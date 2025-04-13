@@ -183,7 +183,7 @@ class imprimirFactura
             <tbody>
             <tr>
                 <td>
-                    <strong>SISTEMA POS</strong><br>
+                    <strong>Pollos Rossy</strong><br>
                     <strong>Ticket de Venta: </strong>' . $respuestaVenta["codigo"] . '<br>
                     <strong>Fecha y Hora: </strong>' . $fecha . '
                 </td>
