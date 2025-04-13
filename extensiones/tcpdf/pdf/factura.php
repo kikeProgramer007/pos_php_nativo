@@ -29,7 +29,7 @@ class imprimirFactura
 
         $respuestaVenta = ControladorVentas::ctrMostrarVentas($itemVenta, $valorVenta);
         if($respuestaVenta!=null){
-        $fecha = date('d-m-Y h:i:s a', strtotime($respuestaVenta["fecha"]));
+        $fecha = date('d-m-Y H:i:s a', strtotime($respuestaVenta["fecha"]));
         $productos = ControladorVentas::ctrMostrarDetalleVentas($respuestaVenta['id']);
 
         $total = number_format($respuestaVenta["total"], 2);
