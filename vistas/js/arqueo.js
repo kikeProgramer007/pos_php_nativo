@@ -354,7 +354,15 @@ class ArqueoCaja {
 
             if (respuesta.status === "ok") {
                 await this.mostrarExito(this.estado);
-                window.location.reload();
+                
+                // Redirigir a crear-venta.php solo si es una apertura exitosa
+                if (this.estado === ESTADO.CERRADA) {
+                    setTimeout(() => {
+                        window.location.href = 'crear-venta';
+                    }, 200);
+                } else {
+                    window.location.reload();
+                }
             } else {
                 throw new Error(respuesta.mensaje || 'Error desconocido en la operación');
             }
