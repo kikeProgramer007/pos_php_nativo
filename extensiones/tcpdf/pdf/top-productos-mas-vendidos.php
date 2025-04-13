@@ -14,8 +14,8 @@ class reporteTopProductosMasVendidos
     public $fechaInicio;
     public $fechaFin;
     public $idUsuario;
-    private $nombreTienda = "Cabañas El Gallito";
-    private $direccionTienda = "Rio Pirai";
+    private $nombreTienda = "Pollos Rosy";
+    private $direccionTienda = "Refineria";
 
     public function generarPdfVentasTopProducto()
     {

@@ -48,7 +48,7 @@ $fechaActual = date('Y-m-d');
               <div class="col-12 col-sm-3">
                 <div class="form-group">
                   <label>Categoria</label>
-                  <select class="form-control" id="id_categoria" name="id_categoria" required>
+                  <select class="select2" class="form-control" id="id_categoria" name="id_categoria" required>
                     <option value="0">Todas</option>
                     
                     <?php
@@ -66,7 +66,7 @@ $fechaActual = date('Y-m-d');
               <div class="col-12 col-md-3">
                 <div class="form-group">
                   <label><i class="text-danger">*</i> Proveedor:</label>
-                  <select class="form-control" id="id_proveedor" name="id_proveedor" required>
+                  <select  class="select2" class="form-control" id="id_proveedor" name="id_proveedor" required>
                     <option value="0">Todos</option>
                     <?php
                       $item = null;

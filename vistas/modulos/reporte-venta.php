@@ -51,7 +51,7 @@ $fechaActual = date('Y-m-d');
               <div class="col-12 col-sm-2">
                 <div class="form-group">
                   <label>Categoria</label>
-                  <select class="form-control" id="id_categoria" name="id_categoria" required>
+                  <select class="select2" class="form-control" id="id_categoria" name="id_categoria" required>
                     <option value="0">Todas</option>
 
                     <?php
@@ -69,7 +69,7 @@ $fechaActual = date('Y-m-d');
               <div class="col-12 col-sm-3">
                 <div class="form-group">
                   <label>Cliente</label>
-                  <select class="form-control" id="id_cliente" name="id_cliente" required>
+                  <select  class="select2"  class="form-control" id="id_cliente" name="id_cliente" required>
                     <option value="0">Todas</option>
 
                     <?php
@@ -87,7 +87,7 @@ $fechaActual = date('Y-m-d');
               <div class="col-12 col-sm-3">
                 <div class="form-group">
                   <label><i class="text-danger">*</i>Mesero</label>
-                  <select class="form-control" id="id_mesero" name="id_mesero" required>
+                  <select  class="select2"  class="form-control" id="id_mesero" name="id_mesero" required>
                     <option value="0">Todas</option>
 
                     <?php

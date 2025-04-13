@@ -18,8 +18,8 @@ class reporteProductoPorCategoria
 {
     public $idCategoria;
     public $idUsuario;
-    private $nombreTienda = "Cabañas El Gallito";
-    private $direccionTienda = "Rio Pirai";
+    private $nombreTienda = "Pollos Rosy";
+    private $direccionTienda = "Refineria";
 
     public function generarPdfProductoPorCategoria()
     {

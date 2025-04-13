@@ -24,8 +24,8 @@ class reporteCompra
     public $idProveedor;
     public $idUsuario;
     public $idCategoria;
-    private $nombreTienda = "Cabañas El Gallito";
-    private $direccionTienda = "Rio Pirai";
+    private $nombreTienda = "Pollos Rosy";
+    private $direccionTienda = "Refineria";
 
     public function generarPdfCompras()
     {

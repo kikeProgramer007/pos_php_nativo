@@ -31,7 +31,7 @@ $fechaActual = date('Y-m-d');
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label><i class="text-danger">*</i> Categoria</label>
-                                    <select class="form-control text-uppercase" id="id_categoria" name="id_categoria" required>
+                                    <select class="select2" class="form-control text-uppercase" id="id_categoria" name="id_categoria" required>
                                         <option value="0">Todas</option>
                                         <?php
                                             $item = null;
