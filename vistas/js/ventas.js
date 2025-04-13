@@ -231,18 +231,19 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
 MODIFICAR LA CANTIDAD
 =============================================*/
 
-$(".formularioVenta").on("change", "input.nuevaCantidadProducto", function(){
+$(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 	var precio = $(this).parent().parent().children(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var cantidad = $(this).val() || 0; // Si no hay valor, usar 0
 
-	var precioFinal = $(this).val() * precio.attr("precioReal");
+	var precioFinal = cantidad * precio.attr("precioReal");
 	
 	precio.val(parseFloat(precioFinal).toFixed(2));
 
-	var nuevoStock = Number($(this).attr("stock")) - $(this).val();
+	var nuevoStock = Number($(this).attr("stock")) - cantidad;
 
 	$(this).attr("nuevoStock", nuevoStock);
 
-	if(Number($(this).val()) > Number($(this).attr("stock"))){
+	if(Number(cantidad) > Number($(this).attr("stock"))){
 
 		/*=============================================
 		SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES
