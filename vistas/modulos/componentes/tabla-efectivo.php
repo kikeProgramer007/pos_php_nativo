@@ -71,6 +71,6 @@
                 </tfoot>
             </tbody>
         </table>
-        <input type="hidden" id="total_efectivo_en_caja" name="total_efectivo_en_caja">
+        <input type="hidden" id="total_efectivo_en_caja" name="total_efectivo_en_caja" value="0">
     </div>
 </div> 

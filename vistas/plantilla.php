@@ -318,6 +318,5 @@ CUERPO DOCUMENTO
 <script src="vistas/js/tabladinamica/proveedortabla.js"></script>
 <script src="vistas/js/tabladinamica/comprastabla.js"></script>
 <script src="vistas/js/tabladinamica/ventastabla.js"></script>
-require_once "controladores/reportes.controlador.php";
 </body>
 </html>

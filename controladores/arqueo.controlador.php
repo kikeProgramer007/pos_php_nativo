@@ -37,7 +37,7 @@ class ControladorArqueo {
      */
     private static function registrarAperturaCaja() {
         // Validar datos requeridos
-        $camposRequeridos = ["fechaApertura", "montoApertura", "estado", "idCaja", "idUsuario"];
+        $camposRequeridos = ["fechaApertura", "estado", "idCaja", "idUsuario"];
         foreach($camposRequeridos as $campo) {
             if(!isset($_POST[$campo]) || empty($_POST[$campo])) {
                 return json_encode([

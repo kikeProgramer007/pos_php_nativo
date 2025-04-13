@@ -17,6 +17,7 @@ class ArqueoCaja {
         this.totales = {
             montoApertura: 0,
             montoVentas: 0,
+            totalEfectivoEnCaja: 0,
             gastosOperativos: 0,
             montoCompras: 0,
             totalIngresos: 0,
@@ -249,10 +250,10 @@ class ArqueoCaja {
         const validaciones = [
             { condicion: !document.getElementById('idVendedor').value, mensaje: 'El usuario es obligatorio' },
             { condicion: !document.getElementById('idCaja').value, mensaje: 'Debe seleccionar una caja' },
-            { condicion: !document.getElementById('nro_ticket').value || document.getElementById('nro_ticket').value < "0", mensaje: 'El número de ticket es obligatorio' },
-            { condicion: !document.getElementById('total_efectivo_en_caja').value || document.getElementById('total_efectivo_en_caja').value === "0.00", mensaje: 'Debe ingresar el efectivo en caja' }
+            { condicion: !document.getElementById('nro_ticket').value || parseFloat(document.getElementById('nro_ticket').value) < 0, mensaje: 'El número de ticket es obligatorio' },
+            { condicion: !document.getElementById('total_efectivo_en_caja').value || parseFloat(document.getElementById('total_efectivo_en_caja').value) < 0, mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja' }
         ];
-
+    
         const error = validaciones.find(v => v.condicion);
         if (error) {
             toastr.error(error.mensaje, 'Error');
@@ -342,18 +343,29 @@ class ArqueoCaja {
                 type: 'POST',
                 data
             });
+   
+            let respuesta;
+            try {
+                respuesta = JSON.parse(response);
+            } catch (parseError) {
+                console.error('Respuesta no válida del servidor:', response);
+                throw new Error('La respuesta del servidor no tiene el formato esperado');
+            }
 
-            const respuesta = JSON.parse(response);
-            console.log(respuesta)
             if (respuesta.status === "ok") {
                 await this.mostrarExito(this.estado);
                 window.location.reload();
             } else {
-                throw new Error(respuesta.mensaje);
+                throw new Error(respuesta.mensaje || 'Error desconocido en la operación');
             }
         } catch (error) {
-            console.error('Error:', error);
-            this.mostrarError('Error al procesar la operación: '+ error);
+            console.error('Error completo:', error);
+            let mensajeError = error.message;
+            if (error.responseText) {
+                console.error('Respuesta del servidor:', error.responseText);
+                mensajeError = 'Error en la comunicación con el servidor';
+            }
+            this.mostrarError('Error al procesar la operación: ' + mensajeError);
         }
     }
 

@@ -663,14 +663,21 @@ DUPLICAR PRODUCTO
 $(document).on("click", "button[title='Duplicar Producto']", function() {
     var $productoRow = $(this).closest('.row');
     var idProducto = $productoRow.find('.nuevaDescripcionProducto').attr('idProducto');
-    var stock = parseInt($productoRow.find('.nuevaCantidadProducto').attr('stock'));
-    var cantidad = parseInt($productoRow.find('.nuevaCantidadProducto').val());
+    var stockOriginal = parseInt($productoRow.find('.nuevaCantidadProducto').attr('stock'));
+    var cantidadTotal = 0;
+    
+    // Calcular la cantidad total actual del producto en la venta
+    $('.nuevaCantidadProducto').each(function() {
+        if($(this).closest('.row').find('.nuevaDescripcionProducto').attr('idProducto') === idProducto) {
+            cantidadTotal += parseInt($(this).val() || 0);
+        }
+    });
     
     // Verificar si hay suficiente stock
-    if(cantidad >= stock) {
+    if(cantidadTotal >= stockOriginal) {
         swal({
             title: "No hay suficiente stock",
-            text: "Solo quedan " + stock + " unidades disponibles",
+            text: "Solo quedan " + stockOriginal + " unidades disponibles",
             type: "error",
             confirmButtonText: "¡Cerrar!"
         });
@@ -692,6 +699,16 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $nuevoProducto.find('.nota-producto').val(null);
     $nuevoProducto.find('.descripcion-producto').val('');
     
+    // Establecer cantidad inicial en 1 y actualizar el nuevoStock
+    var $cantidadInput = $nuevoProducto.find('.nuevaCantidadProducto');
+    $cantidadInput.val(1);
+    $cantidadInput.attr('stock', stockOriginal);
+    $cantidadInput.attr('nuevoStock', stockOriginal - (cantidadTotal + 1));
+    
+    // Actualizar el precio según la cantidad
+    var precioUnitario = $nuevoProducto.find('.nuevoPrecioProducto').attr('precioReal');
+    $nuevoProducto.find('.nuevoPrecioProducto').val(precioUnitario);
+    
     // Insertar el nuevo producto después del original
     $productoRow.after($nuevoProducto);
     
@@ -707,15 +724,6 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
                 return "No hay resultados";
             }
         }
-    });
-    
-    // Asegurar que los eventos estén vinculados al nuevo elemento
-    $nuevoProducto.find('.descripcion-producto').on('change keyup', function() {
-        listarProductos();
-    });
-    
-    $newSelect.on('change', function() {
-        listarProductos();
     });
     
     // Actualizar los totales
