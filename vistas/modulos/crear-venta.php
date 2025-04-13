@@ -411,61 +411,7 @@ if ($_SESSION["perfil"] == "") {
     <div class="row">
 
   
-      <!--=====================================
-      LA TABLA DE PRODUCTOS
-      ======================================-->
-
-      <div class="col-lg-7 hidden-md hidden-sm hidden-xs  ">
-
-        <div class="box box-success">
-
-          <div class=" with-border">
-            <div class="catalogo-header">
-            <div class="filtros-categorias" id="filtrosCategorias">
-              <!-- Los botones de categoría se agregarán dinámicamente -->
-            </div>
-              <div class="catalogo-filtros">
-                <div class="catalogo-busqueda">
-                  <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos...">
-                </div>
-              </div>
-            </div>
-          
-          </div>
-
-          <div class="">
-            <div class="">
-              <div style="padding-left: 15px;" id="catalogoProductos">
-                <!-- Los productos se cargarán dinámicamente aquí -->
-              </div>
-              <div class="catalogo-paginacion">
-                <div class="registros-por-pagina">
-                  <span>Mostrar</span>
-                  <select id="registrosPorPagina">
-                    <option value="12">12</option>
-                    <option value="24">24</option>
-                    <option value="48">48</option>
-                  </select>
-                  <span>registros</span>
-                </div>
-                <div class="paginacion-info" id="paginacionInfo">
-                  <!-- La información de paginación se mostrará aquí -->
-                </div>
-                <div class="paginacion-controles">
-                  <button id="btnAnterior" disabled>Anterior</button>
-                  <div class="paginacion-paginas" id="paginacionPaginas">
-                    <!-- Los números de página se agregarán dinámicamente -->
-                  </div>
-                  <button id="btnSiguiente">Siguiente</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-
-      </div>
+   
 
 
           <!--=====================================
@@ -766,6 +712,62 @@ if ($_SESSION["perfil"] == "") {
           ?>
 
         </div>
+
+      </div>
+
+   <!--=====================================
+      LA TABLA DE PRODUCTOS
+      ======================================-->
+
+      <div class="col-lg-7 hidden-md hidden-sm hidden-xs  ">
+
+        <div class="box box-success">
+
+          <div class=" with-border">
+            <div class="catalogo-header">
+            <div class="filtros-categorias" id="filtrosCategorias">
+              <!-- Los botones de categoría se agregarán dinámicamente -->
+            </div>
+              <div class="catalogo-filtros">
+                <div class="catalogo-busqueda">
+                  <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos...">
+                </div>
+              </div>
+            </div>
+          
+          </div>
+
+          <div class="">
+            <div class="">
+              <div style="padding-left: 15px;" id="catalogoProductos">
+                <!-- Los productos se cargarán dinámicamente aquí -->
+              </div>
+              <div class="catalogo-paginacion">
+                <div class="registros-por-pagina">
+                  <span>Mostrar</span>
+                  <select id="registrosPorPagina">
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                    <option value="48">48</option>
+                  </select>
+                  <span>registros</span>
+                </div>
+                <div class="paginacion-info" id="paginacionInfo">
+                  <!-- La información de paginación se mostrará aquí -->
+                </div>
+                <div class="paginacion-controles">
+                  <button id="btnAnterior" disabled>Anterior</button>
+                  <div class="paginacion-paginas" id="paginacionPaginas">
+                    <!-- Los números de página se agregarán dinámicamente -->
+                  </div>
+                  <button id="btnSiguiente">Siguiente</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
 
       </div>
 
