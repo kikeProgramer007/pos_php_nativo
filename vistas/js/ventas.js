@@ -232,12 +232,11 @@ MODIFICAR LA CANTIDAD
 =============================================*/
 
 $(".formularioVenta").on("change", "input.nuevaCantidadProducto", function(){
-
 	var precio = $(this).parent().parent().children(".ingresoPrecio").children().children(".nuevoPrecioProducto");
 
 	var precioFinal = $(this).val() * precio.attr("precioReal");
 	
-	precio.val(precioFinal);
+	precio.val(parseFloat(precioFinal).toFixed(2));
 
 	var nuevoStock = Number($(this).attr("stock")) - $(this).val();
 
@@ -706,9 +705,9 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $cantidadInput.attr('nuevoStock', stockOriginal - (cantidadTotal + 1));
     
     // Actualizar el precio según la cantidad
-    var precioUnitario = $nuevoProducto.find('.nuevoPrecioProducto').attr('precioReal');
-    $nuevoProducto.find('.nuevoPrecioProducto').val(precioUnitario);
-    
+	var precioUnitario = $nuevoProducto.find('.nuevoPrecioProducto').attr('precioReal');
+	$nuevoProducto.find('.nuevoPrecioProducto').val(parseFloat(precioUnitario).toFixed(2));
+
     // Insertar el nuevo producto después del original
     $productoRow.after($nuevoProducto);
     
