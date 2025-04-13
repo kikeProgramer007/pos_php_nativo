@@ -655,7 +655,7 @@ if ($_SESSION["perfil"] == "") {
 
                               <span class="input-group-addon"><i><b>Bs</b></i></span>
 
-                              <input type="text" class="form-control " id="nuevoTotalVenta" name="nuevoTotalVenta" total="" placeholder="00000" readonly required>
+                              <input type="text" class="form-control " id="nuevoTotalVenta" name="nuevoTotalVenta" total="" placeholder="0" readonly disabled required>
 
                               <input type="hidden" name="totalVenta" id="totalVenta">
 

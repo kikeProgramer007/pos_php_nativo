@@ -145,8 +145,8 @@ class imprimirFactura
             $valorUnitario = number_format($item["precio_venta"], 2);
             $precioTotal = number_format($item["subtotal"], 2);
             $preferencias = $item['preferencias'] ?? '';
-            $nota = $item['nota_adicional'] ?? '';
-            $texto = implode(' - ', array_filter([$preferencias, $nota]));
+            $notaIndividual = $item['nota_adicional'] ?? '';
+            $texto = implode(' - ', array_filter([$preferencias, $notaIndividual]));
             $preferenciasYNotaAdicional = $texto 
                 ? '<br><span style="font-size: 6px; color: #666666;">(' . $texto . ')</span>' 
                 : '';

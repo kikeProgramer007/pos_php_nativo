@@ -30,7 +30,7 @@
 
             <!-- Egresos -->
             <tr class="row-dark">
-                <td>GASTOS</td>
+                <td>Egresos</td>
                 <td class="text-right total-column" id="total_egresos">0.00</td>
             </tr>
             <tr>
