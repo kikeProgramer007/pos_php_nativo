@@ -35,10 +35,10 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 
                                     <div class="auth-actions">
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-save"></i> Guardar
+                                            <i class="fa fa-floppy-o"></i> Guardar
                                         </button>
                                         <a href="categorias" class="btn btn-secondary">
-                                            <i class="fas fa-arrow-left"></i> Volver
+                                            <i class="fa fa-arrow-left"></i> Volver
                                         </a>
                                     </div>
 
