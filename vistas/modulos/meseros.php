@@ -76,10 +76,9 @@ if($_SESSION["perfil"] == "Especial"){
               <th style="width:10px">#</th>
               <th>Nombre</th>
               <th>N° De Carnet</th>
-              <th>Telefono</th>
+              <th>Teléfono</th>
               <th>Dirección</th>
-              <th>Total compras</th>
-           
+              <th>Total de ventas</th>
               <th>Ingreso al sistema</th>
               <th>Acciones</th>
             </tr>
