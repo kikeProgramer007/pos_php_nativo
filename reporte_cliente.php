@@ -8,20 +8,19 @@ class PDF extends FPDF
     function Header()
     {
         // Añadir imagen en la esquina superior izquierda
-        $this->Image('vistas/img/texturas/log.png', 10, 4, 30);
+        $this->Image('vistas/img/texturas/log.png', 12, 4.5, 31);
 
         // Añadir imagen en la esquina superior derecha (opcional)
-        $this->Image('vistas/img/texturas/log2.jpg', 170, 8, 30); // Ajusta la posición si es necesario
+        $this->Image('vistas/img/texturas/log2.jpg', 170, 10, 28); // Ajusta la posición si es necesario
 
         $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, 10, 'EL GALLITO CAMBA', 0, 1, 'C');
-        $this->Cell(0, 8, 'RIO PIRAI', 0, 1, 'C');
+        $this->Cell(0, 10, 'POLLOS ROSSY', 0, 1, 'C');
 
         $this->Ln(7); // Mayor separación después del título
 
         // Título en cada página
         $this->SetFont("Arial", "B", 12);
-        $this->Cell(0, 10, "REPORTE DE CLIENTE", 0, 1, "C");
+        $this->Cell(0, 10, "LISTA DE CLIENTES", 0, 1, "C");
         $this->Ln(5); // Espacio entre el título y la tabla
     }
 
