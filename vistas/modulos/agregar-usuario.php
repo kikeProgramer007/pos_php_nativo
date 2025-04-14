@@ -16,14 +16,14 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
                             <!-- Columna Izquierda - Formulario -->
                             <div class="auth-form-section">
                                 <div class="auth-header">
-                                    <h2><i class="fas fa-user-plus"></i> REGISTRAR USUARIO</h2>
+                                    <h2><i class="fa fa-user"></i> REGISTRAR USUARIO</h2>
                                 </div>
                                 
                                 <form role="form" method="post" enctype="multipart/form-data" class="auth-form" id="formularioUsuario">
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="nuevoNombre">
-                                                <i class="fas fa-user"></i> Nombre
+                                                <i class="fa fa-user-circle"></i> Nombre
                                             </label>
                                             <input type="text" 
                                                    class="form-control" 
@@ -35,7 +35,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 
                                         <div class="form-group col-md-6">
                                             <label for="nuevoUsuario">
-                                                <i class="fas fa-at"></i> Usuario
+                                                <i class="fa fa-address-card"></i> Usuario
                                             </label>
                                             <input type="text" 
                                                    class="form-control" 
@@ -49,7 +49,9 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="nuevoPassword">
-                                                <i class="fas fa-lock"></i> Contraseña
+                                            <i class="fa fa-key"></i> Contraseña
+
+
                                             </label>
                                             <div class="password-input">
                                                 <input type="password" 
@@ -66,7 +68,9 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 
                                         <div class="form-group col-md-6">
                                             <label for="nuevoPerfil">
-                                                <i class="fas fa-user-tag"></i> Perfil
+                                            <i class="fa fa-cogs"></i> Perfil
+
+
                                             </label>
                                             <select class="form-control" id="nuevoPerfil" name="nuevoPerfil" required>
                                                 <option value="">Seleccione un perfil</option>

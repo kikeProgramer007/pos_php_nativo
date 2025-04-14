@@ -15,14 +15,18 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
                             <!-- Columna Izquierda - Formulario -->
                             <div class="auth-form-section">
                                 <div class="auth-header">
-                                    <h2><i class="fas fa-tags"></i> Agregar Categoría</h2>
+                                <h2><i class="fa fa-tags"></i> Agregar Categoría</h2>
+
                                 </div>
                                 
                                 <form role="form" method="post" class="auth-form">
                                     <div class="form-row">
                                         <div class="form-group col-md-12">
                                             <label for="nuevaCategoria">
-                                                <i class="fas fa-tag"></i> Nombre de la Categoría
+                                            <i class="fa fa-cutlery"></i> Nombre de la Categoría
+
+
+
                                             </label>
                                             <input type="text" 
                                                    class="form-control" 
