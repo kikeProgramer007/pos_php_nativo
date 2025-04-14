@@ -15,7 +15,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
                             <!-- Columna Izquierda - Formulario -->
                             <div class="auth-form-section">
                                 <div class="auth-header">
-                                <h2><i class="fa fa-tags"></i> Agregar Categoría</h2>
+                                <h2><i class="fa fa-tags"></i> REGISTRAR CATEGORIA</h2>
 
                                 </div>
                                 
