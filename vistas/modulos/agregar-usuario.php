@@ -122,6 +122,8 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
     --error-color: #dc3545;
     --success-color: #28a745;
     --gray-color: #6c757d;
+    --azul-color: #3c8dbc;
+    --nuevocolor:#,
 }
 
 .auth-container {
@@ -129,7 +131,11 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, var(--gray-color), var(--negro-color));
+
+
+
+ 
     padding: 30px;
 }
 
@@ -168,7 +174,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 }
 
 .auth-header h2 {
-    color: var(--primary-color);
+    color: var(--azul-color);
     font-size: 32px;
     font-weight: 600;
 }
@@ -203,7 +209,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 }
 
 .form-control:focus {
-    border-color: var(--primary-color);
+    border-color: var(--azul-color);
     box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.25);
 
     outline: none;
@@ -268,7 +274,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 .file-label {
     display: inline-block;
     padding: 15px 30px;
-    background: var(--primary-color);
+    background: var(--azul-color);
     color: white;
     border-radius: 30px;
     font-size: 16px;
@@ -316,7 +322,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
 }
 
 .btn-primary {
-    background: var(--primary-color);
+    background: var(--azul-color);
     color: white;
 }
 
@@ -389,7 +395,7 @@ select.form-control option:first-child {
 /* Ajuste específico para el select de perfil */
 #nuevoPerfil {
     font-size: 14px;
-    line-height: 1.2;
+   
 }
 </style>
 
