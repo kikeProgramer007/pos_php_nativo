@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-04-2025 a las 15:06:18
+-- Tiempo de generación: 14-04-2025 a las 19:37:51
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `pos_php_nativo-main-clean`
+-- Base de datos: `pos_php_nativo-main`
 --
 
 -- --------------------------------------------------------
@@ -56,6 +56,13 @@ CREATE TABLE `arqueo_caja` (
   `id_caja` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `arqueo_caja`
+--
+
+INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `diferencia`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
+(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 00000000, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -281,22 +288,22 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
-(1, 1, '101', 'entero', 'vistas/img/productos/101/814.jpg', 50, 80, 70, 0, '2025-03-08 21:36:26', 0, 1),
-(2, 1, '102', '1/2', 'vistas/img/productos/102/393.jpg', 50, 40, 30, 0, '2025-01-05 22:20:18', 0, 1),
-(3, 1, '103', '1/4 pecho', 'vistas/img/productos/103/562.jpg', 50, 20, 18, 0, '2025-01-05 22:13:07', 0, 1),
-(4, 1, '108', '1/4 pierna', 'vistas/img/productos/108/876.jpg', 50, 20, 18, 0, '2025-01-05 22:14:24', 0, 1),
-(5, 1, '104', 'eco pecho', 'vistas/img/productos/104/677.jpg', 50, 12, 10, 0, '2025-03-08 21:36:26', 0, 1),
-(6, 1, '105', 'eco pierna', 'vistas/img/productos/105/136.jpg', 50, 12, 10, 0, '2025-01-05 22:11:56', 0, 1),
-(7, 1, '106', 'eco ala', 'vistas/img/productos/106/524.jpg', 50, 12, 10, 0, '2025-01-05 22:22:15', 0, 1),
-(8, 1, '107', 'eco contra', 'vistas/img/productos/107/140.jpg', 50, 12, 10, 0, '2025-03-08 21:36:26', 0, 1),
-(10, 2, '201', 'entero', 'vistas/img/productos/201/518.png', 50, 80, 70, 0, '2025-01-05 22:29:27', 0, 1),
-(11, 2, '202', '1/2', 'vistas/img/productos/202/592.png', 50, 40, 30, 0, '2025-01-05 22:31:20', 0, 1),
-(12, 2, '203', '1/4  pecho', 'vistas/img/productos/203/989.png', 50, 20, 18, 0, '2025-01-05 22:31:43', 0, 1),
-(13, 2, '204', '1/4 pierna', 'vistas/img/productos/204/129.png', 50, 20, 18, 0, '2025-01-05 22:32:04', 0, 1),
-(14, 2, '205', 'eco pecho', 'vistas/img/productos/205/937.jpg', 50, 12, 10, 0, '2025-03-08 21:36:26', 0, 1),
-(15, 2, '206', 'eco pierna', 'vistas/img/productos/206/586.png', 50, 12, 10, 0, '2025-01-05 22:43:44', 0, 1),
-(16, 2, '207', 'eco ala', 'vistas/img/productos/207/314.jpg', 50, 12, 10, 0, '2025-01-05 22:47:36', 0, 1),
-(17, 2, '208', 'eco contra', 'vistas/img/productos/208/425.png', 50, 12, 10, 0, '2025-01-05 22:46:34', 0, 1),
+(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 80, 70, 0, '2025-04-14 16:26:46', 0, 1),
+(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 40, 30, 0, '2025-04-14 16:26:55', 0, 1),
+(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/562.jpg', 50, 20, 18, 0, '2025-04-14 16:27:14', 0, 1),
+(4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/876.jpg', 50, 20, 18, 0, '2025-04-14 16:27:25', 0, 1),
+(5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/986.jpg', 50, 12, 10, 0, '2025-04-14 17:36:17', 0, 1),
+(6, 1, '105', 'eco pierna broasterd', 'vistas/img/productos/105/136.jpg', 50, 12, 10, 0, '2025-04-14 16:27:55', 0, 1),
+(7, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/524.jpg', 50, 12, 10, 0, '2025-04-14 16:28:06', 0, 1),
+(8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/140.jpg', 50, 12, 10, 0, '2025-04-14 16:28:19', 0, 1),
+(10, 2, '201', 'entero brasa', 'vistas/img/productos/201/518.png', 50, 80, 70, 0, '2025-04-14 16:28:52', 0, 1),
+(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/592.png', 50, 40, 30, 0, '2025-04-14 16:28:40', 0, 1),
+(12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/989.png', 50, 20, 18, 0, '2025-04-14 16:29:04', 0, 1),
+(13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/129.png', 50, 20, 18, 0, '2025-04-14 16:29:14', 0, 1),
+(14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/937.jpg', 50, 12, 10, 0, '2025-04-14 16:29:29', 0, 1),
+(15, 2, '206', 'eco pierna brasa', 'vistas/img/productos/206/586.png', 50, 12, 10, 0, '2025-04-14 16:29:51', 0, 1),
+(16, 2, '207', 'eco ala brasa', 'vistas/img/productos/207/314.jpg', 50, 12, 10, 0, '2025-04-14 16:30:02', 0, 1),
+(17, 2, '208', 'eco contra brasa', 'vistas/img/productos/208/425.png', 50, 12, 10, 0, '2025-04-14 16:30:09', 0, 1),
 (18, 3, '301', 'coca cola 3l', 'vistas/img/productos/301/316.jpg', 50, 17, 15, 0, '2025-01-07 02:39:59', 1, 1),
 (19, 3, '302', 'coca cola 2l', 'vistas/img/productos/302/532.jpg', 50, 13, 11, 0, '2025-03-08 21:36:26', 1, 1),
 (20, 3, '303', 'coca cola 600ml', 'vistas/img/productos/303/492.jpg', 50, 6, 3, 0, '2025-01-07 02:39:59', 1, 1),
@@ -508,7 +515,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
