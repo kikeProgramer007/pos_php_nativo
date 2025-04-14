@@ -7,7 +7,7 @@
       <img src="vistas/img/plantilla/Logo_POS.png" class="img-responsive" style="padding:2px">
     </span>
     <!-- logo normal -->
-    <span class="logo-lg"><b>Sistema </b>POS</span>
+    <span class="logo-lg"><b>Pollos </b>Rossy</span>
   </a>
 
   <!-- BARRA DE NAVEGACIÓN -->
