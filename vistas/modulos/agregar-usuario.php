@@ -131,7 +131,7 @@ if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--gray-color), var(--negro-color));
+    background: linear-gradient(135deg, #03093d, #071f2f);
 
 
 
