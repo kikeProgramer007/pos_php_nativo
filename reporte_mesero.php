@@ -4,95 +4,144 @@ require "fpdf/fpdf.php";
 
 class PDF extends FPDF
 {
-    // Encabezado de página
     function Header()
     {
-       // Añadir imagen en la esquina superior izquierda
-       $this->Image('vistas/img/texturas/log.png', 12, 4.5, 31);
+        // Configuración para caracteres especiales
+        $this->SetFont('Arial','',12);
+        
+        // Rectángulo superior con degradado suave
+        $this->SetFillColor(245, 245, 245);
+        $this->Rect(0, 0, 210, 40, 'F');
+        
+        // Línea decorativa superior
+        $this->SetDrawColor(0, 0, 0);
+        $this->SetLineWidth(0.4);
+        $this->Line(0, 40, 210, 40);
 
-       // Añadir imagen en la esquina superior derecha (opcional)
-       $this->Image('vistas/img/texturas/log2.jpg', 170, 10, 28); // Ajusta la posición si es necesario
+        // Logos
+        $this->Image('vistas/img/texturas/log.png', 12, 4.5, 31);
+        $this->Image('vistas/img/texturas/log2.jpg', 170, 10, 28);
 
-       $this->SetFont('Arial', 'B', 14);
-       $this->Cell(0, 10, 'POLLOS ROSSY', 0, 1, 'C');
-        $this->Ln(7); // Mayor separación después del título
+        // Título principal
+        $this->SetFont('Arial', 'B', 16);
+        $this->Cell(0, 15, iconv('UTF-8', 'ISO-8859-1', 'POLLOS ROSSY'), 0, 1, 'C');
+        
+        // Subtítulo en un recuadro
+        $this->SetFont('Arial', 'B', 12);
+        
+        // Crear un recuadro centrado
+        $textoAncho = 80; // Ancho del recuadro
+        $posX = ($this->GetPageWidth() - $textoAncho) / 2;
+        $this->Rect($posX, $this->GetY() + 2, $textoAncho, 8);
+        
+        // Texto centrado dentro del recuadro
+        $this->Cell(0, 12, iconv('UTF-8', 'ISO-8859-1', 'LISTA DE MESEROS'), 0, 1, 'C');
+        
+        $this->Ln(5);
 
-        // Título en cada página
-        $this->SetFont("Arial", "B", 12);
-        $this->Cell(0, 0, "LISTA DE MESEROS", 0, 1, "C");
-        $this->Ln(5); // Espacio entre el título y la tabla
+        // Información adicional en dos columnas
+        $this->SetFont('Arial', '', 10);
+        $this->SetX(15);
+        date_default_timezone_set('America/La_Paz');
+        $this->Cell(40, 8, 'Fecha: ' . date('d/m/Y'), 0, 0, 'L');
+        $this->SetX(165);
+        $this->Cell(40, 8, 'Hora: ' . date('H:i:s'), 0, 1, 'L');
+        
+        $this->Ln(5);
     }
 
-    // Encabezado de la tabla
     function TablaHeader()
     {
-        $this->SetFont("Arial", "", 10);
-        $this->SetFillColor(200, 200, 200); // Color de fondo de las cabeceras
+        // Configuración de la tabla
+        $this->SetFont('Arial', 'B', 10);
+        $this->SetFillColor(173, 216, 230); // Celeste
 
-        // Ajustar el ancho total de la tabla (restar márgenes izquierdo y derecho)
-        $tablaAncho = 185; // Ancho total de la tabla en mm (210 mm - 2 * 10 mm de márgenes)
-        $anchoColumna = array(60, 40, 40, 50); // Ancho de cada columna
+        $this->SetDrawColor(0, 0, 0);
+        $this->SetLineWidth(0.2);
 
-        // Calcular la posición inicial para centrar la tabla
-        $posX = (210 - $tablaAncho) / 2; // 210 mm es el ancho de A4
+        $tablaAncho = 185;
+        $anchoColumna = array(60, 40, 40, 50);
+        $posX = (210 - $tablaAncho) / 2;
         $this->SetX($posX);
 
-        // Imprimir cabeceras de la tabla
-        $this->Cell($anchoColumna[0], 10, "NOMBRE", 1, 0, "C", true);
-        $this->Cell($anchoColumna[1], 10, "DOCUMENTO", 1, 0, "C", true);
-        $this->Cell($anchoColumna[2], 10, "TELEFONO", 1, 0, "C", true);
-        $this->Cell($anchoColumna[3], 10, "DIRECCION", 1, 1, "C", true);
+        // Cabeceras con bordes completos
+        $this->Cell($anchoColumna[0], 10, iconv('UTF-8', 'ISO-8859-1', 'NOMBRE'), 1, 0, 'C', true);
+        $this->Cell($anchoColumna[1], 10, 'DOCUMENTO', 1, 0, 'C', true);
+        $this->Cell($anchoColumna[2], 10, iconv('UTF-8', 'ISO-8859-1', 'TELÉFONO'), 1, 0, 'C', true);
+        $this->Cell($anchoColumna[3], 10, iconv('UTF-8', 'ISO-8859-1', 'DIRECCIÓN'), 1, 1, 'C', true);
     }
 
-    // Pie de página
     function Footer()
     {
-        $this->SetY(-15); // Posición a 1.5 cm del final
+        // Rectángulo inferior con degradado suave
+        $this->SetFillColor(245, 245, 245);
+        $this->Rect(0, $this->GetPageHeight()-25, 210, 25, 'F');
+        
+        // Línea decorativa inferior
+        $this->SetDrawColor(0, 0, 0);
+        $this->SetLineWidth(0.4);
+        $this->Line(0, $this->GetPageHeight()-25, 210, $this->GetPageHeight()-25);
+
+        $this->SetY(-20);
         $this->SetFont('Arial', 'I', 8);
-        $this->Cell(0, 10, 'Pagina ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        date_default_timezone_set('America/La_Paz');
-        $this->Cell(0, 10, 'Fecha: ' . date('d-m-Y'), 0, 0, 'R');
+        
+        // Información del pie de página
+        $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Fecha de impresión: ') . date('d/m/Y H:i:s'), 0, 0, 'L');
+        $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Página ') . $this->PageNo() . '/{nb}', 0, 0, 'C');
+        $this->Cell(50, 10, 'POLLOS ROSSY', 0, 0, 'R');
     }
 }
 
-// Crear una instancia de FPDF y agregar una página
-$pdf = new PDF("P", "mm", "A4");
+$pdf = new PDF('P', 'mm', 'A4');
 $pdf->AliasNbPages();
 $pdf->AddPage();
+
+// Establecer márgenes
+$pdf->SetMargins(15, 15, 15);
 
 // Imprimir el encabezado de la tabla
 $pdf->TablaHeader();
 
-// Establecer la fuente para los datos
-$pdf->SetFont("Arial", "", 9);
+// Configuración para los datos
+$pdf->SetFont('Arial', '', 9);
+$tablaAncho = 185;
+$anchoColumna = array(60, 40, 40, 50);
 
-// Ajustar el ancho total de la tabla (restar márgenes izquierdo y derecho)
-$tablaAncho = 185; // Ancho total de la tabla en mm (210 mm - 2 * 10 mm de márgenes)
-$anchoColumna = array(60, 40, 40, 50); // Ancho de cada columna
-
-// Ejecutar la consulta y agregar los datos al PDF
-$sql = "SELECT nombre, documento, telefono, direccion FROM meseros WHERE estado=1 ";
+// Consulta y datos
+$sql = "SELECT nombre, documento, telefono, direccion FROM meseros WHERE estado=1";
 if ($resultado = $mysqli->query($sql)) {
+    $colorFila = false;
     while ($fila = $resultado->fetch_assoc()) {
-
-        if ($pdf->GetY() > 250) { // Verifica si la posición Y está cerca del final de la página
-            $pdf->AddPage(); // Añade una nueva página
-            $pdf->TablaHeader(); // Imprime el encabezado de la tabla en la nueva página
+        if ($pdf->GetY() > 230) {
+            $pdf->AddPage();
+            $pdf->TablaHeader();
+            // Resetear la fuente después de TablaHeader
+            $pdf->SetFont('Arial', '', 9);
         }
 
-        $pdf->SetX((210 - $tablaAncho) / 2); // Asegurarse de estar en la posición correcta
+        // Alternar colores de fondo para las filas
+        if($colorFila) {
+            $pdf->SetFillColor(250, 250, 250);
+        } else {
+            $pdf->SetFillColor(255, 255, 255);
+        }
 
-        // Imprimir datos de la fila
-        $pdf->Cell($anchoColumna[0], 10, strtoupper($fila['nombre']), 1, 0, "L");
-        $pdf->Cell($anchoColumna[1], 10, strtoupper($fila['documento']), 1, 0, "L");
-        $pdf->Cell($anchoColumna[2], 10, strtoupper($fila['telefono']), 1, 0, "L");
-        $pdf->Cell($anchoColumna[3], 10, strtoupper($fila['direccion']), 1, 1, "L");
+        $posX = (210 - $tablaAncho) / 2;
+        $pdf->SetX($posX);
+
+        // Imprimir datos con bordes y fondo alternado
+        $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre'])), 1, 0, 'L', true);
+        $pdf->Cell($anchoColumna[1], 8, strtoupper($fila['documento']), 1, 0, 'C', true);
+        $pdf->Cell($anchoColumna[2], 8, strtoupper($fila['telefono']), 1, 0, 'C', true);
+        $pdf->Cell($anchoColumna[3], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['direccion'])), 1, 1, 'L', true);
+        
+        $colorFila = !$colorFila;
     }
     $resultado->free();
 } else {
-    $pdf->Cell(0, 10, "Error en la consulta: " . $mysqli->error, 0, 1, "C");
+    $pdf->SetTextColor(255, 0, 0);
+    $pdf->Cell(0, 10, "Error en la consulta: " . $mysqli->error, 0, 1, 'C');
 }
 
-// Cerrar y generar el PDF
 $pdf->Output();
 ?>
