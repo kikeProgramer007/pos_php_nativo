@@ -1085,7 +1085,7 @@ function agregarProductoAVenta(producto) {
       <div class="col-xs-2">
         <input type="number" class="form-control input-sm nuevaCantidadProducto" 
                name="nuevaCantidadProducto" min="1" value="1" 
-               stock="${producto.stock}" nuevoStock="${Number(producto.stock-1)}" required>
+               stock="${producto.stock}" data-idProducto="${producto.id}" required>
       </div>
 
       <!-- Columna para precio -->

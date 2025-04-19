@@ -57,7 +57,7 @@ class ControladorVentas{
 				return;
 			}
 
-
+			
 			$listaProductos = json_decode($_POST["listaProductos"], true);
 
 			$totalProductosComprados = array();
@@ -68,21 +68,21 @@ class ControladorVentas{
 				
 			   $tablaProductos = "productos";
 
-			    $item = "id";
-			    $valor = $value["id"];
+			    $id = "id";
+			    $valorIdProducto = $value["id"];
 			    $orden = "id";
 
-			    $traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
+			    $traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $id, $valorIdProducto, $orden);
 
-				$item1a = "ventas";
-				$valor1a = $value["cantidad"] + $traerProducto["ventas"];
+				$ventas = "ventas";
+				$cantidadVentas = $value["cantidad"] + $traerProducto["ventas"];
 
-			    $nuevasVentas = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
+			    $nuevasVentas = ModeloProductos::mdlActualizarProducto($tablaProductos, $ventas, $cantidadVentas, $valorIdProducto);
 
-				$item1b = "stock";
-				$valor1b = $value["stock"];
+				$stock = "stock";
+				$valorStock = $traerProducto["stock"] - $value["cantidad"];
 
-				$nuevoStock = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1b, $valor1b, $valor);
+				$nuevoStock = ModeloProductos::mdlActualizarProducto($tablaProductos, $stock, $valorStock, $valorIdProducto);
 
 			}
 

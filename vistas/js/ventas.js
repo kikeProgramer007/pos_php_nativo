@@ -14,16 +14,6 @@ CARGAR LA TABLA DINÁMICA DE VENTAS
 
 
 /*=============================================
-AGREGANDO PRODUCTOS A LA VENTA DESDE LA TABLA
-=============================================*/
-
-/*=============================================
-CUANDO CARGUE LA TABLA CADA VEZ QUE NAVEGUE EN ELLA
-=============================================*/
-
-
-
-/*=============================================
 QUITAR PRODUCTOS DE LA VENTA Y RECUPERAR BOTÓN
 =============================================*/
 
@@ -41,6 +31,16 @@ function contarProductoEnVenta(idProducto) {
     });
     return contador;
 }
+// funcion para sumar la cantidad de productos en la venta con el mismo id
+function sumarCantidadProductos(idProducto) {
+    var suma = 0;
+    $(".nuevoProducto .nuevaCantidadProducto").each(function() {
+        if($(this).attr("data-idProducto") == idProducto) {
+            suma += parseInt($(this).val() || 0);
+        }
+    });
+    return suma;
+}	
 
 $(".formularioVenta").on("click", "button.quitarProducto", function(){
     var idProducto = $(this).attr("idProducto");
@@ -50,7 +50,7 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
 
     // Contar cuántas veces sigue apareciendo el producto
     var apariciones = contarProductoEnVenta(idProducto);
-    
+
     // Solo habilitar el botón si no quedan apariciones del producto
     if(apariciones === 0) {
         // Habilitar el botón en el catálogo
@@ -63,7 +63,7 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
             catalogoProductos.renderizarCatalogo();
         }
     }
-
+	
     if($(".nuevoProducto").children().length == 0){
         $("#nuevoImpuestoVenta").val(0);
         $("#nuevoTotalVenta").val(0);
@@ -129,7 +129,7 @@ $(".btnAgregarProducto").click(function(){
 
 	          '<div class="col-xs-3 ingresoCantidad">'+
 	            
-	             '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="0" stock nuevoStock required>'+
+	             '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="0" stock required>'+
 
 	          '</div>' +
 
@@ -139,7 +139,7 @@ $(".btnAgregarProducto").click(function(){
 
 	            '<div class="input-group">'+
 
-	              '<span class="input-group-addon"><i class="ion ion-social-usd"></i></span>'+
+	              '<span class="input-group-addon"><i>Bs</i></span>'+
 	                 
 	              '<input type="text" class="form-control input-sm nuevoPrecioProducto" precioReal="" name="nuevoPrecioProducto" readonly required>'+
 				  '<input type="hidden" precioRealCompra="" name="nuevoPrecioCompraProducto"  class="nuevoPrecioCompraProducto" value=""  >'+
@@ -212,7 +212,6 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
       	    
       	    $(nuevaDescripcionProducto).attr("idProducto", respuesta["id"]);
       	    $(nuevaCantidadProducto).attr("stock", respuesta["stock"]);
-      	    $(nuevaCantidadProducto).attr("nuevoStock", Number(respuesta["stock"])-1);
       	    $(nuevoPrecioProducto).val(respuesta["precio_venta"]);
       	    $(nuevoPrecioProducto).attr("precioReal", respuesta["precio_venta"]);
 			$(nuevaCantidadProducto).val(1);
@@ -232,40 +231,34 @@ MODIFICAR LA CANTIDAD
 =============================================*/
 
 $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
-	var precio = $(this).parent().parent().children(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var row = $(this).closest(".row"); // Encuentra el contenedor más cercano
+	var idProducto = row.find(".nuevaDescripcionProducto").attr("idProducto"); // Busca dentro del row
+	var precio = row.find(".ingresoPrecio").children().children(".nuevoPrecioProducto"); // Busca dentro del row
 	var cantidad = $(this).val() || 0; // Si no hay valor, usar 0
-
 	var precioFinal = cantidad * precio.attr("precioReal");
-	
+
+
 	precio.val(parseFloat(precioFinal).toFixed(2));
 
-	var nuevoStock = Number($(this).attr("stock")) - cantidad;
+    var apariciones = contarProductoEnVenta(idProducto);
+	if(apariciones > 1){
+		cantidad = sumarCantidadProductos(idProducto);
+	}
 
-	$(this).attr("nuevoStock", nuevoStock);
-
+	/*SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES*/
 	if(Number(cantidad) > Number($(this).attr("stock"))){
 
-		/*=============================================
-		SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES
-		=============================================*/
-
 		$(this).val(1);
-
 		var precioFinal = $(this).val() * precio.attr("precioReal");
-
 		precio.val(precioFinal);
-
 		sumarTotalPrecios();
-
 		swal({
 	      title: "La cantidad supera el Stock",
 	      text: "¡Sólo hay "+$(this).attr("stock")+" unidades!",
 	      type: "error",
 	      confirmButtonText: "¡Cerrar!"
 	    });
-
 	    return;
-
 	}
 
 	// SUMAR TOTAL DE PRECIOS----------------
@@ -424,7 +417,6 @@ $(".formularioVenta").on("change", "input#nuevoCodigoTransaccion", function(){
 /*=============================================
 LISTAR TODOS LOS PRODUCTOS EN FORMATO JSON DENTRO DEL INPUT
 =============================================*/
-var listaProductos = [];
 function listarProductos(){
 	listaProductos = []; // Limpiar el array antes de llenarlo
 	var descripcion = $(".nuevaDescripcionProducto");
@@ -448,7 +440,7 @@ function listarProductos(){
 			"id" : $(descripcion[i]).attr("idProducto"), 
 			"descripcion" : $(descripcion[i]).val(),
 			"cantidad" : $(cantidad[i]).val(),
-			"stock" : $(cantidad[i]).attr("nuevoStock"),
+			"stock" : $(cantidad[i]).attr("stock"),
 			"precio" : $(precio[i]).attr("precioReal"),
 			"precioCompra" : $(precioCompra[i]).attr("precioRealCompra"),
 			"total" : $(precio[i]).val(),
@@ -703,7 +695,6 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     var $cantidadInput = $nuevoProducto.find('.nuevaCantidadProducto');
     $cantidadInput.val(1);
     $cantidadInput.attr('stock', stockOriginal);
-    $cantidadInput.attr('nuevoStock', stockOriginal - (cantidadTotal + 1));
     
     // Actualizar el precio según la cantidad
 	var precioUnitario = $nuevoProducto.find('.nuevoPrecioProducto').attr('precioReal');
