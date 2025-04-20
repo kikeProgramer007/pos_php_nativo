@@ -69,9 +69,9 @@ class imprimirFactura
         $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas); // Altura total
 
         // Crear el documento con la altura calculada
-        $pdf = new TCPDF('P', 'mm', array(80, $alturaTotal), true, 'UTF-8', false);
+        $pdf = new TCPDF('P', 'mm', array(70, $alturaTotal), true, 'UTF-8', false);
 
-        $pdf->SetMargins(1, -1, 1);
+        $pdf->SetMargins(1, -1, 0);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetAutoPageBreak(false, 0); // Desactivar el salto de página automático
@@ -124,15 +124,15 @@ class imprimirFactura
 
         $pdf->writeHTML($html, false, false, false, false, '');
 
-        // Productos
+        // Productos para la factura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:30%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
-                <th style="width:7%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
+                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
+                <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
-                <th style="width:20%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
-                <th style="width:20%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
+                <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
+                <th style="width:23%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
             </tr>
              ';
 
@@ -178,7 +178,7 @@ class imprimirFactura
             <tr><td colspan="4" style="padding: 2px;"></td></tr>
             <tr>
               <td colspan="4" style="padding: 0;">
-                <div style="margin: 0; font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!</div>
+                <div style="margin: 0; font-size: 9px; text-align: right;">¡GRACIAS POR SU COMPRA!</div>
               </td>
             </tr>
             </tbody>
@@ -238,11 +238,11 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:30%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
-                <th style="width:7%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
+                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
+                <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
-                <th style="width:20%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
-                <th style="width:20%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
+                <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
+                <th style="width:23%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
             </tr>
              ';
 
