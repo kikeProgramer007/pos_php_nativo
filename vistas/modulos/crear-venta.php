@@ -586,7 +586,7 @@ if ($_SESSION["perfil"] == "") {
                 <div class="form-group">
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                    <input type="text" class="form-control text-uppercase" id="cliente" name="cliente" value="" placeholder="Ingrese el Cliente" autocomplete="off"  >
+                    <input type="text" class="form-control text-uppercase" id="cliente" name="cliente" value="" placeholder="Ingrese el Cliente (Opcional)" autocomplete="off"  >
                     <input type="hidden" id="id_cliente" name="id_cliente" value="0"/>
                   </div>
                 </div>
@@ -1034,16 +1034,23 @@ function agregarProductoAVenta(producto) {
                 <label for="nota">Preferencias</label>
                 <div class="form-group">
                   <select class="select2-nota form-control input-sm nota-producto" multiple="multiple" name="states[]">
-                    <option value="1">Solo Arroz</option>
-                    <option value="2">Solo Fideo</option>
-                    <option value="3">No Fideo</option>
-                    <option value="4">No Papas</option>
-                    <option value="5">Solo Papas</option>  
-                    <option value="6">Más fideos</option>
+                      <option value="1">Sin fideo ❌</option>
+                      <option value="2">Sin arroz ❌</option>
+                      <option value="3">Sin papas ❌</option>
+                      <option value="4">Más arroz ✅</option>
+                      <option value="5">Más fideo ✅</option>
+                      <option value="6">Más papas ✅</option>
+                      <option value="7">Solo papas</option>
+                      <option value="8">Solo arroz</option>
+                      <option value="9">Solo fideo </option>
+                      <option value="10">Poco arroz</option>
+                      <option value="11">Poco fideo</option>
+                      <option value="12">Poca papas</option>
+
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="descripcion">Nota Adicional</label>
+                  <label for="descripcion">Nota Adicional (Opcional)</label>
                   <textarea class="form-control input-sm descripcion-producto" rows="2" 
                             placeholder="Nota adicional..."></textarea>
                 </div>
