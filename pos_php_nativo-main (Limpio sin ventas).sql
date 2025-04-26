@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-04-2025 a las 19:37:51
+-- Tiempo de generación: 26-04-2025 a las 04:57:13
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -62,7 +62,8 @@ CREATE TABLE `arqueo_caja` (
 --
 
 INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `diferencia`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
-(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 00000000, NULL, 1, 1);
+(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 00000000, NULL, 1, 1),
+(2, '2025-04-25 21:43:10', '2025-04-25 22:51:28', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 20.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cerrada', 00000000, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -109,8 +110,9 @@ INSERT INTO `categorias` (`id`, `categoria`, `fecha`, `estado`) VALUES
 (3, 'sodas', '2025-01-05 21:42:42', 1),
 (4, 'jugos', '2025-01-05 21:42:46', 1),
 (5, 'salchipapas', '2025-01-06 01:31:55', 1),
-(6, 'hamburguesa', '2025-01-05 21:43:07', 1),
-(7, 'test', '2025-03-05 20:18:16', 0);
+(6, ' guarniciones', '2025-04-26 02:16:04', 1),
+(7, 'test', '2025-03-05 20:18:16', 0),
+(8, 'sobras', '2025-04-26 02:16:14', 1);
 
 -- --------------------------------------------------------
 
@@ -156,7 +158,8 @@ INSERT INTO `compras` (`id`, `codigo`, `total`, `id_usuario`, `id_proveedor`, `f
 (1, 10001, 1.40, 1, 1, '2025-01-06 02:00:54', 1),
 (2, 10002, 1870.00, 3, 2, '2025-01-07 02:39:59', 1),
 (3, 10003, 4855.00, 1, 1, '2025-01-08 02:08:22', 1),
-(4, 10004, 7070.00, 1, 1, '2025-01-08 02:09:18', 1);
+(4, 10004, 7070.00, 1, 1, '2025-01-08 02:09:18', 1),
+(5, 10005, 1000.00, 1, 1, '2025-04-26 02:30:03', 1);
 
 -- --------------------------------------------------------
 
@@ -214,7 +217,9 @@ INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `can
 (33, 30, 4, 'simba manzana 2l', 50, 10.00, 500.00),
 (34, 31, 4, 'simba piña 2l', 50, 10.00, 500.00),
 (35, 32, 4, 'simba durazno 2l', 50, 10.00, 500.00),
-(36, 22, 4, 'fanta naranja 3l', 50, 15.00, 750.00);
+(36, 22, 4, 'fanta naranja 3l', 50, 15.00, 750.00),
+(37, 71, 5, 'valle 1l manzana', 50, 10.00, 500.00),
+(38, 70, 5, 'valle 1l durazno', 50, 10.00, 500.00);
 
 -- --------------------------------------------------------
 
@@ -259,8 +264,7 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', 'sin carnet', '000-00-000', 'sin direccion', 141, '2025-03-08 17:20:00', '2025-03-08 21:20:00', 1),
-(2, 'Pablo', '14231231', '61214123', 'sin direccion', 0, '0000-00-00 00:00:00', '2025-03-07 19:39:04', 1);
+(1, 's/n', 'sin carnet', '000-00-000', 'sin direccion', 0, '0000-00-00 00:00:00', '2025-04-26 02:54:27', 1);
 
 -- --------------------------------------------------------
 
@@ -288,22 +292,22 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
-(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 80, 70, 0, '2025-04-14 16:26:46', 0, 1),
-(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 40, 30, 0, '2025-04-14 16:26:55', 0, 1),
-(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/562.jpg', 50, 20, 18, 0, '2025-04-14 16:27:14', 0, 1),
-(4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/876.jpg', 50, 20, 18, 0, '2025-04-14 16:27:25', 0, 1),
-(5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/986.jpg', 50, 12, 10, 0, '2025-04-14 17:36:17', 0, 1),
-(6, 1, '105', 'eco pierna broasterd', 'vistas/img/productos/105/136.jpg', 50, 12, 10, 0, '2025-04-14 16:27:55', 0, 1),
-(7, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/524.jpg', 50, 12, 10, 0, '2025-04-14 16:28:06', 0, 1),
-(8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/140.jpg', 50, 12, 10, 0, '2025-04-14 16:28:19', 0, 1),
-(10, 2, '201', 'entero brasa', 'vistas/img/productos/201/518.png', 50, 80, 70, 0, '2025-04-14 16:28:52', 0, 1),
-(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/592.png', 50, 40, 30, 0, '2025-04-14 16:28:40', 0, 1),
-(12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/989.png', 50, 20, 18, 0, '2025-04-14 16:29:04', 0, 1),
-(13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/129.png', 50, 20, 18, 0, '2025-04-14 16:29:14', 0, 1),
-(14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/937.jpg', 50, 12, 10, 0, '2025-04-14 16:29:29', 0, 1),
-(15, 2, '206', 'eco pierna brasa', 'vistas/img/productos/206/586.png', 50, 12, 10, 0, '2025-04-14 16:29:51', 0, 1),
-(16, 2, '207', 'eco ala brasa', 'vistas/img/productos/207/314.jpg', 50, 12, 10, 0, '2025-04-14 16:30:02', 0, 1),
-(17, 2, '208', 'eco contra brasa', 'vistas/img/productos/208/425.png', 50, 12, 10, 0, '2025-04-14 16:30:09', 0, 1),
+(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 90, 70, 0, '2025-04-26 02:18:36', 0, 1),
+(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 45, 30, 0, '2025-04-26 02:18:58', 0, 1),
+(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/450.png', 50, 23, 18, 0, '2025-04-26 02:19:25', 0, 1),
+(4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/291.png', 50, 23, 18, 0, '2025-04-26 02:19:47', 0, 1),
+(5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/248.png', 50, 13, 10, 0, '2025-04-26 02:20:50', 0, 1),
+(6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/421.png', 50, 13, 10, 0, '2025-04-26 02:21:16', 0, 1),
+(7, 1, '105', ' eco pierna broasterd', 'vistas/img/productos/105/376.png', 50, 13, 10, 0, '2025-04-26 02:21:02', 0, 1),
+(8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/825.png', 50, 13, 10, 0, '2025-04-26 02:21:33', 0, 1),
+(10, 2, '201', 'entero brasa', 'vistas/img/productos/201/518.png', 50, 90, 70, 0, '2025-04-26 02:21:48', 0, 1),
+(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/592.png', 50, 45, 30, 0, '2025-04-26 02:22:01', 0, 1),
+(12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/343.png', 50, 23, 18, 0, '2025-04-26 02:22:19', 0, 1),
+(13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/736.png', 50, 23, 18, 0, '2025-04-26 02:22:40', 0, 1),
+(14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/661.png', 50, 13, 10, 0, '2025-04-26 02:23:29', 0, 1),
+(15, 2, '206', 'eco ala brasa', 'vistas/img/productos/206/334.png', 50, 13, 10, 0, '2025-04-26 02:23:22', 0, 1),
+(16, 2, '207', 'eco pierna brasa', 'vistas/img/productos/207/221.png', 50, 13, 10, 0, '2025-04-26 02:23:12', 0, 1),
+(17, 2, '208', 'eco contra brasa', 'vistas/img/productos/208/169.png', 50, 13, 10, 0, '2025-04-26 02:23:03', 0, 1),
 (18, 3, '301', 'coca cola 3l', 'vistas/img/productos/301/316.jpg', 50, 17, 15, 0, '2025-01-07 02:39:59', 1, 1),
 (19, 3, '302', 'coca cola 2l', 'vistas/img/productos/302/532.jpg', 50, 13, 11, 0, '2025-03-08 21:36:26', 1, 1),
 (20, 3, '303', 'coca cola 600ml', 'vistas/img/productos/303/492.jpg', 50, 6, 3, 0, '2025-01-07 02:39:59', 1, 1),
@@ -319,9 +323,9 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (30, 3, '313', 'simba manzana 2l', 'vistas/img/productos/313/940.jpg', 50, 12, 10, 0, '2025-01-08 02:09:18', 1, 1),
 (31, 3, '314', 'simba piña 2l', 'vistas/img/productos/314/740.png', 50, 12, 10, 0, '2025-01-08 02:09:18', 1, 1),
 (32, 3, '315', 'simba durazno 2l', 'vistas/img/productos/315/954.jpg', 50, 12, 10, 0, '2025-01-08 02:09:18', 1, 1),
-(33, 3, '316', 'pepsi 2l', 'vistas/img/productos/316/938.jpg', 50, 10, 9, 0, '2025-01-08 02:09:18', 1, 1),
-(34, 3, '317', 'pepsi 1l', 'vistas/img/productos/317/343.png', 50, 6, 3, 0, '2025-01-08 02:09:18', 1, 1),
-(35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/539.png', 50, 6, 5, 0, '2025-01-08 02:09:18', 1, 1),
+(33, 3, '316', 'pepsi 2l', 'vistas/img/productos/316/938.jpg', 50, 10, 9, 0, '2025-04-26 02:30:31', 1, 0),
+(34, 3, '317', 'pepsi 1l', 'vistas/img/productos/317/343.png', 50, 7, 3, 0, '2025-04-26 02:30:46', 1, 1),
+(35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/504.png', 50, 7, 5, 0, '2025-04-26 02:33:02', 1, 1),
 (36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/408.jpg', 51, 2, 1.4, 0, '2025-03-08 21:36:53', 1, 1),
 (37, 3, '325', 'coca cola mini 190ml', 'vistas/img/productos/325/287.jpg', 50, 2, 1.4, 0, '2025-03-08 21:36:26', 1, 1),
 (38, 3, '324', 'pop uva 620ml', 'vistas/img/productos/324/957.jpg', 50, 3, 1.8, 0, '2025-01-08 02:09:18', 1, 1),
@@ -336,10 +340,12 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (61, 4, '403', 'aquarios pera 2l', 'vistas/img/productos/403/956.jpg', 50, 13, 11, 0, '2025-03-08 21:36:26', 1, 1),
 (62, 4, '404', 'aquarios pomelo 3l', 'vistas/img/productos/404/930.jpg', 50, 17, 15, 0, '2025-03-08 21:36:26', 1, 1),
 (63, 4, '405', 'aquarios pomelo 2l', 'vistas/img/productos/405/715.png', 50, 13, 11, 0, '2025-03-08 21:36:26', 1, 1),
-(64, 4, '406', 'chicha 2l', 'vistas/img/productos/406/636.png', 50, 12, 9, 0, '2025-03-08 21:36:26', 1, 1),
+(64, 4, '406', 'chicha 2l', 'vistas/img/productos/406/636.png', 50, 12, 9, 0, '2025-04-26 02:24:19', 1, 0),
 (65, 4, '407', 'tropi 600ml', 'vistas/img/productos/407/356.jpg', 50, 6, 3, 0, '2025-03-08 21:36:26', 1, 1),
-(66, 4, '408', 'pura vida de 3l ', 'vistas/img/productos/408/764.jpg', 50, 18, 15, 0, '2025-03-08 21:36:26', 1, 1),
-(69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/488.png', 50, 10, 7, 0, '2025-03-08 21:36:26', 0, 1);
+(66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 0, 12, 10, 0, '2025-04-26 02:28:54', 1, 0),
+(69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/406.png', 50, 12, 7, 0, '2025-04-26 02:24:47', 0, 1),
+(70, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1),
+(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/514.jpg', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -362,7 +368,7 @@ CREATE TABLE `proveedor` (
 --
 
 INSERT INTO `proveedor` (`id`, `nombre`, `empresa`, `telefono`, `direccion`, `fecha`, `estado`) VALUES
-(1, 's/n', 'coca cola', '67709910', 'sin direccion', '2025-01-06 01:59:38', 1),
+(1, 's/n', 's/n', '00000000', 'sin direccion', '2025-04-26 02:55:00', 1),
 (2, 'victor hino', 'coca cola', '67709910', 'sin direccion', '2025-01-06 01:59:47', 1);
 
 -- --------------------------------------------------------
@@ -389,9 +395,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-03-08 16:09:18', '2025-03-08 20:09:18', 1),
-(2, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', '', 1, '2025-01-07 22:10:53', '2025-01-08 02:10:53', 1),
-(3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-01-07 12:22:36', '2025-01-07 16:22:36', 1),
+(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-04-25 22:50:51', '2025-04-26 02:50:51', 1),
+(2, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', '', 1, '2025-04-25 22:50:43', '2025-04-26 02:50:43', 1),
+(3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-04-25 22:46:53', '2025-04-26 02:46:53', 1),
 (4, 'enrique', 'enrique', '$2a$07$asxx54ahjppf45sd87a5auLSGQafrhT1q/TDAijaGwwOMXE8ecr.q', 'Administrador', '', 1, '2025-03-07 12:07:11', '2025-03-07 16:07:11', 1);
 
 -- --------------------------------------------------------
@@ -515,7 +521,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
@@ -527,7 +533,7 @@ ALTER TABLE `cajas`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
@@ -539,13 +545,13 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`
@@ -557,13 +563,13 @@ ALTER TABLE `detalle_venta`
 -- AUTO_INCREMENT de la tabla `meseros`
 --
 ALTER TABLE `meseros`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`

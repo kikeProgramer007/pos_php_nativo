@@ -106,13 +106,26 @@
 				<a href="crear-venta">
 		        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAACVElEQVR4nKWU3UtTcRzGD3TXVXQXXVR/QUQ33kXt1N53nOecba2t2ZKEDNqhF4TooqBASIzIDBZEXbTh1I2aEIjRtpzaTciSMc3QltLL3nUWOffE79RZW7O55gMPz3m+h/Ph9+XAj6LqEK3QNzUbbXMMf/KrZNLJnGpEzaZW1/DzESwvr5RMOplT9YrvxzYhjJ3kWcdbH9y55ywEQmFIJl3HW52bgi6EcFAIY7cQgEcIIiGE0CSX63fpWEsvaz7lotXcD5Kkkzm1mRxBPHQEsCoEgd/uK38vU7GLda8pActgIvAQw+yglVybTM2fOaLkz5P8ZdZ2WNWyh/qXAFx9HK04HdwxfP/0+Uumz/no29++dbs3r+EsuWNq/f4qmN5k6w6NTRSfxCpOB88skEym4PZ4q0zmgz5/Ucdb71cB+ROnJ95OR7ER8NX4JGg1V2Uyj0xHwZrtk1VALW9JZHO5/wZmMlloOUuiAqbRaLbrOOsKALzPAqPxP17IAal0Bu4BX+XKAz6k0xnyCTSsZZUwSkCZgj3Qfu5iEjUU/7i0YRK1nRVSFT+GVvLmru67WdSQZ+gp1tYKcPV7xSRd0o2uniytYg0loIIx3hz0+ddrAaci0ygWi3gzFRGTdEkuj3ddqTddKwHt7Y6e2My7Wjy8eBlCoVDAyGhATNIljY2/Bnfc/kyEHdXy+4Z8/kszs3No1IFQGIzBtiCXG/dSOs463yF05i9fuY6tuEPozBMWxRhsS8lUuua69YgwCEsEfogvVlyejZgwRKDeaBsuv9q34hZjq/8nOt6Ev57j+40AAAAASUVORK5CYII=">
 				<span>CAJA</span>
-				</a>
-				
+				</a>	
 			</li>';
+
+			
+			
 			}
 
 
-			
+			if ($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Especial") {
+
+				echo '<li>	
+                <a href="arqueo-de-caja">
+		        <i class="fa fa-inbox" aria-hidden="true"></i>
+				<span>Apertura</span>
+				</a>
+
+
+			</li>';
+
+			}
 			
 
 
@@ -184,6 +197,15 @@
 
 			if ($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor") {
 
+				echo '<li>	
+                <a href="arqueo-de-caja">
+		        <i class="fa fa-inbox" aria-hidden="true"></i>
+				<span>Apertura</span>
+				</a>
+
+
+			</li>';
+
 				echo '<li>
 					<a href="reporte-venta">
 						<i class="fa fa-calendar"></i>
@@ -208,6 +230,8 @@
 			
 
 			if ($_SESSION["perfil"] == "Administrador"   || $_SESSION["perfil"] == "Especial"  ) {
+				
+
 				
 
 				echo '<li class="treeview">
