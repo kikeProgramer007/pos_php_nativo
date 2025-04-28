@@ -121,6 +121,9 @@ class ControladorVentas{
 				case 3:
 					$tipoPago = "Transferencia";
 					break;
+					case 4:
+						$tipoPago = "Qr y Efectivo(Mixto)";
+						break;
 				default:
 					$tipoPago = "No Especificado";
 					break;

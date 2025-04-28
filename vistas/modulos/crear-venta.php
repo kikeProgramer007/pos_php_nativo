@@ -523,7 +523,7 @@ if ($_SESSION["perfil"] == "") {
                           ';
                       $ultimoNroTicket = ControladorArqueo::ctrObtenerUltimoNroTicket($_SESSION["idArqueoCaja"]);
                       $ultimoNroTicket++;
-                      echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' .str_pad($ultimoNroTicket, 8, '0', STR_PAD_LEFT). '" readonly>';
+                      echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' .$ultimoNroTicket. '" readonly>';
                     } else {
                        echo '<input type="text" class="form-control" value="0" readonly>';
                     }
@@ -699,6 +699,7 @@ if ($_SESSION["perfil"] == "") {
                         <option value="1">Efectivo</option>
                         <option value="2">QR</option>
                         <option value="3">Transferencia</option>
+                        <option value="4">Qr y Efectivo(Mixto)</option>
                       </select>
                     </div>
             

@@ -73,7 +73,7 @@ if ($_SESSION["perfil"] == "") {
             <tr>
 
               <th style="width:10px">#</th>
-              <th>Código factura</th>
+              <th>N° TICKET</th>
               <th>Meseros</th>
               <th>Usuario</th>
               <th>Total</th>

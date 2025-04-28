@@ -46,7 +46,7 @@ class TablaProductosVentasEliminadas {
 
             $datos[] = [
                 ($i + 1),
-                $ventas[$i]["codigo"],
+                ltrim($ventas[$i]["codigo"], '0'),
                 $ventas[$i]["mesero"],
                 $ventas[$i]["usuario"],
                 number_format($ventas[$i]["total"], 2),

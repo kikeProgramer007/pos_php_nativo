@@ -162,7 +162,7 @@ class reporteVenta
         foreach ($respuestaVentas as $item) {
             $total =  $item["total"];
             $pdf->Cell(10, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(16, 5, $item["codigo"], 1, 0, 'L');
+            $pdf->Cell(16, 5, ltrim($item["codigo"], '0'), 1, 0, 'L');
             $pdf->Cell(30, 5, $item["fecha"], 1, 0, 'L');
             $pdf->Cell(35, 5, $item["usuario"], 1, 0, 'L');
             $pdf->Cell(40, 5, $item["mesero"], 1, 0, 'L');

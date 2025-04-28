@@ -91,7 +91,7 @@ class PdfGanancias extends FPDF
 
         foreach ($ganancias as $ganancia) {
             $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(26, 5, $ganancia['codigo'], 1, 0, 'L');
+            $pdf->Cell(26, 5, ltrim($ganancia['codigo'],'0'),1, 0, 'L');
             $pdf->Cell(26, 5, utf8_decode($ganancia['fecha']), 1, 0, 'L');
             $pdf->Cell(30, 5, utf8_decode($ganancia['vendedor']), 1, 0, 'L');
             $pdf->Cell(50, 5, utf8_decode($ganancia['mesero']), 1, 0, 'L');

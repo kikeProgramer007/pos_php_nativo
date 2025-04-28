@@ -30,6 +30,8 @@ class imprimirFactura
         $respuestaVenta = ControladorVentas::ctrMostrarVentas($itemVenta, $valorVenta);
         if($respuestaVenta!=null){
         $fecha = date('d-m-Y H:i:s a', strtotime($respuestaVenta["fecha"]));
+        $fechaSolo = date('d-m-Y', strtotime($respuestaVenta["fecha"]));
+        $horaSolo = date('H:i:s a', strtotime($respuestaVenta["fecha"]));
         $productos = ControladorVentas::ctrMostrarDetalleVentas($respuestaVenta['id']);
 
         $total = number_format($respuestaVenta["total"], 2);
@@ -88,8 +90,8 @@ class imprimirFactura
             <tr>
                 <td style="text-align:left; padding-left:15px;">
                     &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 10px;">POLLOS ROSSY</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 13px;"><strong>N° PEDIDO: </strong><strong>' . $respuestaVenta["codigo"] . '</strong></span><br>
-                 &nbsp;&nbsp; &nbsp;&nbsp;Fecha y Hora: ' . $fecha . '
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 14px;"><strong>N° PEDIDO: </strong><strong>' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
+                    <span  style="font-size: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
             </tr>
             <tbody>
@@ -108,6 +110,7 @@ class imprimirFactura
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
             </tr>
+           
             <tr >
                 <td width="25%"><strong>CAJERO/A</strong></td>
                 <td width="3%"><strong>:</strong></td>
@@ -128,7 +131,7 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
+                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
                 <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
                 <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
@@ -175,10 +178,9 @@ class imprimirFactura
                 <td colspan="3" style="text-align:left; font-size: 9px;"> <strong>CAMBIO:</strong></td>
                 <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . $cambio . '</td>
             </tr>
-            <tr><td colspan="4" style="padding: 2px;"></td></tr>
             <tr>
               <td colspan="4" style="padding: 0;">
-                <div style="margin: 0; font-size: 9px; text-align: right;">¡GRACIAS POR SU COMPRA!</div>
+                <div style="margin: 0; padding: 0; font-size: 9px; text-align: right;">¡GRACIAS POR SU COMPRA!</div>
               </td>
             </tr>
             </tbody>
@@ -189,12 +191,12 @@ class imprimirFactura
         // SEGUNDO: Comanda en nueva página
         $pdf->AddPage();
         
-        $html = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px;text-align:center; ">
+        $html = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px; width:100%;">
             <tbody>
             <tr>
-               <td style="text-align:left; padding-left:15px;">
-                &nbsp;&nbsp;&nbsp;&nbsp;   &nbsp;&nbsp; &nbsp; <span style="font-size: 16px;"><strong>&lt;&lt; COMANDA &gt;&gt;</strong></span><br>
-                &nbsp; &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 15px; font-weight: bold;">' . $respuestaVenta["codigo"] . '</span>
+               <td style="text-align:center;">
+                <span style="font-size: 16px;"><strong>&lt;&lt; COMANDA &gt;&gt;</strong></span><br>
+                <span style="font-size: 15px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
                </td>
             </tr>
             <tbody>
@@ -224,7 +226,7 @@ class imprimirFactura
                 <td width="72%">' . $fecha . '</td>
             </tr>
             <tr >
-                <td width="25%"><strong>ATENCION</strong></td>
+                <td width="25%"><strong>ATENCIÓN</strong></td>
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaVenta["forma_atencion"] . '</td>
             </tr>
@@ -238,7 +240,7 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">PRODUCTO</th>
+                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
                 <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
                 <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
