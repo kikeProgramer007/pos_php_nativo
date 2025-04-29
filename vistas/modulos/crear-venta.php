@@ -492,7 +492,7 @@ if ($_SESSION["perfil"] == "") {
 
                   <div class="input-group">
 
-                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <span class="input-group-addon">USUARIO</span>
 
                     <input type="text" class="form-control text-uppercase " id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
 
@@ -510,7 +510,7 @@ if ($_SESSION["perfil"] == "") {
 
                   <div class="input-group">
 
-                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                    <span class="input-group-addon">N° TICKET</span>
 
                     <?php
 
@@ -541,7 +541,7 @@ if ($_SESSION["perfil"] == "") {
 
                   <div class="input-group">
 
-                    <span class="input-group-addon"><i class="fa fa-users"></i></span>
+                    <span class="input-group-addon">MESEROS</span>
 
                     <select class="select2 text-uppercase form-control" id="seleccionarMesero" name="seleccionarMesero" required>
 
@@ -585,7 +585,7 @@ if ($_SESSION["perfil"] == "") {
 
                 <div class="form-group">
                   <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                    <span class="input-group-addon">CLIENTES</span>
                     <input type="text" class="form-control text-uppercase" id="cliente" name="cliente" value="" placeholder="Ingrese el Cliente (Opcional)" autocomplete="off"  >
                     <input type="hidden" id="id_cliente" name="id_cliente" value="0"/>
                   </div>
@@ -714,7 +714,7 @@ if ($_SESSION["perfil"] == "") {
                         <div class="col-md-12">
                           <div class="form-group">
                             <div class="input-group-prepend">
-                              <label class="input-group-text">NOTA (OPCIONAL)</label>
+                              <label class="input-group-text">NOTA GENERAL(OPCIONAL)</label>
                             </div>
                             <textarea class="form-control text-uppercase" id="nota" cols="100" rows="2" name="nota" aria-label="With textarea"></textarea>
                           </div>
