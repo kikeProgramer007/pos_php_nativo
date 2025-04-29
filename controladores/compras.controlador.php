@@ -40,13 +40,13 @@ class ControladorCompras{
 
 				swal({
 					  type: "error",
-					  title: "La compra no se ha ejecuta si no hay productos",
+					  title: "La compra no se  ejecuta si no hay productos Agregados",
 					  showConfirmButton: true,
 					  confirmButtonText: "Cerrar"
 					  }).then(function(result){
 								if (result.value) {
 
-								window.location = "compras";
+								window.location = "crear-compra";
 
 								}
 							})

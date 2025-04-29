@@ -45,10 +45,10 @@ if ($_SESSION["perfil"] == "") {
             Agregar compra
           </button>
         </a>
-        
+        &nbsp;
         <a class="btn btn-danger" href="compras-eliminadas">
           <i class="fa fa-trash"></i>
-          <span> Eliminados </span>
+          <span> compras Eliminadas </span>
         </a>
 
       </div>

@@ -351,7 +351,7 @@ MODAL EDITAR PRODUCTO
 
               <div class="input-group">
 
-                <span class="input-group-addon"><i class="fa fa-th"></i></span>
+                <span class="input-group-addon">CATEGORIA</span>
 
                 <select class="form-control input-lg" name="editarCategoria" readonly required>
 
@@ -369,7 +369,7 @@ MODAL EDITAR PRODUCTO
 
               <div class="input-group">
 
-                <span class="input-group-addon"><i class="fa fa-code"></i></span>
+                <span class="input-group-addon">CODIGO</span>
 
                 <input type="text" class="form-control input-lg" id="editarCodigo" name="editarCodigo" placeholder="Ingresar código" readonly required>
 
@@ -383,7 +383,7 @@ MODAL EDITAR PRODUCTO
 
               <div class="input-group">
 
-                <span class="input-group-addon"><i class="fa fa-product-hunt"></i></span>
+                <span class="input-group-addon">DESCRIPCIÓN</span>
 
                 <input type="text" class="form-control input-lg" id="editarDescripcion" name="editarDescripcion" required>
 
@@ -398,7 +398,7 @@ MODAL EDITAR PRODUCTO
 
               <div class="input-group">
 
-                <span class="input-group-addon"><i class="fa fa-check"></i></span>
+                <span class="input-group-addon">CANTIDAD</span>
 
                 <input class="form-control input-lg" id="editarStock" name="editarStock" min="0" required>
 
@@ -411,7 +411,7 @@ MODAL EDITAR PRODUCTO
             <div class="form-group row">
               <div class="col-xs-6">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-arrow-up"></i></span>
+                  <span class="input-group-addon">PRECIO_COMPRA</span>
 
                   <input type="number" class="form-control input-lg" id="editarPrecioCompra" name="editarPrecioCompra" min="0" step="any" placeholder="Precio Compra" required>
                 </div>
@@ -423,7 +423,7 @@ MODAL EDITAR PRODUCTO
               <div class="col-xs-6">
 
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-arrow-down"></i></span>
+                  <span class="input-group-addon">PRECIO_VENTA</span>
 
                   <input type="number" class="form-control input-lg" id="editarPrecioVenta" name="editarPrecioVenta" min="0" step="any" placeholder="Precio Venta" required>
 
@@ -436,7 +436,7 @@ MODAL EDITAR PRODUCTO
             <div class=" form-group row">
               <div class="col-md-6">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-th"></i></span>
+                  <span class="input-group-addon">ES INVETARIABLE?</span>
                   <select class="form-control input-lg" id="editarInventariable" name="editarInventariable" required>
                     <option value="" disabled>Es inventariable:</option>
                     <option value="0">NO</option>
@@ -451,7 +451,8 @@ MODAL EDITAR PRODUCTO
                   <div class="form-group">
                     <label>
                       <input type="checkbox" class="minimal porcentaje">
-                      Utilizar procentaje
+                      Utilizar porcentaje
+                      (Opcional)
                     </label>
                   </div>
                 </div>

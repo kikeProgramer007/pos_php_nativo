@@ -455,11 +455,11 @@ class ControladorVentas{
 			echo utf8_decode("<table border='0'> 
 
 				<tr> 
-					<td style='font-weight:bold; border:1px solid #eee;'>CÓDIGO</td> 
+					<td style='font-weight:bold; border:1px solid #eee;'>N°TICKET</td> 
 					<td style='font-weight:bold; border:1px solid #eee;'>MESERO</td>
-					<td style='font-weight:bold; border:1px solid #eee;'>VENDEDOR</td>
+					<td style='font-weight:bold; border:1px solid #eee;'>USUARIO</td>
 					<td style='font-weight:bold; border:1px solid #eee;'>CANTIDAD</td>
-					<td style='font-weight:bold; border:1px solid #eee;'>PRODUCTOS</td>
+					<td style='font-weight:bold; border:1px solid #eee;'>DETALLE</td>
 					<td style='font-weight:bold; border:1px solid #eee;'>TOTAL</td>		
 					<td style='font-weight:bold; border:1px solid #eee;'>FECHA</td>		
 					</tr>");

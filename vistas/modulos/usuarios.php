@@ -137,7 +137,7 @@ MODAL EDITAR USUARIO
               <div class="input-group">
               
                  
-                <span class="input-group-addon"><i class="fa fa-user"></i></span> 
+                <span class="input-group-addon">NOMBRE</span> 
                   
                 <input type="text" class="form-control input-lg" id="editarNombre" name="editarNombre" value="" required>
 
@@ -151,7 +151,7 @@ MODAL EDITAR USUARIO
               
                      <div class="input-group">
 
-                     <span class="input-group-addon"><i class="fa fa-key"></i></span> 
+                     <span class="input-group-addon">USUARIO</span> 
                         <input type="text" class="form-control input-lg" id="editarUsuario" name="editarUsuario" value="" readonly>
 
                       </div>
@@ -167,7 +167,7 @@ MODAL EDITAR USUARIO
               
                       <div class="input-group">
               
-                      <span class="input-group-addon"><i class="fa fa-lock"></i></span> 
+                      <span class="input-group-addon">CONTRASEÑA</span> 
 
                 <input type="password" class="form-control input-lg" name="editarPassword" placeholder=" nuevo password">
 
@@ -182,7 +182,7 @@ MODAL EDITAR USUARIO
             <div class="form-group">
               
               <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-users"></i></span> 
+              <span class="input-group-addon">ROL</span> 
 
                 <select class="form-control input-lg" name="editarPerfil">
                   

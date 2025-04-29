@@ -73,7 +73,7 @@ if($_SESSION["perfil"] == ""){
                 
                   <div class="input-group">
                     
-                    <span class="input-group-addon"><i class="fa fa-user"></i></span> 
+                    <span class="input-group-addon">USUARIO</span> 
 
                     <input type="text" class="form-control text-uppercase " id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
 
@@ -83,7 +83,7 @@ if($_SESSION["perfil"] == ""){
 
                 </div> 
 
-                  <!--=====================================
+                <!--=====================================
                 ENTRADA DEL CÓDIGO
                 ======================================--> 
 
@@ -91,7 +91,7 @@ if($_SESSION["perfil"] == ""){
                   
                   <div class="input-group">
                     
-                    <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                    <span class="input-group-addon">Recibo N°</span>
 
                     <?php
 
@@ -129,14 +129,14 @@ if($_SESSION["perfil"] == ""){
                 </div>
 
                 <!--=====================================
-                ENTRADA DEL MESERO
+                ENTRADA DEL PROVEEDOR
                 ======================================--> 
 
                 <div class="form-group">
                   
                   <div class="input-group">
                     
-                    <span class="input-group-addon"><i class="fa fa-users"></i></span>
+                    <span class="input-group-addon">PROVEEDOR</span>
                     
                     <select class="form-control text-uppercase select2" id="seleccionarProveedor" name="seleccionarProveedor" required>
 

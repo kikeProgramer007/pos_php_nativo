@@ -52,12 +52,18 @@ $fechaActual = date('Y-m-d');
                     <option value="0">Todas</option>
                     
                     <?php
+                      // Obtener todas las categorías activas
                       $item = null;
                       $valor = null;
                       $categorias = ControladorCategorias::ctrMostrarCategorias($item, $valor);
-                       foreach ($categorias as $key => $value) {
-                         echo '<option value="'.$value["id"].'">'.$value["categoria"].'</option>';
-                       }
+                      // Recorrer categorías y mostrar solo las que tengan productos inventariables
+                      foreach ($categorias as $key => $value) {
+                        // Buscar si hay al menos un producto inventariable en esta categoría
+                        $productosInventariables = ControladorProductos::ctrMostrarProductosActivosInventariable('id_categoria', $value["id"], 'id');
+                        if ($productosInventariables) {
+                          echo '<option value="'.$value["id"].'">'.$value["categoria"].'</option>';
+                        }
+                      }
                     ?>
                   </select>
                 </div>

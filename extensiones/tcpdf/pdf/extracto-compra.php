@@ -89,7 +89,7 @@ class imprimirCompra {
         $pdf->Cell(0, 5, 'Detalle de productos', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(14, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(22, 5, 'codigo', 1, 0, 'L'); 
+        $pdf->Cell(22, 5, 'Recibo N°', 1, 0, 'L'); 
         $pdf->Cell(80, 5, 'Nombre', 1, 0, 'L');
         $pdf->Cell(25, 5, 'Precio', 1, 0, 'L');
         $pdf->Cell(25, 5, 'Cantidad', 1, 0, 'L');

@@ -59,17 +59,13 @@
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label for="nuevoStock">
-                                                <i class="fa fa-cubes"></i> Stock
+                                            <label for="inventariable">
+                                                <i class="fa fa-warehouse"></i> Es Inventariable
                                             </label>
-                                            <input type="number" 
-                                                   class="form-control" 
-                                                   id="nuevoStock" 
-                                                   name="nuevoStock" 
-                                                   min="0" 
-                                                   value="0" 
-                                                   readonly 
-                                                   required>
+                                            <select class="form-control" id="inventariable" name="inventariable" required>
+                                                <option value="0">No</option>
+                                                <option value="1" selected>Sí</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -122,13 +118,17 @@
                                         </div>
 
                                         <div class="form-group col-md-6">
-                                            <label for="inventariable">
-                                                <i class="fa fa-warehouse"></i> Es Inventariable
+                                            <label for="nuevoStock">
+                                                <i class="fa fa-cubes"></i> Stock
                                             </label>
-                                            <select class="form-control" id="inventariable" name="inventariable" required>
-                                                <option value="0">No</option>
-                                                <option value="1" selected>Sí</option>
-                                            </select>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="nuevoStock" 
+                                                   name="nuevoStock" 
+                                                   min="0" 
+                                                   value="0" 
+                                                   readonly 
+                                                   required>
                                         </div>
                                     </div>
 

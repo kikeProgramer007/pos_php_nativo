@@ -46,10 +46,10 @@ if ($_SESSION["perfil"] == "") {
             Agregar venta
           </button>
         </a>
-
+        &nbsp;  
         <a class="btn btn-danger" href="ventas-eliminadas">
           <i class="fa fa-trash"></i>
-          <span> Eliminados </span>
+          <span>VENTAS ELIMINADAS </span>
         </a>
 
         <button type="button" class="btn btn-default pull-right" id="daterange-btn">
