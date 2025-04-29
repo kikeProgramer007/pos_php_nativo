@@ -41,7 +41,7 @@ class ControladorVentas{
 
 				swal({ 
 					  type: "error",
-					  title: "La venta no se ha ejecuta si no hay productos Agregados",
+					  title: "La venta no se  ejecuta si no hay productos Agregados",
 					  showConfirmButton: true,
 					  confirmButtonText: "Cerrar"
 					  }).then(function(result){
