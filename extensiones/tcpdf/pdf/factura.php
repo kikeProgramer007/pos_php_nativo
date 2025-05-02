@@ -71,9 +71,10 @@ class imprimirFactura
         $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas); // Altura total
 
         // Crear el documento con la altura calculada
-        $pdf = new TCPDF('P', 'mm', array(70, $alturaTotal), true, 'UTF-8', false);
+        $pdf = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
 
         $pdf->SetMargins(1, -1, 0);
+      
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetAutoPageBreak(false, 0); // Desactivar el salto de página automático
@@ -85,7 +86,7 @@ class imprimirFactura
         $pdf->SetFont('helvetica', '', 8);
 
         // PRIMERO: Factura
-        $html = '<table border="0" style="padding-right;5px">
+        $html = '<table border="0">
             <tbody>
             <tr>
                 <td style="text-align:center;">
@@ -131,7 +132,7 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
+                <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
                 <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
                 <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
@@ -180,7 +181,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-        <br><p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!</p>
+        <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!</p>
         ';
 
         $pdf->writeHTML($html, false, false, false, false, '');
@@ -237,7 +238,7 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
-                <th style="width:38%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
+                <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
                 <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
                 <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
                 <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
@@ -248,9 +249,9 @@ class imprimirFactura
        $notaHtml = '';
         if(!empty($notaGeneral)){
         $notaHtml = '<tr>
-                    <td width="20%"><strong>NOTA</strong></td>
-                    <td width="3%"><strong>:</strong></td>
-                    <td width="77%">' . $notaGeneral . '</td>
+                    <td width="13%"><strong>NOTA:</strong></td>
+                    
+                    <td width="86%">' . $notaGeneral . '</td>
                 </tr>';
         }
         

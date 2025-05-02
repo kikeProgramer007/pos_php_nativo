@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-04-2025 a las 04:57:13
+-- Tiempo de generación: 02-05-2025 a las 02:36:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -51,7 +51,7 @@ CREATE TABLE `arqueo_caja` (
   `efectivo_en_caja` decimal(11,2) NOT NULL DEFAULT 0.00,
   `diferencia` decimal(11,2) NOT NULL DEFAULT 0.00,
   `estado` varchar(20) DEFAULT NULL,
-  `nroTicket` int(8) UNSIGNED ZEROFILL NOT NULL DEFAULT 00000000,
+  `nroTicket` int(11) NOT NULL,
   `tipo_cambio` decimal(11,2) DEFAULT NULL,
   `id_caja` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL
@@ -62,8 +62,8 @@ CREATE TABLE `arqueo_caja` (
 --
 
 INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `diferencia`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
-(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 00000000, NULL, 1, 1),
-(2, '2025-04-25 21:43:10', '2025-04-25 22:51:28', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 20.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cerrada', 00000000, NULL, 1, 1);
+(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 0, NULL, 1, 1),
+(2, '2025-04-25 21:43:10', '2025-04-25 22:51:28', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 20.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cerrada', 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -408,7 +408,7 @@ INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`,
 
 CREATE TABLE `ventas` (
   `id` int(11) NOT NULL,
-  `codigo` int(8) UNSIGNED ZEROFILL NOT NULL,
+  `codigo` int(11) NOT NULL,
   `nro_ticket` int(8) UNSIGNED ZEROFILL DEFAULT NULL,
   `total` float NOT NULL,
   `total_pagado` float DEFAULT NULL,
