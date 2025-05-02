@@ -415,44 +415,45 @@ $(".formularioVenta").on("change", "input#nuevoCodigoTransaccion", function(){
 })
 
 /*=============================================
-LISTAR TODOS LOS PRODUCTOS EN FORMATO JSON DENTRO DEL INPUT
+LISTAR TODOS LOS PRODUCTOS EN FORMATO JSON DENTRO DEL INPUT (OPTIMIZADO)
 =============================================*/
-function listarProductos(){
-	listaProductos = []; // Limpiar el array antes de llenarlo
-	var descripcion = $(".nuevaDescripcionProducto");
-	var cantidad = $(".nuevaCantidadProducto");
-	var precio = $(".nuevoPrecioProducto");
-	var precioCompra = $(".nuevoPrecioCompraProducto");
-	var nota = $(".nota-producto");
-	var descripcionAdicional = $(".descripcion-producto");
-	var formaAtencionDetalle = $("select[name='formaAtencionDetalle']"); // Cambio aquí para seleccionar todos los selects
+function listarProductos() {
+    const listaProductos = [];
+    
+    // Iterar usando each() para mejor manejo de elementos
+    $(".nuevaDescripcionProducto").each(function() {
+        const $producto = $(this);
+        const $row = $producto.closest('.row');
+        
+        // Elementos específicos del producto actual
+        const $cantidad = $row.find('.nuevaCantidadProducto');
+        const $precio = $row.find('.nuevoPrecioProducto');
+        const $precioCompra = $row.find('.nuevoPrecioCompraProducto');
+        const $nota = $row.find('.nota-producto');
+        const $descAdicional = $row.find('.nota-adicional');
+        const $formaAtencion = $row.find('select[name="formaAtencionDetalle"]');
 
-	for(var i = 0; i < descripcion.length; i++){
-		// Obtener los textos de las opciones seleccionadas
-		var preferenciasSeleccionadas = [];
-		if($(nota[i]).length > 0) {
-			$(nota[i]).find("option:selected").each(function() {
-				preferenciasSeleccionadas.push($(this).text());
-			});
-		}
+        // Obtener preferencias usando map() + get() para mejor rendimiento
+		var preferencias = $nota.find('option:selected')
+		.map((i, op) => op.textContent)
+		.get()
+		.join(',') || null;
 
-		listaProductos.push({ 
-			"id" : $(descripcion[i]).attr("idProducto"), 
-			"descripcion" : $(descripcion[i]).val(),
-			"cantidad" : $(cantidad[i]).val(),
-			"stock" : $(cantidad[i]).attr("stock"),
-			"precio" : $(precio[i]).attr("precioReal"),
-			"precioCompra" : $(precioCompra[i]).attr("precioRealCompra"),
-			"total" : $(precio[i]).val(),
-			"preferencias" : preferenciasSeleccionadas.join(",") || null,
-			"nota_adicional" : $(descripcionAdicional[i]).val() || null,
-			"forma_atencion" : $(formaAtencionDetalle[i]).val() || null // Obtener el valor del select específico
-		});
-	}
-
-	$("#listaProductos").val(JSON.stringify(listaProductos));
+        listaProductos.push({
+            id: $producto.attr('idProducto'),
+            descripcion: $producto.val(),
+            cantidad: $cantidad.val(),
+            stock: $cantidad.attr('stock'),
+            precio: $precio.attr('precioReal'),
+            precioCompra: $precioCompra.attr('precioRealCompra'),
+            total: $precio.val(),
+            preferencias: preferencias,
+            nota_adicional: $descAdicional.val() || null,
+            forma_atencion: $formaAtencion.val() || null
+        });
+    });
+    $("#listaProductos").val(JSON.stringify(listaProductos));
 }
-
 /*=============================================
 LISTAR MÉTODO DE PAGO
 =============================================*/
@@ -689,7 +690,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     
     // Limpiar los valores de las notas y preferencias
     $nuevoProducto.find('.nota-producto').val(null);
-    $nuevoProducto.find('.descripcion-producto').val('');
+    $nuevoProducto.find('.nota-adicional').val('');
     
     // Establecer cantidad inicial en 1 y actualizar el nuevoStock
     var $cantidadInput = $nuevoProducto.find('.nuevaCantidadProducto');
@@ -722,10 +723,10 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     listarProductos();
 
     // Restaurar los valores seleccionados
-    var selectedPreferences = $productoRow.find('.nota-producto').val() || [];
-    var notaAdicional = $productoRow.find('.descripcion-producto').val() || '';
+    /*var selectedPreferences = $productoRow.find('.nota-producto').val() || [];
+    var notaAdicional = $productoRow.find('.nota-adicional').val() || '';
     $newSelect.val(selectedPreferences).trigger('change');
-    $nuevoProducto.find('.descripcion-producto').val(notaAdicional);
+    $nuevoProducto.find('.nota-adicional').val(notaAdicional);*/
 });
 
 /*=============================================

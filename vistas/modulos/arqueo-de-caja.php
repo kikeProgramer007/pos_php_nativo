@@ -175,7 +175,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <h4><strong>Usuario</strong></h4>
+                                        <h4><strong>Apertura realizada por Usuario</strong></h4>
                                         <input type="text" class="form-control text-uppercase " id="usuario" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
                                         <input type="hidden" id="idVendedor" name="idVendedor" value="<?php echo $_SESSION["id"]; ?>">
                                     </div>
@@ -203,7 +203,9 @@
                                                 $valor = null;
                                                 $cajas = ControladorCajas::ctrMostrarCajas($item, $valor);
                                                 foreach ($cajas as $key => $value) {
-                                                    echo '<option value="' . $value["id"] . '">' . $value["nombre"]. '</option>';
+                                                    $idCaja = $value["id"];
+                                                    $selected = ($idCaja == "1") ? ' selected' : '';
+                                                    echo '<option value="' . $idCaja . '"' . $selected . '>' . $value["nombre"] . '</option>';
                                                 }
                                                 ?>
                                             </select>

@@ -79,15 +79,16 @@ class ModeloArqueo {
      */
     static public function mdlVerificarCajaAbierta($id_usuario) {
         try {
-            $stmt = Conexion::conectar()->prepare("SELECT * 
-                FROM arqueo_caja 
-                WHERE id_usuario = :id_usuario 
-                AND estado = 'abierta' 
-                AND DATE(fecha_apertura) = DATE(NOW())
-                ORDER BY id DESC 
-                LIMIT 1");
-            
-            $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+            $stmt = Conexion::conectar()->prepare("SELECT ac.*, u.nombre AS nameUsuario 
+                                                    FROM arqueo_caja ac 
+                                                    JOIN usuarios u ON ac.id_usuario = u.id 
+                                                    WHERE ac.estado = 'abierta' 
+                                                    AND DATE(ac.fecha_apertura) = CURDATE() 
+                                                    ORDER BY ac.id DESC 
+                                                    LIMIT 1");
+                 
+        
+            //$stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
             $stmt->execute();
             
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -388,13 +389,13 @@ class ModeloArqueo {
         try {
             $stmt = Conexion::conectar()->prepare("SELECT * 
             FROM arqueo_caja 
-            WHERE id_usuario = :id_usuario 
-            AND estado = 'abierta' 
+            /*WHERE id_usuario = :id_usuario*/ 
+            WHERE estado = 'abierta' 
             AND date(fecha_apertura) = date(now())
             ORDER BY id DESC 
             LIMIT 1");
             
-            $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+            //$stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
             $stmt->execute();
     
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);

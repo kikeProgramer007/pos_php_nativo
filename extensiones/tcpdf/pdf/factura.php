@@ -38,7 +38,7 @@ class imprimirFactura
         $cambio = number_format($respuestaVenta["cambio"], 2);
         $tipoPago = $respuestaVenta["tipo_pago"];
         $totalPagado = number_format($respuestaVenta["total_pagado"], 2);
-        $nota = $respuestaVenta["nota"];
+        $notaGeneral = trim($respuestaVenta["nota"] ?? '');
         // Obtener información del cliente
         $itemCliente = "id";
         $valorCliente = $respuestaVenta["id_cliente"];
@@ -85,13 +85,13 @@ class imprimirFactura
         $pdf->SetFont('helvetica', '', 8);
 
         // PRIMERO: Factura
-        $html = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px;">
+        $html = '<table border="0" style="padding-right;5px">
             <tbody>
             <tr>
-                <td style="text-align:left; padding-left:15px;">
-                    &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 10px;">POLLOS ROSSY</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 14px;"><strong>N° PEDIDO: </strong><strong>' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
-                    <span  style="font-size: 8px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
+                <td style="text-align:center;">
+                    <span style="font-size: 10px;">POLLOS ROSSY</span><br>
+                    <span style="font-size: 14px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
+                    <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
             </tr>
             <tbody>
@@ -178,13 +178,10 @@ class imprimirFactura
                 <td colspan="3" style="text-align:left; font-size: 9px;"> <strong>CAMBIO:</strong></td>
                 <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . $cambio . '</td>
             </tr>
-            <tr>
-              <td colspan="4" style="padding: 0;">
-                <div style="margin: 0; padding: 0; font-size: 9px; text-align: right;">¡GRACIAS POR SU COMPRA!</div>
-              </td>
-            </tr>
             </tbody>
-        </table>';
+        </table>
+        <br><p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!</p>
+        ';
 
         $pdf->writeHTML($html, false, false, false, false, '');
 
@@ -248,6 +245,15 @@ class imprimirFactura
             </tr>
              ';
 
+       $notaHtml = '';
+        if(!empty($notaGeneral)){
+        $notaHtml = '<tr>
+                    <td width="20%"><strong>NOTA</strong></td>
+                    <td width="3%"><strong>:</strong></td>
+                    <td width="77%">' . $notaGeneral . '</td>
+                </tr>';
+        }
+        
         foreach ($productos as $item) {
             $valorUnitario = number_format($item["precio_venta"], 2);
             $precioTotal = number_format($item["subtotal"], 2);
@@ -273,15 +279,11 @@ class imprimirFactura
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $precioTotal . '</td>
                 </tr>';
         }
-
+       
         $html .= '
             <tr><td colspan="5"  style="border-top: 0.5px solid #000000; font-size: 9px;"></td></tr>
-            <tr >
-                <td width="20%"><strong>NOTA</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="77%">' . $nota . '</td>
-            </tr>
-        </tbody>
+            '.$notaHtml.'
+            </tbody>
         </table>
         ';
 

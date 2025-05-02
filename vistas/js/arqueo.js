@@ -13,6 +13,7 @@ class ArqueoCaja {
     constructor() {
         this.idArqueo = document.getElementById('idArqueo').value;
         this.estado = document.getElementById('estado_caja').value;
+        this.userlogeado = document.getElementById('idVendedor').value;
         this.totalEfectivoEnCaja = 0;
         this.totales = {
             montoApertura: 0,
@@ -177,6 +178,10 @@ class ArqueoCaja {
         elementos.idCaja.disabled = true;
         elementos.nroTicket.disabled = true;
        
+        if(this.userlogeado != data.id_usuario){
+            elementos.botonCaja.disabled = true;
+        }
+
         this.mostrarDatosApertura(data);
     }
 
@@ -206,7 +211,8 @@ class ArqueoCaja {
             'resultado_neto': datos.resultado_neto || '0.00',
             'total_ganancia_perdida': datos.resultado_neto || '0.00',
             'efectivo_en_caja': datos.efectivo_en_caja || '0.00',
-            'diferencia': datos.diferencia || '0.00'
+            'idVendedor': datos.id_usuario || '0',
+            'usuario': datos.nameUsuario || 'no encontrado'
         };
         Object.entries(campos).forEach(([id, valor]) => {
             const elemento = document.getElementById(id);
@@ -247,11 +253,24 @@ class ArqueoCaja {
     }
 
     validarAperturaCierreCaja() {
+        var condicionalEfeCaj;
+        if(this.estado === ESTADO.ABIERTA){
+            condicionalEfeCaj={ 
+                condicion: parseFloat(document.getElementById('total_efectivo_en_caja').value) < 1,
+                mensaje: 'Debe ingresar un monto mayor a 0 en efectivo en caja' 
+            }
+        }else{
+            condicionalEfeCaj={
+                condicion:parseFloat(document.getElementById('total_efectivo_en_caja').value) < 0,
+                mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja'
+            }
+        }
         const validaciones = [
             { condicion: !document.getElementById('idVendedor').value, mensaje: 'El usuario es obligatorio' },
             { condicion: !document.getElementById('idCaja').value, mensaje: 'Debe seleccionar una caja' },
             { condicion: !document.getElementById('nro_ticket').value || parseFloat(document.getElementById('nro_ticket').value) < 0, mensaje: 'El número de ticket es obligatorio' },
-            { condicion: !document.getElementById('total_efectivo_en_caja').value || parseFloat(document.getElementById('total_efectivo_en_caja').value) < 0, mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja' }
+            { condicion: !document.getElementById('total_efectivo_en_caja').value, mensaje: 'Debe ingresar el campo efectivo en caja' },
+            condicionalEfeCaj
         ];
     
         const error = validaciones.find(v => v.condicion);

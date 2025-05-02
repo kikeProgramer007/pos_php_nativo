@@ -8,7 +8,7 @@ class ControladorUsuarios{
 
 	static public function ctrIngresoUsuario()
 	{
-
+		date_default_timezone_set('America/La_Paz');
 		if (isset($_POST["ingUsuario"])) {
 
 			if (
@@ -39,17 +39,15 @@ class ControladorUsuarios{
 							$_SESSION["usuario"] = $respuesta["usuario"];
 							$_SESSION["foto"] = $respuesta["foto"];
 							$_SESSION["perfil"] = $respuesta["perfil"];
-							$arqueoActual =ModeloArqueo::mdlObtnerArqueoPorIDUsuario($respuesta["id"]);
+							$arqueoActual =ModeloArqueo::mdlObtnerArqueoPorIDUsuario(1);
 							if($arqueoActual){
 								$_SESSION["idArqueoCaja"] = $arqueoActual["id"];
 								$_SESSION["idCaja"] = $arqueoActual["id_caja"];
 							}
 							
-							/*=============================================
+						/*=============================================
 						REGISTRAR FECHA PARA SABER EL ÚLTIMO LOGIN
 						=============================================*/
-
-							date_default_timezone_set('America/La_Paz');
 
 							$fecha = date('Y-m-d');
 							$hora = date('H:i:s');

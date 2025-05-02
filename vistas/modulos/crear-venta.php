@@ -780,6 +780,11 @@ if ($_SESSION["perfil"] == "") {
 
     </div>
  
+   <!-- <php
+    echo "<pre>";
+    print_r($_SESSION);
+    echo "</pre>";
+    ?>-->
   </section>
 
 </div>
@@ -1030,7 +1035,7 @@ function agregarProductoAVenta(producto) {
             <i class="fa fa-file-text-o"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-right nota-dropdown">
-            <li style="width: 250px; padding: 10px;">
+            <li style="width: 280px; padding: 10px;">
               <form class="noteForm" onsubmit="return false;">
                 <label for="nota">Preferencias</label>
                 <div class="form-group">
@@ -1047,12 +1052,11 @@ function agregarProductoAVenta(producto) {
                       <option value="10">Poco arroz</option>
                       <option value="11">Poco fideo</option>
                       <option value="12">Poca papas</option>
-
                   </select>
                 </div>
                 <div class="form-group">
                   <label for="descripcion">Nota Adicional (Opcional)</label>
-                  <textarea class="form-control input-sm descripcion-producto" rows="2" 
+                  <textarea class="form-control input-sm nota-adicional" rows="2" 
                             placeholder="Nota adicional..."></textarea>
                 </div>
               </form>
@@ -1064,8 +1068,7 @@ function agregarProductoAVenta(producto) {
   var formaAtencionGeneral = $("#formaAtencion").val();
 
   $(".nuevoProducto").append(`
-    <div class="row" style="padding:0px 15px">
-        <div class="row" style="padding:4px 15px">
+    <div class="row" style="padding:4px 15px">
       <!-- Columna para descripción y botones -->
       <div class="col-xs-4" style="padding-right:0px">
         <div class="input-group">
@@ -1074,7 +1077,7 @@ function agregarProductoAVenta(producto) {
               <i class="fa fa-times"></i>
             </button>
           </span>
-       <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
+          <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
                  idProducto="${producto.id}" name="agregarProducto" 
                  value="${producto.descripcion}" readonly required>
                  ${extra}
@@ -1082,7 +1085,7 @@ function agregarProductoAVenta(producto) {
       </div>
 
       <!-- Columna para tipo de servicio -->
-    <div class="col-xs-2" style="padding-right:0px">
+      <div class="col-xs-2" style="padding-right:0px">
         <select class="form-control input-sm" name="formaAtencionDetalle" id="formaAtencionDetalle" style="padding:2px" >
           <option value="1" ${formaAtencionGeneral === "1" ? "selected" : ""}>🍽️ M</option>
           <option value="2" ${formaAtencionGeneral === "2" ? "selected" : ""}>🚚 LL</option>
@@ -1147,7 +1150,7 @@ function agregarProductoAVenta(producto) {
   }, 100);
 
   // Agregar evento change para la descripción
-  $('.descripcion-producto').on('change keyup', function() {
+  $('.nota-adicional').on('change keyup', function() {
     listarProductos();
   });
 
