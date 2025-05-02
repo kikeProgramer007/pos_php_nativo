@@ -124,7 +124,7 @@ $fechaActual = date("Y-m-d");
 <style>
 .skin-blue .main-header .navbar {
  
-  background-color: #6c757d;
+  background-color: #f39c12;;
 
     color: white; /* Cambiar el color del texto a blanco para que sea legible en el degradado oscuro */
   
@@ -153,7 +153,7 @@ resto bar -->
 
   .skin-blue .main-header .logo:hover {
 
-    background-color: #6c757d;
+    background-color: #f39c12;;
 
  /* Degradado de naranja a negro */
  

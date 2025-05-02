@@ -752,10 +752,10 @@ if ($_SESSION["perfil"] == "") {
             <div class="box-footer">
               <div class="row">
                 <div class="col-xs-6 text-left">
-                  <div class="form-check">
+               <!--    <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="sinImprimir" name="sinImprimir">
                     <label class="form-check-label" for="sinImprimir"> Sin Imprimir</label>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="col-xs-6 text-right">
                   <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right">Guardar venta</button>
