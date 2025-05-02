@@ -177,10 +177,22 @@ class ControladorVentas{
 
 				$imprimir = isset($_POST["sinImprimir"]) ? $_POST["sinImprimir"] : false;
 				if ($imprimir == false) {
-					echo "<script type='text/javascript'>
-							 window.open('extensiones/tcpdf/pdf/factura.php?codigo={$respuesta["idVenta"]}', '_blank');
-							  window.location = 'crear-venta';
-						</script>"; 
+
+					//ventana emergente grande
+					/*echo "<script type='text/javascript'>
+					window.open('extensiones/tcpdf/pdf/factura.php?codigo={$respuesta["idVenta"]}', '');
+					 window.location = 'crear-venta';
+			   </script>"; */
+
+					echo "<script type='text/javascript'>\n"
+						. "var width = 1500;\n"
+						. "var height = 300;\n"
+						. "var left = (screen.width / 2) - (width / 2);\n"
+						. "var top = (screen.height / 2) - (height / 2);\n"
+						. "var windowFeatures = 'menubar=no,toolbar=no,status=no,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;\n"
+						. "window.open('extensiones/tcpdf/pdf/factura.php?codigo={$respuesta['idVenta']}', '_blank', windowFeatures);\n"
+						. "window.location = 'crear-venta';\n"
+						. "</script>";
 				}else{
 					echo'<script> swal({
 						  type: "success",
