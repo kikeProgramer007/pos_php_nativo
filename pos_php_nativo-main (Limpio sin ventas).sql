@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-05-2025 a las 02:36:37
+-- Tiempo de generación: 02-05-2025 a las 04:59:21
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -110,9 +110,7 @@ INSERT INTO `categorias` (`id`, `categoria`, `fecha`, `estado`) VALUES
 (3, 'sodas', '2025-01-05 21:42:42', 1),
 (4, 'jugos', '2025-01-05 21:42:46', 1),
 (5, 'salchipapas', '2025-01-06 01:31:55', 1),
-(6, ' guarniciones', '2025-04-26 02:16:04', 1),
-(7, 'test', '2025-03-05 20:18:16', 0),
-(8, 'sobras', '2025-04-26 02:16:14', 1);
+(6, ' guarniciones', '2025-04-26 02:16:04', 1);
 
 -- --------------------------------------------------------
 
@@ -294,7 +292,7 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
 (1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 90, 70, 0, '2025-04-26 02:18:36', 0, 1),
 (2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 45, 30, 0, '2025-04-26 02:18:58', 0, 1),
-(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/450.png', 50, 23, 18, 0, '2025-04-26 02:19:25', 0, 1),
+(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/617.png', 50, 23, 18, 0, '2025-05-02 02:29:47', 0, 1),
 (4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/291.png', 50, 23, 18, 0, '2025-04-26 02:19:47', 0, 1),
 (5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/248.png', 50, 13, 10, 0, '2025-04-26 02:20:50', 0, 1),
 (6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/421.png', 50, 13, 10, 0, '2025-04-26 02:21:16', 0, 1),
@@ -397,8 +395,7 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
 (1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-04-25 22:50:51', '2025-04-26 02:50:51', 1),
 (2, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', '', 1, '2025-04-25 22:50:43', '2025-04-26 02:50:43', 1),
-(3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-04-25 22:46:53', '2025-04-26 02:46:53', 1),
-(4, 'enrique', 'enrique', '$2a$07$asxx54ahjppf45sd87a5auLSGQafrhT1q/TDAijaGwwOMXE8ecr.q', 'Administrador', '', 1, '2025-03-07 12:07:11', '2025-03-07 16:07:11', 1);
+(3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-04-25 22:46:53', '2025-04-26 02:46:53', 1);
 
 -- --------------------------------------------------------
 
@@ -533,7 +530,7 @@ ALTER TABLE `cajas`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
@@ -581,7 +578,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
