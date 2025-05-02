@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-05-2025 a las 04:59:21
+-- Tiempo de generación: 02-05-2025 a las 23:37:20
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -292,10 +292,10 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
 (1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 90, 70, 0, '2025-04-26 02:18:36', 0, 1),
 (2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 45, 30, 0, '2025-04-26 02:18:58', 0, 1),
-(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/617.png', 50, 23, 18, 0, '2025-05-02 02:29:47', 0, 1),
+(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/756.png', 50, 23, 18, 0, '2025-05-02 21:26:29', 0, 1),
 (4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/291.png', 50, 23, 18, 0, '2025-04-26 02:19:47', 0, 1),
 (5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/248.png', 50, 13, 10, 0, '2025-04-26 02:20:50', 0, 1),
-(6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/421.png', 50, 13, 10, 0, '2025-04-26 02:21:16', 0, 1),
+(6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/255.png', 50, 13, 10, 0, '2025-05-02 21:27:20', 0, 1),
 (7, 1, '105', ' eco pierna broasterd', 'vistas/img/productos/105/376.png', 50, 13, 10, 0, '2025-04-26 02:21:02', 0, 1),
 (8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/825.png', 50, 13, 10, 0, '2025-04-26 02:21:33', 0, 1),
 (10, 2, '201', 'entero brasa', 'vistas/img/productos/201/518.png', 50, 90, 70, 0, '2025-04-26 02:21:48', 0, 1),
