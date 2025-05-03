@@ -540,7 +540,23 @@ $(".tablas").on("click", ".btnImprimirFactura", function() {
     // Abre la URL en una nueva ventana (popup)
     popupWindow = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
 });
+var popupWindow2 = null;
+function imprimirFactura(codigoVenta){
+    // Tamaño de la ventana emergente
+    var width = 800;
+    var height = 600;
+    // Configuración de la ventana emergente
+    var left = (screen.width / 2) - (width / 2);
+    var top = (screen.height / 2) - (height / 2);
+    var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
 
+    // Cierra la ventana emergente existente si está abierta
+    if (popupWindow2 && !popupWindow2.closed) {
+        popupWindow2.close();
+    }
+    // Abre la URL en una nueva ventana (popup)
+    popupWindow2 = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+}
 
 /*=============================================
 FUNCIÓN PARA INICIALIZAR LA TABLA

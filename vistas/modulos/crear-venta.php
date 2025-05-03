@@ -135,7 +135,6 @@ if ($_SESSION["perfil"] == "") {
       height: 40px;
       overflow: hidden;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
 
@@ -986,7 +985,9 @@ $(document).ready(function() {
     });
 });
 
-document.getElementById("guardarVentaBtn").addEventListener("click", function() {
+document.getElementById("guardarVentaBtn").addEventListener("click", function(e) {
+  e.preventDefault(); // Evita el submit tradicional
+
   var totalVenta = Number($('#nuevoTotalVenta').val());
   var efectivo = Number($('#nuevoValorEfectivo').val());
   var cambio = Number(efectivo) - totalVenta;
@@ -1001,9 +1002,43 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function() 
     return;
   }
 
-  if(cambio>=0){
-    document.getElementById("ventaForm").submit();
-  }else{
+  if(cambio >= 0){
+    // Recoge los datos del formulario
+    var form = document.getElementById("ventaForm");
+    var formData = new FormData(form);
+
+    $.ajax({
+      url: "ajax/ventas.ajax.php", // Cambia aquí
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function(respuesta) {
+        if(respuesta.status == "ok") {
+          imprimirFactura(respuesta.idVenta);
+          window.location.href = "crear-venta";
+        } else {
+          swal({
+            type: "error",
+            title: "Error al guardar la venta",
+            text: respuesta.mensaje || "Error desconocido",
+            showConfirmButton: true,
+            confirmButtonText: "Cerrar"
+          });
+        }
+      },
+      error: function(xhr, status, error) {
+        swal({
+          type: "error",
+          title: "Error de comunicación",
+          text: "No se pudo guardar la venta",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+      }
+    });
+  } else {
     swal({
       type: "error",
       title: "Lo que Canceló debe ser igual o mayor al total",

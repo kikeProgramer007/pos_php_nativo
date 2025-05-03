@@ -177,50 +177,25 @@ class ControladorVentas{
 
 				$imprimir = isset($_POST["sinImprimir"]) ? $_POST["sinImprimir"] : false;
 				if ($imprimir == false) {
-
-					//ventana emergente grande
-					/*echo "<script type='text/javascript'>
-					window.open('extensiones/tcpdf/pdf/factura.php?codigo={$respuesta["idVenta"]}', '');
-					 window.location = 'crear-venta';
-			   </script>"; */
-
-					echo "<script type='text/javascript'>\n"
-						. "var width = 1500;\n"
-						. "var height = 300;\n"
-						. "var left = (screen.width / 2) - (width / 2);\n"
-						. "var top = (screen.height / 2) - (height / 2);\n"
-						. "var windowFeatures = 'menubar=no,toolbar=no,status=no,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;\n"
-						. "window.open('extensiones/tcpdf/pdf/factura.php?codigo={$respuesta['idVenta']}', '_blank', windowFeatures);\n"
-						. "window.location = 'crear-venta';\n"
-						. "</script>";
-				}else{
-					echo'<script> swal({
-						  type: "success",
-						  title: "La venta ha sido guardada correctamente",
-						  showConfirmButton: true,
-						  confirmButtonText: "Cerrar"
-						  }).then(function(result){
-								if (result.value) {
-								window.location = "crear-venta";
-								}
-							})
-					</script>';
+					echo json_encode([
+						"status" => "ok",
+						"idVenta" => $respuesta['idVenta'],
+						"imprimir" => true
+					]);
+				} else {
+					echo json_encode([
+						"status" => "ok",
+						"idVenta" => $respuesta['idVenta'],
+						"imprimir" => false
+					]);
 				}
-		
+				return;
 			} else {
-				echo '<script>
-					swal({
-						type: "error",
-						title: "Error al guardar la venta",
-						text: "' . (is_string($respuesta) ? $respuesta : "Error desconocido") . '",
-						showConfirmButton: true,
-						confirmButtonText: "Cerrar"
-					}).then(function(result){
-						if (result.value) {
-							window.location = "crear-venta";
-						}
-					});
-				</script>';
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => is_string($respuesta) ? $respuesta : "Error desconocido"
+				]);
+				return;
 			}
 
 		}
