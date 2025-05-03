@@ -73,7 +73,7 @@ class imprimirFactura
         // Crear el documento con la altura calculada
         $pdf = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
 
-        $pdf->SetMargins(1, -1, 0);
+        $pdf->SetMargins(1, 1, 0);
       
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
