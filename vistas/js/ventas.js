@@ -715,7 +715,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $nuevoProducto.find('.nota-producto').removeClass('select2-hidden-accessible');
     
     // Limpiar los valores de las notas y preferencias
-    $nuevoProducto.find('.nota-producto').val(null);
+    $nuevoProducto.find('.nota-producto').val([]);
     $nuevoProducto.find('.nota-adicional').val('');
     
     // Establecer cantidad inicial en 1 y actualizar el nuevoStock
@@ -731,7 +731,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $productoRow.after($nuevoProducto);
     
     // Reinicializar Select2 en el nuevo elemento
-    var $newSelect = $nuevoProducto.find('.nota-producto');
+    var $newSelect = $nuevoProducto.find('.select2-nota');
     $newSelect.select2({
         theme: "classic",
         multiple: true,
@@ -742,17 +742,17 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
                 return "No hay resultados";
             }
         }
-    });
-    
+    	}).on('change', function() {
+		listarProductos();
+	  });
+
+	  $('.nota-adicional').on('change keyup', function() {
+		listarProductos();
+	  });
+	
     // Actualizar los totales
     sumarTotalPrecios();
     listarProductos();
-
-    // Restaurar los valores seleccionados
-    /*var selectedPreferences = $productoRow.find('.nota-producto').val() || [];
-    var notaAdicional = $productoRow.find('.nota-adicional').val() || '';
-    $newSelect.val(selectedPreferences).trigger('change');
-    $nuevoProducto.find('.nota-adicional').val(notaAdicional);*/
 });
 
 /*=============================================
