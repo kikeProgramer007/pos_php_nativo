@@ -543,19 +543,29 @@ $(".tablas").on("click", ".btnImprimirFactura", function() {
 var popupWindow2 = null;
 function imprimirFactura(codigoVenta){
     // Tamaño de la ventana emergente
-    var width = 800;
-    var height = 600;
+    var width = 1000;
+    var height = 500;
     // Configuración de la ventana emergente
     var left = (screen.width / 2) - (width / 2);
     var top = (screen.height / 2) - (height / 2);
     var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
 
-    // Cierra la ventana emergente existente si está abierta
-    if (popupWindow2 && !popupWindow2.closed) {
-        popupWindow2.close();
+    // Intenta cerrar la ventana anterior si existe y no está cerrada
+    try {
+        if (popupWindow2 && !popupWindow2.closed) {
+            popupWindow2.close();
+        }
+    } catch (e) {
+        // Si hay error, ignóralo (por ejemplo, si la ventana ya fue cerrada manualmente)
     }
+
     // Abre la URL en una nueva ventana (popup)
     popupWindow2 = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+
+    // Trae la ventana al frente (opcional)
+    if (popupWindow2) {
+        popupWindow2.focus();
+    }
 }
 
 /*=============================================

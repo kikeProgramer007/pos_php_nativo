@@ -1017,7 +1017,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       success: function(respuesta) {
         if(respuesta.status == "ok") {
           imprimirFactura(respuesta.idVenta);
-          window.location.href = "crear-venta";
+           window.location.href = "crear-venta"; 
         } else {
           swal({
             type: "error",
