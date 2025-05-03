@@ -544,10 +544,10 @@ var popupWindow2 = null;
 function imprimirFactura(codigoVenta){
     // Tamaño de la ventana emergente
     var width = 1000;
-    var height = 500;
+    var height = 300;
     // Configuración de la ventana emergente
     var left = (screen.width / 2) - (width / 2);
-    var top = (screen.height / 2) - (height / 2);
+    var top = (screen.height / 3) - (height / 3);
     var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
 
     // Intenta cerrar la ventana anterior si existe y no está cerrada
