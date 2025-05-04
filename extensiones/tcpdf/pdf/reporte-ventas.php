@@ -86,7 +86,7 @@ class reporteVenta
         $pdf->AddPage();
 
         $pdf->SetFont('helvetica', 'B', 11);
-        $pdf->Cell(0, 5, 'REPORTE DE VENTA ENTRE FECHA', 0, 1, 'C');
+        $pdf->Cell(0, 5, 'REPORTE DE VENTAS ENTRE FECHA', 0, 1, 'C');
        /*  $pdf->Image('images/logo-negro-bloque.jpg', 150, 10, 60, 51, 'jpg', '', 'T', false, 300, '', false, false, 0, false, false, false); */
        $pdf->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
         $pdf->Ln(10); // Espacio después de la imagen
@@ -126,6 +126,7 @@ class reporteVenta
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaMesero["nombre"], 0, 1, 'L');
         $pdf->SetX(140);
+        $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(100, 5, date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 1, 'L');
@@ -147,13 +148,14 @@ class reporteVenta
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 5, 'Detalle Del Reporte', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(10, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(16, 5, 'Ticket', 1, 0, 'L');
-        $pdf->Cell(30, 5, 'Fecha', 1, 0, 'L');
-        $pdf->Cell(35, 5, 'Usuario', 1, 0, 'L');
-        $pdf->Cell(40, 5, 'Mesero', 1, 0, 'L');
-        $pdf->Cell(40, 5, 'Cliente', 1, 0, 'L');
-        $pdf->Cell(25, 5, 'Monto', 1, 1, 'L');
+        $pdf->Cell(10, 5, '#', 1, 0, 'L');
+        $pdf->Cell(14, 5, 'Ticket', 1, 0, 'C');
+        $pdf->Cell(34, 5, 'Fecha Y Hora', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Usuario', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Mesero', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Cliente', 1, 0, 'C');
+        $pdf->Cell(27, 5, 'Tipo de Pago', 1, 0, 'C');
+        $pdf->Cell(21, 5, 'Monto', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         //Imprimir los detalles de los productos
@@ -162,12 +164,16 @@ class reporteVenta
         foreach ($respuestaVentas as $item) {
             $total =  $item["total"];
             $pdf->Cell(10, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(16, 5, ltrim($item["codigo"], '0'), 1, 0, 'L');
-            $pdf->Cell(30, 5, $item["fecha"], 1, 0, 'L');
-            $pdf->Cell(35, 5, $item["usuario"], 1, 0, 'L');
-            $pdf->Cell(40, 5, $item["mesero"], 1, 0, 'L');
-            $pdf->Cell(40, 5, $item["cliente"], 1, 0, 'L');
-            $pdf->Cell(25, 5, $total, 1, 1, 'R');
+            $pdf->Cell(14, 5, ltrim($item["codigo"], '0'), 1, 0, 'C');
+            // Mostrar fecha y hora con segundos y am/pm
+            $fechaCompleta = $item["fecha"];
+            $fechaFormateada = date('Y-m-d h:i:s a', strtotime($fechaCompleta));
+            $pdf->Cell(34, 5, $fechaFormateada, 1, 0, 'C');
+            $pdf->Cell(30, 5, $item["usuario"], 1, 0, 'C');
+            $pdf->Cell(30, 5, strtolower($item["mesero"]), 1, 0, 'C');
+            $pdf->Cell(30, 5, strtolower($item["cliente"]), 1, 0, 'C');
+            $pdf->Cell(27, 5, $item["tipo_pago"], 1, 0, 'C');
+            $pdf->Cell(21, 5, $total . ' Bs', 1, 1, 'C');
             $contador++;
             $sumTotal += $total;
         }

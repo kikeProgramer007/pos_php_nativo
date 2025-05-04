@@ -55,7 +55,23 @@ class PdfGanancias extends FPDF
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(23, 5, 'Periodo:', 0, 0, 'L');
         $this->SetFont('helvetica', '', 9);
-        $this->Cell(100, 5, $this->month . ' de ' . $this->year, 0, 1, 'L');
+        $meses = [
+            '01' => 'Enero',
+            '02' => 'Febrero',
+            '03' => 'Marzo',
+            '04' => 'Abril',
+            '05' => 'Mayo',
+            '06' => 'Junio',
+            '07' => 'Julio',
+            '08' => 'Agosto',
+            '09' => 'Septiembre',
+            '10' => 'Octubre',
+            '11' => 'Noviembre',
+            '12' => 'Diciembre'
+        ];
+        $mesConCero = str_pad($this->month, 2, '0', STR_PAD_LEFT);
+        $nombreMes = isset($meses[$mesConCero]) ? $meses[$mesConCero] : $this->month;
+        $this->Cell(100, 5, $nombreMes . ' de ' . $this->year, 0, 1, 'L');
 
         $DateAndTime = date('d-m-Y h:i:s a', time());
         $this->SetY(40);  // Ajusta este valor según sea necesario altura
@@ -67,13 +83,13 @@ class PdfGanancias extends FPDF
         $this->Ln(5);
 
         $this->SetFont('Arial', 'B', 11);
-        $this->Cell(12, 5, utf8_decode('Nº'), 1, 0, 'L');
-        $this->Cell(26, 5, utf8_decode('Ticket'), 1, 0, 'L');
-        $this->Cell(26, 5, utf8_decode('Fecha'), 1, 0, 'L');
-        $this->Cell(30, 5, utf8_decode('Usuario'), 1, 0, 'L');
-        $this->Cell(50, 5, utf8_decode('Mesero'), 1, 0, 'L');
-        $this->Cell(24, 5, utf8_decode('Monto'), 1, 0, 'L');
-        $this->Cell(24, 5, utf8_decode('Ganancia'), 1, 1, 'L');
+        $this->Cell(12, 5, utf8_decode('#'), 1, 0, 'L');
+        $this->Cell(26, 5, utf8_decode('Nº Ticket'), 1, 0, 'C');
+        $this->Cell(26, 5, utf8_decode('Fecha'), 1, 0, 'C');
+        $this->Cell(30, 5, utf8_decode('Usuario'), 1, 0, 'C');
+        $this->Cell(50, 5, utf8_decode('Mesero'), 1, 0, 'C');
+        $this->Cell(24, 5, utf8_decode('Monto'), 1, 0, 'C');
+        $this->Cell(24, 5, utf8_decode('Ganancia'), 1, 1, 'C');
         $this->SetFont('Arial', '', 11);
     }
 
@@ -91,12 +107,12 @@ class PdfGanancias extends FPDF
 
         foreach ($ganancias as $ganancia) {
             $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(26, 5, ltrim($ganancia['codigo'],'0'),1, 0, 'L');
-            $pdf->Cell(26, 5, utf8_decode($ganancia['fecha']), 1, 0, 'L');
-            $pdf->Cell(30, 5, utf8_decode($ganancia['vendedor']), 1, 0, 'L');
-            $pdf->Cell(50, 5, utf8_decode($ganancia['mesero']), 1, 0, 'L');
-            $pdf->Cell(24, 5, $ganancia['total'], 1, 0, 'L');
-            $pdf->Cell(24, 5, number_format($ganancia['ganancias'], 2, '.', ','), 1, 1, 'R');
+            $pdf->Cell(26, 5, ltrim($ganancia['codigo'],'0'),1, 0, 'C');
+            $pdf->Cell(26, 5, utf8_decode($ganancia['fecha']), 1, 0, 'C');
+            $pdf->Cell(30, 5, utf8_decode($ganancia['vendedor']), 1, 0, 'C');
+            $pdf->Cell(50, 5, utf8_decode($ganancia['mesero']), 1, 0, 'C');
+            $pdf->Cell(24, 5, $ganancia['total']. ' Bs.', 1, 0, 'C');
+            $pdf->Cell(24, 5, number_format($ganancia['ganancias'], 2, '.', ','). ' Bs.', 1, 1, 'C');
             $sum += $ganancia['total'];
             $sum_ganancias += $ganancia['ganancias'];
             $contador++;

@@ -88,13 +88,12 @@ class reporteProductoFaltante
         $pdf->Ln(5);
 
         $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(12, 5, utf8_decode('Nº'), 1, 0, 'L');
-        $pdf->Cell(28, 5, utf8_decode('Codigo'), 1, 0, 'L');
-        $pdf->Cell(72, 5, utf8_decode('nombre'), 1, 0, 'L');
-
-        $pdf->Cell(26, 5, utf8_decode('Precio venta'), 1, 0, 'L');
-        $pdf->Cell(30, 5, utf8_decode('Precio compra'), 1, 0, 'L');
-        $pdf->Cell(24, 5, utf8_decode('stock'), 1, 1, 'L');
+        $pdf->Cell(12, 5, utf8_decode('#'), 1, 0, 'L');
+        $pdf->Cell(28, 5, utf8_decode('Codigo'), 1, 0, 'C');
+        $pdf->Cell(70, 5, utf8_decode('Producto'), 1, 0, 'C');
+        $pdf->Cell(30, 5, utf8_decode('Precio compra'), 1, 0, 'C');
+        $pdf->Cell(28, 5, utf8_decode('Precio venta'), 1, 0, 'C');
+        $pdf->Cell(24, 5, utf8_decode('Cantidad'), 1, 1, 'C');
         $pdf->SetFont('Arial', '', 11);
 
 
@@ -107,11 +106,11 @@ class reporteProductoFaltante
         $pdf->SetAutoPageBreak(false);
         foreach ($respuestaProductos as $producto) {
             $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(28, 5, $producto['codigo'], 1, 0, 'L');
-            $pdf->Cell(72, 5, utf8_decode($producto['descripcion']), 1, 0, 'L');
-            $pdf->Cell(26, 5, $producto['precio_venta'], 1, 0, 'L');
-            $pdf->Cell(30, 5, $producto['precio_compra'], 1, 0, 'L');
-            $pdf->Cell(24, 5, $producto['stock'], 1, 1, 'L');
+            $pdf->Cell(28, 5, $producto['codigo'], 1, 0, 'C');
+            $pdf->Cell(70, 5, utf8_decode($producto['descripcion']), 1, 0, 'C');
+            $pdf->Cell(30, 5, $producto['precio_compra'].' Bs', 1, 0, 'C');
+            $pdf->Cell(28, 5, $producto['precio_venta'].' Bs', 1, 0, 'C');
+            $pdf->Cell(24, 5, $producto['stock'], 1, 1, 'C');
             $contador++;
 
             if ($contador == $cortar) {

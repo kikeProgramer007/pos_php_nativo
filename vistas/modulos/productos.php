@@ -460,7 +460,7 @@ MODAL EDITAR PRODUCTO
                 <!-- ENTRADA PARA PORCENTAJE -->
                 <div class="col-xs-6" style="padding:0">
                   <div class="input-group">
-                    <input type="number" class="form-control input-lg nuevoPorcentaje" min="0" value="40" required>
+                    <input type="number" class="form-control input-lg nuevoPorcentaje" min="0" value="0" required>
                     <span class="input-group-addon"><i class="fa fa-percent"></i></span>
                   </div>
                 </div>
@@ -539,4 +539,48 @@ $restaurarProducto->ctrRestaurarProducto();
             stockInput.setAttribute('readonly', true); // Deshabilitar el campo
         }
     });
+</script>
+<script>
+// Manejo del porcentaje en el modal de editar producto
+// Se asegura de que funcione correctamente al abrir el modal
+$(document).ready(function() {
+    const checkPorcentajeEditar = document.querySelector('#modalEditarProducto .porcentaje');
+    const precioCompraEditar = document.getElementById('editarPrecioCompra');
+    const precioVentaEditar = document.getElementById('editarPrecioVenta');
+    const porcentajeInputEditar = document.querySelector('#modalEditarProducto .nuevoPorcentaje');
+
+    function calcularPrecioVentaEditar() {
+        if (checkPorcentajeEditar && checkPorcentajeEditar.checked) {
+            let porcentaje = parseFloat(porcentajeInputEditar.value);
+            let precioCompraValor = parseFloat(precioCompraEditar.value);
+            if (!isNaN(precioCompraValor) && !isNaN(porcentaje)) {
+                let nuevoPrecioVenta = precioCompraValor + (precioCompraValor * porcentaje / 100);
+                precioVentaEditar.value = nuevoPrecioVenta.toFixed(2);
+            }
+        }
+    }
+
+    function actualizarReadonlyPrecioVentaEditar() {
+        if (checkPorcentajeEditar && checkPorcentajeEditar.checked) {
+            precioVentaEditar.setAttribute('readonly', true);
+        } else if (precioVentaEditar) {
+            precioVentaEditar.removeAttribute('readonly');
+        }
+    }
+
+    if (checkPorcentajeEditar && precioCompraEditar && precioVentaEditar && porcentajeInputEditar) {
+        checkPorcentajeEditar.addEventListener('change', function() {
+            actualizarReadonlyPrecioVentaEditar();
+            calcularPrecioVentaEditar();
+        });
+        precioCompraEditar.addEventListener('input', calcularPrecioVentaEditar);
+        porcentajeInputEditar.addEventListener('input', calcularPrecioVentaEditar);
+
+        // Al abrir el modal, actualizar el estado
+        $('#modalEditarProducto').on('shown.bs.modal', function () {
+            actualizarReadonlyPrecioVentaEditar();
+            calcularPrecioVentaEditar();
+        });
+    }
+});
 </script>

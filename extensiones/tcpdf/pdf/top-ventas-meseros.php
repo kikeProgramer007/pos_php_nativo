@@ -90,10 +90,10 @@ class reporteTopVentasMeseros
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 5, 'Detalle de Top Ventas por Meseros', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(18, 5, 'Nro Top', 1, 0, 'L');
-        $pdf->Cell(70, 5, 'Mesero', 1, 0, 'L');
-        $pdf->Cell(48, 5, 'Cantidad Ventas', 1, 0, 'L');
-        $pdf->Cell(60, 5, 'Monto Ventas', 1, 1, 'L');
+        $pdf->Cell(18, 5, 'Nro Top', 1, 0, 'C');
+        $pdf->Cell(70, 5, 'Mesero', 1, 0, 'C');
+        $pdf->Cell(48, 5, 'Cantidad Ventas', 1, 0, 'C');
+        $pdf->Cell(60, 5, 'Monto Ventas', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         //Imprimir los detalles de los productos
@@ -101,11 +101,11 @@ class reporteTopVentasMeseros
         $sumTotal = 0;
         foreach ($respuestaVentas as $item) {
             $total =  $item["total"];
-            $pdf->Cell(18, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(70, 5, $item["mesero"], 1, 0, 'L');
-            $pdf->Cell(48, 5, $item["cantidad"], 1, 0, 'L');
-            $pdf->Cell(60, 5, $item["total"], 1, 1, 'R');
-    
+            $pdf->Cell(18, 5,  $contador, 1, 0, 'C');
+            $pdf->Cell(70, 5, $item["mesero"], 1, 0, 'C');
+            $pdf->Cell(48, 5, $item["cantidad"], 1, 0, 'C');
+       
+            $pdf->Cell(60, 5, $item["total"] . ' Bs', 1, 1, 'C');
             $contador++;
             $sumTotal += $total;
         }

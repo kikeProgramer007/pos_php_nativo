@@ -89,9 +89,10 @@ class reporteTopProductosMasVendidos
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 5, 'Detalle de Top', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(18, 5, 'Nro Top', 1, 0, 'L');
+        $pdf->Cell(18, 5, '#', 1, 0, 'L');
+        
         $pdf->Cell(140, 5, 'Producto', 1, 0, 'L');
-        $pdf->Cell(38, 5, 'Cantidad Vendida', 1, 1, 'L');
+        $pdf->Cell(38, 5, 'Cantidad Vendida', 1, 1, 'C');
         // $pdf->Cell(60, 5, 'Monto Ventas', 1, 1, 'L');
         $pdf->SetFont('helvetica', '', 8);
 
@@ -103,7 +104,7 @@ class reporteTopProductosMasVendidos
             $total =  $item['cantidad'];
             $pdf->Cell(18, 5,  $contador, 1, 0, 'L');
             $pdf->Cell(140, 5,  $item['descripcion'], 1, 0, 'L');
-            $pdf->Cell(38, 5, $total, 1, 1, 'R');
+            $pdf->Cell(38, 5, $total, 1, 1, 'C');
     
             $contador++;
             $sumTotal += $total;

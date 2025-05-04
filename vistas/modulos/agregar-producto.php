@@ -95,7 +95,7 @@
                                                    min="0" 
                                                    step="any" 
                                                    placeholder="Precio de venta" 
-                                                   required>
+                                                   readonly>
                                         </div>
                                     </div>
 
@@ -108,7 +108,7 @@
                                                 <input type="number" 
                                                        class="form-control nuevoPorcentaje" 
                                                        min="0" 
-                                                       value="40" 
+                                                       value="0" 
                                                        required>
                                                 <div class="porcentaje-checkbox">
                                                     <input type="checkbox" class="minimal porcentaje" id="checkPorcentaje">
@@ -529,8 +529,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    checkPorcentaje.addEventListener('change', calcularPrecioVenta);
+    function actualizarReadonlyPrecioVenta() {
+        if (checkPorcentaje.checked) {
+            precioVenta.setAttribute('readonly', true);
+        } else {
+            precioVenta.removeAttribute('readonly');
+        }
+    }
+
+    checkPorcentaje.addEventListener('change', function() {
+        actualizarReadonlyPrecioVenta();
+        calcularPrecioVenta();
+    });
     precioCompra.addEventListener('input', calcularPrecioVenta);
     porcentajeInput.addEventListener('input', calcularPrecioVenta);
+
+    // Llama una vez al cargar la página para el estado inicial
+    actualizarReadonlyPrecioVenta();
 });
 </script>

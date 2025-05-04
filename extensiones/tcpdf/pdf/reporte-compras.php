@@ -129,7 +129,7 @@ class reporteCompra
         $pdf->Cell(0, 5, 'Detalle de productos', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(14, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(22, 5, 'Ticket', 1, 0, 'L');
+        $pdf->Cell(22, 5, 'Recibo Nº', 1, 0, 'L');
         $pdf->Cell(30, 5, 'Fecha', 1, 0, 'L');
         $pdf->Cell(50, 5, 'Usuario', 1, 0, 'L');
         $pdf->Cell(50, 5, 'Proveedor', 1, 0, 'L');

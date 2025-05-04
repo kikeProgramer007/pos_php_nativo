@@ -359,6 +359,7 @@ class ModeloVentas
 						usuarios.nombre AS usuario, 
 						meseros.nombre AS mesero, 
 						clientes.nombre AS cliente, 
+						ventas.tipo_pago,
 						SUM(dv.subtotal) AS total
 					FROM $tabla
 					JOIN detalle_venta dv ON ventas.id = dv.id_venta
@@ -387,7 +388,7 @@ class ModeloVentas
 			$query .= " AND ventas.estado =1 ";
 		}
 		
-		$query .= " GROUP BY ventas.codigo, ventas.fecha DESC, usuarios.nombre, meseros.nombre;";
+		$query .= " GROUP BY ventas.codigo, ventas.fecha, usuarios.nombre, meseros.nombre, clientes.nombre, ventas.tipo_pago ORDER BY ventas.fecha ASC;";
 
 		// Preparar la consulta
 		$stmt = Conexion::conectar()->prepare($query);
