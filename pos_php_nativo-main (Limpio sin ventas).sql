@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-05-2025 a las 23:37:20
+-- Tiempo de generación: 04-05-2025 a las 23:27:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -290,8 +290,8 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
-(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/814.jpg', 50, 90, 70, 0, '2025-04-26 02:18:36', 0, 1),
-(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/393.jpg', 50, 45, 30, 0, '2025-04-26 02:18:58', 0, 1),
+(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/576.png', 50, 90, 70, 0, '2025-05-04 21:15:22', 0, 1),
+(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/692.png', 50, 45, 30, 0, '2025-05-04 21:25:59', 0, 1),
 (3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/756.png', 50, 23, 18, 0, '2025-05-02 21:26:29', 0, 1),
 (4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/291.png', 50, 23, 18, 0, '2025-04-26 02:19:47', 0, 1),
 (5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/248.png', 50, 13, 10, 0, '2025-04-26 02:20:50', 0, 1),
@@ -343,7 +343,10 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 0, 12, 10, 0, '2025-04-26 02:28:54', 1, 0),
 (69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/406.png', 50, 12, 7, 0, '2025-04-26 02:24:47', 0, 1),
 (70, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1),
-(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/514.jpg', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1);
+(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/514.jpg', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1),
+(72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/145.png', 50, 7, 4, 0, '2025-05-04 21:05:49', 0, 1),
+(73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/596.png', 50, 7, 4, 0, '2025-05-04 21:06:52', 0, 1),
+(74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/526.png', 50, 7, 4, 0, '2025-05-04 21:11:53', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -393,7 +396,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-04-25 22:50:51', '2025-04-26 02:50:51', 1),
+(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-05-04 17:25:26', '2025-05-04 21:25:26', 1),
 (2, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', '', 1, '2025-04-25 22:50:43', '2025-04-26 02:50:43', 1),
 (3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-04-25 22:46:53', '2025-04-26 02:46:53', 1);
 
@@ -566,7 +569,7 @@ ALTER TABLE `meseros`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
