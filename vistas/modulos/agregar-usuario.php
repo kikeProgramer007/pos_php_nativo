@@ -1,9 +1,19 @@
+
+
 <?php
-// Verificar la sesión del usuario si es necesario
-if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
-    echo '<script>window.location = "inicio";</script>';
-    exit();
+
+if($_SESSION["perfil"] == "Vendedor"){
+
+  echo '<script>
+
+    window.location = "inicio";
+
+  </script>';
+
+  return;
+
 }
+
 ?>
 
 <div class="content-wrapper">

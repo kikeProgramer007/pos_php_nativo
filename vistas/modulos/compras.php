@@ -1,6 +1,6 @@
 <?php
 
-if ($_SESSION["perfil"] == "") {
+if ($_SESSION["perfil"] == "Vendedor") {
 
   echo '<script>
 
