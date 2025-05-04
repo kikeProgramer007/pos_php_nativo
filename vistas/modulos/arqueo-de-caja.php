@@ -214,7 +214,7 @@
 
                                     <div class="form-group">
                                         <h4><strong>Nro de Ticket</strong></h4>
-                                        <input type="number" class="form-control text-uppercase " id="nro_ticket" name="nro_ticket" value="0" min="0" >
+                                        <input type="number" class="form-control text-uppercase " id="nro_ticket" name="nro_ticket" value="0" min="0" readonly>
                                     </div>
 
                                 </div>
