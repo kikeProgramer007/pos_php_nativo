@@ -72,6 +72,12 @@ class imprimirCompra {
         // --- ENCABEZADO TIPO TABLA DE TRES COLUMNAS ---
         $y_inicial = $pdf->GetY();
 
+        // RECIBO N° GRANDE Y AL PRINCIPIO
+        $pdf->SetXY(10, $y_inicial);
+        $pdf->SetFont('helvetica', 'B', 15);
+        $pdf->Cell(0, 10, 'Recibo N°: ' . $respuestaCompra["codigo"], 0, 1, 'L');
+        $y_inicial = $pdf->GetY(); // Actualizar Y para el resto del encabezado
+
         // COLUMNA IZQUIERDA
         $pdf->SetXY(10, $y_inicial);
         $pdf->SetFont('helvetica', 'B', 9);
@@ -131,14 +137,13 @@ class imprimirCompra {
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->SetFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(0, 5, 'Detalle De Productos Comprados', 1, 1, 'C', 1);
+        $pdf->Cell(0, 5, 'Detalle De roductos Comprados', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(14, 5, '#', 1, 0, 'L');
-        $pdf->Cell(22, 5, 'Recibo N°', 1, 0, 'C'); 
-        $pdf->Cell(80, 5, 'Nombre', 1, 0, 'L');
-        $pdf->Cell(25, 5, 'Precio', 1, 0, 'C');
+        $pdf->Cell(90, 5, 'Nombre', 1, 0, 'L');
+        $pdf->Cell(28, 5, 'Precio', 1, 0, 'C');
         $pdf->Cell(25, 5, 'Cantidad', 1, 0, 'C');
-        $pdf->Cell(30, 5, 'Subtotal', 1, 1, 'C');
+        $pdf->Cell(39, 5, 'Subtotal', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         // Imprimir los detalles de los productos
@@ -153,19 +158,10 @@ class imprimirCompra {
             // Imprimir el número de ítem
             $pdf->Cell(14, 5, $contador, 1, 0, 'L');
 
-            // Solo en la primera fila, imprime el código, luego celdas vacías
-            if ($contador == 1) {
-                $pdf->Cell(22, 5 * $totalFilas, $respuestaCompra["codigo"], 1, 0, 'C', 0, '', 0, false, 'T', 'C');
-            } else {
-                // No imprimir nada en las siguientes filas (la celda ya está ocupada por la anterior)
-                // Solo avanza el cursor
-                $pdf->Cell(22, 5, '', 0, 0);
-            }
-
-            $pdf->Cell(80, 5, $descripcion, 1, 0, 'L');
-            $pdf->Cell(25, 5, number_format($precio, 2, '.', ','). ' Bs', 1, 0, 'C');
+            $pdf->Cell(90, 5, $descripcion, 1, 0, 'L');
+            $pdf->Cell(28, 5, number_format($precio, 2, '.', ','). ' Bs', 1, 0, 'C');
             $pdf->Cell(25, 5, $item["cantidad"], 1, 0, 'C');
-            $pdf->Cell(30, 5, $importe . ' Bs', 1, 1, 'C');
+            $pdf->Cell(39, 5, $importe . ' Bs', 1, 1, 'C');
             $contador++;
         }
 
