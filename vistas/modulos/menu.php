@@ -17,6 +17,17 @@
 
 				</a>
 
+
+				 <li>
+	
+                     <a href="http://localhost/A/pos_php_nativo/pagina/index.php">
+                        <i class="fa fa-globe"></i>
+
+                              <span style="font-weight: bold;">Pagina Web</span>
+                        </a>
+	
+				</li>
+
 			</li>
 
 			<li>
@@ -159,6 +170,11 @@
 						</a>
 
 					</li>
+
+
+                           
+
+
 
 					<li>
 
