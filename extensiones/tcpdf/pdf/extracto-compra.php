@@ -28,6 +28,10 @@ class imprimirCompra {
         // Convertir la fecha y hora a un objeto DateTime
         $fechaHoraObj = new DateTime($respuestaCompra["fecha_alta"]);
 
+        // Obtener fecha y hora por separado
+        $fechaSolo = $fechaHoraObj->format('d/m/Y');
+        $horaSolo = $fechaHoraObj->format('H:i a');
+   
         // Formatear la fecha y hora
         $fechaFormateada = $fechaHoraObj->format('d/m/Y h:i A');
 
@@ -61,55 +65,107 @@ class imprimirCompra {
         $pdf->SetTitle('Compra de productos');
         $pdf->AddPage();
 
+        // Definir variables de restaurante y dirección
+        $nombreTienda = "Pollos Rossy"; // Puedes cambiarlo por una variable si lo deseas
+        $direccionTienda = "Refineria"; // Puedes cambiarlo por una variable si lo deseas
+
+        // --- ENCABEZADO TIPO TABLA DE TRES COLUMNAS ---
+        $y_inicial = $pdf->GetY();
+
+        // COLUMNA IZQUIERDA
+        $pdf->SetXY(10, $y_inicial);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(28, 5, 'Restaurante:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(42, 5, $nombreTienda, 0, 1, 'L');
+
+        $pdf->SetX(10);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(28, 5, 'Dirección:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(42, 5, $direccionTienda, 0, 1, 'L');
+
+        $pdf->SetX(10);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(28, 5, 'Proveedor:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(42, 5, $respuestaProveedor["nombre"], 0, 1, 'L');
+
+        $pdf->SetX(10);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(28, 5, 'Concepto:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(42, 5, 'Compra de productos', 0, 1, 'L');
+
+        // COLUMNA CENTRAL (LOGO)
+        $pdf->SetXY(100, $y_inicial);
+        $pdf->Image('images/logo-negro-bloque.jpg', 100, $y_inicial, 25, 20, 'jpg', '', 'T', false, 300, '', false, false, 0, false, false, false);
+
+        // COLUMNA DERECHA
+        $pdf->SetXY(150, $y_inicial);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(20, 5, 'Usuario:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(40, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
+
+        $pdf->SetX(150);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(20, 5, 'Fecha:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(40, 5, $fechaSolo, 0, 1, 'L');
+
+        $pdf->SetX(150);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(20, 5, 'Hora:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(40, 5, $horaSolo, 0, 1, 'L');
+
+        // Salto de línea para dejar espacio después del encabezado
+        $pdf->Ln(10);
+
+        // Título centrado
         $pdf->SetFont('helvetica', 'B', 11);
-        $pdf->Cell(0, 5, 'Compra de productos', 0, 1, 'C');
-        $pdf->Image('images/logo-negro-bloque.jpg', 185, 10, 18, 16, 'jpg', '', 'T', false, 300, '', false, false, 0, false, false, false);
-
-        $pdf->Ln(10); // Espacio después de la imagen
-  
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Cajero/a: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
-
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Proveedor: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $respuestaProveedor["nombre"], 0, 1, 'L');
-
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Fecha: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $fechaFormateada, 0, 1, 'L');
-
+   
         $pdf->Ln(5);
+
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->SetFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(0, 5, 'Detalle de productos', 1, 1, 'C', 1);
+        $pdf->Cell(0, 5, 'Detalle De Productos Comprados', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(14, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(22, 5, 'Recibo N°', 1, 0, 'L'); 
+        $pdf->Cell(14, 5, '#', 1, 0, 'L');
+        $pdf->Cell(22, 5, 'Recibo N°', 1, 0, 'C'); 
         $pdf->Cell(80, 5, 'Nombre', 1, 0, 'L');
-        $pdf->Cell(25, 5, 'Precio', 1, 0, 'L');
-        $pdf->Cell(25, 5, 'Cantidad', 1, 0, 'L');
-        $pdf->Cell(30, 5, 'Subtotal', 1, 1, 'L');
+        $pdf->Cell(25, 5, 'Precio', 1, 0, 'C');
+        $pdf->Cell(25, 5, 'Cantidad', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Subtotal', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         // Imprimir los detalles de los productos
         $contador = 1;
-        foreach ($detalleCompra as $item) {
-
+        $totalFilas = count($detalleCompra);
+        foreach ($detalleCompra as $index => $item) {
             $descripcion = isset($item["producto"]) ? $item["producto"] : '';
-            $precio = isset($item["precio_compra"]) ? str_replace(',', '', $item["precio_compra"]) : 0; // Asignar 0 si no está definido
-            $precio = (float) $precio; // Convertir a float
+            $precio = isset($item["precio_compra"]) ? str_replace(',', '', $item["precio_compra"]) : 0;
+            $precio = (float) $precio;
             $importe = number_format($precio * $item["cantidad"], 2, '.', ',');
+
+            // Imprimir el número de ítem
             $pdf->Cell(14, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(22, 5, $respuestaCompra["codigo"], 1, 0, 'L'); 
+
+            // Solo en la primera fila, imprime el código, luego celdas vacías
+            if ($contador == 1) {
+                $pdf->Cell(22, 5 * $totalFilas, $respuestaCompra["codigo"], 1, 0, 'C', 0, '', 0, false, 'T', 'C');
+            } else {
+                // No imprimir nada en las siguientes filas (la celda ya está ocupada por la anterior)
+                // Solo avanza el cursor
+                $pdf->Cell(22, 5, '', 0, 0);
+            }
+
             $pdf->Cell(80, 5, $descripcion, 1, 0, 'L');
-            $pdf->Cell(25, 5, number_format($precio, 2, '.', ','), 1, 0, 'L');
-            $pdf->Cell(25, 5, $item["cantidad"], 1, 0, 'L');
-            $pdf->Cell(30, 5, $importe, 1, 1, 'R');
+            $pdf->Cell(25, 5, number_format($precio, 2, '.', ','). ' Bs', 1, 0, 'C');
+            $pdf->Cell(25, 5, $item["cantidad"], 1, 0, 'C');
+            $pdf->Cell(30, 5, $importe . ' Bs', 1, 1, 'C');
             $contador++;
         }
 
@@ -120,7 +176,7 @@ class imprimirCompra {
 
         // Nro de compras
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(30, 5, 'Número de compras:  ' . ($contador - 1), 0, 0, 'L');
+        $pdf->Cell(30, 5, 'Número Total De Compras:  ' . ($contador - 1), 0, 0, 'L');
 
         $pdf->Output('factura.pdf', 'I');
     }else{

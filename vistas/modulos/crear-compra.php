@@ -103,7 +103,7 @@ if($_SESSION["perfil"] == "Vendedor"){
 
                     if(!$compras){
 
-                      echo '<input type="text" class="form-control" id="nuevaCompra" name="nuevaCompra" value="10001" readonly>';
+                      echo '<input type="text" class="form-control" id="nuevaCompra" name="nuevaCompra" value="1" readonly>';
                   
 
                     }else{

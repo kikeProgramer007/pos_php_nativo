@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-05-2025 a las 23:27:29
+-- Tiempo de generación: 05-05-2025 a las 04:42:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -56,14 +56,6 @@ CREATE TABLE `arqueo_caja` (
   `id_caja` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `arqueo_caja`
---
-
-INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `diferencia`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
-(1, '2025-04-14 12:31:02', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 0, NULL, 1, 1),
-(2, '2025-04-25 21:43:10', '2025-04-25 22:51:28', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 20.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cerrada', 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -148,17 +140,6 @@ CREATE TABLE `compras` (
   `estado` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `compras`
---
-
-INSERT INTO `compras` (`id`, `codigo`, `total`, `id_usuario`, `id_proveedor`, `fecha_alta`, `estado`) VALUES
-(1, 10001, 1.40, 1, 1, '2025-01-06 02:00:54', 1),
-(2, 10002, 1870.00, 3, 2, '2025-01-07 02:39:59', 1),
-(3, 10003, 4855.00, 1, 1, '2025-01-08 02:08:22', 1),
-(4, 10004, 7070.00, 1, 1, '2025-01-08 02:09:18', 1),
-(5, 10005, 1000.00, 1, 1, '2025-04-26 02:30:03', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -217,7 +198,8 @@ INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `can
 (35, 32, 4, 'simba durazno 2l', 50, 10.00, 500.00),
 (36, 22, 4, 'fanta naranja 3l', 50, 15.00, 750.00),
 (37, 71, 5, 'valle 1l manzana', 50, 10.00, 500.00),
-(38, 70, 5, 'valle 1l durazno', 50, 10.00, 500.00);
+(38, 70, 5, 'valle 1l durazno', 50, 10.00, 500.00),
+(39, 71, 1, 'valle 1l manzana', 1, 10.00, 10.00);
 
 -- --------------------------------------------------------
 
@@ -343,7 +325,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 0, 12, 10, 0, '2025-04-26 02:28:54', 1, 0),
 (69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/406.png', 50, 12, 7, 0, '2025-04-26 02:24:47', 0, 1),
 (70, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/819.png', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1),
-(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/514.jpg', 50, 12, 10, 0, '2025-04-26 02:30:03', 1, 1),
+(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/514.jpg', 51, 12, 10, 0, '2025-05-05 02:41:41', 1, 1),
 (72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/145.png', 50, 7, 4, 0, '2025-05-04 21:05:49', 0, 1),
 (73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/596.png', 50, 7, 4, 0, '2025-05-04 21:06:52', 0, 1),
 (74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/526.png', 50, 7, 4, 0, '2025-05-04 21:11:53', 0, 1);
@@ -521,7 +503,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
@@ -545,13 +527,13 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`
