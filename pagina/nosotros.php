@@ -90,17 +90,71 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
             padding: 5px 0;
             display: inline-block;
         }
+        /* Hover naranja para servicios */
+        .services-icon-wap:hover {
+            background: #ff6600 !important;
+        }
+        .services-icon-wap:hover i,
+        .services-icon-wap:hover h2,
+        .services-icon-wap:hover p {
+            color: #fff !important;
+        }
+        /* Iconos de servicios por defecto en amarillo oscuro */
+        .services-icon-wap i {
+            color: rgb(255, 251, 0) !important;
+        }
+        /* Deshacer gradiente icono-naranja-rojo en servicios */
+        .services-icon-wap .icono-naranja-rojo {
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+            -webkit-text-fill-color: #ff9900 !important;
+            text-fill-color: #ff9900 !important;
+            color: #ff9900 !important;
+        }
+        /* Hover icono-naranja-rojo: texto blanco */
+        .services-icon-wap:hover .icono-naranja-rojo {
+            -webkit-text-fill-color: #fff !important;
+            text-fill-color: #fff !important;
+            color: #fff !important;
+        }
+        /* Ajuste directo al <i> para colores de iconos en servicios */
+        .services-icon-wap .icono-naranja-rojo i {
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+            -webkit-text-fill-color: #ff9900 !important;
+            text-fill-color: #ff9900 !important;
+            color: #ff9900 !important;
+        }
+        .services-icon-wap:hover .icono-naranja-rojo i {
+            -webkit-text-fill-color: #fff !important;
+            text-fill-color: #fff !important;
+            color: #fff !important;
+        }
     </style>
   </head>
 
   <body>
    
-
+<!-- Barra Superior -->
+<nav class="navbar navbar-expand-lg bg-dark navbar-light d-none d-lg-block" id="templatemo_nav_top">
+        <div class="container text-light">
+            <div class="w-10 d-flex justify-content-between">
+                <div>
+                   
+                </div>
+                <div>
+                  
+                </div>
+            </div>
+        </div>
+    </nav>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light shadow">
       <div class="container d-flex justify-content-between align-items-center">
       <a class="pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">
-                Pollos ROSSY
+                POLLOS ROSSY
             </a>
 
         <button

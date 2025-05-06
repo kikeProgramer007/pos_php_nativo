@@ -80,14 +80,26 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
   
-
+<!-- Barra Superior -->
+<nav class="navbar navbar-expand-lg bg-dark navbar-light d-none d-lg-block" id="templatemo_nav_top">
+        <div class="container text-light">
+            <div class="w-10 d-flex justify-content-between">
+                <div>
+                   
+                </div>
+                <div>
+                  
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light shadow">
         <div class="container d-flex justify-content-between align-items-center">
 
             <a class=" pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">
-                Pollos ROSSY
+                POLLOS ROSSY
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

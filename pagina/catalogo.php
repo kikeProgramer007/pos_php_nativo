@@ -86,6 +86,13 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             padding: 5px 0;
             display: inline-block;
         }
+        .fab.fa-whatsapp {
+            color: green !important;
+            transition: color 0.3s ease;
+        }
+        .fab.fa-whatsapp:hover {
+            color: #ff6600 !important;
+        }
     </style>
     <script>
         // Función para desplegar y ocultar los filtros
@@ -97,12 +104,24 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-
+<!-- Barra Superior -->
+<nav class="navbar navbar-expand-lg bg-dark navbar-light d-none d-lg-block" id="templatemo_nav_top">
+        <div class="container text-light">
+            <div class="w-10 d-flex justify-content-between">
+                <div>
+                   
+                </div>
+                <div>
+                  
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light shadow">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">Pollos Rossy</a>
+            <a class="pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">POLLOS ROSSY</a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -111,7 +130,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                         <li class="nav-item"><a class="nav-link" href="index.php">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.php">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Menú</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.php">Contacto</a></li>
                     </ul>
                 </div>
@@ -152,7 +171,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="text" name="buscar" class="form-control mb-3" placeholder="Buscar producto...">
 
                     <!-- Botón de Filtrar -->
-                    <button type="submit" class="btn btn-primary mt-3">Aplicar</button>
+                    <button type="submit" class="btn btn-warning mt-3">Aplicar</button>
                 </form>
             </div>
 
@@ -168,7 +187,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="card-body">
                                         <h5 class="card-title"><?= htmlspecialchars($producto['descripcion']) ?></h5>
                                         <p><strong>Precio:</strong> <?= number_format($producto['precio_venta'], 2) ?> Bs</p>
-                                        <p><strong>Stock:</strong> <?= htmlspecialchars($producto['stock']) ?></p>
+                                        <p><strong>Cantidad:</strong> <?= htmlspecialchars($producto['stock']) ?></p>
                                         <p class="text-center">
                                             <a class="btn btn-success" href="https://wa.me/59175620296?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" target="_blank">
                                                 <i class="fab fa-whatsapp"></i> Pedir

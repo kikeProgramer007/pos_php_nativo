@@ -49,6 +49,12 @@ foreach ($categorias as $cat) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="assets/css/fontawesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+    <!-- Google Fonts Modernas -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- AOS Animate On Scroll -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <!-- CSS Moderno personalizado -->
+    <link rel="stylesheet" href="assets/css/modern.css">
     <style>
         .envios-gratis {
             background-color: #f8f9fa;
@@ -75,7 +81,8 @@ foreach ($categorias as $cat) {
             height: 30px;
         }
         .pollos-rossy-titulo {
-            font-family: 'Bangers', Impact, Arial, sans-serif;
+            font-family: Impact, Arial, sans-serif !important;
+            font-style: normal !important;
             font-size: 48px;
             color: #fff200 !important;
             text-shadow:
@@ -95,18 +102,40 @@ foreach ($categorias as $cat) {
                 margin-left: 80px;
             }
         }
+        .btn-primary.btn-lg {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,204,51,0.4);}
+            70% { box-shadow: 0 0 0 10px rgba(255,204,51,0);}
+            100% { box-shadow: 0 0 0 0 rgba(255,204,51,0);}
+        }
+        .btn-primary.btn-lg:hover {
+            animation: none;
+            transform: scale(1.07);
+        }
     </style>
 </head>
 
 <body>
    
-
-    <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-light shadow">
+  <!-- Barra Superior -->
+  <nav class="navbar navbar-expand-lg bg-dark navbar-light d-none d-lg-block" id="templatemo_nav_top">
+        <div class="container text-light">
+            <div class="w-10 d-flex justify-content-between">
+                <div>
+                   
+                </div>
+                <div>
+                  
+                </div>
+            </div>
+        </div>
+    </nav>
+   <!-- Header -->
+   <nav class="navbar navbar-expand-lg navbar-light shadow">
         <div class="container d-flex justify-content-between align-items-center">
-        <a class="pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">
-                Pollos ROSSY
-            </a>
+            <a class="pollos-rossy-titulo navbar-brand text-success logo h1 align-self-center" href="index.php">POLLOS ROSSY</a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -115,15 +144,15 @@ foreach ($categorias as $cat) {
                     <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                         <li class="nav-item"><a class="nav-link" href="index.php">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.php">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Menú</a></li>
+                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Catálogo</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.php">Contacto</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
- <!-- Opciones de Venta -->
- <div class="container my-3">
+  <!-- Opciones de Venta -->
+  <div class="container my-3">
     <div class="row text-center">
         <div class="col-md-6">
             <h5>Venta Telefónica</h5>
@@ -132,7 +161,7 @@ foreach ($categorias as $cat) {
             </a>
         </div>
         <div class="col-md-6">
-            <h5>Pedidos por WhatsApp</h5>
+            <h5>Venta por WhatsApp</h5>
             <a href="https://wa.me/59178069757" target="_blank" class="text-decoration-none text-dark">
                 <i class="fab fa-whatsapp fa-lg" style="color: green;"></i> +591 75620296
             </a>
@@ -157,7 +186,7 @@ foreach ($categorias as $cat) {
                     <div class="col-lg-6 mb-0 d-flex align-items-center">
                         <div class="text-align-left align-self-center">
                         <h1 class="h1 text-black"><b>¡Bienvenido!</b></h1>
-                        <h3 class="h2">Nos encontramos en el 7mo Anillo, cerca de la Refinería</h3>
+                  
                             <p>El sabor que buscas está aquí. Ven y disfruta de nuestros deliciosos pollos brasa y broaster, preparados al momento para ti.</p>
                         </div>
                     </div>
@@ -212,22 +241,31 @@ foreach ($categorias as $cat) {
     <!-- Categorías del Mes -->
     <section class="container py-5">
         <div class="row text-center py-3">
-            <div class="col-lg-6 m-auto">
+            <div class="col-lg-6 m-auto mb-4">
                 <h1 class="h1">Conoce algunos de nuestros productos</h1>
-          <p>Explora nuestras deliciosas opciones de pollos a la brasa y broaster, preparadas con los mejores ingredientes para satisfacer tu apetito.</p>
-
+                <p>Explora nuestras deliciosas opciones de pollos a la brasa y broaster, preparadas con los mejores ingredientes para satisfacer tu apetito.</p>
+                <hr class="separador-productos">
             </div>
         </div>
         <div class="row">
             <?php foreach ($productosDestacados as $producto): ?>
-                <div class="col-12 col-md-4 mb-4">
+                <div class="col-12 col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                     <div class="card h-100">
                         <img src="../<?= htmlspecialchars($producto['imagen']) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['descripcion']) ?>">
                         <div class="card-body">
+                            <ul class="list-unstyled d-flex justify-content-between mb-2 align-items-center">
+                                <li>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                </li>
+                            </ul>
                             <span class="badge bg-primary mb-2"><?= htmlspecialchars($producto['categoria']) ?></span>
                             <h5 class="card-title"><?= htmlspecialchars($producto['descripcion']) ?></h5>
-                            <p><strong>Precio:</strong> <?= number_format($producto['precio_venta'], 2) ?> Bs</p>
-                            <p><strong>Stock:</strong> <?= isset($producto['stock']) ? htmlspecialchars($producto['stock']) : 'N/D' ?></p>
+                            <p><strong>Cantidad:</strong> <?= isset($producto['stock']) ? htmlspecialchars($producto['stock']) : 'N/D' ?></p>
+                            <span class="precio-destacado"><?= number_format($producto['precio_venta'], 2) ?> Bs</span>
                             <p class="text-center">
                                 <a class="btn btn-success" href="https://wa.me/59175620296?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" target="_blank">
                                     <i class="fab fa-whatsapp"></i> Pedir
@@ -489,5 +527,9 @@ foreach ($categorias as $cat) {
 </script>
 
     <!-- End Script -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+      AOS.init();
+    </script>
   </body>
 </html>
