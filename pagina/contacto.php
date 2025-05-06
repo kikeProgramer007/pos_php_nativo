@@ -121,6 +121,7 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
                         <li class="nav-item">
                             <a class="nav-link" href="contacto.php">Contacto</a>
                         </li>
+                        <li class="nav-item"><a class="nav-link" href="http://localhost/A/pos_php_nativo/">Login</a></li>
                     </ul>
                 </div>
                 <div class="navbar align-self-center d-flex">
