@@ -70,12 +70,12 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
             text-fill-color: transparent;
         }
         .icono-naranja-rojo {
-            color: #ff9800;
-            background: linear-gradient(90deg, #ff9800 0%, #ff7043 50%, #c62828 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+            -webkit-text-fill-color: unset !important;
+            text-fill-color: unset !important;
+            color: #ff9900 !important;
         }
 
         .pollos-rossy-titulo {
@@ -103,34 +103,16 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
         .services-icon-wap i {
             color: rgb(255, 251, 0) !important;
         }
-        /* Deshacer gradiente icono-naranja-rojo en servicios */
+        /* Iconos de servicios en color oscuro */
+        .services-icon-wap .icono-naranja-rojo i,
         .services-icon-wap .icono-naranja-rojo {
-            background: none !important;
-            -webkit-background-clip: unset !important;
-            background-clip: unset !important;
-            -webkit-text-fill-color: #ff9900 !important;
-            text-fill-color: #ff9900 !important;
             color: #ff9900 !important;
         }
-        /* Hover icono-naranja-rojo: texto blanco */
-        .services-icon-wap:hover .icono-naranja-rojo {
-            -webkit-text-fill-color: #fff !important;
-            text-fill-color: #fff !important;
-            color: #fff !important;
-        }
-        /* Ajuste directo al <i> para colores de iconos en servicios */
-        .services-icon-wap .icono-naranja-rojo i {
-            background: none !important;
-            -webkit-background-clip: unset !important;
-            background-clip: unset !important;
-            -webkit-text-fill-color: #ff9900 !important;
-            text-fill-color: #ff9900 !important;
-            color: #ff9900 !important;
-        }
+        /* Hover: icono-naranja-rojo en blanco */
+        .services-icon-wap:hover .icono-naranja-rojo,
         .services-icon-wap:hover .icono-naranja-rojo i {
-            -webkit-text-fill-color: #fff !important;
-            text-fill-color: #fff !important;
             color: #fff !important;
+            -webkit-text-fill-color: #fff !important;
         }
     </style>
   </head>
