@@ -144,7 +144,7 @@ foreach ($categorias as $cat) {
                     <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                         <li class="nav-item"><a class="nav-link" href="index.php">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="nosotros.php">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Catálogo</a></li>
+                        <li class="nav-item"><a class="nav-link" href="catalogo.php">Menú</a></li>
                         <li class="nav-item"><a class="nav-link" href="contacto.php">Contacto</a></li>
                     </ul>
                 </div>
