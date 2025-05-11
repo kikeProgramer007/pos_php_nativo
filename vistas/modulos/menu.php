@@ -20,7 +20,7 @@
 
 				 <li>
 	
-                     <a href="http://localhost/A/pos_php_nativo/pagina/index.php">
+                     <a href="pagina/">
                         <i class="fa fa-globe"></i>
 
                               <span style="font-weight: bold;">Pagina Web</span>

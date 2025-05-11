@@ -144,7 +144,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="offcanvas__content">
                         <div class="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
                             <div class="offcanvas__logo">
-                                <a href="index.php">
+                                <a href="../pagina/">
                                 <img src="assets/img/logo/logoo2.webp" alt="logo-img">
                                 </a>
                             </div>
@@ -198,7 +198,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="mega-menu-wrapper">
                         <div class="header-main">
                             <div class="logo">
-                                <a href="index.php" class="header-logo">
+                                <a href="../pagina/" class="header-logo">
                                 <img src="assets/img/logo/logoo2.webp" alt="logo-img">
                                 </a>
                             </div>
@@ -208,7 +208,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <nav id="mobile-menu">
                                             <ul>
                                                 <li class="active" style="padding-left: -20px;">
-                                                    <a href="index.php">
+                                                    <a href="../pagina/">
                                                    INICIO
                                                     </a>
                                                 </li>
@@ -234,7 +234,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 </li>
 
                                                 <li>
-                                                    <a href="http://localhost/A/pos_php_nativo/">Login</a>
+                                                    <a href="../login">Login</a>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -493,7 +493,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="container">
                     <div class="footer-bottom-wrapper d-flex align-items-center justify-content-between">
                         <p class="wow fadeInLeft" data-wow-delay=".3s">
-                            © Copyright <span class="theme-color-3">2025</span> <a href="index.php">Pollos PollosRossy </a>.Todos los derechos reservados.
+                            © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">Pollos PollosRossy </a>.Todos los derechos reservados.
                         </p>
                         <div class="card-image wow fadeInRight" data-wow-delay=".5s">
                             <img src="assets/img/card.webp" alt="card-img">
