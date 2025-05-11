@@ -1,6 +1,10 @@
 <?php
-require "fpdf/conexion.php";
-require "fpdf/fpdf.php";
+require_once "modelos/conexion.php";
+require_once "fpdf/fpdf.php";
+
+// Obtenemos la conexión usando la clase Conexion de la carpeta modelos y el archivo conexion.php //
+$conexion = Conexion::conectar();
+//fin de la conexión
 
 class PDF extends FPDF
 {
@@ -109,38 +113,35 @@ $anchoColumna = array(60, 50, 25, 60);
 
 // Consulta y datos
 $sql = "SELECT nombre, empresa, telefono, direccion FROM proveedor WHERE estado=1";
-if ($resultado = $mysqli->query($sql)) {
-    $colorFila = false;
-    while ($fila = $resultado->fetch_assoc()) {
-        if ($pdf->GetY() > 230) {
-            $pdf->AddPage();
-            $pdf->TablaHeader();
-            // Resetear la fuente después de TablaHeader
-            $pdf->SetFont('Arial', '', 9);
-        }
+$stmt = $conexion->prepare($sql);
+$stmt->execute();
 
-        // Alternar colores de fondo para las filas
-        if($colorFila) {
-            $pdf->SetFillColor(250, 250, 250);
-        } else {
-            $pdf->SetFillColor(255, 255, 255);
-        }
-
-        $posX = (210 - $tablaAncho) / 2;
-        $pdf->SetX($posX);
-
-        // Imprimir datos con bordes y fondo alternado
-        $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre'])), 1, 0, 'L', true);
-        $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['empresa'])), 1, 0, 'L', true);
-        $pdf->Cell($anchoColumna[2], 8, strtoupper($fila['telefono']), 1, 0, 'C', true);
-        $pdf->Cell($anchoColumna[3], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['direccion'])), 1, 1, 'L', true);
-        
-        $colorFila = !$colorFila;
+$colorFila = false;
+while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    if ($pdf->GetY() > 230) {
+        $pdf->AddPage();
+        $pdf->TablaHeader();
+        // Resetear la fuente después de TablaHeader
+        $pdf->SetFont('Arial', '', 9);
     }
-    $resultado->free();
-} else {
-    $pdf->SetTextColor(255, 0, 0);
-    $pdf->Cell(0, 10, "Error en la consulta: " . $mysqli->error, 0, 1, 'C');
+
+    // Alternar colores de fondo para las filas
+    if($colorFila) {
+        $pdf->SetFillColor(250, 250, 250);
+    } else {
+        $pdf->SetFillColor(255, 255, 255);
+    }
+
+    $posX = (210 - $tablaAncho) / 2;
+    $pdf->SetX($posX);
+
+    // Imprimir datos con bordes y fondo alternado
+    $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre'])), 1, 0, 'L', true);
+    $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['empresa'])), 1, 0, 'L', true);
+    $pdf->Cell($anchoColumna[2], 8, strtoupper($fila['telefono']), 1, 0, 'C', true);
+    $pdf->Cell($anchoColumna[3], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['direccion'])), 1, 1, 'L', true);
+    
+    $colorFila = !$colorFila;
 }
 
 $pdf->Output();

@@ -1,6 +1,10 @@
 <?php
-require "fpdf/conexion.php";
-require "fpdf/fpdf.php";
+require_once "modelos/conexion.php";
+require_once "fpdf/fpdf.php";
+
+// Obtenemos la conexión usando la clase Conexion de la carpeta modelos y el archivo conexion.php //
+$conexion = Conexion::conectar();
+//fin de la conexión
 
 class PDF extends FPDF
 {
@@ -111,40 +115,37 @@ $anchoColumna = array(20, 60, 15, 25, 25, 40);
 
 // Consulta y datos
 $sql = "SELECT id, codigo, descripcion, imagen, stock, precio_compra, precio_venta, fecha FROM productos WHERE estado=1";
-if ($resultado = $mysqli->query($sql)) {
-    $colorFila = false;
-    while ($fila = $resultado->fetch_assoc()) {
-        if ($pdf->GetY() > 230) {
-            $pdf->AddPage();
-            $pdf->TablaHeader();
-            // Resetear la fuente después de TablaHeader
-            $pdf->SetFont('Arial', '', 9);
-        }
+$stmt = $conexion->prepare($sql);
+$stmt->execute();
 
-        // Alternar colores de fondo para las filas
-        if($colorFila) {
-            $pdf->SetFillColor(250, 250, 250);
-        } else {
-            $pdf->SetFillColor(255, 255, 255);
-        }
-
-        $posX = (210 - $tablaAncho) / 2;
-        $pdf->SetX($posX);
-
-        // Imprimir datos con bordes y fondo alternado
-        $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', $fila['codigo']), 1, 0, 'C', true);
-        $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['descripcion'])), 1, 0, 'L', true);
-        $pdf->Cell($anchoColumna[2], 8, iconv('UTF-8', 'ISO-8859-1', $fila['stock']), 1, 0, 'C', true);
-        $pdf->Cell($anchoColumna[4], 8, number_format($fila['precio_compra'], 2), 1, 0, 'R', true);
-        $pdf->Cell($anchoColumna[3], 8, number_format($fila['precio_venta'], 2), 1, 0, 'R', true);
-        $pdf->Cell($anchoColumna[5], 8, iconv('UTF-8', 'ISO-8859-1', $fila['fecha']), 1, 1, 'C', true);
-        
-        $colorFila = !$colorFila;
+$colorFila = false;
+while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    if ($pdf->GetY() > 230) {
+        $pdf->AddPage();
+        $pdf->TablaHeader();
+        // Resetear la fuente después de TablaHeader
+        $pdf->SetFont('Arial', '', 9);
     }
-    $resultado->free();
-} else {
-    $pdf->SetTextColor(255, 0, 0);
-    $pdf->Cell(0, 10, iconv('UTF-8', 'ISO-8859-1', "Error en la consulta: " . $mysqli->error), 0, 1, 'C');
+
+    // Alternar colores de fondo para las filas
+    if($colorFila) {
+        $pdf->SetFillColor(250, 250, 250);
+    } else {
+        $pdf->SetFillColor(255, 255, 255);
+    }
+
+    $posX = (210 - $tablaAncho) / 2;
+    $pdf->SetX($posX);
+
+    // Imprimir datos con bordes y fondo alternado
+    $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', $fila['codigo']), 1, 0, 'C', true);
+    $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['descripcion'])), 1, 0, 'L', true);
+    $pdf->Cell($anchoColumna[2], 8, iconv('UTF-8', 'ISO-8859-1', $fila['stock']), 1, 0, 'C', true);
+    $pdf->Cell($anchoColumna[4], 8, number_format($fila['precio_compra'], 2), 1, 0, 'R', true);
+    $pdf->Cell($anchoColumna[3], 8, number_format($fila['precio_venta'], 2), 1, 0, 'R', true);
+    $pdf->Cell($anchoColumna[5], 8, iconv('UTF-8', 'ISO-8859-1', $fila['fecha']), 1, 1, 'C', true);
+    
+    $colorFila = !$colorFila;
 }
 
 $pdf->Output();
