@@ -100,7 +100,7 @@ if($_SESSION["perfil"] == "Vendedor"){
                             <div class="auth-photo-section">
                                 <div class="photo-upload-container">
                                     <div class="preview-container">
-                                        <img src="vistas/img/plantilla/p.png" class="preview-image" alt="Vista previa">
+                                        <img src="vistas/img/plantilla/p.webp" class="preview-image" alt="Vista previa">
                                     </div>
                                 </div>
                             </div>

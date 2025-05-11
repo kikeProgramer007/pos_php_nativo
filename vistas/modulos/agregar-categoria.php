@@ -68,7 +68,7 @@ if($_SESSION["perfil"] == "Vendedor"){
                             <div class="auth-photo-section">
                                 <div class="photo-upload-container">
                                     <div class="preview-container">
-                                        <img src="vistas/img/plantilla/cas.jpg" class="preview-image" alt="Categoría">
+                                        <img src="vistas/img/plantilla/cas.webp" class="preview-image" alt="Categoría">
                                     </div>
                                     <div class="category-info">
                                         <h3>Gestión de Categorías</h3>

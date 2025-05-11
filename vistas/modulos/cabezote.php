@@ -4,7 +4,7 @@
   <a href="inicio" class="logo">
     <!-- logo mini -->
     <span class="logo-mini">
-      <img src="vistas/img/plantilla/Logo_POS.png" class="img-responsive" style="padding:2px">
+      <img src="vistas/img/plantilla/Logo_POS.webp" class="img-responsive" style="padding:2px">
     </span>
     <!-- logo normal -->
     <span class="logo-lg"><b>Pollos </b>Rossy</span>

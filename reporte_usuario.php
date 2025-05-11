@@ -22,8 +22,8 @@ class PDF extends FPDF
         $this->Line(0, 40, 210, 40);
 
         // Logos
-        $this->Image('vistas/img/texturas/log.png', 12, 4.5, 31);
-        $this->Image('vistas/img/texturas/log2.jpg', 170, 10, 28);
+        $this->Image('vistas/img/plantilla/logo-blanco-bloque.png', 12, 4.5, 31);
+        $this->Image('vistas/img/plantilla/log2.jpg', 170, 10, 28);
 
         // Título principal
         $this->SetFont('Arial', 'B', 16);

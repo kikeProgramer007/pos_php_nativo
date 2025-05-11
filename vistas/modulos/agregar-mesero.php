@@ -85,7 +85,7 @@
                             <div class="auth-photo-section">
                                 <div class="photo-upload-container">
                                     <div class="preview-container">
-                                        <img src="vistas/img/plantilla/s.png" class="preview-image" alt="Vista previa">
+                                        <img src="vistas/img/plantilla/s.webp" class="preview-image" alt="Vista previa">
                                     </div>
                                 </div>
                             </div>

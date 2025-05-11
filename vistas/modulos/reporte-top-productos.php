@@ -53,7 +53,7 @@ $fechaActual = date('Y-m-d');
                             </div>
                         </form>
                     </div>
-                    <img src="vistas/img/plantilla/cat.png" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
+                    <img src="vistas/img/plantilla/cat.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
                 </div>
             </div>
         </div>

@@ -97,7 +97,7 @@ $fechaActual = date('Y-m-d');
             
           </div>
 
-          <img src="vistas/img/plantilla/w.jpg" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
+          <img src="vistas/img/plantilla/w.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
 
             <br>
         </div>
