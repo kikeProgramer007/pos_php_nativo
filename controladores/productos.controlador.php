@@ -109,6 +109,26 @@ class ControladorProductos{
 
 					}
 
+					if($_FILES["nuevaImagen"]["type"] == "image/webp"){
+
+						/*=============================================
+						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
+						=============================================*/
+
+						$aleatorio = mt_rand(100,999);
+
+						$ruta = "vistas/img/productos/".$_POST["nuevoCodigo"]."/".$aleatorio.".webp";
+
+						$origen = imagecreatefromwebp($_FILES["nuevaImagen"]["tmp_name"]);						
+
+						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+
+						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+
+						imagewebp($destino, $ruta);
+
+					}
+
 				}
 
 				$tabla = "productos";
@@ -260,6 +280,26 @@ class ControladorProductos{
 						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
 
 						imagepng($destino, $ruta);
+
+					}
+
+					if($_FILES["editarImagen"]["type"] == "image/webp"){
+
+						/*=============================================
+						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
+						=============================================*/
+
+						$aleatorio = mt_rand(100,999);
+
+						$ruta = "vistas/img/productos/".$_POST["editarCodigo"]."/".$aleatorio.".webp";
+
+						$origen = imagecreatefromwebp($_FILES["editarImagen"]["tmp_name"]);						
+
+						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+
+						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+
+						imagewebp($destino, $ruta);
 
 					}
 

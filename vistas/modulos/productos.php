@@ -276,7 +276,7 @@ MODAL AGREGAR PRODUCTO
 
               <input type="file" class="nuevaImagen" name="nuevaImagen">
 
-              <p class="help-block">Peso máximo de la imagen 2MB</p>
+              <p class="help-block">Peso máximo de la imagen 2MB. Formatos permitidos: JPG, PNG y WEBP</p>
 
               <img src="vistas/img/productos/default/anonymous.png" class="img-thumbnail previsualizar" width="100px">
 
@@ -475,7 +475,7 @@ MODAL EDITAR PRODUCTO
 
               <input type="file" class="nuevaImagen" name="editarImagen">
 
-              <p class="help-block">Peso máximo de la imagen 2MB</p>
+              <p class="help-block">Peso máximo de la imagen 2MB. Formatos permitidos: JPG, PNG y WEBP</p>
 
               <img src="vistas/img/productos/default/anonymous.png" class="img-thumbnail previsualizar" width="100px">
 

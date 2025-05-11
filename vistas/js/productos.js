@@ -199,16 +199,16 @@ $(".nuevaImagen").change(function () {
 	var imagen = this.files[0];
 
 	/*=============================================
-		VALIDAMOS EL FORMATO DE LA IMAGEN SEA JPG O PNG
+		VALIDAMOS EL FORMATO DE LA IMAGEN SEA JPG, PNG O WEBP
 		=============================================*/
 
-	if (imagen["type"] != "image/jpeg" && imagen["type"] != "image/png") {
+	if (imagen["type"] != "image/jpeg" && imagen["type"] != "image/png" && imagen["type"] != "image/webp") {
 
 		$(".nuevaImagen").val("");
 
 		swal({
 			title: "Error al subir la imagen",
-			text: "¡La imagen debe estar en formato JPG o PNG!",
+			text: "¡La imagen debe estar en formato JPG, PNG o WEBP!",
 			type: "error",
 			confirmButtonText: "¡Cerrar!"
 		});
