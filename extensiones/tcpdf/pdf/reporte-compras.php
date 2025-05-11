@@ -128,12 +128,12 @@ class reporteCompra
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 5, 'Detalle de productos', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(14, 5, 'No', 1, 0, 'L');
-        $pdf->Cell(22, 5, 'Recibo Nº', 1, 0, 'L');
-        $pdf->Cell(30, 5, 'Fecha', 1, 0, 'L');
-        $pdf->Cell(50, 5, 'Usuario', 1, 0, 'L');
-        $pdf->Cell(50, 5, 'Proveedor', 1, 0, 'L');
-        $pdf->Cell(30, 5, 'Monto', 1, 1, 'L');
+        $pdf->Cell(14, 5, '#', 1, 0, 'L');
+        $pdf->Cell(22, 5, 'Recibo Nº', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Fecha', 1, 0, 'C');
+        $pdf->Cell(50, 5, 'Usuario', 1, 0, 'C');
+        $pdf->Cell(50, 5, 'Proveedor', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Monto', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         //Imprimir los detalles de los productos
@@ -142,11 +142,11 @@ class reporteCompra
         foreach ($respuestaCompra as $item) {
             $total =  $item["total"];
             $pdf->Cell(14, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(22, 5, $item["codigo"], 1, 0, 'L');
-            $pdf->Cell(30, 5, $item["fecha_alta"], 1, 0, 'L');
-            $pdf->Cell(50, 5, $item["usuario"], 1, 0, 'L');
-            $pdf->Cell(50, 5, $item["proveedor"], 1, 0, 'L');
-            $pdf->Cell(30, 5, $total, 1, 1, 'R');
+            $pdf->Cell(22, 5, $item["codigo"], 1, 0, 'C');
+            $pdf->Cell(30, 5, $item["fecha_alta"], 1, 0, 'C');
+            $pdf->Cell(50, 5, $item["usuario"], 1, 0, 'C');
+            $pdf->Cell(50, 5, $item["proveedor"], 1, 0, 'C');
+            $pdf->Cell(30, 5, $total . ' Bs', 1, 1, 'C');
             $contador++;
             $sumTotal += $total;
         }
@@ -162,7 +162,7 @@ class reporteCompra
         $pdf->Cell(30, 5, 'Número de compras:  ' . $contador - 1, 0, 0, 'L');
 
         // Salida del archivo PDF
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ReporteDeCompras.pdf', 'I');
     }
 }
 

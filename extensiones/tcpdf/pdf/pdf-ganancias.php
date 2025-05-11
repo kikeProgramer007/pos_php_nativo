@@ -130,7 +130,7 @@ class PdfGanancias extends FPDF
         $pdf->Cell(38, 5, utf8_decode('Total Ganancia:'), 0, 0, 'L');
         $pdf->Cell(20, 5, number_format($sum_ganancias, 2, '.', ',') . ' Bs.', 0, 1, 'L');
 
-        $pdf->Output('gananciaspormes.pdf', 'I');
+        $pdf->Output('ReporteDeGananciasPorMes.pdf', 'I');
     }
 }
 

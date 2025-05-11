@@ -119,7 +119,7 @@ class reporteTopProductosMasVendidos
 
 
         // Salida del archivo PDF
-        $pdf->Output('top-producto-mas-vendidos.pdf', 'I');
+        $pdf->Output('ReporteDeProductosMasVendidos.pdf', 'I');
     }
 }
 

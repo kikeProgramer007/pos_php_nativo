@@ -455,7 +455,8 @@ class PdfGananciasYear
             $pdf->Cell(23,5,$sum3,0,1,'C',0);
         }
     
-        $pdf->Output('gananciaspormes.pdf', 'I');
+        $pdf->Output(utf8_decode('ReporteDeGananciasPorAño.pdf'), 'I');
+
     }
 
 

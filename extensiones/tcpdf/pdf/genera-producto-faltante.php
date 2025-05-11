@@ -121,7 +121,7 @@ class reporteProductoFaltante
         $pdf->Ln();
 
         // Salida del archivo PDF
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ReporteDeProductosFaltantes.pdf', 'I');
     }
 }
 

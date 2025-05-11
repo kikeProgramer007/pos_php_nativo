@@ -121,7 +121,7 @@ class reporteTopVentasMeseros
         $pdf->Cell(30, 5, 'Total Meseros:  ' . $contador - 1, 0, 0, 'L');
 
         // Salida del archivo PDF
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ReporteDeMeserosConMasVentas.pdf', 'I');
     }
 }
 

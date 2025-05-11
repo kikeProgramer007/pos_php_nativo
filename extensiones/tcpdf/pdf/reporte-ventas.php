@@ -110,28 +110,59 @@ class reporteVenta
         $pdf->Cell(23, 5, 'Usuario: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(23, 5, 'Tipo de Pagos: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(50, 5, $tipoPago == 0 ? 'Todos' : $tipoPago, 0, 1, 'L');
 
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Categoria: ', 0, 0, 'L');
+        $pdf->Cell(23, 5, 'Categorias: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaCategoria["categoria"], 0, 1, 'L');
         $pdf->SetY(25);  // Ajusta este valor según sea necesario altura
         $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Cliente: ', 0, 0, 'L');
+
+        
+
+        $pdf->Cell(23, 5, 'Clientes: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaCliente["nombre"], 0, 1, 'L');
 
         $pdf->SetX(140);
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
+        $pdf->Cell(23, 5, 'Meseros: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaMesero["nombre"], 0, 1, 'L');
         $pdf->SetX(140);
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(100, 5, date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 1, 'L');
+        // Obtener el mes, día y año de la fecha de inicio y fin
+        $meses = [
+            '01' => 'Enero',
+            '02' => 'Febrero',
+            '03' => 'Marzo',
+            '04' => 'Abril',
+            '05' => 'Mayo',
+            '06' => 'Junio',
+            '07' => 'Julio',
+            '08' => 'Agosto',
+            '09' => 'Septiembre',
+            '10' => 'Octubre',
+            '11' => 'Noviembre',
+            '12' => 'Diciembre'
+        ];
+        $mesInicio = date('m', strtotime($fechaInicio));
+        $diaInicio = date('d', strtotime($fechaInicio));
+        $anioInicio = date('Y', strtotime($fechaInicio));
+        $nombreMesInicio = isset($meses[$mesInicio]) ? $meses[$mesInicio] : $mesInicio;
+        $mesFin = date('m', strtotime($fechaFin));
+        $diaFin = date('d', strtotime($fechaFin));
+        $anioFin = date('Y', strtotime($fechaFin));
+        $nombreMesFin = isset($meses[$mesFin]) ? $meses[$mesFin] : $mesFin;
+        $periodo = 'Desde ' . $nombreMesInicio . ' ' . $diaInicio . ' del ' . $anioInicio . "\nHasta " . $nombreMesFin . ' ' . $diaFin . ' del ' . $anioFin;
+        $pdf->MultiCell(38, 8, $periodo, 0, 'L');
         $pdf->SetX(140);
         $DateAndTime = date('d-m-Y h:i:s a', time());
         $pdf->SetFont('helvetica', 'B', 9);
@@ -180,18 +211,17 @@ class reporteVenta
             $sumTotal += $total;
         }
 
-        // Total de la compra
+        // Total de la Venta
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(169, 5, 'Total ', 0, 0, 'R');
-        $pdf->Cell(27, 5, number_format($sumTotal, 2, '.', ',') . ' Bs.', 1, 1, 'R');
-
+        $pdf->Cell(175, 5, 'Total ', 0, 0, 'R');
+        $pdf->Cell(21, 5, number_format($sumTotal, 2, '.', ',') . ' Bs.', 1, 1, 'R');
 
         // Nro de compras
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(30, 5, 'Número de ventas:  ' . $contador - 1, 0, 0, 'L');
 
         // Salida del archivo PDF
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ReporteVentas.pdf', 'I');
     }
 }
 

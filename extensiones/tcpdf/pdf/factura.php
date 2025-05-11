@@ -291,7 +291,7 @@ class imprimirFactura
         $pdf->writeHTML($html, false, false, false, false, '');
 
         // Generar el PDF
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ExtractoDeVenta.pdf', 'I');
         }else{
        
             echo'<script>

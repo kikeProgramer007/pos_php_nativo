@@ -109,7 +109,7 @@ class reporteProductoPorCategoria extends FPDF
         }
         $this->Ln();
         // Salida del archivo PDF
-        $this->Output('factura.pdf', 'I');
+        $this->Output('ReporteDeProductosPorCategoria.pdf', 'I');
     }
 }
 

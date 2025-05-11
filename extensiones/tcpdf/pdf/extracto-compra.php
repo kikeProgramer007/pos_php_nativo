@@ -174,7 +174,7 @@ class imprimirCompra {
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(30, 5, 'Número Total De Compras:  ' . ($contador - 1), 0, 0, 'L');
 
-        $pdf->Output('factura.pdf', 'I');
+        $pdf->Output('ExtractoDeCompra.pdf', 'I');
     }else{
    
         echo'<script>
