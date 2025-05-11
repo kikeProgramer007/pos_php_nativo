@@ -145,7 +145,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
                             <div class="offcanvas__logo">
                                 <a href="index.php">
-                             
+                                <img src="assets/img/logo/logoo2.webp" alt="logo-img">
                                 </a>
                             </div>
                             <div class="offcanvas__close">

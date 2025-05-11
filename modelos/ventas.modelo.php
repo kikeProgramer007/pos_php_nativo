@@ -351,7 +351,7 @@ class ModeloVentas
 	RANGO DE VENTAS - POR MESERO
 	=============================================*/
 
-	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados)
+	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados, $tipoPago = "0")
 	{
 		$query = "SELECT 
 						ventas.codigo, 
@@ -381,6 +381,9 @@ class ModeloVentas
 		if ($idCliente != 0) {
 			$query .= " AND  ventas.id_cliente =:idCliente";
 		}
+		if ($tipoPago != "0") {
+			$query .= " AND ventas.tipo_pago = :tipoPago";
+		}
 		// echo $soloEliminados;
 		if ($soloEliminados=='true'){
 			$query .= " AND ventas.estado =0 ";
@@ -406,6 +409,9 @@ class ModeloVentas
 		}
 		if ($idCliente != 0) {
 			$stmt->bindParam(":idCliente", $idCliente, PDO::PARAM_INT);
+		}
+		if ($tipoPago != "0") {
+			$stmt->bindParam(":tipoPago", $tipoPago, PDO::PARAM_STR);
 		}
 
 		// Ejecutar la consulta

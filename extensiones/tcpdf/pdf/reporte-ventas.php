@@ -25,6 +25,7 @@ class reporteVenta
     public $idCategoria;
     public $idCliente;
     public $registroEliminados;
+    public $tipoPago;
     private $nombreTienda = "Pollos Rosy";
     private $direccionTienda = "Refineria";
 
@@ -39,8 +40,9 @@ class reporteVenta
         $idCategoria= $this->idCategoria;
         $idCliente = $this->idCliente;
         $registroEliminados = $this->registroEliminados;
+        $tipoPago = $this->tipoPago;
         
-        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasPdf($fechaInicio, $fechaFin, $idMesero,$idCategoria,$idCliente,$registroEliminados);
+        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasPdf($fechaInicio, $fechaFin, $idMesero,$idCategoria,$idCliente,$registroEliminados, $tipoPago);
 
         $itemUsuario = "id";
 
@@ -201,4 +203,5 @@ $factura->idUsuario = $_GET["idUsuario"];
 $factura->idCategoria = $_GET["idCategoria"];
 $factura->idCliente = $_GET["idCliente"];
 $factura->registroEliminados = $_GET["registroEliminados"];
+$factura->tipoPago = $_GET["tipoPago"];
 $factura->generarPdfVentas();

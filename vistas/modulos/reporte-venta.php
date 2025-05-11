@@ -48,6 +48,20 @@ $fechaActual = date('Y-m-d');
                 </div>
               </div>
 
+
+              <div class="col-12 col-sm-2">
+                <div class="form-group">
+                  <label>Tipo de Pago</label>
+                  <select class="select2" class="form-control" id="tipo_pago" name="tipo_pago" required>
+                    <option value="0">Todos</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="QR">QR</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Qr y Efectivo(Mixto)">Qr y Efectivo(Mixto)</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="col-12 col-sm-2">
                 <div class="form-group">
                   <label>Categoria</label>
@@ -66,7 +80,8 @@ $fechaActual = date('Y-m-d');
                   </select>
                 </div>
               </div>
-              <div class="col-12 col-sm-3">
+              
+              <div class="col-12 col-sm-2">
                 <div class="form-group">
                   <label>Cliente</label>
                   <select  class="select2"  class="form-control" id="id_cliente" name="id_cliente" required>
@@ -84,7 +99,7 @@ $fechaActual = date('Y-m-d');
                   </select>
                 </div>
               </div>
-              <div class="col-12 col-sm-3">
+              <div class="col-12 col-sm-2">
                 <div class="form-group">
                   <label><i class="text-danger">*</i>Mesero</label>
                   <select  class="select2"  class="form-control" id="id_mesero" name="id_mesero" required>
@@ -152,6 +167,7 @@ $fechaActual = date('Y-m-d');
     const idUsuario = document.getElementById('id_usuario').value;
     const idCategoria = document.getElementById('id_categoria').value;
     const idCliente = document.getElementById('id_cliente').value;
+    const tipoPago = document.getElementById('tipo_pago').value;
     const registroEliminados = document.getElementById('registros_eliminados').checked;
  
     // Validar campos
@@ -182,7 +198,6 @@ $fechaActual = date('Y-m-d');
       return;
     }
 
-
     // Tamaño de la ventana emergente
     const width = 800;
     const height = 600;
@@ -197,17 +212,18 @@ $fechaActual = date('Y-m-d');
       popupWindow.close();
     }
 
-    // Abre la URL en una nueva ventana (popup)
-    popupWindow = window.open(
-      "extensiones/tcpdf/pdf/reporte-ventas.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+    // Construir la URL con todos los parámetros
+    const url = "extensiones/tcpdf/pdf/reporte-ventas.php?" + 
+      "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
       "&fechaFin=" + encodeURIComponent(fechaFin.value) +
       "&idMesero=" + encodeURIComponent(idMesero) +
       "&idUsuario=" + encodeURIComponent(idUsuario) +
       "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idCliente=" + encodeURIComponent(idCliente)+
-      "&registroEliminados=" + encodeURIComponent(registroEliminados),
-      "_blank",
-      windowFeatures
-    );
+      "&idCliente=" + encodeURIComponent(idCliente) +
+      "&tipoPago=" + encodeURIComponent(tipoPago) +
+      "&registroEliminados=" + encodeURIComponent(registroEliminados);
+
+    // Abre la URL en una nueva ventana (popup)
+    popupWindow = window.open(url, "_blank", windowFeatures);
   }
 </script>

@@ -152,15 +152,15 @@ foreach ($categorias as $cat) {
                         <div class="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
                             <div class="offcanvas__logo">
                                 <a href="index.php">
-                                <img src="#" alt="logo-img">
-            </a>
-        </div>
+                                <img src="assets/img/logo/logoo2.webp" alt="logo-img">
+                                </a>
+                             </div>
                             <div class="offcanvas__close">
                                 <button>
                                 <i class="fas fa-times"></i>
                                 </button>
-        </div>
-    </div>
+                             </div>
+                        </div>
                         <p class="text d-none d-lg-block">
                             Los Mejores Pollo de la Ciudad
                         </p>
