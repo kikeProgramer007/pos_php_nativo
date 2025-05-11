@@ -1,9 +1,10 @@
 <?php
-// Incluye el archivo de conexión
-include 'conexion.php';
+// Incluye el archivo de conexión desde la carpeta modelos
+require_once "../modelos/conexion.php";
 
-// Crea una instancia de la conexión
+// Obtenemos la conexión usando la clase Conexion de la carpeta modelos y el archivo conexion.php //
 $conexion = Conexion::conectar();
+//fin de la conexión
 
 // Obtener todas las categorías
 $sqlCategorias = "SELECT id, categoria FROM categorias";
