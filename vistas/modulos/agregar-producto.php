@@ -76,21 +76,10 @@ if($_SESSION["perfil"] == "Vendedor"){
                                                    required>
                                         </div>
 
-                                        <div class="form-group col-md-6">
-                                            <label for="inventariable">
-                                                <i class="fa fa-warehouse"></i> Es Inventariable
-                                            </label>
-                                            <select class="form-control" id="inventariable" name="inventariable" required>
-                                                <option value="0">No</option>
-                                                <option value="1" selected>Sí</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
-                                    <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="nuevoPrecioCompra">
-                                                <i class="fa fa-money"></i> Precio de Compra
+                                                <i class="fa fa-money"></i> Precio de Compra(Costo Bs. De Produccion)
                                             </label>
                                             <input type="number" 
                                                    class="form-control" 
@@ -102,23 +91,11 @@ if($_SESSION["perfil"] == "Vendedor"){
                                                    required>
                                         </div>
 
-                                        <div class="form-group col-md-6">
-                                            <label for="nuevoPrecioVenta">
-                                                <i class="fa fa-tag"></i> Precio de Venta
-                                            </label>
-                                            <input type="number" 
-                                                   class="form-control" 
-                                                   id="nuevoPrecioVenta" 
-                                                   name="nuevoPrecioVenta" 
-                                                   min="0" 
-                                                   step="any" 
-                                                   placeholder="Precio de venta" 
-                                                   readonly>
-                                        </div>
+                                      
                                     </div>
 
                                     <div class="form-row">
-                                        <div class="form-group col-md-6">
+                                    <div class="form-group col-md-6">
                                             <label>
                                                 <i class="fa fa-percent"></i> Porcentaje (Opcional)
                                             </label>
@@ -134,6 +111,36 @@ if($_SESSION["perfil"] == "Vendedor"){
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="nuevoPrecioVenta">
+                                                <i class="fa fa-tag"></i> Precio de Venta (Precio Bs. Final)
+                                            </label>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   id="nuevoPrecioVenta" 
+                                                   name="nuevoPrecioVenta" 
+                                                   min="0" 
+                                                   step="any" 
+                                                   placeholder="Precio de venta" 
+                                                   readonly>
+                                        </div>
+                                    </div>
+
+                                             <div class="form-row">
+                                       
+
+                                             <div class="form-group col-md-6">
+                                            <label for="inventariable">
+                                                <i class="fa fa-warehouse"></i> Es Inventariable
+                                            </label>
+                                            <select class="form-control" id="inventariable" name="inventariable" required>
+                                                <option value="0">No</option>
+                                                <option value="1" selected>Sí</option>
+                                            </select>
+                                        </div>
+
+
+
 
                                         <div class="form-group col-md-6">
                                             <label for="nuevoStock">
