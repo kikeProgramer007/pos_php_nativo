@@ -6,6 +6,10 @@
  */
 class ControladorArqueo {
 
+    static public function obtenerArqueoPorId($idArqueo) {
+        return ModeloArqueo::mdlObtnerArqueoPorIDArqueo($idArqueo);
+    }
+    
     /**
      * Registra una apertura o cierre de caja
      * @return string|array Respuesta de la operación

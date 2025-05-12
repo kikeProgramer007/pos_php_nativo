@@ -83,7 +83,6 @@ class ModeloArqueo {
                                                     FROM arqueo_caja ac 
                                                     JOIN usuarios u ON ac.id_usuario = u.id 
                                                     WHERE ac.estado = 'abierta' 
-                                                    AND DATE(ac.fecha_apertura) = CURDATE() 
                                                     ORDER BY ac.id DESC 
                                                     LIMIT 1");
                  
@@ -407,6 +406,36 @@ class ModeloArqueo {
             return null; // Si no hay resultado, devuelve null
         } catch (PDOException $e) {
             error_log("Error en mdlObtnerIdArqueoDelUsuario: " . $e->getMessage());
+            return null;
+        } finally {
+            if (isset($stmt)) {
+                $stmt->closeCursor();
+                $stmt = null;
+            }
+        }
+    }
+
+    
+    static public function mdlObtnerArqueoPorIDArqueo($idArqueo) {
+        try {
+            $stmt = Conexion::conectar()->prepare("SELECT * 
+            FROM arqueo_caja 
+            WHERE id = :idArqueo
+            ORDER BY id DESC 
+            LIMIT 1");
+            
+            $stmt->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            // Verificar si se obtuvo algún resultado
+            if ($resultado) {
+                return $resultado; // Devuelve solo el ID
+            }
+            return null; // Si no hay resultado, devuelve null
+        } catch (PDOException $e) {
+            error_log("Error en mdlObtnerArqueoPorIDArqueo: " . $e->getMessage());
             return null;
         } finally {
             if (isset($stmt)) {

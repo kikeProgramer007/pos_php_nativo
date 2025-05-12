@@ -108,7 +108,7 @@
 
 /* Estilos para la tabla de resumen (tfoot/div) */
 .summary-table {
-    float: right;
+    /*float: right;*/
     width: 100%;
     margin-top: 15px; /* Reemplaza <br> con margen */
 }
@@ -232,7 +232,7 @@
                     </div>
 
                     <!-- Botones -->
-                    <div class="row" style="text-align: right; padding-right: 20px;">
+                    <div class="row" style="text-align: center; padding-right: 20px;">
                         <button type="button" onclick="arqueoCaja.guardarAperturaCierreCaja()" id="aperturar_cierre_caja" class="btn btn-primary btn-sm" style="margin-right: 3px;">Aperturar Caja</button>
                     </div>
 
