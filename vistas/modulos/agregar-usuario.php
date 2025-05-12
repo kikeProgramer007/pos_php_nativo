@@ -1,5 +1,3 @@
-
-
 <?php
 
 if($_SESSION["perfil"] == "Vendedor"){
@@ -91,7 +89,7 @@ if($_SESSION["perfil"] == "Vendedor"){
                                         </div>
                                     </div>
 
-                                    <input type="file" class="nuevaFoto" name="nuevaFoto" id="nuevaFoto" accept="image/*" style="display: none;">
+                                    <input type="file" class="nuevaFoto" name="nuevaFoto" id="nuevaFoto" accept="image/jpeg,image/png,image/webp" style="display: none;">
                                     
                                     <div class="auth-actions">
                                         <button type="submit" class="btn btn-primary">

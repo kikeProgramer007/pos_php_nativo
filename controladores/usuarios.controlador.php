@@ -221,7 +221,7 @@ class ControladorUsuarios{
 
 					}
 
-					if($_FILES["nuevaImagen"]["type"] == "image/webp"){
+					if($_FILES["nuevaFoto"]["type"] == "image/webp"){
 
 						/*=============================================
 						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
@@ -231,7 +231,7 @@ class ControladorUsuarios{
 
 						$ruta = "vistas/img/usuarios/".$_POST["nuevoUsuario"]."/".$aleatorio.".webp";
 
-						$origen = imagecreatefrompng($_FILES["nuevaFoto"]["tmp_name"]);							
+						$origen = imagecreatefromwebp($_FILES["nuevaFoto"]["tmp_name"]);                        
 
 						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
 
@@ -432,7 +432,7 @@ class ControladorUsuarios{
 					}
 
 
-					if($_FILES["nuevaImagen"]["type"] == "image/webp"){
+					if($_FILES["editarFoto"]["type"] == "image/webp"){
 
 						/*=============================================
 						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
@@ -442,7 +442,7 @@ class ControladorUsuarios{
 
 						$ruta = "vistas/img/usuarios/".$_POST["editarUsuario"]."/".$aleatorio.".webp";
 
-						$origen = imagecreatefrompng($_FILES["editarFoto"]["tmp_name"]);							
+						$origen = imagecreatefromwebp($_FILES["editarFoto"]["tmp_name"]);							
 
 						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
 
