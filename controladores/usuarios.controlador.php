@@ -160,7 +160,7 @@ class ControladorUsuarios{
 				VALIDAR IMAGEN
 				=============================================*/
 
-				$ruta = "";
+				$ruta = "vistas/img/usuarios/default/anonymous.webp";
 
 				if(isset($_FILES["nuevaFoto"]["tmp_name"]) && !empty($_FILES["nuevaFoto"]["tmp_name"])){
 
