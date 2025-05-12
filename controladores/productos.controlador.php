@@ -229,7 +229,7 @@ class ControladorProductos{
 					PRIMERO PREGUNTAMOS SI EXISTE OTRA IMAGEN EN LA BD
 					=============================================*/
 
-					if(!empty($_POST["imagenActual"]) && $_POST["imagenActual"] != "vistas/img/productos/default/anonymous.png"){
+					if(!empty($_POST["imagenActual"]) && $_POST["imagenActual"] != "vistas/img/productos/default/anonymous.webp"){
 
 						unlink($_POST["imagenActual"]);
 
