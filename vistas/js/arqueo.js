@@ -300,9 +300,13 @@ class ArqueoCaja {
         }
     }
     
-    async imprimirMovimientosEnCaja(){
-      
-        var codigoVenta = this.idArqueo;
+    async imprimirMovimientosEnCaja(id=null){
+        var codigoVenta;
+        if(id===null){
+            codigoVenta = this.idArqueo;
+        }else{
+            codigoVenta = id
+        }
 
         // Tamaño de la ventana emergente
         var width = 800;

@@ -143,7 +143,15 @@
         margin: 0;
         padding: 0;
     }
-
+    /* Reduce padding vertical y fija altura de fila */
+    .tablaHistorialArqueo.dataTable tbody tr {
+    height: 25px;              /* Ajusta a la altura deseada */
+    }
+    .tablaHistorialArqueo.dataTable tbody th,
+    .tablaHistorialArqueo.dataTable tbody td {
+    padding-top: 4px;          /* Ajusta el padding vertical */
+    padding-bottom: 4px;
+    }
 </style>
 
 
@@ -236,18 +244,57 @@
                         <button type="button" onclick="arqueoCaja.guardarAperturaCierreCaja()" id="aperturar_cierre_caja" class="btn btn-primary btn-sm" style="margin-right: 3px;">Aperturar Caja</button>
                     </div>
 
-                    <!-- Controlador para crear el arqueo de caja-->
-                    <?php
-                    $registrarArqueo = new ControladorArqueo();
-                    $registrarArqueo->ctrRegistrarArqueo();
-                    ?>
                
                 </form>
 
-
             </div><!-- /.box-body -->
         </div><!-- /.box -->
+
+
+
+        <div class="box box-default collapsed-box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Historial</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-12">
+                    <table class=" table table-bordered table-striped dt-responsive tablaHistorialArqueo" width="100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Usuario</th>
+                                <th>Estado</th>
+                                <th>Fecha Apertura</th>
+                                <th>Fecha Cierre</th>
+                                <th>Ingresos</th>
+                                <th>Egresos</th>
+                                <th>Saldo Neto</th>
+                                <th width="1%"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <!-- /.col -->
+             
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.box-body -->
+     
+          </div>
+          <!-- /.box -->
+
     </section>
+ 
+               
 </div>
 
 <!-- Estilos adicionales para mejorar la apariencia del checkbox -->
@@ -269,6 +316,48 @@
     }
 
 </style>
+<script >
+      if ($.fn.DataTable) { 
+  $('.tablaHistorialArqueo').DataTable( {
+    "ajax": "ajax/tabladinamica/datatable-arqueo.ajax.php",
+    "deferRender": true,
+    "retrieve": true,
+    "processing": true,
+	 "language": {
+
+			"sProcessing":     "Procesando...",
+			"sLengthMenu":     "Mostrar _MENU_ registros",
+			"sZeroRecords":    "No se encontraron resultados",
+			"sEmptyTable":     "Ningún dato disponible en esta tabla",
+			"sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+			"sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0",
+			"sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+			"sInfoPostFix":    "",
+			"sSearch":         "Buscar:",
+			"sUrl":            "",
+			"sInfoThousands":  ",",
+			"sLoadingRecords": "Cargando...",
+			"oPaginate": {
+			"sFirst":    "Primero",
+			"sLast":     "Último",
+			"sNext":     "Siguiente",
+			"sPrevious": "Anterior"
+			},
+			"oAria": {
+				"sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+				"sSortDescending": ": Activar para ordenar la columna de manera descendente"
+			}
+
+	}, // Agregar esta configuración
+    autoWidth: false,
+    columnDefs: [
+  
+    { targets: 8, width: '1%' }
+  ]
+
+} );
+}
+</script>
  <!-- Toastr -->
  <script src="vistas/plugins/toastr/js/jquery-3.6.0.min.js"></script>
  <script src="vistas/plugins/toastr/js/toastr.min.js"></script>

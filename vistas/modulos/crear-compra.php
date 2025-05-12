@@ -54,17 +54,17 @@ if($_SESSION["perfil"] == "Vendedor"){
 
 
           <?php 
-            if (isset($_SESSION["idArqueoCaja"])) {
-              echo '<input type="hidden" name="idArqueoCaja" value="'.$_SESSION["idArqueoCaja"].'" hidden>';
-            }else{
-               return '<input type="hidden" name="idArqueoCaja" value="0" hidden>';
-            }
-          ?>
+                  if (isset($_SESSION["idArqueoCaja"])) {
+                    echo '<input type="hidden" name="idArqueoCaja" value="'.$_SESSION["idArqueoCaja"].'" >';
+                  }else{
+                    return '<input type="hidden" name="idArqueoCaja" value="0" >';
+                  }
+                ?>
 
-            <div class="box-body">
-  
-              <div class="box">
-
+          <div class="box-body">
+            
+            <div class="box">
+             
                 <!--=====================================
                 ENTRADA DEL VENDEDOR
                 ======================================-->

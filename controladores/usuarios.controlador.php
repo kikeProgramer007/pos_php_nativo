@@ -318,11 +318,7 @@ class ControladorUsuarios{
 	static public function ctrMostrarUsuariosActivoInactivo($item, $valor){
 
 		$tabla = "usuarios";
-	
 		$respuesta = ModeloUsuarios::mdlMostrarUsuariosActivosInactivos($tabla, $item, $valor);
-
-	
-
 		return $respuesta;
 	}
 

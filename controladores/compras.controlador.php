@@ -93,6 +93,7 @@ class ControladorCompras{
 						   "id_proveedor"=>$_POST["seleccionarProveedor"],
 						   "codigo"=>$_POST["nuevaCompra"],
 						   "productos"=>$_POST["listaProductos"],
+						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
 						   "total"=>$_POST["totalCompra"]
 						);
 			
@@ -162,7 +163,7 @@ class ControladorCompras{
 			$respuesta = ModeloCompras::mdlEliminarCompra($tabla, $_GET["idCompra"]);
 
 			if($respuesta == "ok"){
-
+				ModeloArqueo::mdlEliminarEgreso($traerCompra["id_arqueo_caja"], $traerCompra["total"]);
 				echo'<script>
 
 				swal({

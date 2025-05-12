@@ -7,6 +7,28 @@ require_once "conexion.php";
  */
 class ModeloArqueo {
 
+    	/*=============================================
+	MOSTRAR ARQUEOS DE CAJA
+	=============================================*/
+
+	static public function mdlMostrarArqueos($tabla, $item, $valor){
+
+		if($item != null){
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item ORDER BY id  ASC ");
+			$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+			$stmt -> execute();
+			return $stmt -> fetch();
+		}else{
+			$stmt = Conexion::conectar()->prepare("SELECT $tabla.*, usuarios.usuario FROM $tabla JOIN usuarios ON ($tabla.id_usuario=usuarios.id) ORDER BY fecha_apertura DESC ");
+			$stmt -> execute();
+			return $stmt -> fetchAll();
+		}
+		
+		$stmt -> close();
+		$stmt = null;
+	}
+
+
     /**
      * Registra la apertura de una caja
      * @param array $datos Datos de la apertura
@@ -225,8 +247,6 @@ class ModeloArqueo {
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
             SET monto_ventas = monto_ventas - (:totalCompra),
              total_ingresos = total_ingresos - (:totalCompra),
-             resultado_neto = (total_ingresos - total_egresos),
-             resultado_neto = (total_ingresos - total_egresos),
              resultado_neto = (total_ingresos - total_egresos)
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
@@ -271,6 +291,48 @@ class ModeloArqueo {
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
             SET monto_compras = monto_compras + (:totalCompras), 
              total_egresos = total_egresos + (:totalCompras), 
+             resultado_neto = (total_ingresos - total_egresos) 
+             WHERE id = :idArqueo");
+            $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
+            $stmtArqueo->bindParam(":totalCompras", $totalEgreso, PDO::PARAM_STR); 
+
+            $actualizacionExitosa = $stmtArqueo->execute();
+
+            if (!$actualizacionExitosa) {
+                throw new Exception("Fallo al actualizar el número de ticket en arqueo_caja.");
+            }
+
+            // Si todo está bien, confirmar la transacción
+            $db->commit();
+            return [
+                'status' => 'ok',
+                'message' => 'Actualización exitosa del total de egreso.'
+            ];
+
+        } catch (Exception $e) {
+            // Revertir la transacción en caso de error
+            $db->rollBack();
+            error_log("Error en mdlRegistrarEgreso: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Error al actualizar: ' . $e->getMessage()
+            ];
+        } finally {
+            // Liberar recursos (opcional, PDO lo hace automáticamente)
+            if (isset($stmtArqueo)) {
+                $stmtArqueo = null;
+            }
+            $db = null; // Cerrar la conexión (opcional si usas un singleton)
+        }
+    }
+    public static function mdlEliminarEgreso($idArqueo, $totalEgreso) {
+        $db = Conexion::conectar(); // Obtener la conexión PDO
+        $db->beginTransaction(); // Iniciar transacción
+        try {
+            // Preparar y ejecutar la actualización en la tabla arqueo_caja
+            $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
+            SET monto_compras = monto_compras - (:totalCompras), 
+             total_egresos = total_egresos - (:totalCompras), 
              resultado_neto = (total_ingresos - total_egresos) 
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);

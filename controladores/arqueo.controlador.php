@@ -6,7 +6,13 @@
  */
 class ControladorArqueo {
 
-    static public function obtenerArqueoPorId($idArqueo) {
+	static public function ctrMostrarArqueo($item, $valor){
+		$tabla = "arqueo_caja";
+		$respuesta = ModeloArqueo::mdlMostrarArqueos($tabla, $item, $valor);
+		return $respuesta;
+	}
+
+    static public function ctrObtenerArqueoPorId($idArqueo) {
         return ModeloArqueo::mdlObtnerArqueoPorIDArqueo($idArqueo);
     }
     

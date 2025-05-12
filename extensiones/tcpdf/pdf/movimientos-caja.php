@@ -25,11 +25,9 @@ class imprimirFactura
     public function traerMovimientoCaja()
     {
 
-        // Obtener información de la venta
-        $itemVenta = "id";
-        $valorVenta = $this->codigo;
+    
         //Obtener informacion del arqueo por idArqueo
-        $arqueo = ControladorArqueo::obtenerArqueoPorId($this->codigo);
+        $arqueo = ControladorArqueo::ctrObtenerArqueoPorId($this->codigo);
         if($arqueo!=null){
         $fechaSolo = date('d-m-Y');
         $horaSolo = date('H:i:s a');

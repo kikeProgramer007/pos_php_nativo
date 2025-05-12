@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-05-2025 a las 05:39:55
+-- Tiempo de generación: 12-05-2025 a las 08:06:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `pos_php_nativo-main`
+-- Base de datos: `pos_php_nativo-main-clean`
 --
 
 -- --------------------------------------------------------
@@ -67,7 +67,7 @@ CREATE TABLE `cajas` (
   `id` int(11) NOT NULL,
   `nombre` varchar(35) NOT NULL,
   `numero_caja` varchar(10) NOT NULL,
-  `nro_ticket` int(10) UNSIGNED ZEROFILL NOT NULL,
+  `nro_ticket` int(10) NOT NULL,
   `estado` tinyint(4) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
@@ -76,8 +76,8 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 0000000000, 1),
-(2, 'Caja Administrativa', '2', 0000000000, 0);
+(1, 'Caja de ventas', '1', 0, 1),
+(2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -137,7 +137,8 @@ CREATE TABLE `compras` (
   `id_usuario` int(11) NOT NULL,
   `id_proveedor` int(11) NOT NULL,
   `fecha_alta` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1
+  `estado` tinyint(4) NOT NULL DEFAULT 1,
+  `id_arqueo_caja` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -160,46 +161,6 @@ CREATE TABLE `detalle_compra` (
 -- Volcado de datos para la tabla `detalle_compra`
 --
 
-INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `cantidad`, `precio_compra`, `subtotal`) VALUES
-(1, 36, 1, 'fanta naranja mini', 1, 1.00, 1.40),
-(2, 18, 2, 'coca cola 3l', 50, 15.00, 750.00),
-(3, 19, 2, 'coca cola 2l', 50, 11.00, 550.00),
-(4, 20, 2, 'coca cola 600ml', 50, 3.00, 150.00),
-(5, 21, 2, 'retornable coca cola 2.5l', 50, 7.00, 350.00),
-(6, 37, 2, 'coca cola mini 190ml', 50, 1.00, 70.00),
-(7, 66, 3, 'pura vida de 3l ', 50, 15.00, 750.00),
-(8, 65, 3, 'tropi 600ml', 50, 3.00, 150.00),
-(9, 64, 3, 'chicha 2l', 50, 9.00, 450.00),
-(10, 63, 3, 'aquarios pomelo 2l', 50, 11.00, 550.00),
-(11, 62, 3, 'aquarios pomelo 3l', 50, 15.00, 750.00),
-(12, 61, 3, 'aquarios pera 2l', 50, 11.00, 550.00),
-(13, 60, 3, 'aquarios pera 3l', 50, 15.00, 750.00),
-(14, 59, 3, 'valle 3l  naranja', 50, 14.00, 725.00),
-(15, 58, 3, 'pop uva 620ml', 50, 1.00, 90.00),
-(16, 43, 3, 'pop guarana 620ml', 50, 1.00, 90.00),
-(17, 42, 4, 'pop manzana 620ml', 50, 1.00, 90.00),
-(18, 41, 4, 'pop papaya 620ml', 50, 1.00, 90.00),
-(19, 40, 4, 'pop naranja 620ml', 50, 1.00, 90.00),
-(20, 39, 4, 'pop piña  620ml', 50, 1.00, 90.00),
-(21, 38, 4, 'pop uva 620ml', 50, 1.00, 90.00),
-(22, 36, 4, 'fanta naranja mini', 50, 1.00, 70.00),
-(23, 35, 4, 'mendocina papaya 1l', 50, 5.00, 250.00),
-(24, 34, 4, 'pepsi 1l', 50, 3.00, 150.00),
-(25, 33, 4, 'pepsi 2l', 50, 9.00, 450.00),
-(26, 23, 4, 'fanta naranja 2l', 50, 11.00, 550.00),
-(27, 24, 4, 'fanta naranja 600ml', 50, 3.00, 150.00),
-(28, 25, 4, 'fanta papaya 3l', 50, 15.00, 750.00),
-(29, 26, 4, 'fanta papaya 2l', 50, 11.00, 550.00),
-(30, 27, 4, 'fanta guarana 3l', 50, 15.00, 750.00),
-(31, 28, 4, 'fanta guarana 2l', 50, 11.00, 550.00),
-(32, 29, 4, 'sprite 600ml', 50, 3.00, 150.00),
-(33, 30, 4, 'simba manzana 2l', 50, 10.00, 500.00),
-(34, 31, 4, 'simba piña 2l', 50, 10.00, 500.00),
-(35, 32, 4, 'simba durazno 2l', 50, 10.00, 500.00),
-(36, 22, 4, 'fanta naranja 3l', 50, 15.00, 750.00),
-(37, 71, 5, 'valle 1l manzana', 50, 10.00, 500.00),
-(38, 70, 5, 'valle 1l durazno', 50, 10.00, 500.00),
-(39, 71, 1, 'valle 1l manzana', 1, 10.00, 10.00);
 
 -- --------------------------------------------------------
 
@@ -306,7 +267,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (33, 3, '316', 'pepsi 2l', 'vistas/img/productos/316/642.webp', 50, 10, 9, 0, '2025-05-12 03:34:55', 1, 0),
 (34, 3, '317', 'pepsi 1l', 'vistas/img/productos/317/756.webp', 50, 7, 3, 0, '2025-05-12 03:05:38', 1, 1),
 (35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/561.webp', 50, 7, 5, 0, '2025-05-12 03:05:50', 1, 1),
-(36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/635.webp', 51, 2, 1.4, 0, '2025-05-12 03:06:07', 1, 1),
+(36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/635.webp', 50, 2, 1.4, 0, '2025-05-12 03:06:07', 1, 1),
 (37, 3, '325', 'coca cola mini 190ml', 'vistas/img/productos/325/287.jpg', 50, 2, 1.4, 0, '2025-03-08 21:36:26', 1, 1),
 (38, 3, '324', 'pop uva 620ml', 'vistas/img/productos/324/767.webp', 50, 3, 1.8, 0, '2025-05-12 03:38:31', 1, 1),
 (39, 3, '319', 'pop piña  620ml', 'vistas/img/productos/319/719.webp', 50, 3, 1.8, 0, '2025-05-12 03:07:01', 1, 1),
@@ -323,7 +284,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (65, 4, '407', 'tropi 600ml', 'vistas/img/productos/407/166.webp', 50, 6, 3, 0, '2025-05-12 03:13:09', 1, 1),
 (66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/174.webp', 50, 12, 10, 0, '2025-05-12 03:27:31', 1, 1),
 (69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/916.webp', 50, 12, 7, 0, '2025-05-12 03:16:30', 0, 1),
-(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/600.webp', 51, 12, 10, 0, '2025-05-12 03:17:09', 1, 1),
+(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/600.webp', 50, 12, 10, 0, '2025-05-12 03:17:09', 1, 1),
 (72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/268.webp', 50, 7, 4, 0, '2025-05-12 03:17:21', 0, 1),
 (73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/228.webp', 50, 7, 4, 0, '2025-05-12 03:17:34', 0, 1),
 (74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/620.webp', 50, 7, 4, 0, '2025-05-12 03:17:42', 0, 1);
@@ -376,7 +337,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-05-04 17:25:26', '2025-05-04 21:25:26', 1),
+(1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/202.png', 1, '2025-05-12 01:58:58', '2025-05-12 05:58:58', 1),
 (2, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', '', 1, '2025-04-25 22:50:43', '2025-04-26 02:50:43', 1),
 (3, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', '', 1, '2025-04-25 22:46:53', '2025-04-26 02:46:53', 1);
 
@@ -440,7 +401,8 @@ ALTER TABLE `clientes`
 ALTER TABLE `compras`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_compra_usuario` (`id_usuario`),
-  ADD KEY `fk_compra_proveedor` (`id_proveedor`);
+  ADD KEY `fk_compra_proveedor` (`id_proveedor`),
+  ADD KEY `id_arqueo_caja` (`id_arqueo_caja`);
 
 --
 -- Indices de la tabla `detalle_compra`
@@ -531,7 +493,7 @@ ALTER TABLE `compras`
 -- AUTO_INCREMENT de la tabla `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`

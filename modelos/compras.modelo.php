@@ -13,9 +13,7 @@ class ModeloCompras{
 		if($item != null){
 
 			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item ORDER BY id  ASC ");
-
 			$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
-
 			$stmt -> execute();
 
 			return $stmt -> fetch();
@@ -23,15 +21,12 @@ class ModeloCompras{
 		}else{
 
 			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla ORDER BY id ASC ");
-
 			$stmt -> execute();
-
 			return $stmt -> fetchAll();
 
 		}
 		
 		$stmt -> close();
-
 		$stmt = null;
 
 	}
@@ -101,13 +96,14 @@ static public function mdlRegistrarCompra($tabla, $datos){
 		$conexion->beginTransaction();
 
 		// 1. Registrar la compra principal en la tabla "compras"
-		$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, total,id_usuario, id_proveedor) 
-									VALUES (:codigo, :total, :id_usuario, :id_proveedor)");
+		$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, total,id_usuario, id_proveedor, id_arqueo_caja) 
+									VALUES (:codigo, :total, :id_usuario,:id_proveedor ,:id_arqueo_caja)");
 
 		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
 		$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
 		$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
 		$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
+		$stmt->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
 			throw new Exception("Error al registrar la compra");
