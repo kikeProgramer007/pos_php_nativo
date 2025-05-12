@@ -8,6 +8,7 @@ const CONFIG = {
     INTERVALO_ACTUALIZACION: 1000,
     DECIMALES: 2
 };
+var popupWindow = null;
 
 class ArqueoCaja {
     constructor() {
@@ -157,7 +158,8 @@ class ArqueoCaja {
             estadoCaja: document.getElementById('estado_caja'),
             botonCaja: document.getElementById('aperturar_cierre_caja'),
             idCaja: document.getElementById('idCaja'),
-            nroTicket: document.getElementById('nro_ticket')
+            nroTicket: document.getElementById('nro_ticket'),
+            btnImprimirMovimientos: document.getElementById('imprimirMovimientos')
         };
 
         if (data) {
@@ -177,7 +179,7 @@ class ArqueoCaja {
         elementos.botonCaja.classList.replace('btn-primary', 'btn-danger');
         elementos.idCaja.disabled = true;
         elementos.nroTicket.disabled = true;
-       
+        elementos.btnImprimirMovimientos.disabled = false;
         if(this.userlogeado != data.id_usuario){
             elementos.botonCaja.disabled = true;
         }
@@ -196,6 +198,7 @@ class ArqueoCaja {
         elementos.botonCaja.classList.replace('btn-danger', 'btn-primary');
         elementos.idCaja.disabled = false;
         elementos.nroTicket.disabled = false;
+        elementos.btnImprimirMovimientos.disabled = true;
     }
 
     mostrarDatosApertura(datos) {
@@ -296,6 +299,29 @@ class ArqueoCaja {
             await this.enviarDatos(data);
         }
     }
+    
+    async imprimirMovimientosEnCaja(){
+      
+        var codigoVenta = this.idArqueo;
+
+        // Tamaño de la ventana emergente
+        var width = 800;
+        var height = 600;
+    
+        // Configuración de la ventana emergente
+        var left = (screen.width / 2) - (width / 2);
+        var top = (screen.height / 2) - (height / 2);
+        var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
+    
+        // Cierra la ventana emergente existente si está abierta
+        if (popupWindow && !popupWindow.closed) {
+            popupWindow.close();
+        }
+    
+        // Abre la URL en una nueva ventana (popup)
+        popupWindow = window.open("extensiones/tcpdf/pdf/movimientos-caja.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+    
+    }
 
     prepararDatosApertura(fechaAperturaCierre, nroTicket, idCaja) {
         return {
@@ -380,6 +406,7 @@ class ArqueoCaja {
                         window.location.href = 'crear-venta';
                     }, 200);
                 } else {
+                    this.imprimirMovimientosEnCaja();
                     window.location.reload();
                 }
             } else {
