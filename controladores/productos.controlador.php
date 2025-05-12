@@ -45,7 +45,7 @@ class ControladorProductos{
 				VALIDAR IMAGEN
 				=============================================*/
 
-			   	$ruta = "vistas/img/productos/default/anonymous.png";
+			   	$ruta = "vistas/img/productos/default/anonymous.webp";
 
 			   	if(isset($_FILES["nuevaImagen"]["tmp_name"])   && !empty($_FILES["nuevaImagen"]["tmp_name"])){
 					

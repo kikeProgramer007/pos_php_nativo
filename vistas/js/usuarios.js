@@ -15,13 +15,13 @@ $(".nuevaFoto").change(function(){
   	VALIDAMOS EL FORMATO DE LA IMAGEN SEA JPG O PNG
   	=============================================*/
 
-  	if(imagen["type"] != "image/jpeg" && imagen["type"] != "image/png"){
+  	if(imagen["type"] != "image/jpeg" && imagen["type"] != "image/png" && imagen["type"] != "image/webp"){
 
   		$(".nuevaFoto").val("");
 
   		 swal({
 		      title: "Error al subir la imagen",
-		      text: "¡La imagen debe estar en formato JPG o PNG!",
+			  text: "¡La imagen debe estar en formato JPG, PNG o WEBP!",
 		      type: "error",
 		      confirmButtonText: "¡Cerrar!"
 		    });

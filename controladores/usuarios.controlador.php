@@ -221,6 +221,26 @@ class ControladorUsuarios{
 
 					}
 
+					if($_FILES["nuevaImagen"]["type"] == "image/webp"){
+
+						/*=============================================
+						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
+						=============================================*/
+
+						$aleatorio = mt_rand(100,999);
+
+						$ruta = "vistas/img/usuarios/".$_POST["nuevoUsuario"]."/".$aleatorio.".webp";
+
+						$origen = imagecreatefrompng($_FILES["nuevaFoto"]["tmp_name"]);							
+
+						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+
+						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+
+						imagewebp($destino, $ruta);
+
+					}
+
 				}
 
 				$tabla = "usuarios";
@@ -408,6 +428,27 @@ class ControladorUsuarios{
 						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
 
 						imagepng($destino, $ruta);
+
+					}
+
+
+					if($_FILES["nuevaImagen"]["type"] == "image/webp"){
+
+						/*=============================================
+						GUARDAMOS LA IMAGEN EN EL DIRECTORIO
+						=============================================*/
+
+						$aleatorio = mt_rand(100,999);
+
+						$ruta = "vistas/img/usuarios/".$_POST["editarUsuario"]."/".$aleatorio.".webp";
+
+						$origen = imagecreatefrompng($_FILES["editarFoto"]["tmp_name"]);							
+
+						$destino = imagecreatetruecolor($nuevoAncho, $nuevoAlto);
+
+						imagecopyresized($destino, $origen, 0, 0, 0, 0, $nuevoAncho, $nuevoAlto, $ancho, $alto);
+
+						imagewebp($destino, $ruta);
 
 					}
 

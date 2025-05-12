@@ -120,7 +120,7 @@ if($_SESSION["perfil"] == "Vendedor"){
                                             <i class="fas fa-cloud-upload-alt"></i> Elegir foto
                                         </label>
                                     </div>
-                                    <small class="file-info">Máximo 2MB (JPG o PNG)</small>
+                                    <small class="file-info">Máximo 2MB (JPG PNG o WEBP)</small>
                                 </div>
                             </div>
                         </div>
