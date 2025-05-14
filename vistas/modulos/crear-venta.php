@@ -985,7 +985,6 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
   var totalVenta = Number($('#nuevoTotalVenta').val());
   var efectivo = Number($('#nuevoValorEfectivo').val());
   var cambio = Number(efectivo) - totalVenta;
-
   if(!efectivo){
     swal({
       type: "error",
@@ -996,7 +995,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
     return;
   }
 
-  if(cambio >= 0){
+  if(cambio >= 0 ){
     // Recoge los datos del formulario
     var form = document.getElementById("ventaForm");
     var formData = new FormData(form);

@@ -282,7 +282,9 @@ function sumarTotalPrecios(){
     precioItem.each(function() {
         sumaTotalPrecio += Number($(this).val()) || 0;
     });
-    
+	
+	$("#nuevoCambioEfectivo").val("");
+    $("#nuevoValorEfectivo").val("");
     $("#nuevoTotalVenta").val(sumaTotalPrecio);
     $("#totalVenta").val(sumaTotalPrecio);
     $("#nuevoTotalVenta").attr("total", sumaTotalPrecio);
