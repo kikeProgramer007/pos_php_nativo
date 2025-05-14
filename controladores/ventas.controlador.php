@@ -149,11 +149,12 @@ class ControladorVentas{
 			=============================================*/	
 			
 			$tabla = "ventas";
-
+			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicket($_POST["idArqueoCaja"]);
+			$ultimoNroTicket++;
 			$datos = array("id_vendedor"=>$_POST["idVendedor"],
 						   "id_mesero"=>$_POST["seleccionarMesero"],
 						   "id_cliente"=>$_POST["id_cliente"],
-						   "codigo"=>$_POST["nuevaVenta"],
+						   "codigo"=>$ultimoNroTicket,
 						   "productos"=>$_POST["listaProductos"],
 						   "total"=>$_POST["totalVenta"],
 						   "nota"=>strtoupper($_POST["nota"]),
