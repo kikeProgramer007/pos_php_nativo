@@ -560,7 +560,7 @@ if ($_SESSION["perfil"] == "") {
 
                     </select>
 
-                    <span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Meseros</button></span>
+                    <span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Gastos</button></span>
                     <span class="input-group-addon">
                                       <a href="arqueo-de-caja">
                    <button type="button" class="btn btn-default btn-xs text-uppercase">Cerrar Caja</button>
@@ -802,7 +802,7 @@ MODAL AGREGAR MESERO
 
           <button type="button" class="close" data-dismiss="modal">&times;</button>
 
-          <h4 class="modal-title">Agregar Mesero</h4>
+          <h4 class="modal-title">Agregar Gastos</h4>
 
         </div>
 
