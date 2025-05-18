@@ -37,14 +37,32 @@ class imprimirFactura
         $id = "id";
         $idUsuario = $arqueo["id_usuario"];
         $respuestaVendedor = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($id, $idUsuario);
+        // Calculamos totales antes de generar la tabla
+        $totalBilletes = ($arqueo["Bs200"] * 200) 
+                    + ($arqueo["Bs100"] * 100)
+                    + ($arqueo["Bs50"] * 50)
+                    + ($arqueo["Bs20"] * 20)
+                    + ($arqueo["Bs10"] * 10);
 
+        $totalMonedas = ($arqueo["Bs5"] * 5)
+                    + ($arqueo["Bs2"] * 2)
+                    + ($arqueo["Bs050"] * 0.5)
+                    + ($arqueo["Bs020"] * 0.20);
    
+        $totalGeneral = $totalBilletes + $totalMonedas;
+    
+       if($arqueo["total_egresos"]>0){
+            $arqueo["gastos_operativos"] *= $arqueo["gastos_operativos"]>0? (-1): 1;
+            $arqueo["monto_compras"] *= $arqueo["gastos_operativos"]>0? (-1) :1;
+            $arqueo["total_egresos"] *= (-1);
+       }
+      
 
         // Configuración del PDF para impresora térmica
         require_once('tcpdf_include.php');
 
         // Definir altura base (en mm) para encabezado y márgenes.
-        $alturaBase = 130;
+        $alturaBase = 230;
   
 
         // Crear el documento con la altura calculada
@@ -116,37 +134,114 @@ class imprimirFactura
                 <td style="width:3%;"><strong>:</strong></td>
                 <td style="width:53%;">' . $arqueo["nroTicket"] . '</td>
             </tr>
-           <tr> <td colspan="3" ></td> </tr> 
+            <tr> <td ></td> </tr> 
             <tr>
-                <td colspan="3" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">MOVIMIENTOS</td>
+                <td colspan="3" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">DESGLOSE</td>
             </tr>
             <tr><td colspan="3"></td></tr>
             <tr>
-                <td style="width:70%; text-align:left;"><strong>INGRESOS:</strong></td>
-                <td style="width:28%; text-align:right;"><strong>' . $arqueo["total_ingresos"] . '</strong></td>
+                <td style="width:70%; text-align:left;"><strong>BILLETES:</strong></td>
+                <td style="width:28%; text-align:right;"><strong></strong></td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">'.$arqueo["Bs200"].' BILLETES DE BS. 200</td>
+                <td style="text-align:right; "> ' . number_format($arqueo["Bs200"] * 200, 2) . '</td>
+            </tr>
+             <tr>
+                <td style="text-align:left; ">'.$arqueo["Bs100"].' BILLETES DE BS. 100:</td>
+                <td style="text-align:right; "> ' . number_format($arqueo["Bs100"] * 100, 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">'.$arqueo["Bs50"].' BILLETES DE BS. 50:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs50"] * 50, 2). '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">'.$arqueo["Bs20"].' BILLETES DE BS. 20:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs20"] * 20, 2). '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">'.$arqueo["Bs10"].' BILLETES DE BS. 10:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs10"] * 10, 2). '</td>
+            </tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>TOTAL BILLETES:</strong></td>
+                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($totalBilletes, 2) . '</strong></td>
+            </tr>
+        
+            <tr >
+                <td colspan="2" style="padding: 0; margin: 0; height: 4px; line-height: 4px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>MONEDAS:</strong></td>
+                <td style="width:28%; text-align:right;"><strong></strong></td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">' . $arqueo["Bs5"] . ' MONEDAS DE BS. 5:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs5"] * 5, 2). '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">' . $arqueo["Bs2"] . ' MONEDAS DE BS. 2:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs2"] * 2, 2). '</td>
+            </tr>
+             <tr>
+                <td style="text-align:left; ">' . $arqueo["Bs050"] . ' MONEDAS DE BS. 0.50:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs050"] * 0.5, 2). '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">' . $arqueo["Bs020"] . ' MONEDAS DE BS. 0.20:</td>
+                <td style="text-align:right; "> ' .number_format($arqueo["Bs020"] * 0.20, 2). '</td>
+            </tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>TOTAL MONEDAS:</strong></td>
+                <td style="width:28%; text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($totalMonedas, 2) . '</strong></td>
+            </tr>
+
+            <tr> <td colspan="2" ></td> </tr> 
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>DINERO EN LA CAJA:</strong></td>
+                <td style="width:28%; text-align:right;"><strong>' . number_format($totalGeneral, 2) . '</strong></td>
+            </tr>
+           <tr> <td colspan="2" ></td> </tr> 
+            <tr>
+                <td colspan="2" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">MOVIMIENTOS</td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>INGRESOS</strong></td>
+                <td style="width:28%; text-align:right;"><strong></strong></td>
             </tr>
              <tr>
                 <td style="text-align:left; "> SALDO INICIAL EN CAJA:</td>
                 <td style="text-align:right; ">' . $arqueo["monto_apertura"] . '</td>
             </tr>
-              <tr>
+            <tr>
                 <td style="text-align:left; "> VENTAS:</td>
                 <td style="text-align:right; ">' . $arqueo["monto_ventas"] . '</td>
             </tr>
             <tr>
-                <td style="text-align:left;"><strong>EGRESOS:</strong></td>
-                <td style="text-align:right; "><strong>' . $arqueo["total_egresos"] . '</strong></td>
+                <td style="width:70%; text-align:left;"><strong>TOTAL INGRESOS:</strong></td>
+                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . $arqueo["total_ingresos"] . '</strong></td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="text-align:left;"><strong>EGRESOS</strong></td>
+                <td style="text-align:right; "><strong></strong></td>
             </tr>
               <tr>
                 <td style="text-align:left; "> GASTO:</td>
-                <td style="text-align:right; ">' . $arqueo["gastos_operativos"] . '</td>
+                <td style="text-align:right; ">' . number_format($arqueo["gastos_operativos"],2) . '</td>
             </tr>
               <tr>
                 <td style="text-align:left;"> COMPRAS:</td>
-                <td style="text-align:right; ">' . $arqueo["monto_compras"] . '</td>
+                <td style="text-align:right; ">' . number_format($arqueo["monto_compras"],2) . '</td>
             </tr>
             <tr>
-                <td style="text-align:left; "><strong>SALDO NETO:</strong></td>
+                <td style="width:70%; text-align:left;"><strong>TOTAL EGRESOS:</strong></td>
+                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($arqueo["total_egresos"],2) . '</strong></td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="text-align:left; "><strong>DINERO EN EL SISTEMA:</strong></td>
                 <td style="text-align:right; "><strong>' . $arqueo["resultado_neto"] . '</strong></td>
             </tr>
                
@@ -156,11 +251,11 @@ class imprimirFactura
            </tr>
            <tr><td colspan="2"></td></tr>
             <tr>
-                <td style="text-align:left; ">TOTAL MOVIMIENTO EN CAJA:</td>
+                <td style="text-align:left; ">DINERO EN EL SISTEMA:</td>
                 <td style="text-align:right; ">' . $arqueo["resultado_neto"] . '</td>
             </tr>
             <tr>
-                <td style="text-align:left;">TOTAL EFECTIVO EN CAJA:</td>
+                <td style="text-align:left;">DINERO EN LA CAJA:</td>
                 <td style="text-align:right;">' . $arqueo["efectivo_en_caja"] . '</td>
             </tr>
             <tr>
@@ -169,8 +264,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-        <br><br>
-        <br>
+        <br><br><br><br><br><br>
         <p style="text-align: center;">¡FIRMA Y SELLO!</p>
         ';
 

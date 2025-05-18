@@ -452,7 +452,7 @@ class ModeloArqueo {
             FROM arqueo_caja 
             /*WHERE id_usuario = :id_usuario*/ 
             WHERE estado = 'abierta' 
-            AND date(fecha_apertura) = date(now())
+     
             ORDER BY id DESC 
             LIMIT 1");
             
