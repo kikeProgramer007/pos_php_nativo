@@ -56,7 +56,13 @@ class imprimirFactura
             $arqueo["monto_compras"] *= $arqueo["gastos_operativos"]>0? (-1) :1;
             $arqueo["total_egresos"] *= (-1);
        }
-      
+
+       $ResultadoMessage = "NO HAY DIFENCIAS";
+        if($arqueo["resultado_neto"]>$arqueo["efectivo_en_caja"]){
+            $ResultadoMessage = "FALTANTE";
+        }else if($arqueo["resultado_neto"]<$arqueo["efectivo_en_caja"]){
+            $ResultadoMessage = "SOBRANTE";
+        }
 
         // Configuración del PDF para impresora térmica
         require_once('tcpdf_include.php');
@@ -259,8 +265,8 @@ class imprimirFactura
                 <td style="text-align:right;">' . $arqueo["efectivo_en_caja"] . '</td>
             </tr>
             <tr>
-                <td style="text-align:left;"><strong>DIFERENCIA:</strong></td>
-                <td style="border-top: 0.5px solid #000000; text-align:right;"><strong>' . $arqueo["diferencia"] . '</strong></td>
+                <td style="text-align:left;"><strong>'.$ResultadoMessage.':</strong></td>
+                <td style="border-top: 0.5px solid #000000; text-align:right;"><strong>' . number_format($arqueo["diferencia"],2) . '</strong></td>
             </tr>
             </tbody>
         </table>
