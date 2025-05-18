@@ -999,7 +999,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
     // Recoge los datos del formulario
     var form = document.getElementById("ventaForm");
     var formData = new FormData(form);
-
+  $("#guardarVentaBtn").prop("disabled", true);
     $.ajax({
       url: "ajax/ventas.ajax.php", // Cambia aquí
       type: "POST",
@@ -1012,6 +1012,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
           imprimirFactura(respuesta.idVenta);
            window.location.href = "crear-venta"; 
         } else {
+          $("#guardarVentaBtn").prop("disabled", false);
           swal({
             type: "error",
             title: "Error al guardar la venta",
@@ -1022,6 +1023,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
         }
       },
       error: function(xhr, status, error) {
+        $("#guardarVentaBtn").prop("disabled", false);
         swal({
           type: "error",
           title: "Error de comunicación",
@@ -1029,6 +1031,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
           showConfirmButton: true,
           confirmButtonText: "Cerrar"
         });
+
       }
     });
   } else {

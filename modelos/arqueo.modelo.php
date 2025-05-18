@@ -146,7 +146,28 @@ class ModeloArqueo {
             }
         }
     }
-
+/**
+     * Obtiene el último número de ticket registrado
+     * @return int Último número de ticket o false en caso de error
+     */
+    static public function mdlObtenerUltimoNroTicketDeVentas($id_arqueo) {
+        try {
+            $pdo = Conexion::conectar();
+            $stmt = $pdo->prepare("SELECT codigo as ultimo FROM ventas WHERE id_arqueo_caja = :id_arqueo ORDER BY codigo DESC LIMIT 1");
+            $stmt->bindParam(":id_arqueo", $id_arqueo, PDO::PARAM_INT);
+            $stmt->execute();
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $resultado && $resultado["ultimo"] !== null ? (int)($resultado["ultimo"]) : 0;
+        } catch (PDOException $e) {
+            error_log("Error en mdlObtenerUltimoNroTicket: " . $e->getMessage());
+            return 0;
+        } finally {
+            if (isset($stmt)) {
+                $stmt->closeCursor();
+                $stmt = null;
+            }
+        }
+    }
     /**
      * Actualiza el número de ticket de una caja
      * @param int $id_caja ID de la caja

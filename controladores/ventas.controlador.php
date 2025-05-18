@@ -149,8 +149,10 @@ class ControladorVentas{
 			=============================================*/	
 			
 			$tabla = "ventas";
-			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicket($_POST["idArqueoCaja"]);
+			$ultimoNroTicket=0;
+			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($_POST["idArqueoCaja"]);
 			$ultimoNroTicket++;
+			
 			$datos = array("id_vendedor"=>$_POST["idVendedor"],
 						   "id_mesero"=>$_POST["seleccionarMesero"],
 						   "id_cliente"=>$_POST["id_cliente"],
@@ -174,7 +176,7 @@ class ControladorVentas{
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
 				$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
 
-				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$_POST["nuevaVenta"], $_POST["totalVenta"]);
+				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"]);
 
 				$imprimir = isset($_POST["sinImprimir"]) ? $_POST["sinImprimir"] : false;
 				if ($imprimir == false) {
