@@ -158,10 +158,10 @@
 <div class="content-wrapper text-uppercase">
     <!-- Header -->
     <section class="content-header">
-        <h1>APERTURA DE CAJA</h1>
+        <h1>ARQUEO DE CAJA</h1>
         <ol class="breadcrumb">
             <li><a href="inicio"><i class="fa fa-dashboard"></i> Inicio</a></li>
-            <li class="active">APERTURA DE CAJA</li>
+            <li class="active">ARQUEO DE CAJA</li>
         </ol>
     </section>
 
