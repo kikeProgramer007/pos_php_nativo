@@ -25,7 +25,7 @@ class TablaMeserosEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Vendedor"){
+			if(isset($_GET["perfilOculto"]) && ($_GET["perfilOculto"] == "Vendedor" || $_GET["perfilOculto"] == "Supervisor")){
 
 				$botones =  ""; 
               
