@@ -417,8 +417,6 @@ class ModeloArqueo {
                 diferencia = :diferencia,
                 estado = :estado
                 WHERE id = :id_arqueo");
-             
-        
 
             $stmt->bindParam(":fecha_cierre", $datos["fecha_cierre"], PDO::PARAM_STR);
             $stmt->bindParam(":Bs200", $datos["Bs200"], PDO::PARAM_INT);

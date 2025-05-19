@@ -112,8 +112,10 @@ class ArqueoCaja {
         this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas;
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
-        this.totales.diferencia = this.totales.totalEfectivoEnCaja - this.totales.resultadoNeto;
-      
+    
+        // Diferencia simplificada: efectivo real vs. resultado esperado
+        this.totales.diferencia = this.totales.totalEfectivoEnCaja - Math.abs(this.totales.resultadoNeto);
+
         this.actualizarElementos({
             'total_efectivo_en_caja_tabla': this.totales.totalEfectivoEnCaja,
             'total_efectivo_en_caja': this.totales.totalEfectivoEnCaja,
