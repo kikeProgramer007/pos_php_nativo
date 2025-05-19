@@ -150,27 +150,27 @@ class imprimirFactura
                 <td style="width:28%; text-align:right;"><strong></strong></td>
             </tr>
             <tr>
-                <td style="text-align:left; ">'.$arqueo["Bs200"].' BILLETES DE BS. 200</td>
-                <td style="text-align:right; "> ' . number_format($arqueo["Bs200"] * 200, 2) . '</td>
+                <td style="text-align:left; "> '.$arqueo["Bs200"].' BILLETES DE BS. 200</td>
+                <td style="text-align:right; ">' . number_format($arqueo["Bs200"] * 200, 2) . '</td>
             </tr>
              <tr>
-                <td style="text-align:left; ">'.$arqueo["Bs100"].' BILLETES DE BS. 100:</td>
-                <td style="text-align:right; "> ' . number_format($arqueo["Bs100"] * 100, 2) . '</td>
+                <td style="text-align:left; "> '.$arqueo["Bs100"].' BILLETES DE BS. 100:</td>
+                <td style="text-align:right; ">' . number_format($arqueo["Bs100"] * 100, 2) . '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">'.$arqueo["Bs50"].' BILLETES DE BS. 50:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs50"] * 50, 2). '</td>
+                <td style="text-align:left; "> '.$arqueo["Bs50"].' BILLETES DE BS. 50:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs50"] * 50, 2). '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">'.$arqueo["Bs20"].' BILLETES DE BS. 20:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs20"] * 20, 2). '</td>
+                <td style="text-align:left; "> '.$arqueo["Bs20"].' BILLETES DE BS. 20:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs20"] * 20, 2). '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">'.$arqueo["Bs10"].' BILLETES DE BS. 10:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs10"] * 10, 2). '</td>
+                <td style="text-align:left; "> '.$arqueo["Bs10"].' BILLETES DE BS. 10:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs10"] * 10, 2). '</td>
             </tr>
             <tr>
-                <td style="width:70%; text-align:left;"><strong>TOTAL BILLETES:</strong></td>
+                <td style="width:70%; text-align:left;"><strong> TOTAL BILLETES:</strong></td>
                 <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($totalBilletes, 2) . '</strong></td>
             </tr>
         
@@ -182,23 +182,23 @@ class imprimirFactura
                 <td style="width:28%; text-align:right;"><strong></strong></td>
             </tr>
             <tr>
-                <td style="text-align:left; ">' . $arqueo["Bs5"] . ' MONEDAS DE BS. 5:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs5"] * 5, 2). '</td>
+                <td style="text-align:left; "> ' . $arqueo["Bs5"] . ' MONEDAS DE BS. 5:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs5"] * 5, 2). '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">' . $arqueo["Bs2"] . ' MONEDAS DE BS. 2:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs2"] * 2, 2). '</td>
+                <td style="text-align:left; "> ' . $arqueo["Bs2"] . ' MONEDAS DE BS. 2:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs2"] * 2, 2). '</td>
             </tr>
              <tr>
-                <td style="text-align:left; ">' . $arqueo["Bs050"] . ' MONEDAS DE BS. 0.50:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs050"] * 0.5, 2). '</td>
+                <td style="text-align:left; "> ' . $arqueo["Bs050"] . ' MONEDAS DE BS. 0.50:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs050"] * 0.5, 2). '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">' . $arqueo["Bs020"] . ' MONEDAS DE BS. 0.20:</td>
-                <td style="text-align:right; "> ' .number_format($arqueo["Bs020"] * 0.20, 2). '</td>
+                <td style="text-align:left; "> ' . $arqueo["Bs020"] . ' MONEDAS DE BS. 0.20:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs020"] * 0.20, 2). '</td>
             </tr>
             <tr>
-                <td style="width:70%; text-align:left;"><strong>TOTAL MONEDAS:</strong></td>
+                <td style="width:70%; text-align:left;"><strong> TOTAL MONEDAS:</strong></td>
                 <td style="width:28%; text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($totalMonedas, 2) . '</strong></td>
             </tr>
 
