@@ -46,7 +46,7 @@ class TablaProductosVentas{
 			  =============================================*/
 			  $botones.= "<button class='btn btn-info btnImprimirFactura' codigoVenta='".$ventas[$i]["id"]."'><i class='fa fa-print'></i></button>"; 
 
-			  if ((isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Administrador") || (isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial")) {
+			  if ((isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Administrador") || (isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor")) {
 				$botones .=  "<button class='btn btn-danger btnEliminarVenta' idVenta='".$ventas[$i]["id"]."'><i class='fa fa-times'></i></button>";
 			}
 			

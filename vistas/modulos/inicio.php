@@ -20,7 +20,7 @@
           <?php
           if ($_SESSION["perfil"] == "Vendedor") {
             echo '<span> Cajero/a</span>';
-          } elseif ($_SESSION["perfil"] == "Especial") {
+          } elseif ($_SESSION["perfil"] == "Supervisor") {
             echo '<span>Supervisor</span>';
           }
           ?>
@@ -30,7 +30,7 @@
         <p class="lead">Estamos encantados de tenerte aquí.</p>
 
         <!-- Quitamos la imagen y movemos el botón aquí -->
-        <?php if ($_SESSION["perfil"] == "Especial") { ?>
+        <?php if ($_SESSION["perfil"] == "Supervisor") { ?>
           <a href="ventas">
             <button class="btn btn-success btn-lg">Comienza a Supervisar</button>
           </a>

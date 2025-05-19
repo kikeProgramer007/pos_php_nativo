@@ -1,4 +1,3 @@
-
 <?php
 require_once "../../controladores/categorias.controlador.php";
 require_once "../../modelos/categorias.modelo.php";
@@ -26,7 +25,7 @@ class TablaCategorias
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial"){
+			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
 
 				$botones =  ""; 
 

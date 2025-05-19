@@ -1,4 +1,3 @@
-
 <?php
 require_once "../../controladores/usuarios.controlador.php";
 require_once "../../modelos/usuarios.modelo.php";
@@ -47,7 +46,7 @@ class TablaUsuariosEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial"){
+			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
 
 				$botones =  "<div class='btn-group'></div>"; 
 

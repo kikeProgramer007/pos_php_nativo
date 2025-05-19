@@ -1,7 +1,6 @@
-
 <?php
 
-if($_SESSION["perfil"] == "Especial" || $_SESSION["perfil"] == "Vendedor"){
+if($_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor"){
 
   echo '<script>
 
@@ -190,7 +189,7 @@ MODAL EDITAR USUARIO
 
                   <option value="Administrador">Administrador</option>
 
-                  <option value="Especial">Especial</option>
+                  <option value="Supervisor">Supervisor</option>
 
                   <option value="Vendedor">Vendedor</option>
 

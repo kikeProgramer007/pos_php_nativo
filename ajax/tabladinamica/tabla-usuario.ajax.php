@@ -1,4 +1,3 @@
-
 <?php
 require_once "../../controladores/usuarios.controlador.php";
 require_once "../../modelos/usuarios.modelo.php";
@@ -41,7 +40,7 @@ class TablaUsuarios
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial"){
+			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
 
 				$botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarUsuario' idUsuario='".$usuario[$i]["id"]."' data-toggle='modal' data-target='#modalEditarUsuario'><i class='fa fa-pencil'></i></button></div>"; 
 

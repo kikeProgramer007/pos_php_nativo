@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-05-2025 a las 20:11:05
+-- Tiempo de generación: 19-05-2025 a las 04:10:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -332,7 +332,7 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
 (1, 'rosmery quizpe', 'admin', '$2a$07$asxx54ahjppf45sd87a5auXBm1Vr2M1NV5t/zNQtGHGpS5fFirrbG', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2025-05-12 13:51:07', '2025-05-12 17:51:07', 1),
-(2, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Especial', 'vistas/img/usuarios/default/anonymous.webp', 1, '0000-00-00 00:00:00', '2025-05-12 18:06:13', 1),
+(2, 'edwin yamil', 'edwin', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Supervisor', 'vistas/img/usuarios/default/anonymous.webp', 1, '0000-00-00 00:00:00', '2025-05-19 02:09:13', 1),
 (3, 'luis hidalgo', 'luis10', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 'vistas/img/usuarios/default/anonymous.webp', 1, '0000-00-00 00:00:00', '2025-05-12 18:06:42', 1);
 
 -- --------------------------------------------------------

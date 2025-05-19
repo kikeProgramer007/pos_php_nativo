@@ -42,7 +42,7 @@
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li>
 
@@ -69,7 +69,7 @@
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li>
 
@@ -103,7 +103,7 @@
 
 		
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li>
 
@@ -116,7 +116,7 @@
 			
 			
 			}
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Especial" || $_SESSION["perfil"] == "Vendedor") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor") {
 				echo '<li>
 					<a href="ventas">
 						<i class="fa fa-money" aria-hidden="true"></i>
@@ -125,7 +125,7 @@
 				</li>';
 			}
 
-			if ($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li>	
                 <a href="arqueo-de-caja">
@@ -140,7 +140,7 @@
 			
 
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li class="treeview">
 
@@ -197,7 +197,7 @@
 			}
 
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Especial") {
+			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
 
 				echo '<li>
 
@@ -245,7 +245,7 @@
 			}
 			
 
-			if ($_SESSION["perfil"] == "Administrador"   || $_SESSION["perfil"] == "Especial"  ) {
+			if ($_SESSION["perfil"] == "Administrador"   || $_SESSION["perfil"] == "Supervisor"  ) {
 				
 
 				
@@ -336,7 +336,7 @@
 				}
 
 
-				if ($_SESSION["perfil"] == "Administrador"  || $_SESSION["perfil"] == "Especial") {
+				if ($_SESSION["perfil"] == "Administrador"  || $_SESSION["perfil"] == "Supervisor") {
 
 					echo '<li>
 

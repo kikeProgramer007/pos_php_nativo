@@ -1,6 +1,6 @@
 <?php
 
-if ($_SESSION["perfil"] == "Especial") {
+if ($_SESSION["perfil"] == "Supervisor") {
 
   echo '<script>
 

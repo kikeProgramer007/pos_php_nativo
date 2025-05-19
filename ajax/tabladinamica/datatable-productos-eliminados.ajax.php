@@ -65,7 +65,7 @@ class TablaProductosEliminados{
  	 		TRAEMOS LAS ACCIONES
   			=============================================*/ 
 
-  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial"){
+  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
 
 				$botones =  ""; 
 

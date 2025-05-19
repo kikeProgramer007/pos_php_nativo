@@ -83,7 +83,7 @@ if($_SESSION["perfil"] == "Vendedor"){
                                             <select class="form-control" id="nuevoPerfil" name="nuevoPerfil" required>
                                                 <option value="">Seleccione un perfil</option>
                                                 <option value="Administrador">Administrador</option>
-                                                <option value="Especial">Especial</option>
+                                                <option value="Supervisor">Supervisor</option>
                                                 <option value="Vendedor">Vendedor</option>
                                             </select>
                                         </div>

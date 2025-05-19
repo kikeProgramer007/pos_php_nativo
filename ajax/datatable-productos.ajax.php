@@ -63,7 +63,7 @@ class TablaProductos{
  	 		TRAEMOS LAS ACCIONES
   			=============================================*/ 
 
-  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Especial"){
+  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
 
 			$botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarProducto' idProducto='".$productos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProducto'><i class='fa fa-pencil'></i></button>";
 
