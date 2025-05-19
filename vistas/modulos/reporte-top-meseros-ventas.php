@@ -33,7 +33,7 @@ $fechaActual = date('Y-m-d');
                                 <div class="form-group">
                                     <label><i class="text-danger">*</i> Fecha de inicio:</label>
                                     <div class="input-group date">
-                                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo date('Y-m-01'); ?>" class="form-control" required />
+                                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo date('Y-m-d'); ?>" class="form-control" required />
                                     </div>
                                 </div>
                             </div>
