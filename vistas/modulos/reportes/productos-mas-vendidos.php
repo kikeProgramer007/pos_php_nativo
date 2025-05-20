@@ -45,7 +45,7 @@ PRODUCTOS MÁS VENDIDOS
 
 		  	 	<?php
 
-					for($i = 0; $i < 5; $i++){
+					for($i = 0; $i < 10; $i++){
 
 					echo '   <li><i class="fa fa-circle-o text-'.$colores[$i].'"></i>   '.$productos[$i]["descripcion"].'</li>';
 

@@ -107,7 +107,7 @@ class imprimirFactura
         $html = '<table border="0" cellpadding="0" style="width:100%;  font-size: 9px;">
             <tbody>
             <tr>
-                <th colspan="3" style="width:98%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">INFORMACION</th>
+                <th colspan="3" style="width:98%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">INFORMACIÓN</th>
             </tr>
              ';
 
@@ -115,7 +115,7 @@ class imprimirFactura
         $html .= '
             <tr><td colspan="3"></td></tr>
             <tr >
-                <td width="42%"><strong>CAJERO/A</strong></td>
+                <td width="42%"><strong>RESPONSABLE</strong></td>
                 <td style="width:3%;"><strong>:</strong></td>
                 <td width="53%">' . strtoupper($respuestaVendedor["nombre"]) . '</td>
             </tr>
@@ -123,7 +123,7 @@ class imprimirFactura
             <tr>
                 <td style="width:42%;"><strong>ESTADO</strong></td>
                 <td style="width:3%;"><strong>:</strong></td>
-                <td style="width:53%;">' . strtoupper($arqueo["estado"])  . '</td>
+                <td style="width:53%;">CAJA ' . strtoupper($arqueo["estado"]) . '</td>
             </tr>
             <tr>
                 <td style="width:42%;"><strong>F. APERTURA</strong></td>
