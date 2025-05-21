@@ -49,7 +49,7 @@ foreach ($categorias as $cat) {
         <!-- ======== Page title ============ -->
         <title>PollosRossy</title>
         <!--<< Favcion >>-->
-        <link rel="shortcut icon" href="assets/img/hero/logo-blanco-bloque.webp">
+        <link rel="shortcut icon" href="../vistas/img/plantilla/logo-blanco-bloque.png">
         <!--<< Bootstrap min.css >>-->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
         <!--<< Font Awesome.css >>-->
