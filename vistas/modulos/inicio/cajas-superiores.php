@@ -166,7 +166,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
     <div class="icon">
 
-    <img src="./pagina/assets/img/food/pierna.webp" alt="">
+    <img src="./pagina/assets/img/food/22.webp" alt="">
 
     </div>
 
