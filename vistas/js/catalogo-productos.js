@@ -213,7 +213,7 @@ class CatalogoProductos {
         <div class="thumbnail" style="height: 100%;">
           <div class="first">
             <div class="d-flex justify-content-between"> 
-              <span class="${stockClass}">STOCK: ${producto.stock}</span> 
+              <span class="${stockClass}">CANTIDAD: ${producto.stock}</span> 
             </div>
           </div> 
           <div style="overflow: hidden;">

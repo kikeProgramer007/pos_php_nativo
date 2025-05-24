@@ -17,7 +17,7 @@
 
   <!-- Título de bienvenida centrado -->
   <div class="text-center" style="margin-top: -12px; font-size: 14px; font-weight: bold;color: black; /* Añadido para hacer el texto en negrita */">
- USUARIO Y CONTRASEÑA REQUERIDO
+ SOLO PERSONAL AUTORIZADO
 </div>
 
 
