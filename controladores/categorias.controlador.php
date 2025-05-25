@@ -163,7 +163,7 @@ class ControladorCategorias{
 		if(isset($_GET["idCategoria"])){
 
 
-				$tabla ="Categorias";
+				$tabla ="categorias";
 				$datos = $_GET["idCategoria"];
 
 				$respuesta = ModeloCategorias::mdlBorrarCategoria($tabla, $datos);
@@ -208,7 +208,7 @@ class ControladorCategorias{
 	/* 	$respuesta = ModeloProductos::mdlMostrarProductos("productos", "id_categoria", $_GET["idCategoriaRestaurar"], "ASC"); */
 			
 		/* 	if (!$respuesta) { */
-				$tabla ="Categorias";$_GET["idCategoriaRestaurar"];
+				$tabla ="categorias";$_GET["idCategoriaRestaurar"];
 				$datos = $_GET["idCategoriaRestaurar"];
 
 				$respuesta = ModeloCategorias::mdlRestaurarCategoria($tabla, $datos);
