@@ -40,7 +40,7 @@ if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
           Agregar Gastos
         </button> -->
        <?php
-        if($_SESSION["perfil"] ==  'Administrador') {
+        if(($_SESSION["perfil"] ==  'Administrador') || ($_SESSION["perfil"] ==  'Supervisor') ) {
             echo '<a href="agregar-gasto" class="btn btn-primary">
                 <i class="fa fa-plus"></i>
                 Agregar Gastos

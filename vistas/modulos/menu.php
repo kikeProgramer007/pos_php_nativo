@@ -91,6 +91,16 @@
 					</a>
 				</li>';
 			}
+			if($_SESSION["perfil"] == "Vendedor"){
+				$moduloGasto = "";
+			}else if($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor"){
+				$moduloGasto = '<li>
+							<a href="gastos">
+								<i class="fa fa-inbox" aria-hidden="true"></i>
+								<span>Gastos</span>
+							</a>
+						</li>';
+			}
 
 			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
 				echo '
@@ -112,12 +122,7 @@
 								<span>Arqueo de Caja</span>
 							</a>
 						</li>
-						<li>
-							<a href="gastos">
-								<i class="fa fa-inbox" aria-hidden="true"></i>
-								<span>Gastos</span>
-							</a>
-						</li>
+						'.$moduloGasto.'
 					</ul>	
 					</li>
 				';

@@ -559,8 +559,12 @@ if ($_SESSION["perfil"] == "") {
                       ?>
 
                     </select>
-
-                    <span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Gastos</button></span>
+                    <?php
+                      if(($_SESSION["perfil"] ==  'Administrador') || ($_SESSION["perfil"] ==  'Supervisor') ) {
+                          echo '<span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Gastos</button></span>';
+                      }
+                    ?>
+                    
                     <span class="input-group-addon">
                                       <a href="arqueo-de-caja">
                    <button type="button" class="btn btn-default btn-xs text-uppercase">Cerrar Caja</button>
