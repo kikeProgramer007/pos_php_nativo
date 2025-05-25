@@ -815,78 +815,67 @@ MODAL AGREGAR MESERO
           <div class="box-body">
 
 
-            <!-- ENTRADA PARA EL NOMBRE -->
+            <!-- ENTRADA PARA EL TIPO DE GASTO -->
 
+         
             <div class="form-group">
-
               <div class="input-group">
+              <span class="input-group-addon">TIPO DE GASTO</span>
+                  <select class="form-control input-sm" id="id_tipo_gasto" name="id_tipo_gasto" required>
 
-                <span class="input-group-addon">
-                  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA7ElEQVR4nMXUwSqEURQH8B9Zi2RjOytZDAtLXsGSKWvvIUuyoMGChWnK2htYKmXlHUQRK5GiW3dqFue75Q459a9b5/Trfl+nyz/UBFax/hvYGu7xlXOIdi22jI8hbJB3LNaA5wE2SLcGvCqAlzXgaQHs1YBHBXC/BuwWwIMacBJPAZbWaFplHQfgnhFqLgCnRgHbAdiqgcawggXs4AGP2MU8ln7yEGziLt/mDWf501NO8Jp7t/nBGG/CZnHTsCbbOVHvGjMReFHYu42cpn4/Al8ahj/zDdLupXM08xyBHWwFGX5Y0zmaSf/9b+obeeR7t6oVkbEAAAAASUVORK5CYII=">
-                </span>
-
-                <input type="text" class="form-control input-lg" name="nuevoMesero" placeholder="Ingresar Nombre" required>
-
+                    <?php
+                      $item = null;
+                      $valor = null;
+                      $categorias = ControladorTipoGasto::ctrMostrarTipoGasto($item, $valor);
+                      foreach ($categorias as $key => $value) {
+                        echo '<option value="' . $value["id"] . '">' . $value["nombre"] . '</option>';
+                      }
+                    ?>
+                  </select>
               </div>
-
             </div>
 
-
-            <!-- ENTRADA PARA EL CI/NIT -->
-
             <div class="form-group">
-
+              <div class="input-group">
+                <span class="input-group-addon">DESCRIPCIÓN</span>
+                <input type="text" class="form-control input-sm" name="descripcion_gasto" id="descripcion_gasto" placeholder="Ingresar Descripción" required>
+              </div>
+            </div>
+            <!-- ENTRADA PARA LA FECHA DE GASTO-->
+       
+             <div class="form-group">
               <div class="input-group">
 
-                <span class="input-group-addon">
-                  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAABQklEQVR4nO3UPUoDURQF4A8bQYm/VTobcQMuwDbaxeAK1C2kFhUUJBYBdQEK7kAsUpgtiIXaGS0EQdEFRB48wzBM0JgZsPDAYX7OnXfeve/O5R9/FcvooJsjO6gkTfI26EY+JE26BbKHfgGXOMBTUSbthD6KqyJMTpIBOEzp87IxP4jJWerj8yIyaaVM2in9CHsZPB704KtRX83QGqhnsDGoSTPqzSK66xU7mI56uO7iLa+Dv0W5zwJl3OWRSbtPreuR6QboxrFUQymymtjMt2fyE3Ywk8p4BAt4xFIeA7KWUdZ9nGINF18vK3Fi/sakhDmMxbXWcYMpTOLZkHjHBLZwjc242WAqmoSYodBK/LAbeMFiQq9lTI6BsRJbfjY+jye00Az3MWZobMcuCoccShcYMggGQcsNYbehLB+R4b6XwSerJzNlafpJlwAAAABJRU5ErkJggg==">
-                </span>
+                <!-- ENTRADA PARA LA FECHA DE GASTO-->
+                <span class="input-group-addon">FECHA DE GASTO</span>
+                <div class="input-group date">
+                  <input type="date" id="fecha_gasto" name="fecha_gasto" value="<?php echo date('Y-m-d'); ?>" class="form-control input-sm" required />
+                </div>
 
-                <input type="text" class="form-control input-lg" name="nuevoDocumentoId" placeholder="Ingresar CI/NIT" required>
-
+                <!-- ENTRADA PARA EL MONTO-->
+                <span class="input-group-addon">MONTO</span>
+                <input type="number" class="form-control input-sm" name="monto_gasto" placeholder="Ingresar Monto" required>
+           
               </div>
-
             </div>
+        
 
-            <!-- ENTRADA PARA EL TELÉFONO -->
-
+            <!-- ENTRADA PARA EL TIPO DE PAGO -->
             <div class="form-group">
-
               <div class="input-group">
-
-                <span class="input-group-addon">
-                  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAABH0lEQVR4nO3VsUoDQRAG4E877fI4omBnJwiSLoWVr2GnFlqHNNaSB1CIPoEE7BQ0NtHKQgmCJjbKwgjHYQjkNsHCgZ+df2bY/3Znd4/qto4vNMzQtuchsltVZAmbOMAZrvAQY+L7OK0isoG3mCDhE+0CPgu5qUUapUmGOCxgmFOkV1pBu4ReDpHmhLrmv8jct6s3puHnuMBjDpF3jErHtXis33OdrkWs4T5iaVzFQq7tSl/7EvhZ0agQG+YQuUELr+iH3w/einy2y3gbzRZj4nJt1zO6+MAg/EHwbuQri3RQxxOuw78OXo98ZZET1HCHy/Avg9cin+2p/5qAv7+Szix7svXLL3YcUl2qn8qWsYId7OE4LuBR8BRP+VQ31r4BxB63UdWtCsYAAAAASUVORK5CYII=">
-
-                </span>
-
-                <input type="number" class="form-control input-lg" name="nuevoTelefono" placeholder="Ingresar teléfono" required>
-
-
+                <span class="input-group-addon">FORMAS DE PAGO</span>
+                <select class="form-control input-sm" id="tipo_pago_gasto" name="tipo_pago_gasto">
+                        <option value="1">Efectivo</option>
+                        <option value="2">QR</option>
+                        <option value="3">Transferencia</option>
+                        <option value="4">Qr y Efectivo(Mixto)</option>
+                      </select>
               </div>
-
             </div>
-
 
             <!-- ENTRADA PARA LA DIRECCIÓN -->
-
-            <div class="form-group">
-
-              <div class="input-group">
-
-                <span class="input-group-addon">
-                  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAACXBIWXMAAAsTAAALEwEAmpwYAAABbklEQVR4nK2WTSsFURjHf7lsKTbiA0jJwku3fAPKgpXylkSy8ta1lh17PoEkScpGsqB0LdhStnRtZOflRkanHnV7OnNe7p1/PZ2m+f/nN3POzHMG/GoH1oEroASUZTTHBaCNGtQAbALvQOIoc34DqI8FNAEXnosnqs4lF6QccBoJSKTOJO/VmiX8BewAg0AvMATsyvpo73LINL2p0BPQleLvBp6V/xVodEGmVOAH6PHcWJ/4KnMTrsC+Mh8QpkOV23OZb5R5NhAyp3JFl/lRmUcCIaMqZ66TqjtlXgqErKjcbcyaXAdCijFrsmB576c9gBlLZt4VaLF8YGWB1ymvOV5M8Tf7Hv0kpWXcA1sy/9vAQ4rvmADlgd8qe1cCDIRAXE+TeOqICHVKU4wBfAIdRKoQCVmlCuVkiw0BXFrevmC1Sqt3AUryH1CT8jLfiaU+gH4y0jDwrQBmDzGNMVNNVmxOZhzPGvCvMeBFxmD9Ac+v9APTJwF8AAAAAElFTkSuQmCC">
-
-                </span>
-
-                <input type="text" class="form-control input-lg" name="nuevaDireccion" placeholder="Ingresar dirección" required>
-
-              </div>
-
-            </div>
-
-
-
-
+            <input type="hidden" name="id_usuario_gasto" value="<?php echo $_SESSION["id"]; ?>">
+            <input type="hidden" name="id_arqueo_caja_gasto" value="<?php echo $_SESSION["idArqueoCaja"]; ?>">
           </div>
 
         </div>
@@ -899,7 +888,7 @@ MODAL AGREGAR MESERO
 
           <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
 
-          <button type="submit" class="btn btn-" style="background:#6c757d; color:white">Guardar Mesero </button>
+          <button type="submit" class="btn btn-" style="background:#6c757d; color:white">Registrar Gasto </button>
 
         </div>
 
@@ -909,8 +898,8 @@ MODAL AGREGAR MESERO
       
       <?php
 
-      $crearMesero = new ControladorMeseros();
-      $crearMesero->ctrCrearMesero();
+      $crearGasto= new ControladorGastos();
+      $crearGasto->ctrCrearGasto();
 
       ?>
 

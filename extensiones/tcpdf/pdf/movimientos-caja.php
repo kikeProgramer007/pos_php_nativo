@@ -53,7 +53,7 @@ class imprimirFactura
     
        if($arqueo["total_egresos"]>0){
             $arqueo["gastos_operativos"] *= $arqueo["gastos_operativos"]>0? (-1): 1;
-            $arqueo["monto_compras"] *= $arqueo["gastos_operativos"]>0? (-1) :1;
+            $arqueo["monto_compras"] *= $arqueo["monto_compras"]>0? (-1) :1;
             $arqueo["total_egresos"] *= (-1);
        }
 
@@ -234,7 +234,7 @@ class imprimirFactura
                 <td style="text-align:right; "><strong></strong></td>
             </tr>
               <tr>
-                <td style="text-align:left; "> GASTO:</td>
+                <td style="text-align:left; "> GASTOS:</td>
                 <td style="text-align:right; ">' . number_format($arqueo["gastos_operativos"],2) . '</td>
             </tr>
               <tr>

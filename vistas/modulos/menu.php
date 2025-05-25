@@ -93,12 +93,34 @@
 			}
 
 			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
-				echo '<li>
-					<a href="arqueo-de-caja">
-						<i class="fa fa-inbox" aria-hidden="true"></i>
+				echo '
+					<li class="treeview">
+
+					<a href="#">
+						<i class="fa fa-inbox"></i>
 						<span>Caja</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
 					</a>
-				</li>';
+
+					<ul class="treeview-menu">
+					
+						<li>
+							<a href="arqueo-de-caja">
+								<i class="fa fa-inbox" aria-hidden="true"></i>
+								<span>Arqueo de Caja</span>
+							</a>
+						</li>
+						<li>
+							<a href="gastos">
+								<i class="fa fa-inbox" aria-hidden="true"></i>
+								<span>Gastos</span>
+							</a>
+						</li>
+					</ul>	
+					</li>
+				';
 			}
 
 			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {

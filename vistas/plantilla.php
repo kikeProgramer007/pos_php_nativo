@@ -50,6 +50,7 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "agregar-producto" ||
          $_GET["ruta"] == "agregar-cliente" ||
          $_GET["ruta"] == "agregar-mesero" ||
+         $_GET["ruta"] == "agregar-gasto" ||
          $_GET["ruta"] == "agregar-proveedor" ||
          $_GET["ruta"] == "editar-categoria" ||
          $_GET["ruta"] == "productos" ||
@@ -66,6 +67,7 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "crear-venta" ||
          $_GET["ruta"] == "editar-venta" ||
          $_GET["ruta"] == "compras" ||
+         $_GET["ruta"] == "gastos" ||
          $_GET["ruta"] == "compras-eliminadas" ||
          $_GET["ruta"] == "crear-compra" ||
          $_GET["ruta"] == "reportes" ||

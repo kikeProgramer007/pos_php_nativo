@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-05-2025 a las 04:10:40
+-- Tiempo de generación: 25-05-2025 a las 20:41:23
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `pos_php_nativo-main`
+-- Base de datos: `pos_php_nativo-main-clean`
 --
 
 -- --------------------------------------------------------
@@ -180,6 +180,23 @@ CREATE TABLE `detalle_venta` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `gastos`
+--
+
+CREATE TABLE `gastos` (
+  `id` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `descripcion` varchar(500) DEFAULT NULL,
+  `monto` decimal(11,2) NOT NULL DEFAULT 0.00,
+  `forma_pago` varchar(100) NOT NULL,
+  `id_tipo_gasto` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_arqueo` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf32 COLLATE=utf32_spanish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `meseros`
 --
 
@@ -310,6 +327,27 @@ INSERT INTO `proveedor` (`id`, `nombre`, `empresa`, `telefono`, `direccion`, `fe
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tipo_gasto`
+--
+
+CREATE TABLE `tipo_gasto` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(300) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf32 COLLATE=utf32_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_gasto`
+--
+
+INSERT INTO `tipo_gasto` (`id`, `nombre`) VALUES
+(1, 'Servicios (luz, agua, internet)'),
+(2, 'Sueldos'),
+(3, 'Reparaciones'),
+(4, 'Otros');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -415,6 +453,15 @@ ALTER TABLE `detalle_venta`
   ADD KEY `fk_venta` (`id_venta`);
 
 --
+-- Indices de la tabla `gastos`
+--
+ALTER TABLE `gastos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_gastos_tipo_gasto` (`id_tipo_gasto`) USING BTREE,
+  ADD KEY `fk_gastos_id_usuario` (`id_usuario`) USING BTREE,
+  ADD KEY `fk_gastos_id_arqueo` (`id_arqueo`);
+
+--
 -- Indices de la tabla `meseros`
 --
 ALTER TABLE `meseros`
@@ -431,6 +478,12 @@ ALTER TABLE `productos`
 -- Indices de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `tipo_gasto`
+--
+ALTER TABLE `tipo_gasto`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -496,6 +549,12 @@ ALTER TABLE `detalle_venta`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `gastos`
+--
+ALTER TABLE `gastos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `meseros`
 --
 ALTER TABLE `meseros`
@@ -512,6 +571,12 @@ ALTER TABLE `productos`
 --
 ALTER TABLE `proveedor`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_gasto`
+--
+ALTER TABLE `tipo_gasto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`

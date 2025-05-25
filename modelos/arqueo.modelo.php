@@ -123,7 +123,30 @@ class ModeloArqueo {
             }
         }
     }
-
+    static public function mdlVerificarCajaAbiertaPorIdArqueo($id_arqueo) {
+        try {
+            $stmt = Conexion::conectar()->prepare("
+                SELECT 1
+                FROM arqueo_caja ac
+                WHERE ac.estado = 'abierta'
+                  AND ac.id = :id_arqueo
+                LIMIT 1
+            ");
+            $stmt->bindParam(":id_arqueo", $id_arqueo, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en mdlVerificarCajaAbiertaPorIdArqueo: " . $e->getMessage());
+            return false;
+        } finally {
+            if (isset($stmt)) {
+                $stmt->closeCursor();
+                $stmt = null;
+            }
+        }
+    }
+    
     /**
      * Obtiene el último número de ticket registrado
      * @return int Último número de ticket o false en caso de error
@@ -303,19 +326,19 @@ class ModeloArqueo {
         }
     }
 
-    public static function mdlRegistrarEgreso($idArqueo, $totalEgreso) {
+    public static function mdlRegistrarEgreso($idArqueo, $totalEgreso, $nombreCampo = "monto_compras") {
         $db = Conexion::conectar(); // Obtener la conexión PDO
         $db->beginTransaction(); // Iniciar transacción
         try {
 
             // Preparar y ejecutar la actualización en la tabla arqueo_caja
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
-            SET monto_compras = monto_compras + (:totalCompras), 
-             total_egresos = total_egresos + (:totalCompras), 
+            SET $nombreCampo = $nombreCampo + (:egresoNuevo), 
+             total_egresos = total_egresos + (:egresoNuevo), 
              resultado_neto = (total_ingresos - total_egresos) 
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
-            $stmtArqueo->bindParam(":totalCompras", $totalEgreso, PDO::PARAM_STR); 
+            $stmtArqueo->bindParam(":egresoNuevo", $totalEgreso, PDO::PARAM_STR); 
 
             $actualizacionExitosa = $stmtArqueo->execute();
 
@@ -346,18 +369,18 @@ class ModeloArqueo {
             $db = null; // Cerrar la conexión (opcional si usas un singleton)
         }
     }
-    public static function mdlEliminarEgreso($idArqueo, $totalEgreso) {
+    public static function mdlEliminarEgreso($idArqueo, $totalEgreso, $nombreCampo = "monto_compras") {
         $db = Conexion::conectar(); // Obtener la conexión PDO
         $db->beginTransaction(); // Iniciar transacción
         try {
             // Preparar y ejecutar la actualización en la tabla arqueo_caja
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
-            SET monto_compras = monto_compras - (:totalCompras), 
-             total_egresos = total_egresos - (:totalCompras), 
+            SET $nombreCampo = $nombreCampo - (:egresoDescontar), 
+             total_egresos = total_egresos - (:egresoDescontar), 
              resultado_neto = (total_ingresos - total_egresos) 
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
-            $stmtArqueo->bindParam(":totalCompras", $totalEgreso, PDO::PARAM_STR); 
+            $stmtArqueo->bindParam(":egresoDescontar", $totalEgreso, PDO::PARAM_STR); 
 
             $actualizacionExitosa = $stmtArqueo->execute();
 
