@@ -1004,7 +1004,22 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
         if(respuesta.status == "ok") {
           imprimirFactura(respuesta.idVenta);
            window.location.href = "crear-venta"; 
-        } else {
+        }else if(respuesta.status == "recargar"){
+          swal({
+                        title:"Actualice de la caja",
+                        text: "es necesario recargar la pagina para continuar",
+                        type: "warning",
+                        showCancelButton: false,
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "Sí, recargar pagina",
+                     
+                    }).then((result) => {
+                        if (result.value) {
+                            window.location.href = "crear-venta";
+                        }
+                    }); 
+        }
+        else {
           $("#guardarVentaBtn").prop("disabled", false);
           swal({
             type: "error",
@@ -1017,6 +1032,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       },
       error: function(xhr, status, error) {
         $("#guardarVentaBtn").prop("disabled", false);
+        
         swal({
           type: "error",
           title: "Error de comunicación",

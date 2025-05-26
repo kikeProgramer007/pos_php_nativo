@@ -16,7 +16,7 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="nuevoMesero">
-                                                <i class="fa fa-user"></i> TIPO DE GASTO
+                                               TIPO DE GASTO
                                             </label>
                                         
                                             <select class="form-control " id="id_tipo_gasto" name="id_tipo_gasto" required>
@@ -33,12 +33,12 @@
 
                                         <div class="form-group col-md-6">
                                             <label for="descripcion_gasto">
-                                                <i class="fa fa-map-marker"></i> DESCRIPCIÓN
+                                                DESCRIPCIÓN
                                             </label>
                                             <input type="text" 
                                                    class="form-control" 
                                                    name="descripcion_gasto" 
-                                                   placeholder="Ingrese la dirección" 
+                                                   placeholder="Ingrese la descripcion" 
                                                    required>
                                         </div>
                                     </div>
@@ -46,20 +46,21 @@
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="monto_gasto">
-                                                <i class="fa fa-phone"></i> MONTO
+                                            <span style="font-weight: bold; font-size: 15px; margin-left: 8px;">Bs.</span> MONTO:
+
                                             </label>
                                             <input type="number" 
                                                    class="form-control" 
                                                    name="monto_gasto" 
                                                    step="0.01" min="0"
-                                                   placeholder="Ingrese el teléfono" 
+                                                   placeholder="Ingrese el monto" 
                                                    
                                                    required>
                                         </div>
 
                                         <div class="form-group col-md-6">
                                             <label for="fecha_gasto">
-                                                <i class="fa fa-id-card"></i> FECHA
+                                                FECHA
                                             </label>
                                             <input type="date" 
                                                    class="form-control" 
@@ -72,7 +73,7 @@
 
                                         <div class="form-group col-md-6">
                                         <label for="monto_gasto">
-                                                <i class="fa fa-phone"></i> FORMA DE PAGO
+                                                FORMA DE PAGO
                                             </label>
                                             <select class="form-control input-lg" id="tipo_pago_gasto" name="tipo_pago_gasto">
                                                 <option value="1">Efectivo</option>

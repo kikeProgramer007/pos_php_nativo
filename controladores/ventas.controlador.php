@@ -30,7 +30,22 @@ class ControladorVentas{
 	static public function ctrCrearVenta(){
 
 		if(isset($_POST["nuevaVenta"])){
-
+            if(ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_POST["idArqueoCaja"]) == false){
+				if (session_status() == PHP_SESSION_NONE) {
+                    session_start();
+                }
+				$idArqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario(1);
+                // Guardamos el id en la variable de sesión
+                $_SESSION["idArqueoCaja"] = $idArqueoActual["id"];
+                $_SESSION["idCaja"] = $idArqueoActual["id_caja"];
+			
+				echo json_encode([
+				 
+					"status" => "recargar",
+					"mensaje" =>  "Error desconocido"
+				]);
+				return;
+			}
 			/*=============================================
 			ACTUALIZAR LAS COMPRAS DEL CLIENTE Y REDUCIR EL STOCK Y AUMENTAR LAS VENTAS DE LOS PRODUCTOS
 			=============================================*/

@@ -58,6 +58,8 @@ class TablaProductosVentas{
 			      ($i+1),
 				  ltrim($ventas[$i]["codigo"], '0'),
 				  $ventas[$i]["mesero"],
+				  $ventas[$i]["cliente"],
+				  $ventas[$i]["tipo_pago"],
                   $ventas[$i]["usuario"],
 			      number_format($ventas[$i]["total"], 2),
 				  $ventas[$i]["fecha"],

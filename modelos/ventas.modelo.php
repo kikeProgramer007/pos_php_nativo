@@ -484,12 +484,12 @@ class ModeloVentas
 	{
 		date_default_timezone_set('America/La_Paz');
 
-		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total
+		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total,ventas.tipo_pago,clientes.nombre as cliente 
 				  FROM $tabla 
 				  JOIN usuarios ON ventas.id_vendedor = usuarios.id
+				  JOIN clientes ON ventas.id_cliente = clientes.id
 				  JOIN meseros ON ventas.id_mesero = meseros.id";
-
-
+				  
 
 		if ($fechaInicial == null && $fechaFinal == null) {
 			$stmt = Conexion::conectar()->prepare($query . " WHERE ventas.estado =:estado ORDER BY ventas.fecha DESC");

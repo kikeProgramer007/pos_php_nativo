@@ -75,6 +75,8 @@ if ($_SESSION["perfil"] == "") {
               <th style="width:10px">#</th>
               <th>N° TICKET</th>
               <th>Meseros</th>
+              <th>Clientes</th>
+              <th>Tipo de Pago</th>
               <th>Usuario</th>
               <th>Total</th>
               <th>Fecha</th>
