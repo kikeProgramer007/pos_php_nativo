@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-05-2025 a las 20:41:23
+-- Tiempo de generación: 27-05-2025 a las 16:35:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `pos_php_nativo-main-clean`
+-- Base de datos: `pos_php_nativo-main`
 --
 
 -- --------------------------------------------------------
@@ -254,7 +254,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (7, 1, '105', ' eco pierna broasterd', 'vistas/img/productos/105/476.webp', 50, 13, 10, 0, '2025-05-12 02:55:33', 0, 1),
 (8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/294.webp', 50, 13, 10, 0, '2025-05-12 02:55:50', 0, 1),
 (10, 2, '201', 'entero brasa', 'vistas/img/productos/201/261.webp', 50, 90, 70, 0, '2025-05-12 02:56:14', 0, 1),
-(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/826.webp', 50, 45, 30, 0, '2025-05-12 02:56:24', 0, 1),
+(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/328.webp', 50, 45, 30, 0, '2025-05-27 14:21:20', 0, 1),
 (12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/459.webp', 50, 23, 18, 0, '2025-05-12 02:56:41', 0, 1),
 (13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/610.webp', 50, 23, 18, 0, '2025-05-12 02:57:04', 0, 1),
 (14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/622.webp', 50, 13, 10, 0, '2025-05-12 02:58:58', 0, 1),
@@ -281,12 +281,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/561.webp', 50, 7, 5, 0, '2025-05-12 03:05:50', 1, 1),
 (36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/635.webp', 50, 2, 1.4, 0, '2025-05-12 03:06:07', 1, 1),
 (37, 3, '325', 'coca cola mini 190ml', 'vistas/img/productos/325/287.jpg', 50, 2, 1.4, 0, '2025-03-08 21:36:26', 1, 1),
-(38, 3, '324', 'pop uva 620ml', 'vistas/img/productos/324/767.webp', 50, 3, 1.8, 0, '2025-05-12 03:38:31', 1, 1),
-(39, 3, '319', 'pop piña  620ml', 'vistas/img/productos/319/719.webp', 50, 3, 1.8, 0, '2025-05-12 03:07:01', 1, 1),
-(40, 3, '320', 'pop naranja 620ml', 'vistas/img/productos/320/429.webp', 50, 3, 1.8, 0, '2025-05-12 03:07:26', 1, 1),
-(41, 3, '321', 'pop papaya 620ml', 'vistas/img/productos/321/710.webp', 50, 3, 1.8, 0, '2025-05-12 03:08:09', 1, 1),
-(42, 3, '322', 'pop manzana 620ml', 'vistas/img/productos/322/983.webp', 50, 3, 1.8, 0, '2025-05-12 03:08:24', 1, 1),
-(43, 3, '323', 'pop guarana 620ml', 'vistas/img/productos/323/698.webp', 50, 3, 1.8, 0, '2025-05-12 03:08:37', 1, 1),
+(38, 3, '324', 'soda pop ', 'vistas/img/productos/324/223.webp', 50, 3, 1.8, 0, '2025-05-27 14:33:24', 1, 1),
 (59, 4, '401', 'valle 3l  naranja', 'vistas/img/productos/401/178.webp', 50, 17, 14.5, 0, '2025-05-12 03:09:26', 1, 1),
 (60, 4, '402', 'aquarios pera 3l', 'vistas/img/productos/402/979.webp', 50, 17, 15, 0, '2025-05-12 03:12:13', 1, 1),
 (61, 4, '403', 'aquarios pera 2l', 'vistas/img/productos/403/838.webp', 50, 13, 11, 0, '2025-05-12 03:11:09', 1, 1),
