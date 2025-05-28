@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-05-2025 a las 16:35:40
+-- Tiempo de generación: 28-05-2025 a las 18:11:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -245,56 +245,57 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
-(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/884.webp', 50, 90, 70, 0, '2025-05-12 02:53:46', 0, 1),
-(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/847.webp', 50, 45, 30, 0, '2025-05-12 02:54:06', 0, 1),
-(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/138.webp', 50, 23, 18, 0, '2025-05-12 02:54:23', 0, 1),
-(4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/247.webp', 50, 23, 18, 0, '2025-05-12 02:54:48', 0, 1),
-(5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/897.webp', 50, 13, 10, 0, '2025-05-12 02:55:07', 0, 1),
-(6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/670.webp', 50, 13, 10, 0, '2025-05-12 02:55:21', 0, 1),
-(7, 1, '105', ' eco pierna broasterd', 'vistas/img/productos/105/476.webp', 50, 13, 10, 0, '2025-05-12 02:55:33', 0, 1),
-(8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/294.webp', 50, 13, 10, 0, '2025-05-12 02:55:50', 0, 1),
-(10, 2, '201', 'entero brasa', 'vistas/img/productos/201/261.webp', 50, 90, 70, 0, '2025-05-12 02:56:14', 0, 1),
-(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/328.webp', 50, 45, 30, 0, '2025-05-27 14:21:20', 0, 1),
-(12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/459.webp', 50, 23, 18, 0, '2025-05-12 02:56:41', 0, 1),
-(13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/610.webp', 50, 23, 18, 0, '2025-05-12 02:57:04', 0, 1),
-(14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/622.webp', 50, 13, 10, 0, '2025-05-12 02:58:58', 0, 1),
-(15, 2, '206', 'eco ala brasa', 'vistas/img/productos/206/334.png', 50, 13, 10, 0, '2025-04-26 02:23:22', 0, 1),
-(16, 2, '207', 'eco pierna brasa', 'vistas/img/productos/207/304.webp', 50, 13, 10, 0, '2025-05-12 03:00:21', 0, 1),
-(17, 2, '208', 'eco contra brasa', 'vistas/img/productos/208/618.webp', 50, 13, 10, 0, '2025-05-12 03:00:04', 0, 1),
-(18, 3, '301', 'coca cola 3l', 'vistas/img/productos/301/586.webp', 50, 17, 15, 0, '2025-05-12 03:00:50', 1, 1),
-(19, 3, '302', 'coca cola 2l', 'vistas/img/productos/302/757.webp', 50, 13, 11, 0, '2025-05-12 03:01:02', 1, 1),
-(20, 3, '303', 'coca cola 600ml', 'vistas/img/productos/303/248.webp', 50, 6, 3, 0, '2025-05-12 03:01:15', 1, 1),
-(21, 3, '304', 'retornable coca cola 2.5l', 'vistas/img/productos/304/116.webp', 50, 12, 7, 0, '2025-05-12 03:01:27', 1, 1),
-(22, 3, '305', 'fanta naranja 3l', 'vistas/img/productos/305/612.webp', 50, 17, 15, 0, '2025-05-12 03:01:44', 1, 1),
-(23, 3, '306', 'fanta naranja 2l', 'vistas/img/productos/306/628.webp', 50, 13, 11, 0, '2025-05-12 03:01:57', 1, 1),
-(24, 3, '307', 'fanta naranja 600ml', 'vistas/img/productos/307/828.webp', 50, 6, 3, 0, '2025-05-12 03:02:11', 1, 1),
-(25, 3, '308', 'fanta papaya 3l', 'vistas/img/productos/308/132.webp', 50, 17, 15, 0, '2025-05-12 03:02:41', 1, 1),
-(26, 3, '309', 'fanta papaya 2l', 'vistas/img/productos/309/885.webp', 50, 13, 11, 0, '2025-05-12 03:02:53', 1, 1),
-(27, 3, '310', 'fanta guarana 3l', 'vistas/img/productos/310/726.webp', 50, 17, 15, 0, '2025-05-12 03:03:08', 1, 1),
-(28, 3, '311', 'fanta guarana 2l', 'vistas/img/productos/311/328.webp', 50, 13, 11, 0, '2025-05-12 03:03:24', 1, 1),
-(29, 3, '312', 'sprite 600ml', 'vistas/img/productos/312/220.webp', 50, 6, 3, 0, '2025-05-12 03:03:45', 1, 1),
+(1, 1, '101', 'entero broasterd', 'vistas/img/productos/101/884.webp', 50, 90, 80, 0, '2025-05-28 15:42:30', 0, 1),
+(2, 1, '102', '1/2 broasterd', 'vistas/img/productos/102/847.webp', 50, 45, 40, 0, '2025-05-28 15:42:44', 0, 1),
+(3, 1, '103', '1/4 pecho broasterd', 'vistas/img/productos/103/138.webp', 50, 23, 22, 0, '2025-05-28 15:43:01', 0, 1),
+(4, 1, '108', '1/4 pierna broasterd', 'vistas/img/productos/108/247.webp', 50, 23, 22, 0, '2025-05-28 15:43:52', 0, 1),
+(5, 1, '104', 'eco pecho broasterd', 'vistas/img/productos/104/897.webp', 50, 14, 13, 0, '2025-05-28 15:44:21', 0, 1),
+(6, 1, '106', 'eco ala broasterd', 'vistas/img/productos/106/670.webp', 50, 14, 13, 0, '2025-05-28 15:45:50', 0, 1),
+(7, 1, '105', ' eco pierna broasterd', 'vistas/img/productos/105/476.webp', 50, 14, 13, 0, '2025-05-28 15:46:19', 0, 1),
+(8, 1, '107', 'eco contra broasterd', 'vistas/img/productos/107/294.webp', 50, 14, 13, 0, '2025-05-28 15:47:05', 0, 1),
+(10, 2, '201', 'entero brasa', 'vistas/img/productos/201/261.webp', 50, 90, 80, 0, '2025-05-28 15:48:03', 0, 1),
+(11, 2, '202', '1/2 brasa', 'vistas/img/productos/202/328.webp', 50, 45, 40, 0, '2025-05-28 15:48:21', 0, 1),
+(12, 2, '203', '1/4  pecho brasa', 'vistas/img/productos/203/459.webp', 50, 23, 22, 0, '2025-05-28 15:48:44', 0, 1),
+(13, 2, '204', '1/4 pierna brasa', 'vistas/img/productos/204/610.webp', 50, 23, 22, 0, '2025-05-28 15:49:04', 0, 1),
+(14, 2, '205', 'eco pecho brasa', 'vistas/img/productos/205/622.webp', 50, 14, 13, 0, '2025-05-28 15:50:29', 0, 1),
+(15, 2, '206', 'eco ala brasa', 'vistas/img/productos/206/334.png', 50, 14, 13, 0, '2025-05-28 15:50:40', 0, 1),
+(16, 2, '207', 'eco pierna brasa', 'vistas/img/productos/207/304.webp', 50, 14, 13, 0, '2025-05-28 15:51:02', 0, 1),
+(17, 2, '208', 'eco contra brasa', 'vistas/img/productos/208/618.webp', 50, 14, 13, 0, '2025-05-28 15:51:22', 0, 1),
+(18, 3, '301', 'coca cola 3l', 'vistas/img/productos/301/586.webp', 50, 18, 16, 0, '2025-05-28 15:51:54', 1, 1),
+(19, 3, '302', 'coca cola 2l', 'vistas/img/productos/302/757.webp', 50, 14, 13, 0, '2025-05-28 15:52:20', 1, 1),
+(20, 3, '303', 'coca cola 600ml', 'vistas/img/productos/303/248.webp', 50, 6, 4, 0, '2025-05-28 15:52:40', 1, 1),
+(21, 3, '304', 'retornable coca cola 2.5l', 'vistas/img/productos/304/116.webp', 50, 12, 10.5, 0, '2025-05-28 15:53:42', 1, 1),
+(22, 3, '305', 'fanta naranja 3l', 'vistas/img/productos/305/612.webp', 50, 18, 16, 0, '2025-05-28 15:54:22', 1, 1),
+(23, 3, '306', 'fanta naranja 2l', 'vistas/img/productos/306/628.webp', 50, 14, 13, 0, '2025-05-28 15:54:43', 1, 1),
+(24, 3, '307', 'fanta naranja 600ml', 'vistas/img/productos/307/828.webp', 50, 6, 4, 0, '2025-05-28 15:55:03', 1, 1),
+(25, 3, '308', 'fanta papaya 3l', 'vistas/img/productos/308/132.webp', 50, 18, 16, 0, '2025-05-28 15:58:32', 1, 1),
+(26, 3, '309', 'fanta papaya 2l', 'vistas/img/productos/309/885.webp', 50, 14, 13, 0, '2025-05-28 15:57:07', 1, 1),
+(27, 3, '310', 'fanta guarana 3l', 'vistas/img/productos/310/726.webp', 50, 18, 16, 0, '2025-05-28 15:58:01', 1, 1),
+(28, 3, '311', 'fanta guarana 2l', 'vistas/img/productos/311/328.webp', 50, 14, 13, 0, '2025-05-28 15:59:11', 1, 1),
+(29, 3, '312', 'sprite 600ml', 'vistas/img/productos/312/220.webp', 50, 6, 4, 0, '2025-05-28 15:59:41', 1, 1),
 (30, 3, '313', 'simba manzana 2l', 'vistas/img/productos/313/175.webp', 50, 12, 10, 0, '2025-05-12 03:04:45', 1, 1),
 (31, 3, '314', 'simba piña 2l', 'vistas/img/productos/314/492.webp', 50, 12, 10, 0, '2025-05-12 03:05:06', 1, 1),
 (32, 3, '315', 'simba durazno 2l', 'vistas/img/productos/315/973.webp', 50, 12, 10, 0, '2025-05-12 03:05:20', 1, 1),
 (33, 3, '316', 'pepsi 2l', 'vistas/img/productos/316/642.webp', 50, 10, 9, 0, '2025-05-12 03:34:55', 1, 0),
-(34, 3, '317', 'pepsi 1l', 'vistas/img/productos/317/756.webp', 50, 7, 3, 0, '2025-05-12 03:05:38', 1, 1),
-(35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/561.webp', 50, 7, 5, 0, '2025-05-12 03:05:50', 1, 1),
-(36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/635.webp', 50, 2, 1.4, 0, '2025-05-12 03:06:07', 1, 1),
-(37, 3, '325', 'coca cola mini 190ml', 'vistas/img/productos/325/287.jpg', 50, 2, 1.4, 0, '2025-03-08 21:36:26', 1, 1),
-(38, 3, '324', 'soda pop ', 'vistas/img/productos/324/223.webp', 50, 3, 1.8, 0, '2025-05-27 14:33:24', 1, 1),
-(59, 4, '401', 'valle 3l  naranja', 'vistas/img/productos/401/178.webp', 50, 17, 14.5, 0, '2025-05-12 03:09:26', 1, 1),
-(60, 4, '402', 'aquarios pera 3l', 'vistas/img/productos/402/979.webp', 50, 17, 15, 0, '2025-05-12 03:12:13', 1, 1),
-(61, 4, '403', 'aquarios pera 2l', 'vistas/img/productos/403/838.webp', 50, 13, 11, 0, '2025-05-12 03:11:09', 1, 1),
-(62, 4, '404', 'aquarios pomelo 3l', 'vistas/img/productos/404/845.webp', 50, 17, 15, 0, '2025-05-12 03:12:26', 1, 1),
-(63, 4, '405', 'aquarios pomelo 2l', 'vistas/img/productos/405/871.webp', 50, 13, 11, 0, '2025-05-12 03:12:44', 1, 1),
+(34, 3, '317', 'pepsi 1l', 'vistas/img/productos/317/756.webp', 50, 7, 6, 0, '2025-05-28 16:00:26', 1, 1),
+(35, 3, '318', 'mendocina papaya 1l', 'vistas/img/productos/318/561.webp', 50, 7, 5.5, 0, '2025-05-28 16:00:48', 1, 1),
+(36, 3, '326', 'fanta naranja mini', 'vistas/img/productos/326/635.webp', 50, 2.5, 1.6, 0, '2025-05-28 16:02:00', 1, 1),
+(37, 3, '325', 'Coca Cola 1.5L', 'vistas/img/productos/325/878.webp', 50, 10, 7.5, 0, '2025-05-28 16:10:47', 1, 1),
+(38, 3, '324', 'soda pop ', 'vistas/img/productos/324/223.webp', 50, 3.5, 1.8, 0, '2025-05-28 16:03:10', 1, 1),
+(59, 4, '401', 'valle 3l  naranja', 'vistas/img/productos/401/178.webp', 50, 18, 16.5, 0, '2025-05-28 16:03:47', 1, 1),
+(60, 4, '402', 'aquarios pera 3l', 'vistas/img/productos/402/979.webp', 50, 18, 16, 0, '2025-05-28 16:04:18', 1, 1),
+(61, 4, '403', 'aquarios pera 2l', 'vistas/img/productos/403/838.webp', 50, 14, 13, 0, '2025-05-28 16:04:37', 1, 1),
+(62, 4, '404', 'aquarios pomelo 3l', 'vistas/img/productos/404/845.webp', 50, 18, 16, 0, '2025-05-28 16:04:57', 1, 1),
+(63, 4, '405', 'aquarios pomelo 2l', 'vistas/img/productos/405/871.webp', 50, 14, 13, 0, '2025-05-28 16:05:19', 1, 1),
 (64, 4, '406', 'chicha 2l', 'vistas/img/productos/406/903.webp', 50, 12, 9, 0, '2025-05-12 03:31:47', 1, 0),
-(65, 4, '407', 'tropi 600ml', 'vistas/img/productos/407/166.webp', 50, 6, 3, 0, '2025-05-12 03:13:09', 1, 1),
-(66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/174.webp', 50, 12, 10, 0, '2025-05-12 03:27:31', 1, 1),
-(69, 5, '501', 'salchipapa simple', 'vistas/img/productos/501/916.webp', 50, 12, 7, 0, '2025-05-12 03:16:30', 0, 1),
-(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/600.webp', 50, 12, 10, 0, '2025-05-12 03:17:09', 1, 1),
-(72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/268.webp', 50, 7, 4, 0, '2025-05-12 03:17:21', 0, 1),
-(73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/228.webp', 50, 7, 4, 0, '2025-05-12 03:17:34', 0, 1),
-(74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/620.webp', 50, 7, 4, 0, '2025-05-12 03:17:42', 0, 1);
+(65, 4, '407', 'tropi 600ml', 'vistas/img/productos/407/166.webp', 50, 6, 4, 0, '2025-05-28 16:05:36', 1, 1),
+(66, 4, '408', 'valle 1l durazno', 'vistas/img/productos/408/174.webp', 50, 12, 10, 0, '2025-05-28 16:05:52', 1, 0),
+(69, 5, '501', 'salchipapa ', 'vistas/img/productos/501/916.webp', 50, 12, 10, 0, '2025-05-28 16:06:46', 0, 1),
+(71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/600.webp', 50, 12, 10, 0, '2025-05-28 16:07:02', 1, 0),
+(72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/268.webp', 50, 7, 6, 0, '2025-05-28 16:07:13', 0, 1),
+(73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/228.webp', 50, 7, 6, 0, '2025-05-28 16:07:26', 0, 1),
+(74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/620.webp', 50, 7, 6, 0, '2025-05-28 16:07:34', 0, 1),
+(75, 3, '325', 'Coca Cola 1.5L', 'vistas/img/productos/325/878.webp', 50, 10, 7.5, 0, '2025-05-28 16:10:47', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -559,7 +560,7 @@ ALTER TABLE `meseros`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
