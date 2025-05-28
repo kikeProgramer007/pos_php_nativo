@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-05-2025 a las 18:11:35
+-- Tiempo de generación: 28-05-2025 a las 18:30:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -294,8 +294,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (71, 4, '409', 'valle 1l manzana', 'vistas/img/productos/409/600.webp', 50, 12, 10, 0, '2025-05-28 16:07:02', 1, 0),
 (72, 6, '601', 'porcion de arroz', 'vistas/img/productos/601/268.webp', 50, 7, 6, 0, '2025-05-28 16:07:13', 0, 1),
 (73, 6, '602', 'porcion de papa fritas', 'vistas/img/productos/602/228.webp', 50, 7, 6, 0, '2025-05-28 16:07:26', 0, 1),
-(74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/620.webp', 50, 7, 6, 0, '2025-05-28 16:07:34', 0, 1),
-(75, 3, '325', 'Coca Cola 1.5L', 'vistas/img/productos/325/878.webp', 50, 10, 7.5, 0, '2025-05-28 16:10:47', 1, 1);
+(74, 6, '603', 'porcion de fideo', 'vistas/img/productos/603/620.webp', 50, 7, 6, 0, '2025-05-28 16:07:34', 0, 1);
 
 -- --------------------------------------------------------
 
