@@ -15,6 +15,11 @@ $categorias = $stmtCategorias->fetchAll(PDO::FETCH_ASSOC);
 // Consulta para obtener productos filtrados según selección del usuario
 $sql = "SELECT descripcion, precio_venta, stock, imagen FROM productos WHERE 1=1";
 
+// Configuración de paginación
+$productos_por_pagina = 6; // Número de productos por página
+$pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $productos_por_pagina;
+
 if (isset($_GET['categorias']) && !empty($_GET['categorias']) && !in_array('todas', $_GET['categorias'])) {
     $categoriasSeleccionadas = $_GET['categorias'];
     $placeholders = str_repeat('?,', count($categoriasSeleccionadas) - 1) . '?';
@@ -24,6 +29,29 @@ if (isset($_GET['categorias']) && !empty($_GET['categorias']) && !in_array('toda
 if (isset($_GET['buscar']) && !empty($_GET['buscar'])) {
     $sql .= " AND descripcion LIKE ?";
 }
+
+// Consulta para obtener el total de productos
+$sqlTotal = str_replace("SELECT descripcion, precio_venta, stock, imagen", "SELECT COUNT(*) as total", $sql);
+$stmtTotal = $conexion->prepare($sqlTotal);
+
+$paramIndex = 1;
+if (isset($_GET['categorias']) && !empty($_GET['categorias']) && !in_array('todas', $_GET['categorias'])) {
+    foreach ($_GET['categorias'] as $categoriaId) {
+        $stmtTotal->bindValue($paramIndex++, $categoriaId, PDO::PARAM_INT);
+    }
+}
+
+if (isset($_GET['buscar']) && !empty($_GET['buscar'])) {
+    $buscarTermino = "%" . $_GET['buscar'] . "%";
+    $stmtTotal->bindValue($paramIndex, $buscarTermino, PDO::PARAM_STR);
+}
+
+$stmtTotal->execute();
+$totalProductos = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'];
+$totalPaginas = ceil($totalProductos / $productos_por_pagina);
+
+// Agregar LIMIT a la consulta principal
+$sql .= " LIMIT ? OFFSET ?";
 
 $stmt = $conexion->prepare($sql);
 
@@ -36,8 +64,11 @@ if (isset($_GET['categorias']) && !empty($_GET['categorias']) && !in_array('toda
 
 if (isset($_GET['buscar']) && !empty($_GET['buscar'])) {
     $buscarTermino = "%" . $_GET['buscar'] . "%";
-    $stmt->bindValue($paramIndex, $buscarTermino, PDO::PARAM_STR);
+    $stmt->bindValue($paramIndex++, $buscarTermino, PDO::PARAM_STR);
 }
+
+$stmt->bindValue($paramIndex++, $productos_por_pagina, PDO::PARAM_INT);
+$stmt->bindValue($paramIndex, $offset, PDO::PARAM_INT);
 
 $stmt->execute();
 $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -446,6 +477,40 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             <?php endif; ?>
                         </div>
+                        <!-- Paginación -->
+                        <?php if ($totalPaginas > 1): ?>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <nav aria-label="Navegación de páginas">
+                                    <ul class="pagination justify-content-center">
+                                        <?php if ($pagina_actual > 1): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?pagina=<?= $pagina_actual - 1 ?><?= isset($_GET['categorias']) ? '&categorias[]=' . implode('&categorias[]=', $_GET['categorias']) : '' ?><?= isset($_GET['buscar']) ? '&buscar=' . urlencode($_GET['buscar']) : '' ?>" aria-label="Anterior">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+
+                                        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                                            <li class="page-item <?= $i == $pagina_actual ? 'active' : '' ?>">
+                                                <a class="page-link" href="?pagina=<?= $i ?><?= isset($_GET['categorias']) ? '&categorias[]=' . implode('&categorias[]=', $_GET['categorias']) : '' ?><?= isset($_GET['buscar']) ? '&buscar=' . urlencode($_GET['buscar']) : '' ?>">
+                                                    <?= $i ?>
+                                                </a>
+                                            </li>
+                                        <?php endfor; ?>
+
+                                        <?php if ($pagina_actual < $totalPaginas): ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?pagina=<?= $pagina_actual + 1 ?><?= isset($_GET['categorias']) ? '&categorias[]=' . implode('&categorias[]=', $_GET['categorias']) : '' ?><?= isset($_GET['buscar']) ? '&buscar=' . urlencode($_GET['buscar']) : '' ?>" aria-label="Siguiente">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
