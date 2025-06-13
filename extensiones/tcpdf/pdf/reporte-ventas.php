@@ -220,8 +220,8 @@ class reporteVenta extends TCPDF
 
         // Total de la Venta
         $this->SetFont('helvetica', 'B', 9);
-        $this->Cell(175, 5, 'Total ', 0, 0, 'R');
-        $this->Cell(15, 5, number_format($sumTotal, 2, '.', ',') . ' Bs.', 1, 1, 'R');
+        $this->Cell(160, 5, 'Total ', 0, 0, 'R');
+        $this->Cell(30, 5, number_format($sumTotal, 2, '.', ',') . ' Bs.', 1, 1, 'R');
 
         // Nro de compras
         $this->SetFont('helvetica', 'B', 9);
