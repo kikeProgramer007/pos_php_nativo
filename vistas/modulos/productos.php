@@ -135,6 +135,7 @@ MODAL EDITAR PRODUCTO
           <div class="box-body">
 
             <!-- ENTRADA PARA SELECCIONAR LA CATEGORIA -->
+             <input type="text" id="idProductoEditar" name="idProductoEditar" required>
 
             <div class="form-group">
 

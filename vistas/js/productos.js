@@ -285,6 +285,7 @@ $(".tablaProductos tbody").on("click", "button.btnEditarProducto", function () {
 
 			})
 
+			$("#idProductoEditar").val(respuesta["id"]);
 			$("#editarCodigo").val(respuesta["codigo"]);
 			$("#editarDescripcion").val(respuesta["descripcion"]);
 			$("#editarStock").val(respuesta["stock"]);
