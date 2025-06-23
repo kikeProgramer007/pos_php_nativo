@@ -372,11 +372,115 @@ if ($_SESSION["perfil"] == "") {
   .w-100 {
       width: 100%;
   }
+
+  /* Estilos para hacer más grandes los selects del modal de gastos */
+  #modalAgregarMesero .form-control,
+  #modalAgregarMesero .input-group-addon {
+    font-size: 16px;
+    height: 40px;
+    padding: 6px 12px;
+    line-height: 1.5;
+  }
+
+  #modalAgregarMesero .form-group {
+      margin-bottom: 15px;
+  }
+
+  /* Estilo específico para el input de monto */
+  #modalAgregarMesero input[name="monto_gasto"] {
+      width: 180px;
+      min-width: 180px;
+  }
+
+  /* Ajustar el input-group para el monto */
+  #modalAgregarMesero .input-group:has(input[name="monto_gasto"]) {
+      flex-wrap: nowrap;
+  }
+
+  /* Contenedor Flexbox para los campos de fecha y monto */
+  .gastos-flex-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se apilen en pantallas pequeñas */
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+
+  .gastos-flex-container > div {
+    flex-grow: 1; /* Permite que los elementos crezcan para ocupar el espacio */
+    padding: 0 5px;
+    margin-bottom: 15px;
+  }
+
+  .gastos-flex-container .fecha-gasto-container {
+    flex-basis: 220px; /* Ancho base para el campo de fecha */
+  }
+
+  .gastos-flex-container .monto-gasto-container {
+    flex-basis: 150px; /* Ancho base para el campo de monto */
+  }
+
+  /* Estilos para campos de pago y cambio */
+  .cajasMetodoPago .form-group label {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .cajasMetodoPago .form-control {
+    font-size: 22px;
+    font-weight: bold;
+    height: 45px;
+  }
+  .cajasMetodoPago .input-group-addon {
+    font-size: 20px;
+  }
+
+  /* Estilos para el campo Total */
+  .cajaTotal th {
+    font-size: 15px;
+    padding-bottom: 5px;
+  }
+
+  .cajaTotal .form-control {
+    height: 45px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .cajaTotal .input-group-addon {
+    font-size: 20px;
+  }
+
+  @media (max-width: 767px) {
+    .form-group .input-group {
+      display: block;
+      width: 100%;
+    }
+    .form-group .input-group .input-group-addon,
+    .form-group .input-group .select2-container,
+    .form-group .input-group .form-control {
+      display: block;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: left;
+    }
+    .form-group .input-group .input-group-addon {
+      margin-bottom: 5px;
+    }
+    .form-group .input-group .input-group-addon {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: left;
+    }
+  }
 </style>
 
 <div class="content-wrapper text-uppercase ">
 
-  <section class="content-header">
+<!--   <section class="content-header">
 
 
 
@@ -396,7 +500,7 @@ if ($_SESSION["perfil"] == "") {
     </ol>
 
   </section>
-
+ -->
   <section class="content">
 
 
@@ -481,49 +585,41 @@ if ($_SESSION["perfil"] == "") {
                 ENTRADA DEL VENDEDOR
                 ======================================-->
 
-                <div class="form-group">
+                <div class="row">
 
-                  <div class="input-group">
-
-                    <span class="input-group-addon">USUARIO</span>
-
-                    <input type="text" class="form-control text-uppercase " id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
-
-                    <input type="hidden" name="idVendedor" value="<?php echo $_SESSION["id"]; ?>">
-
+                  <!-- ENTRADA DEL VENDEDOR -->
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon">USUARIO</span>
+                        <input type="text" class="form-control text-uppercase" id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
+                        <input type="hidden" name="idVendedor" value="<?php echo $_SESSION["id"]; ?>">
+                      </div>
+                    </div>
                   </div>
 
-                </div>
-
-                <!--=====================================
-                ENTRADA DEL CÓDIGO
-                ======================================-->
-             
-                <div class="form-group">
-
-                  <div class="input-group">
-
-                    <span class="input-group-addon">N° TICKET</span>
-
-                    <?php
-
-                    $item = null;
-
-                    $ultimoNroTicket = 0;
-                    if (isset($_SESSION["idArqueoCaja"])) {
-                      echo'<input type="hidden" name="idArqueoCaja" value="'.$_SESSION["idArqueoCaja"].'" hidden>
-                          <input type="hidden" name="idCaja" value="'.$_SESSION["idCaja"].'" hidden>
-                          ';
-                      $ultimoNroTicket = ControladorArqueo::ctrObtenerUltimoNroTicket($_SESSION["idArqueoCaja"]);
-                      $ultimoNroTicket++;
-                      echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' .$ultimoNroTicket. '" readonly>';
-                    } else {
-                       echo '<input type="text" class="form-control" value="0" readonly>';
-                    }
-                    ?>
-
+                  <!-- ENTRADA DEL CÓDIGO -->
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon">N° TICKET</span>
+                        <?php
+                        $item = null;
+                        $ultimoNroTicket = 0;
+                        if (isset($_SESSION["idArqueoCaja"])) {
+                          echo '<input type="hidden" name="idArqueoCaja" value="' . $_SESSION["idArqueoCaja"] . '" hidden>';
+                          echo '<input type="hidden" name="idCaja" value="' . $_SESSION["idCaja"] . '" hidden>';
+                          $ultimoNroTicket = ControladorArqueo::ctrObtenerUltimoNroTicket($_SESSION["idArqueoCaja"]);
+                          $ultimoNroTicket++;
+                          echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' . $ultimoNroTicket . '" readonly>';
+                        } else {
+                          echo '<input type="text" class="form-control" value="0" readonly>';
+                        }
+                        ?>
+                      </div>
+                    </div>
                   </div>
-
+                  
                 </div>
 
                 <!--=====================================
@@ -565,12 +661,18 @@ if ($_SESSION["perfil"] == "") {
                       }
                     ?>
                     
-                    <span class="input-group-addon">
-                                      <a href="arqueo-de-caja">
-                   <button type="button" class="btn btn-default btn-xs text-uppercase">Cerrar Caja</button>
-                 </a>
-               </span>
+                    <span class="input-group-addon hidden-xs">
+                      <a href="arqueo-de-caja">
+                        <button type="button" class="btn btn-default btn-xs text-uppercase">Cerrar Caja</button>
+                      </a>
+                    </span>
 
+                    <!-- Botón Cerrar Caja solo visible en móviles -->
+                    <div class="visible-xs" style="margin-top:10px; margin-bottom:10px;">
+                      <a href="arqueo-de-caja">
+                        <button type="button" class="btn btn-block btn-default btn-xs text-uppercase">Cerrar Caja</button>
+                      </a>
+                    </div>
 
                   </div>
 
@@ -631,7 +733,7 @@ if ($_SESSION["perfil"] == "") {
                   ENTRADA IMPUESTOS Y TOTAL
                   ======================================-->
 
-                  <div class="col-xs-6 pull-right">
+                  <div class="col-xs-6 pull-right cajaTotal">
 
                     <table style="width:100%">
 
@@ -725,15 +827,14 @@ if ($_SESSION["perfil"] == "") {
                       <label for="nuevoValorEfectivo">Pagado:</label>
                       <div class="input-group">
                         <span class="input-group-addon"><i><b>Bs</b></i></span>
-                        <input type="text" class="form-control input-sm" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="000000" required>
+                        <input type="text" class="form-control" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="0" required>
                       </div>
                     </div>
                     <div class="form-group " id="capturarCambioEfectivo">
                       <label for="nuevoCambioEfectivo">Cambio:</label>
                       <div class="input-group">
                         <span class="input-group-addon"><i><b>Bs</b></i></span>
-                        <input type="text" class="form-control input-sm" id="nuevoCambioEfectivo" name="nuevoCambioEfectivo" placeholder="000000" readonly
-                          required>
+                        <input type="text" class="form-control" id="nuevoCambioEfectivo" name="nuevoCambioEfectivo" placeholder="0" readonly required>
                       </div>
                     </div>
                   </div>
@@ -825,14 +926,15 @@ MODAL AGREGAR MESERO
             <div class="form-group">
               <div class="input-group">
               <span class="input-group-addon">TIPO DE GASTO</span>
-                  <select class="form-control input-sm" id="id_tipo_gasto" name="id_tipo_gasto" required>
+                  <select class="form-control" id="id_tipo_gasto" name="id_tipo_gasto" required>
 
                     <?php
                       $item = null;
                       $valor = null;
                       $categorias = ControladorTipoGasto::ctrMostrarTipoGasto($item, $valor);
                       foreach ($categorias as $key => $value) {
-                        echo '<option value="' . $value["id"] . '">' . $value["nombre"] . '</option>';
+                        $selected = (strtolower($value['nombre']) == 'otros') ? 'selected' : '';
+                        echo '<option value="' . $value["id"] . '" ' . $selected . '>' . $value["nombre"] . '</option>';
                       }
                     ?>
                   </select>
@@ -842,24 +944,23 @@ MODAL AGREGAR MESERO
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon">DESCRIPCIÓN</span>
-                <input type="text" class="form-control input-sm" name="descripcion_gasto" id="descripcion_gasto" placeholder="Ingresar Descripción" required>
+                <input type="text" class="form-control" name="descripcion_gasto" id="descripcion_gasto" placeholder="Ingresar Descripción" required>
               </div>
             </div>
-            <!-- ENTRADA PARA LA FECHA DE GASTO-->
-       
-             <div class="form-group">
-              <div class="input-group">
-
-                <!-- ENTRADA PARA LA FECHA DE GASTO-->
-                <span class="input-group-addon">FECHA DE GASTO</span>
-                <div class="input-group date">
-                  <input type="date" id="fecha_gasto" name="fecha_gasto" value="<?php echo date('Y-m-d'); ?>" class="form-control input-sm" required />
+            <!-- ENTRADA PARA LA FECHA DE GASTO Y MONTO -->
+            <div class="gastos-flex-container">
+              <div class="form-group fecha-gasto-container">
+                <div class="input-group">
+                  <span class="input-group-addon">FECHA DE GASTO</span>
+                  <input type="date" id="fecha_gasto" name="fecha_gasto" value="<?php echo date('Y-m-d'); ?>" class="form-control" required />
                 </div>
+              </div>
 
-                <!-- ENTRADA PARA EL MONTO-->
-                <span class="input-group-addon">MONTO</span>
-                <input type="number" class="form-control input-sm" name="monto_gasto" placeholder="Ingresar Monto" required>
-           
+              <div class="form-group monto-gasto-container">
+                <div class="input-group">
+                  <span class="input-group-addon">MONTO </span>
+                  <input type="number" class="form-control" name="monto_gasto" placeholder="Ingresa el monto" min="1" step="0.01">
+                </div>
               </div>
             </div>
         
@@ -868,7 +969,7 @@ MODAL AGREGAR MESERO
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon">FORMAS DE PAGO</span>
-                <select class="form-control input-sm" id="tipo_pago_gasto" name="tipo_pago_gasto">
+                <select class="form-control" id="tipo_pago_gasto" name="tipo_pago_gasto">
                         <option value="1">Efectivo</option>
                         <option value="2">QR</option>
                         <option value="3">Transferencia</option>

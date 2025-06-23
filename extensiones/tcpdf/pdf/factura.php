@@ -153,12 +153,12 @@ class imprimirFactura
             
             $texto = implode(' - ', array_filter([$preferencias, $nota]));
             $preferenciasYNotaAdicional = $texto 
-                ? '<br><span style="font-size: 6px; color: #666666;">(' . $texto . ')</span>' 
+                ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
           
             $html .= '
                 <tr>
-                    <td style="font-size: 9px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
+                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
@@ -181,7 +181,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-        <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!</p>
+         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL  75620296</p>
         ';
 
         $pdf->writeHTML($html, false, false, false, false, '');
@@ -193,7 +193,7 @@ class imprimirFactura
             <tbody>
             <tr>
                <td style="text-align:center;">
-                <span style="font-size: 16px;"><strong>&lt;&lt; COMANDA &gt;&gt;</strong></span><br>
+                <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
                 <span style="font-size: 15px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
                </td>
             </tr>
@@ -268,12 +268,12 @@ class imprimirFactura
             
             $texto = implode(' - ', array_filter([$preferencias, $notaIndividual]));
             $preferenciasYNotaAdicional = $texto 
-                ? '<br><span style="font-size: 6px; color: #666666;">(' . $texto . ')</span>' 
+                ? '<br><span style="font-size: 10px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
 
             $html .= '
                 <tr>
-                    <td style="font-size: 9px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
+                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
