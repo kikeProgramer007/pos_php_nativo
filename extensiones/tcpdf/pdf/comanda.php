@@ -15,7 +15,7 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 
-class imprimirFactura
+class imprimirComanda
 {
 
     public $codigo;
@@ -74,122 +74,7 @@ class imprimirFactura
         $cantidadFilas = count($productos); // Obtener la cantidad de productos
         $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas); // Altura total
 
-        // Crear el documento con la altura calculada
-        $pdfFactura = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
-
-        $pdfFactura->SetMargins(1, 1, 0);
-      
-        $pdfFactura->setPrintHeader(false);
-        $pdfFactura->setPrintFooter(false);
-        $pdfFactura->SetAutoPageBreak(false, 0); // Desactivar el salto de página automático
-
-        // Configuración adicional para caracteres especiales
-        $pdfFactura->setFontSubsetting(true);
-
-        $pdfFactura->AddPage();
-        $pdfFactura->SetFont('helvetica', '', 8);
-
-        // PRIMERO: Factura
-        $htmlFactura = '<table border="0">
-            <tbody>
-            <tr>
-                <td style="text-align:center;">
-                    <span style="font-size: 10px;">POLLOS ROSSY</span><br>
-                    <span style="font-size: 14px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
-                    <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
-                </td>
-            </tr>
-            <tbody>
-        </table>
-        <table >
-            <thead>
-            <tr>
-             <th width="25%"></th>
-             <th width="3%"></th>
-             <th width="72%"></th>
-            </tr>
-            </thead>
-          <tbody >
-            <tr >
-                <td width="25%"><strong>CLIENTE</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $respuestaCliente["nombre"] . '</td>
-            </tr>
-           
-            <tr >
-                <td width="25%"><strong>CAJERO/A</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $respuestaVendedor["nombre"] . '</td>
-            </tr>
-            <tr >
-                <td width="25%"><strong>VÍA PAGO</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $tipoPago . '</td>
-            </tr>
-            <tr><td colspan="2"></td></tr>
-          </tbody>
-        </table>';
-
-        $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
-
-        // Productos para la factura
-        $htmlFactura = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
-            <tbody>
-            <tr>
-                <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
-                <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
-                <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
-                <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
-                <th style="width:23%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
-            </tr>
-             ';
-
-        foreach ($productos as $item) {
-            $valorUnitario = number_format($item["precio_venta"], 2);
-            $precioTotal = number_format($item["subtotal"], 2);
-            $preferencias = $item['preferencias'] ?? '';
-            $nota = $item['nota_adicional'] ?? '';
-            
-            // Eliminar emojis de las preferencias
-            $preferencias = preg_replace('/[\x{1F300}-\x{1F9FF}]/u', '', $preferencias);
-            $preferencias = preg_replace('/[❌✅]/u', '', $preferencias);
-            $preferencias = trim($preferencias);
-            
-            $texto = implode(' - ', array_filter([$preferencias, $nota]));
-            $preferenciasYNotaAdicional = $texto 
-                ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
-                : '';
-          
-            $htmlFactura .= '
-                <tr>
-                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
-                    <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
-                    <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
-                    <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
-                    <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $precioTotal . '</td>
-                </tr>';
-        }
-
-        $htmlFactura .= '
-            <tr>
-                <td colspan="3" style="border-top: 0.5px solid #000000; text-align:left; font-size: 9px;"> <strong>TOTAL:</strong></td>
-                <td colspan="2" style="border-top: 0.5px solid #000000; text-align:right; font-size: 9px;"> Bs ' . $total . '</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:left; font-size: 9px;"> <strong>PAGADO:</strong></td>
-                <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . $totalPagado . '</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:left; font-size: 9px;"> <strong>CAMBIO:</strong></td>
-                <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . $cambio . '</td>
-            </tr>
-            </tbody>
-        </table>
-         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL  75620296</p>
-        ';
-
-        $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
-        $facturaBase64 = $this->pdfToBase64($pdfFactura);
+        // Crear el documento comanda con la altura calculada
 
         $pdfComanda = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
         $pdfComanda->SetMargins(1, 1, 0);
@@ -308,7 +193,6 @@ class imprimirFactura
         header('Content-Type: application/json');    
         echo json_encode([
             'success' => true,
-            'facturaBase64' => $facturaBase64,
             'comandaBase64' => $comandaBase64
         ]);
         exit;

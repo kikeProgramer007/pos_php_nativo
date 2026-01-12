@@ -543,7 +543,7 @@ $(".tablas").on("click", ".btnImprimirFactura", function() {
     popupWindow = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
 });
 var popupWindow2 = null;
-function imprimirFactura(codigoVenta){
+function imprimirFacturaOriginal(codigoVenta){
     // Tamaño de la ventana emergente
     var width = 1000;
     var height = 450;
@@ -569,6 +569,54 @@ function imprimirFactura(codigoVenta){
         popupWindow2.focus();
     }
 }
+
+
+ async function imprimirFactura(codigoVenta) {
+    try {
+			
+        // 1️⃣ Pedir los PDFs al servidor PHP
+        const response = await fetch(
+            `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
+				  method: 'GET',
+				 headers: { 'Content-Type': 'application/json' },
+			}
+        );
+
+        const data = await response.json();
+		console.log(data);
+        if (!data.success) {
+            alert('Error al generar los PDFs');
+            return;
+        }
+
+        // 2️⃣ Imprimir FACTURA (CAJA)
+         await fetch('http://localhost:3000/print-pdf', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+                 pdfBase64: data.facturaBase64,
+                 printerName: 'POSPrinter POS-80C-RED'
+             })
+         });
+
+        // 3️⃣ Imprimir COMANDA (COCINA)
+         await fetch('http://localhost:3000/print-pdf', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+                 pdfBase64: data.comandaBase64,
+                 printerName: 'POSPrinter POS-80C-RED-2'
+             })
+         });
+
+        console.log('✅ Impresión enviada correctamente');
+
+    } catch (error) {
+        console.error('❌ Error de impresión:', error);
+        alert('No se pudo imprimir');
+    }
+}
+
 
 /*=============================================
 FUNCIÓN PARA INICIALIZAR LA TABLA

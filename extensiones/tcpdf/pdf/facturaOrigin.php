@@ -20,10 +20,7 @@ class imprimirFactura
 
     public $codigo;
 
-    public function pdfToBase64(TCPDF $pdf): string {
-        return base64_encode($pdf->Output('', 'S')); // S = string
-    }
-    
+
     public function traerImpresionFactura()
     {
 
@@ -75,22 +72,22 @@ class imprimirFactura
         $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas); // Altura total
 
         // Crear el documento con la altura calculada
-        $pdfFactura = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
+        $pdf = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
 
-        $pdfFactura->SetMargins(1, 1, 0);
+        $pdf->SetMargins(1, 1, 0);
       
-        $pdfFactura->setPrintHeader(false);
-        $pdfFactura->setPrintFooter(false);
-        $pdfFactura->SetAutoPageBreak(false, 0); // Desactivar el salto de página automático
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->SetAutoPageBreak(false, 0); // Desactivar el salto de página automático
 
         // Configuración adicional para caracteres especiales
-        $pdfFactura->setFontSubsetting(true);
+        $pdf->setFontSubsetting(true);
 
-        $pdfFactura->AddPage();
-        $pdfFactura->SetFont('helvetica', '', 8);
+        $pdf->AddPage();
+        $pdf->SetFont('helvetica', '', 8);
 
         // PRIMERO: Factura
-        $htmlFactura = '<table border="0">
+        $html = '<table border="0">
             <tbody>
             <tr>
                 <td style="text-align:center;">
@@ -130,10 +127,10 @@ class imprimirFactura
           </tbody>
         </table>';
 
-        $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
+        $pdf->writeHTML($html, false, false, false, false, '');
 
         // Productos para la factura
-        $htmlFactura = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
+        $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
                 <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
@@ -160,7 +157,7 @@ class imprimirFactura
                 ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
           
-            $htmlFactura .= '
+            $html .= '
                 <tr>
                     <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
@@ -170,7 +167,7 @@ class imprimirFactura
                 </tr>';
         }
 
-        $htmlFactura .= '
+        $html .= '
             <tr>
                 <td colspan="3" style="border-top: 0.5px solid #000000; text-align:left; font-size: 9px;"> <strong>TOTAL:</strong></td>
                 <td colspan="2" style="border-top: 0.5px solid #000000; text-align:right; font-size: 9px;"> Bs ' . $total . '</td>
@@ -188,20 +185,12 @@ class imprimirFactura
          <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL  75620296</p>
         ';
 
-        $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
-        $facturaBase64 = $this->pdfToBase64($pdfFactura);
+        $pdf->writeHTML($html, false, false, false, false, '');
 
-        $pdfComanda = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
-        $pdfComanda->SetMargins(1, 1, 0);
-        $pdfComanda->setPrintHeader(false);
-        $pdfComanda->setPrintFooter(false);
-        $pdfComanda->SetAutoPageBreak(false, 0);
-        $pdfComanda->AddPage();
-        $pdfComanda->SetFont('helvetica', '', 9);
         // SEGUNDO: Comanda en nueva página
-        // $pdf->AddPage();
+        $pdf->AddPage();
         
-        $htmlComanda = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px; width:100%;">
+        $html = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px; width:100%;">
             <tbody>
             <tr>
                <td style="text-align:center;">
@@ -244,10 +233,10 @@ class imprimirFactura
           </tbody>
         </table>';
 
-        $pdfComanda->writeHTML($htmlComanda, false, false, false, false, '');
+        $pdf->writeHTML($html, false, false, false, false, '');
 
         // Productos para la comanda
-        $htmlComanda = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
+        $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
                 <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
@@ -283,7 +272,7 @@ class imprimirFactura
                 ? '<br><span style="font-size: 10px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
 
-            $htmlComanda .= '
+            $html .= '
                 <tr>
                     <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
@@ -292,27 +281,18 @@ class imprimirFactura
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $precioTotal . '</td>
                 </tr>';
         }
-
-        $htmlComanda .= '
+       
+        $html .= '
             <tr><td colspan="5"  style="border-top: 0.5px solid #000000; font-size: 9px;"></td></tr>
             '.$notaHtml.'
             </tbody>
         </table>
         ';
 
-        $pdfComanda->writeHTML($htmlComanda, false, false, false, false, '');
-        /* Convertir a Base64 */
-        $comandaBase64 = $this->pdfToBase64($pdfComanda);
-        // Generar el PDF
-        //$pdfComanda->Output('ExtractoDeVenta.pdf', 'I');
-        header('Content-Type: application/json');    
-        echo json_encode([
-            'success' => true,
-            'facturaBase64' => $facturaBase64,
-            'comandaBase64' => $comandaBase64
-        ]);
-        exit;
+        $pdf->writeHTML($html, false, false, false, false, '');
 
+        // Generar el PDF
+        $pdf->Output('ExtractoDeVenta.pdf', 'I');
         }else{
        
             echo'<script>

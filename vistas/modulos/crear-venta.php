@@ -595,7 +595,7 @@ if ($_SESSION["perfil"] == "") {
                         <input type="text" class="form-control text-uppercase" id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
                         <input type="hidden" name="idVendedor" value="<?php echo $_SESSION["id"]; ?>">
                       </div>
-                    </div>
+                    </div>http://localhost/pos_php_nativo/crear-venta
                   </div>
 
                   <!-- ENTRADA DEL CÓDIGO -->
@@ -846,14 +846,23 @@ if ($_SESSION["perfil"] == "") {
 
             </div>
 
-
             <div class="box-footer">
               <div class="row">
-                <div class="col-xs-6 text-left">
-               <!--    <div class="form-check">
+                <div class="col-xs-6 text-left ">
+              <!--<div class="form-check">
                     <input type="checkbox" class="form-check-input" id="sinImprimir" name="sinImprimir">
                     <label class="form-check-label" for="sinImprimir"> Sin Imprimir</label>
                   </div> -->
+                     <div class="">
+                      <div class="input-group">
+                        <span class="input-group-addon text-bold">IMPRIMIR EN</span>
+                        <select class="form-control input-sm text-uppercase text-bold" id="idTipoImpresion" name="idTipoImpresion">
+                          <option value="1" selected>CAJA Y COCINA</option>
+                          <option value="2">COCINA</option>
+                          <option value="3">CAJA</option>
+                        </select>
+                      </div>
+                    </div>
                 </div>
                 <div class="col-xs-6 text-right">
                   <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right">Guardar venta</button>
@@ -1101,10 +1110,10 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       processData: false,
       contentType: false,
       dataType: "json",
-      success: function(respuesta) {
+      success:  function(respuesta) {
         if(respuesta.status == "ok") {
-          imprimirFactura(respuesta.idVenta);
-           window.location.href = "crear-venta"; 
+           imprimirFactura(respuesta.idVenta);
+           //window.location.href = "crear-venta"; 
         }else if(respuesta.status == "recargar"){
           swal({
                         title:"Actualice de la caja",
