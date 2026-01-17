@@ -543,7 +543,7 @@ $(".tablas").on("click", ".btnImprimirFactura", function() {
     popupWindow = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
 });
 var popupWindow2 = null;
-function imprimirFacturaOriginal(codigoVenta){
+async function mostrarVenta(codigoVenta, idTipoImpresion) {
     // Tamaño de la ventana emergente
     var width = 1000;
     var height = 450;
@@ -562,21 +562,49 @@ function imprimirFacturaOriginal(codigoVenta){
     }
 
     // Abre la URL en una nueva ventana (popup)
-    popupWindow2 = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
-
+    if(idTipoImpresion == 1) {
+        popupWindow2 = window.open("extensiones/tcpdf/pdf/facturaComanda.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+    } else if(idTipoImpresion == 2) {
+        popupWindow2 = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+    } else if(idTipoImpresion == 3) {
+        popupWindow2 = window.open("extensiones/tcpdf/pdf/comanda.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+    }
     // Trae la ventana al frente (opcional)
     if (popupWindow2) {
         popupWindow2.focus();
     }
 }
 
+async function imprimirVentaSegunTipo(codigoVenta) {
+    // Aquí puedes agregar lógica para determinar el tipo de venta
+    // Por ejemplo, podrías hacer una solicitud AJAX para obtener el tipo de venta
+    // y luego llamar a la función de impresión correspondiente.  
+    var idTipoImpresion = $("#idTipoImpresion").val();  
+    try {
+      
+        if (idTipoImpresion == 1) {//Caja y Cocina
+            await imprimirCajaCocina(codigoVenta);
+        } else if (idTipoImpresion == 2) {//Solo Caja
+          await imprimirSoloCaja(codigoVenta);
+        } else if (idTipoImpresion == 3) {//Solo Cocina
+           await imprimirSoloCocina(codigoVenta);
+        }
+    }catch (error) {
+        console.error('❌ Error al determinar el tipo de impresión:', error);
+        alert('No se pudo determinar el tipo de impresión');
+    }finally {
+        // Siempre imprimir la factura original en ventana emergente
+       await mostrarVenta(codigoVenta, idTipoImpresion);
+         window.location.href = "crear-venta"; 
+    }
+}
 
- async function imprimirFactura(codigoVenta) {
+ async function imprimirCajaCocina(codigoVenta) {
     try {
 			
         // 1️⃣ Pedir los PDFs al servidor PHP
         const response = await fetch(
-            `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
+            `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
 				  method: 'GET',
 				 headers: { 'Content-Type': 'application/json' },
 			}
@@ -617,6 +645,66 @@ function imprimirFacturaOriginal(codigoVenta){
     }
 }
 
+async function imprimirSoloCaja(codigoVenta) {
+    try {
+        // Pedir el PDF al servidor PHP     
+        const response = await fetch(
+            `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
+                  method: 'GET',
+                 headers: { 'Content-Type': 'application/json' },
+            }
+        );
+
+        const data = await response.json(); 
+        if (!data.success) {
+            alert('Error al generar el PDF');
+            return;
+        }      
+        // Imprimir FACTURA (CAJA)
+         await fetch('http://localhost:3000/print-pdf', {
+             method: 'POST',    
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pdfBase64: data.facturaBase64,
+                    printerName: 'POSPrinter POS-80C-RED'
+                })
+         });
+        console.log('✅ Impresión enviada correctamente');
+    } catch (error) {
+        console.error('❌ Error de impresión:', error);
+        alert('No se pudo imprimir');
+    }   
+}
+
+async function imprimirSoloCocina(codigoVenta) {
+    try {
+        // Pedir el PDF al servidor PHP         
+        const response = await fetch(
+            `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`,{
+                  method: 'GET',
+                 headers: { 'Content-Type': 'application/json' },
+            }
+        );  
+        const data = await response.json();
+        if (!data.success) {
+            alert('Error al generar el PDF');
+            return;
+        }
+        // Imprimir COMANDA (COCINA)
+            await fetch('http://localhost:3000/print-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    pdfBase64: data.comandaBase64,
+                    printerName: 'POSPrinter POS-80C-RED-2'
+                })
+            });
+        console.log('✅ Impresión enviada correctamente');
+    } catch (error) {
+        console.error('❌ Error de impresión:', error);
+        alert('No se pudo imprimir');
+    }       
+}
 
 /*=============================================
 FUNCIÓN PARA INICIALIZAR LA TABLA

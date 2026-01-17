@@ -15,15 +15,16 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 
-class imprimirFactura
+class imprimirFacturaComanda
 {
+
     public $codigo;
 
     public function pdfToBase64(TCPDF $pdf): string {
         return base64_encode($pdf->Output('', 'S')); // S = string
     }
     
-    public function traerImpresionFactura()
+    public function traerImpresionFacturaComanda()
     {
 
         // Obtener información de la venta
@@ -188,17 +189,128 @@ class imprimirFactura
         ';
 
         $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
-        // Convertir el PDF de la factura a Base64
         $facturaBase64 = $this->pdfToBase64($pdfFactura);
+
+        $pdfComanda = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
+        $pdfComanda->SetMargins(1, 1, 0);
+        $pdfComanda->setPrintHeader(false);
+        $pdfComanda->setPrintFooter(false);
+        $pdfComanda->SetAutoPageBreak(false, 0);
+        $pdfComanda->AddPage();
+        $pdfComanda->SetFont('helvetica', '', 9);
+        // SEGUNDO: Comanda en nueva página
+        // $pdf->AddPage();
+        
+        $htmlComanda = '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px; width:100%;">
+            <tbody>
+            <tr>
+               <td style="text-align:center;">
+                <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
+                <span style="font-size: 15px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
+               </td>
+            </tr>
+            <tbody>
+        </table>
+        <table >
+            <thead>
+            <tr>
+             <th width="25%"></th>
+             <th width="3%"></th>
+             <th width="72%"></th>
+            </tr>
+            </thead>
+          <tbody >
+            <tr >
+                <td width="25%"><strong>CLIENTE</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaCliente["nombre"] . '</td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>MESERO/A</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaMesero["nombre"] . '</td>
+            </tr>
+            <tr >
+                <td width="25%"><strong>FECHA </strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $fecha . '</td>
+            </tr>
+            <tr >
+                <td width="25%"><strong>ATENCIÓN</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaVenta["forma_atencion"] . '</td>
+            </tr>
+            <tr><td colspan="3"></td></tr>
+          </tbody>
+        </table>';
+
+        $pdfComanda->writeHTML($htmlComanda, false, false, false, false, '');
+
+        // Productos para la comanda
+        $htmlComanda = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
+            <tbody>
+            <tr>
+                <th style="width:41%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:left;font-weight: bold; ">DETALLE</th>
+                <th style="width:9%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">F.A</th>
+                <th style="width:8%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:center; font-weight: bold;">CNT</th>
+                <th style="width:17%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;text-align:right; font-weight: bold;">PRECIO</th>
+                <th style="width:23%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
+            </tr>
+             ';
+
+       $notaHtml = '';
+        if(!empty($notaGeneral)){
+        $notaHtml = '<tr>
+                    <td width="13%"><strong>NOTA:</strong></td>
+                    
+                    <td width="86%">' . $notaGeneral . '</td>
+                </tr>';
+        }
+        
+        foreach ($productos as $item) {
+            $valorUnitario = number_format($item["precio_venta"], 2);
+            $precioTotal = number_format($item["subtotal"], 2);
+            $preferencias = $item['preferencias'] ?? '';
+            $notaIndividual = $item['nota_adicional'] ?? '';
+            
+            // Eliminar emojis de las preferencias
+            $preferencias = preg_replace('/[\x{1F300}-\x{1F9FF}]/u', '', $preferencias);
+            $preferencias = preg_replace('/[❌✅]/u', '', $preferencias);
+            $preferencias = trim($preferencias);
+            
+            $texto = implode(' - ', array_filter([$preferencias, $notaIndividual]));
+            $preferenciasYNotaAdicional = $texto 
+                ? '<br><span style="font-size: 10px; color: #666666;">(' . $texto . ')</span>' 
+                : '';
+
+            $htmlComanda .= '
+                <tr>
+                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
+                    <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
+                    <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
+                    <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
+                    <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $precioTotal . '</td>
+                </tr>';
+        }
+
+        $htmlComanda .= '
+            <tr><td colspan="5"  style="border-top: 0.5px solid #000000; font-size: 9px;"></td></tr>
+            '.$notaHtml.'
+            </tbody>
+        </table>
+        ';
+
+        $pdfComanda->writeHTML($htmlComanda, false, false, false, false, '');
+        /* Convertir a Base64 */
+        $comandaBase64 = $this->pdfToBase64($pdfComanda);
         // Generar el PDF
-       
+        //$pdfComanda->Output('ExtractoDeVenta.pdf', 'I');
         header('Content-Type: application/json');    
         echo json_encode([
             'success' => true,
             'facturaBase64' => $facturaBase64,
-            'pdf'  => $pdfFactura->Output('ExtractoDeVenta.pdf', 'I')
+            'comandaBase64' => $comandaBase64
         ]);
-        
         exit;
 
         }else{
@@ -211,6 +323,6 @@ class imprimirFactura
     }
 }
 
-$factura = new imprimirFactura();
+$factura = new imprimirFacturaComanda();
 $factura->codigo = $_GET["codigo"];
-$factura->traerImpresionFactura();
+$factura->traerImpresionFacturaComanda();

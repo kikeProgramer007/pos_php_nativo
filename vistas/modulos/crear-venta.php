@@ -858,8 +858,8 @@ if ($_SESSION["perfil"] == "") {
                         <span class="input-group-addon text-bold">IMPRIMIR EN</span>
                         <select class="form-control input-sm text-uppercase text-bold" id="idTipoImpresion" name="idTipoImpresion">
                           <option value="1" selected>CAJA Y COCINA</option>
-                          <option value="2">COCINA</option>
-                          <option value="3">CAJA</option>
+                          <option value="2">CAJA</option>
+                          <option value="3">COCINA</option>
                         </select>
                       </div>
                     </div>
@@ -1112,8 +1112,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       dataType: "json",
       success:  function(respuesta) {
         if(respuesta.status == "ok") {
-           imprimirFactura(respuesta.idVenta);
-           //window.location.href = "crear-venta"; 
+            imprimirVentaSegunTipo(respuesta.idVenta);
         }else if(respuesta.status == "recargar"){
           swal({
                         title:"Actualice de la caja",

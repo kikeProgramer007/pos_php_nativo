@@ -23,8 +23,8 @@ class imprimirComanda
     public function pdfToBase64(TCPDF $pdf): string {
         return base64_encode($pdf->Output('', 'S')); // S = string
     }
-    
-    public function traerImpresionFactura()
+
+    public function traerImpresionComanda()
     {
 
         // Obtener información de la venta
@@ -59,8 +59,6 @@ class imprimirComanda
         $itemVendedor = "id";
         $valorVendedor = $respuestaVenta["id_vendedor"];
         $respuestaVendedor = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($itemVendedor, $valorVendedor);
-
-
 
         // Configuración del PDF para impresora térmica
         require_once('tcpdf_include.php');
@@ -207,6 +205,6 @@ class imprimirComanda
     }
 }
 
-$factura = new imprimirFactura();
+$factura = new imprimirComanda();
 $factura->codigo = $_GET["codigo"];
-$factura->traerImpresionFactura();
+$factura->traerImpresionComanda();
