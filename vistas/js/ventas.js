@@ -543,7 +543,7 @@ $(".tablas").on("click", ".btnImprimirFactura", function() {
     popupWindow = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
 });
 var popupWindow2 = null;
-async function mostrarVenta(codigoVenta, idTipoImpresion) {
+async function mostrarVenta(base64) {
     // Tamaño de la ventana emergente
     var width = 1000;
     var height = 450;
@@ -552,26 +552,32 @@ async function mostrarVenta(codigoVenta, idTipoImpresion) {
     var top = (screen.height / 3) - (height / 3);
     var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
 
-    // Intenta cerrar la ventana anterior si existe y no está cerrada
     try {
-        if (popupWindow2 && !popupWindow2.closed) {
-            popupWindow2.close();
+        // Convertir base64 a blob
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
         }
-    } catch (e) {
-        // Si hay error, ignóralo (por ejemplo, si la ventana ya fue cerrada manualmente)
-    }
+        const blob = new Blob([bytes], { type: 'application/pdf' });
 
-    // Abre la URL en una nueva ventana (popup)
-    if(idTipoImpresion == 1) {
-        popupWindow2 = window.open("extensiones/tcpdf/pdf/facturaComanda.php?codigo=" + codigoVenta, "_blank", windowFeatures);
-    } else if(idTipoImpresion == 2) {
-        popupWindow2 = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
-    } else if(idTipoImpresion == 3) {
-        popupWindow2 = window.open("extensiones/tcpdf/pdf/comanda.php?codigo=" + codigoVenta, "_blank", windowFeatures);
-    }
-    // Trae la ventana al frente (opcional)
-    if (popupWindow2) {
-        popupWindow2.focus();
+        // Crear URL del blob
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Si la ventana ya existe y está abierta, solo traerla al frente
+        if (popupWindow2 && !popupWindow2.closed) {
+            popupWindow2.focus();
+        } else {
+            // Si no existe o fue cerrada, abrir una nueva
+            popupWindow2 = window.open(blobUrl, "_blank", windowFeatures);
+            if (popupWindow2) {
+                popupWindow2.focus();
+            }
+        }
+
+    } catch (error) {
+        console.error('❌ Error al mostrar la venta:', error);
+        alert('Error al procesar el PDF: ' + error.message);
     }
 }
 
@@ -593,9 +599,9 @@ async function imprimirVentaSegunTipo(codigoVenta) {
         console.error('❌ Error al determinar el tipo de impresión:', error);
         alert('No se pudo determinar el tipo de impresión');
     }finally {
-        // Siempre imprimir la factura original en ventana emergente
-       await mostrarVenta(codigoVenta, idTipoImpresion);
-         window.location.href = "crear-venta"; 
+        setTimeout(() => {
+            window.location.href = "crear-venta";
+        }, 500);
     }
 }
 
@@ -610,15 +616,20 @@ async function imprimirVentaSegunTipo(codigoVenta) {
 			}
         );
 
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
         const data = await response.json();
-		console.log(data);
+		console.log('📋 Respuesta del servidor:', data);
+
         if (!data.success) {
             alert('Error al generar los PDFs');
             return;
         }
-
+        await mostrarVenta(data.facturaBase64);
         // 2️⃣ Imprimir FACTURA (CAJA)
-         await fetch('http://localhost:3000/print-pdf', {
+        const printCaja = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({
@@ -627,8 +638,12 @@ async function imprimirVentaSegunTipo(codigoVenta) {
              })
          });
 
+         if (!printCaja.ok) {
+             console.warn('⚠️ Advertencia: No se pudo imprimir en caja. Continuando...');
+         }
+
         // 3️⃣ Imprimir COMANDA (COCINA)
-         await fetch('http://localhost:3000/print-pdf', {
+        const printCocina = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({
@@ -637,11 +652,15 @@ async function imprimirVentaSegunTipo(codigoVenta) {
              })
          });
 
+         if (!printCocina.ok) {
+             console.warn('⚠️ Advertencia: No se pudo imprimir en cocina. Continuando...');
+         }
+
         console.log('✅ Impresión enviada correctamente');
 
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-        alert('No se pudo imprimir');
+        alert('Error al procesar la impresión: ' + error.message);
     }
 }
 
@@ -655,13 +674,18 @@ async function imprimirSoloCaja(codigoVenta) {
             }
         );
 
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
         const data = await response.json(); 
         if (!data.success) {
             alert('Error al generar el PDF');
             return;
-        }      
+        }
+        await mostrarVenta(data.facturaBase64);
         // Imprimir FACTURA (CAJA)
-         await fetch('http://localhost:3000/print-pdf', {
+        const printResponse = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',    
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -669,10 +693,14 @@ async function imprimirSoloCaja(codigoVenta) {
                     printerName: 'POSPrinter POS-80C-RED'
                 })
          });
+
+         if (!printResponse.ok) {
+             console.warn('⚠️ Advertencia: No se pudo imprimir. Continuando...');
+         }
         console.log('✅ Impresión enviada correctamente');
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-        alert('No se pudo imprimir');
+        alert('Error al procesar la impresión: ' + error.message);
     }   
 }
 
@@ -700,6 +728,7 @@ async function imprimirSoloCocina(codigoVenta) {
                 })
             });
         console.log('✅ Impresión enviada correctamente');
+        await mostrarVenta(data.comandaBase64);
     } catch (error) {
         console.error('❌ Error de impresión:', error);
         alert('No se pudo imprimir');

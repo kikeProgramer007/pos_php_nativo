@@ -190,13 +190,11 @@ class imprimirFactura
         $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
         // Convertir el PDF de la factura a Base64
         $facturaBase64 = $this->pdfToBase64($pdfFactura);
-        // Generar el PDF
-       
+        
         header('Content-Type: application/json');    
         echo json_encode([
             'success' => true,
-            'facturaBase64' => $facturaBase64,
-            'pdf'  => $pdfFactura->Output('ExtractoDeVenta.pdf', 'I')
+            'facturaBase64' => $facturaBase64
         ]);
         
         exit;
