@@ -595,7 +595,7 @@ if ($_SESSION["perfil"] == "") {
                         <input type="text" class="form-control text-uppercase" id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
                         <input type="hidden" name="idVendedor" value="<?php echo $_SESSION["id"]; ?>">
                       </div>
-                    </div>http://localhost/pos_php_nativo/crear-venta
+                    </div>
                   </div>
 
                   <!-- ENTRADA DEL CÓDIGO -->

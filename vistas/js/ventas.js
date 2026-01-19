@@ -519,29 +519,130 @@ $(".tablas").on("click", ".btnEliminarVenta", function(){
 IMPRIMIR FACTURA
 =============================================*/
 
-// Variable global para mantener la referencia de la ventana emergente
-var popupWindow = null;
-
-$(".tablas").on("click", ".btnImprimirFactura", function() {
+ $(".tablas").on("click", ".btnVerFactura", async function() {
     var codigoVenta = $(this).attr("codigoVenta");
 
-    // Tamaño de la ventana emergente
-    var width = 800;
-    var height = 600;
+    // Pedir el PDF al servidor PHP     
+        const response = await fetch(
+            `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
+                  method: 'GET',
+                 headers: { 'Content-Type': 'application/json' },
+            }
+        );
 
-    // Configuración de la ventana emergente
-    var left = (screen.width / 2) - (width / 2);
-    var top = (screen.height / 2) - (height / 2);
-    var windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
 
-    // Cierra la ventana emergente existente si está abierta
-    if (popupWindow && !popupWindow.closed) {
-        popupWindow.close();
-    }
+        const data = await response.json();
+		console.log('📋 Respuesta del servidor:', data);
 
-    // Abre la URL en una nueva ventana (popup)
-    popupWindow = window.open("extensiones/tcpdf/pdf/factura.php?codigo=" + codigoVenta, "_blank", windowFeatures);
+        if (!data.success) {
+            alert('Error al generar los PDFs');
+            return;
+        }
+        await mostrarVenta(data.facturaComandaBase64);
 });
+/*=============================================
+IMPRIMIR FACTURA
+=============================================*/
+
+$(".tablas").on("click", ".btnImprimirFactura", async function(){
+
+	var idVenta = $(this).attr("codigoVenta");
+
+    swal({
+        title: "Tipo de impresión",
+        input: "select",
+        inputOptions: {
+            "1": "Caja y Cocina",
+            "2": "Solo Caja",
+            "3": "Solo Cocina"
+        },
+        inputPlaceholder: "Seleccione",
+        showCancelButton: true,
+        confirmButtonText: "Imprimir",
+        cancelButtonText: "Cancelar",
+        width: 350,
+        padding: 20,
+        confirmButtonClass: 'btn btn-warning btn-sm swal-btn-margin',
+        cancelButtonClass: 'btn btn-default btn-sm swal-btn-margin',
+        inputClass: 'form-control input-sm swal-select-bootstrap',
+        buttonsStyling:false,
+        inputValidator: function(value) {
+            return new Promise(function(resolve) {
+            if (value) {
+                resolve();
+            } else {
+                resolve("Seleccione una opción");
+            }
+            });
+        },
+        }).then( async function(result) {
+        if (result.value) {
+            // Llamar a la función de impresión
+          await imprimirVentaSegunTipo(idVenta, result.value,false);
+        }
+        });
+  })
+
+ $(".tablas").on("click", ".btnImprimirFacturass", async function() {
+    var codigoVenta = $(this).attr("codigoVenta");
+  const response = await fetch(
+        `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+        }
+    );
+    if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('📋 Respuesta del servidor:', data);
+    if (!data.success) {
+        alert('Error al generar los PDFs');
+        return;
+    }
+    await mostrarVenta(data.facturaComandaBase64);
+
+    try {
+			
+        // 2️⃣ Imprimir FACTURA (CAJA)
+        const printCaja = await fetch('http://localhost:3000/print-pdf', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+                 pdfBase64: data.facturaBase64,
+                 printerName: 'IMPRESORA-CAJA'
+             })
+         });
+
+         if (!printCaja.ok) {
+             console.warn('⚠️ Advertencia: No se pudo imprimir en caja. Continuando...');
+         }
+
+        // 3️⃣ Imprimir COMANDA (COCINA)
+        const printCocina = await fetch('http://localhost:3000/print-pdf', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+                 pdfBase64: data.comandaBase64,
+                 printerName: 'IMPRESORA-COCINA'
+             })
+         });
+
+         if (!printCocina.ok) {
+             console.warn('⚠️ Advertencia: No se pudo imprimir en cocina. Continuando...');
+         }
+
+        console.log('✅ Impresión enviada correctamente');
+
+    } catch (error) {
+        console.error('❌ Error de impresión:', error);
+    }
+});
+
+
 var popupWindow2 = null;
 async function mostrarVenta(base64) {
     // Tamaño de la ventana emergente
@@ -581,11 +682,15 @@ async function mostrarVenta(base64) {
     }
 }
 
-async function imprimirVentaSegunTipo(codigoVenta) {
+async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, recargarPagina = true) {
     // Aquí puedes agregar lógica para determinar el tipo de venta
     // Por ejemplo, podrías hacer una solicitud AJAX para obtener el tipo de venta
-    // y luego llamar a la función de impresión correspondiente.  
-    var idTipoImpresion = $("#idTipoImpresion").val();  
+    // y luego llamar a la función de impresión correspondiente.
+    var idTipoImpresion = idParameterImpresion;
+    if (!idTipoImpresion){
+     idTipoImpresion = $("#idTipoImpresion").val();  
+    }
+    
     try {
       
         if (idTipoImpresion == 1) {//Caja y Cocina
@@ -597,44 +702,43 @@ async function imprimirVentaSegunTipo(codigoVenta) {
         }
     }catch (error) {
         console.error('❌ Error al determinar el tipo de impresión:', error);
-        alert('No se pudo determinar el tipo de impresión');
     }finally {
-        setTimeout(() => {
+        if (recargarPagina){
+            setTimeout(() => {
             window.location.href = "crear-venta";
         }, 500);
+        }
     }
 }
 
  async function imprimirCajaCocina(codigoVenta) {
+    // 1 Pedir los PDFs al servidor PHP
+    const response = await fetch(
+        `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+        }
+    );
+    if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('📋 Respuesta del servidor:', data);
+    if (!data.success) {
+        alert('Error al generar los PDFs');
+        return;
+    }
+    await mostrarVenta(data.facturaComandaBase64);
+
     try {
 			
-        // 1️⃣ Pedir los PDFs al servidor PHP
-        const response = await fetch(
-            `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
-				  method: 'GET',
-				 headers: { 'Content-Type': 'application/json' },
-			}
-        );
-
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const data = await response.json();
-		console.log('📋 Respuesta del servidor:', data);
-
-        if (!data.success) {
-            alert('Error al generar los PDFs');
-            return;
-        }
-        await mostrarVenta(data.facturaBase64);
         // 2️⃣ Imprimir FACTURA (CAJA)
         const printCaja = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({
                  pdfBase64: data.facturaBase64,
-                 printerName: 'POSPrinter POS-80C-RED'
+                 printerName: 'IMPRESORA-CAJA'
              })
          });
 
@@ -648,7 +752,7 @@ async function imprimirVentaSegunTipo(codigoVenta) {
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({
                  pdfBase64: data.comandaBase64,
-                 printerName: 'POSPrinter POS-80C-RED-2'
+                 printerName: 'IMPRESORA-COCINA'
              })
          });
 
@@ -660,37 +764,35 @@ async function imprimirVentaSegunTipo(codigoVenta) {
 
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-        alert('Error al procesar la impresión: ' + error.message);
     }
 }
 
 async function imprimirSoloCaja(codigoVenta) {
+    // 1 Pedir el PDF al servidor PHP     
+    const response = await fetch(
+        `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+        }
+    );
+    if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+    }
+    const data = await response.json(); 
+    if (!data.success) {
+        alert('Error al generar el PDF');
+        return;
+    }
+    await mostrarVenta(data.facturaBase64);
+
     try {
-        // Pedir el PDF al servidor PHP     
-        const response = await fetch(
-            `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
-                  method: 'GET',
-                 headers: { 'Content-Type': 'application/json' },
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const data = await response.json(); 
-        if (!data.success) {
-            alert('Error al generar el PDF');
-            return;
-        }
-        await mostrarVenta(data.facturaBase64);
         // Imprimir FACTURA (CAJA)
         const printResponse = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',    
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     pdfBase64: data.facturaBase64,
-                    printerName: 'POSPrinter POS-80C-RED'
+                    printerName: 'IMPRESORA-CAJA'
                 })
          });
 
@@ -700,38 +802,38 @@ async function imprimirSoloCaja(codigoVenta) {
         console.log('✅ Impresión enviada correctamente');
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-        alert('Error al procesar la impresión: ' + error.message);
     }   
 }
 
 async function imprimirSoloCocina(codigoVenta) {
-    try {
-        // Pedir el PDF al servidor PHP         
-        const response = await fetch(
-            `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`,{
-                  method: 'GET',
-                 headers: { 'Content-Type': 'application/json' },
-            }
-        );  
-        const data = await response.json();
-        if (!data.success) {
-            alert('Error al generar el PDF');
-            return;
+    // Pedir el PDF al servidor PHP         
+    const response = await fetch(
+        `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`,{
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
         }
+    );  
+    const data = await response.json();
+    if (!data.success) {
+        alert('Error al generar el PDF');
+        return;
+    }
+    await mostrarVenta(data.comandaBase64);
+    try {
+
         // Imprimir COMANDA (COCINA)
             await fetch('http://localhost:3000/print-pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     pdfBase64: data.comandaBase64,
-                    printerName: 'POSPrinter POS-80C-RED-2'
+                    printerName: 'IMPRESORA-COCINA'
                 })
             });
         console.log('✅ Impresión enviada correctamente');
-        await mostrarVenta(data.comandaBase64);
+  
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-        alert('No se pudo imprimir');
     }       
 }
 

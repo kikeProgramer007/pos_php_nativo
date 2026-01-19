@@ -90,8 +90,6 @@ if ($_SESSION["perfil"] == "") {
           <tbody>
 
             <?php
-
-        
  
             ?>
 

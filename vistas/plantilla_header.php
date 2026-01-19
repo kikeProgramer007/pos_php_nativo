@@ -133,6 +133,10 @@
 .select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
     height: auto !important;
 }
+.swal-btn-margin{
+    margin-left: 4px !important;
+    margin-right: 4px !important;
+}
 </style>
 
 <!-- 
