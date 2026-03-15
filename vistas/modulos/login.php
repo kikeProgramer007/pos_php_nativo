@@ -30,9 +30,13 @@
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
 
-      <div class="form-group has-feedback" style="margin-top: 20px;">
-        <input type="password" class="form-control" placeholder="Contraseña" name="ingPassword" required>
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      <div class="form-group has-feedback" style="margin-top: 20px; position: relative;">
+        <input id="passwordInput" type="password" class="form-control" placeholder="Contraseña" name="ingPassword" required>
+      
+        <!-- Botón/ícono para mostrar/ocultar contraseña -->
+        <span id="togglePassword" style="position: absolute; right: 10px; top: 8px; cursor: pointer; z-index: 2;">
+          <span class="glyphicon glyphicon-eye-open"></span>
+        </span>
       </div>
 
       <div class="row">
@@ -51,3 +55,26 @@
     </form>
   </div>
 </div>
+<script>
+  (function() {
+    var input = document.getElementById('passwordInput');
+    var toggle = document.getElementById('togglePassword');
+    if (!input || !toggle) return;
+
+    toggle.addEventListener('click', function() {
+      var isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      // Cambia el icono si tu plantilla tiene ambos iconos disponibles
+      var icon = toggle.querySelector('.glyphicon');
+      if (icon) {
+        if (isPassword) {
+          icon.classList.remove('glyphicon-eye-open');
+          icon.classList.add('glyphicon-eye-close');
+        } else {
+          icon.classList.remove('glyphicon-eye-close');
+          icon.classList.add('glyphicon-eye-open');
+        }
+      }
+    });
+  })();
+</script>
