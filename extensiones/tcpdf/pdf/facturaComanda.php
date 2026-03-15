@@ -93,7 +93,7 @@ class imprimirFacturaComanda
         $html .= '</tbody></table>';
         
         if (!$esComanda) {
-            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 75620296</p>';
+            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>SISTEMAS AL 73982982</p>';
         }
 
         return $html;
