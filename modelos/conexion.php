@@ -8,7 +8,7 @@ class Conexion {
             $link = new PDO(
                 "mysql:host=localhost;dbname=pos_php_nativo-main;charset=utf8",
                 "root",
-                ""
+                "root"
             );
 
             // Modo de errores con excepciones

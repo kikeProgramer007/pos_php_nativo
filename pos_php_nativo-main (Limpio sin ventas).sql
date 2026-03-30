@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 15-03-2026 a las 19:17:17
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Host: localhost
+-- Generation Time: Mar 23, 2026 at 12:43 AM
+-- Server version: 9.6.0
+-- PHP Version: 8.5.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,61 +18,61 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `pos_php_nativo-main`
+-- Database: `pos_php_nativo-main`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `arqueo_caja`
+-- Table structure for table `arqueo_caja`
 --
 
 CREATE TABLE `arqueo_caja` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
   `fecha_apertura` datetime DEFAULT NULL,
   `fecha_cierre` datetime DEFAULT NULL,
-  `Bs200` int(11) NOT NULL DEFAULT 0,
-  `Bs100` int(11) NOT NULL DEFAULT 0,
-  `Bs50` int(11) NOT NULL DEFAULT 0,
-  `Bs20` int(11) NOT NULL DEFAULT 0,
-  `Bs10` int(11) NOT NULL DEFAULT 0,
-  `Bs5` int(11) NOT NULL DEFAULT 0,
-  `Bs2` int(11) NOT NULL DEFAULT 0,
-  `Bs1` int(11) NOT NULL DEFAULT 0,
-  `Bs050` int(11) NOT NULL DEFAULT 0,
-  `Bs020` int(11) NOT NULL DEFAULT 0,
-  `monto_ventas` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `monto_apertura` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `total_ingresos` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `gastos_operativos` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `monto_compras` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `total_egresos` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `resultado_neto` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `efectivo_en_caja` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `diferencia` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `estado` varchar(20) DEFAULT NULL,
-  `nroTicket` int(11) NOT NULL,
+  `Bs200` int NOT NULL DEFAULT '0',
+  `Bs100` int NOT NULL DEFAULT '0',
+  `Bs50` int NOT NULL DEFAULT '0',
+  `Bs20` int NOT NULL DEFAULT '0',
+  `Bs10` int NOT NULL DEFAULT '0',
+  `Bs5` int NOT NULL DEFAULT '0',
+  `Bs2` int NOT NULL DEFAULT '0',
+  `Bs1` int NOT NULL DEFAULT '0',
+  `Bs050` int NOT NULL DEFAULT '0',
+  `Bs020` int NOT NULL DEFAULT '0',
+  `monto_ventas` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_apertura` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `total_ingresos` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `gastos_operativos` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_compras` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `total_egresos` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `resultado_neto` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `efectivo_en_caja` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `diferencia` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `estado` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nroTicket` int NOT NULL,
   `tipo_cambio` decimal(11,2) DEFAULT NULL,
-  `id_caja` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL
+  `id_caja` int NOT NULL,
+  `id_usuario` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `cajas`
+-- Table structure for table `cajas`
 --
 
 CREATE TABLE `cajas` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(35) NOT NULL,
-  `numero_caja` varchar(10) NOT NULL,
-  `nro_ticket` int(10) NOT NULL,
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `nombre` varchar(35) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `numero_caja` varchar(10) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `nro_ticket` int NOT NULL,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `cajas`
+-- Dumping data for table `cajas`
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
@@ -82,18 +82,18 @@ INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALU
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `categorias`
+-- Table structure for table `categorias`
 --
 
 CREATE TABLE `categorias` (
-  `id` int(11) NOT NULL,
-  `categoria` text NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `categoria` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `categorias`
+-- Dumping data for table `categorias`
 --
 
 INSERT INTO `categorias` (`id`, `categoria`, `fecha`, `estado`) VALUES
@@ -107,18 +107,18 @@ INSERT INTO `categorias` (`id`, `categoria`, `fecha`, `estado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `clientes`
+-- Table structure for table `clientes`
 --
 
 CREATE TABLE `clientes` (
-  `id` int(11) NOT NULL,
-  `nombre` text NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `nombre` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `clientes`
+-- Dumping data for table `clientes`
 --
 
 INSERT INTO `clientes` (`id`, `nombre`, `fecha`, `estado`) VALUES
@@ -127,32 +127,32 @@ INSERT INTO `clientes` (`id`, `nombre`, `fecha`, `estado`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `compras`
+-- Table structure for table `compras`
 --
 
 CREATE TABLE `compras` (
-  `id` int(11) NOT NULL,
-  `codigo` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `codigo` int NOT NULL,
   `total` decimal(10,2) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_proveedor` int(11) NOT NULL,
-  `fecha_alta` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1,
-  `id_arqueo_caja` bigint(20) UNSIGNED DEFAULT NULL
+  `id_usuario` int NOT NULL,
+  `id_proveedor` int NOT NULL,
+  `fecha_alta` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `estado` tinyint(1) NOT NULL DEFAULT '1',
+  `id_arqueo_caja` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `detalle_compra`
+-- Table structure for table `detalle_compra`
 --
 
 CREATE TABLE `detalle_compra` (
-  `id` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `id_compra` int(11) NOT NULL,
-  `producto` varchar(200) NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `id_compra` int NOT NULL,
+  `producto` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `cantidad` int NOT NULL,
   `precio_compra` decimal(10,2) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -160,60 +160,60 @@ CREATE TABLE `detalle_compra` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `detalle_venta`
+-- Table structure for table `detalle_venta`
 --
 
 CREATE TABLE `detalle_venta` (
-  `id` int(11) NOT NULL,
-  `id_producto` int(11) NOT NULL,
-  `id_venta` int(11) NOT NULL,
-  `producto` varchar(200) NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `id_venta` int NOT NULL,
+  `producto` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `cantidad` int NOT NULL,
   `precio_venta` decimal(10,2) NOT NULL,
   `precio_compra` decimal(10,2) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL,
-  `preferencias` varchar(200) DEFAULT NULL,
-  `nota_adicional` text DEFAULT NULL,
-  `forma_atencion` char(2) NOT NULL
+  `preferencias` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nota_adicional` text COLLATE utf8mb4_general_ci,
+  `forma_atencion` char(2) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `gastos`
+-- Table structure for table `gastos`
 --
 
 CREATE TABLE `gastos` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL,
   `fecha` date NOT NULL,
-  `descripcion` varchar(500) DEFAULT NULL,
-  `monto` decimal(11,2) NOT NULL DEFAULT 0.00,
-  `forma_pago` varchar(100) NOT NULL,
-  `id_tipo_gasto` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `id_arqueo` bigint(20) NOT NULL
+  `descripcion` varchar(500) COLLATE utf32_spanish_ci DEFAULT NULL,
+  `monto` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `forma_pago` varchar(100) COLLATE utf32_spanish_ci NOT NULL,
+  `id_tipo_gasto` int NOT NULL,
+  `id_usuario` int NOT NULL,
+  `id_arqueo` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf32 COLLATE=utf32_spanish_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `meseros`
+-- Table structure for table `meseros`
 --
 
 CREATE TABLE `meseros` (
-  `id` int(11) NOT NULL,
-  `nombre` text NOT NULL,
-  `documento` varchar(11) NOT NULL,
-  `telefono` text NOT NULL,
-  `direccion` text NOT NULL,
-  `compras` int(11) NOT NULL,
-  `ultima_compra` datetime NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `nombre` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `documento` varchar(11) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `telefono` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `direccion` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `compras` int NOT NULL DEFAULT '0',
+  `ultima_compra` datetime DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `meseros`
+-- Dumping data for table `meseros`
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
@@ -222,26 +222,26 @@ INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `co
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `productos`
+-- Table structure for table `productos`
 --
 
 CREATE TABLE `productos` (
-  `id` int(11) NOT NULL,
-  `id_categoria` int(11) NOT NULL,
-  `codigo` text NOT NULL,
-  `descripcion` text NOT NULL,
-  `imagen` text NOT NULL,
-  `stock` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `id_categoria` int NOT NULL,
+  `codigo` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `descripcion` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `imagen` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `stock` int NOT NULL,
   `precio_venta` float NOT NULL,
   `precio_compra` float NOT NULL,
-  `ventas` int(11) NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `inventariable` tinyint(4) NOT NULL,
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `ventas` int NOT NULL DEFAULT '0',
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `inventariable` tinyint NOT NULL,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `productos`
+-- Dumping data for table `productos`
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
@@ -307,21 +307,21 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `proveedor`
+-- Table structure for table `proveedor`
 --
 
 CREATE TABLE `proveedor` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `empresa` varchar(100) NOT NULL,
-  `telefono` varchar(12) NOT NULL,
-  `direccion` text NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `estado` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `empresa` varchar(100) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `telefono` varchar(12) COLLATE utf8mb3_spanish_ci NOT NULL,
+  `direccion` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `estado` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `proveedor`
+-- Dumping data for table `proveedor`
 --
 
 INSERT INTO `proveedor` (`id`, `nombre`, `empresa`, `telefono`, `direccion`, `fecha`, `estado`) VALUES
@@ -332,16 +332,16 @@ INSERT INTO `proveedor` (`id`, `nombre`, `empresa`, `telefono`, `direccion`, `fe
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tipo_gasto`
+-- Table structure for table `tipo_gasto`
 --
 
 CREATE TABLE `tipo_gasto` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(300) NOT NULL
+  `id` int NOT NULL,
+  `nombre` varchar(300) COLLATE utf32_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf32 COLLATE=utf32_spanish_ci;
 
 --
--- Volcado de datos para la tabla `tipo_gasto`
+-- Dumping data for table `tipo_gasto`
 --
 
 INSERT INTO `tipo_gasto` (`id`, `nombre`) VALUES
@@ -353,60 +353,60 @@ INSERT INTO `tipo_gasto` (`id`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `usuarios`
+-- Table structure for table `usuarios`
 --
 
 CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL,
-  `nombre` text NOT NULL,
-  `usuario` text NOT NULL,
-  `password` text NOT NULL,
-  `perfil` text NOT NULL,
-  `foto` text NOT NULL,
-  `estado` int(11) NOT NULL,
-  `ultimo_login` datetime NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `activo` tinyint(4) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int NOT NULL,
+  `nombre` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `usuario` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `password` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `perfil` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `foto` text COLLATE utf8mb3_spanish_ci NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT '1',
+  `ultimo_login` datetime DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `activo` tinyint NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Volcado de datos para la tabla `usuarios`
+-- Dumping data for table `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
 (1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2026-03-15 14:17:01', '2026-03-15 18:17:01', 1),
-(2, 'ROSMERY QUIZPE', 'rosmery', '$2a$07$asxx54ahjppf45sd87a5auioJfdXb0g1ZupDaddMsyRWyugXcqAj2', 'Administrador', 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-03-15 12:16:12', '2026-03-15 16:16:12', 1);
+(2, 'ROSMERY QUIZPE', 'rosmery', '$2a$07$asxx54ahjppf45sd87a5auioJfdXb0g1ZupDaddMsyRWyugXcqAj2', 'Administrador', 'vistas/img/usuarios/rosmery/468.png', 1, '2026-03-15 12:16:12', '2026-03-23 03:33:40', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ventas`
+-- Table structure for table `ventas`
 --
 
 CREATE TABLE `ventas` (
-  `id` int(11) NOT NULL,
-  `codigo` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `codigo` int NOT NULL,
   `nro_ticket` int(8) UNSIGNED ZEROFILL DEFAULT NULL,
   `total` float NOT NULL,
   `total_pagado` float DEFAULT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `nota` varchar(300) DEFAULT NULL,
-  `tipo_pago` varchar(100) DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `nota` varchar(300) COLLATE utf8mb3_spanish_ci DEFAULT NULL,
+  `tipo_pago` varchar(100) COLLATE utf8mb3_spanish_ci DEFAULT NULL,
   `cambio` float DEFAULT NULL,
-  `forma_atencion` varchar(200) DEFAULT NULL,
-  `estado` tinyint(4) NOT NULL DEFAULT 1,
-  `id_mesero` int(11) DEFAULT NULL,
-  `id_cliente` int(11) DEFAULT NULL,
-  `id_vendedor` int(11) DEFAULT NULL,
-  `id_arqueo_caja` bigint(20) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `forma_atencion` varchar(200) COLLATE utf8mb3_spanish_ci DEFAULT NULL,
+  `estado` tinyint NOT NULL DEFAULT '1',
+  `id_mesero` int DEFAULT NULL,
+  `id_cliente` int DEFAULT NULL,
+  `id_vendedor` int DEFAULT NULL,
+  `id_arqueo_caja` bigint UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `arqueo_caja`
+-- Indexes for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
   ADD PRIMARY KEY (`id`),
@@ -414,25 +414,25 @@ ALTER TABLE `arqueo_caja`
   ADD KEY `fk_arqueo_caja` (`id_caja`);
 
 --
--- Indices de la tabla `cajas`
+-- Indexes for table `cajas`
 --
 ALTER TABLE `cajas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `categorias`
+-- Indexes for table `categorias`
 --
 ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `clientes`
+-- Indexes for table `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `compras`
+-- Indexes for table `compras`
 --
 ALTER TABLE `compras`
   ADD PRIMARY KEY (`id`),
@@ -441,7 +441,7 @@ ALTER TABLE `compras`
   ADD KEY `id_arqueo_caja` (`id_arqueo_caja`);
 
 --
--- Indices de la tabla `detalle_compra`
+-- Indexes for table `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
   ADD PRIMARY KEY (`id`),
@@ -449,7 +449,7 @@ ALTER TABLE `detalle_compra`
   ADD KEY `fk_detalle_compra_compra` (`id_compra`);
 
 --
--- Indices de la tabla `detalle_venta`
+-- Indexes for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
   ADD PRIMARY KEY (`id`),
@@ -457,7 +457,7 @@ ALTER TABLE `detalle_venta`
   ADD KEY `fk_venta` (`id_venta`);
 
 --
--- Indices de la tabla `gastos`
+-- Indexes for table `gastos`
 --
 ALTER TABLE `gastos`
   ADD PRIMARY KEY (`id`),
@@ -466,38 +466,38 @@ ALTER TABLE `gastos`
   ADD KEY `fk_gastos_id_arqueo` (`id_arqueo`);
 
 --
--- Indices de la tabla `meseros`
+-- Indexes for table `meseros`
 --
 ALTER TABLE `meseros`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `productos`
+-- Indexes for table `productos`
 --
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_categoria` (`id_categoria`);
 
 --
--- Indices de la tabla `proveedor`
+-- Indexes for table `proveedor`
 --
 ALTER TABLE `proveedor`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `tipo_gasto`
+-- Indexes for table `tipo_gasto`
 --
 ALTER TABLE `tipo_gasto`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `usuarios`
+-- Indexes for table `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `ventas`
+-- Indexes for table `ventas`
 --
 ALTER TABLE `ventas`
   ADD PRIMARY KEY (`id`),
@@ -507,113 +507,113 @@ ALTER TABLE `ventas`
   ADD KEY `id_arqueo_caja` (`id_arqueo_caja`) USING BTREE;
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `arqueo_caja`
+-- AUTO_INCREMENT for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `cajas`
+-- AUTO_INCREMENT for table `cajas`
 --
 ALTER TABLE `cajas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `categorias`
+-- AUTO_INCREMENT for table `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT de la tabla `clientes`
+-- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `compras`
+-- AUTO_INCREMENT for table `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `detalle_compra`
+-- AUTO_INCREMENT for table `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `detalle_venta`
+-- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `gastos`
+-- AUTO_INCREMENT for table `gastos`
 --
 ALTER TABLE `gastos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `meseros`
+-- AUTO_INCREMENT for table `meseros`
 --
 ALTER TABLE `meseros`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `productos`
+-- AUTO_INCREMENT for table `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
--- AUTO_INCREMENT de la tabla `proveedor`
+-- AUTO_INCREMENT for table `proveedor`
 --
 ALTER TABLE `proveedor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de la tabla `tipo_gasto`
+-- AUTO_INCREMENT for table `tipo_gasto`
 --
 ALTER TABLE `tipo_gasto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT de la tabla `usuarios`
+-- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `ventas`
+-- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- Restricciones para tablas volcadas
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `arqueo_caja`
+-- Constraints for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
   ADD CONSTRAINT `arqueo_caja_id_usuario_foreign` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
   ADD CONSTRAINT `fk_arqueo_caja` FOREIGN KEY (`id_caja`) REFERENCES `cajas` (`id`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `compras`
+-- Constraints for table `compras`
 --
 ALTER TABLE `compras`
   ADD CONSTRAINT `fk_compra_proveedor` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id`),
   ADD CONSTRAINT `fk_compra_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
 
 --
--- Filtros para la tabla `detalle_venta`
+-- Constraints for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
   ADD CONSTRAINT `fk_producto` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`) ON DELETE CASCADE,
