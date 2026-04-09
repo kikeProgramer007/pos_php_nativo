@@ -7,33 +7,47 @@ class ModeloReportes{
 	/*=============================================
 	MOSTRAR VENTAS
 	=============================================*/
+	static public function mdlObtenerMesAnioGanancias($year_actual){
 
-    static public function mdlObtenerMesAnioGanancias($year_actual){
+		$conexion = Conexion::conectar();
 
-        // Preparar la consulta de meses
-        $meses = Conexion::conectar()->prepare("SELECT DISTINCT MONTH(fecha) AS mes FROM ventas WHERE ventas.estado=1 ORDER BY fecha ASC ");
-    
-        // Preparar la consulta de años
-        $years = Conexion::conectar()->prepare("SELECT DISTINCT YEAR(fecha) AS years FROM ventas WHERE YEAR(fecha) >= '2000' AND YEAR(fecha) <= :year_actual AND ventas.estado=1 ORDER BY fecha ASC");
-    
-        // Bindear el parámetro del año actual
-        $years->bindParam(':year_actual', $year_actual, PDO::PARAM_INT);
-    
-        // Ejecutar las consultas
-        $meses->execute();
-        $years->execute();
-    
-        // Obtener los resultados
-        $datos = ['meses' => $meses->fetchAll(), 'years' => $years->fetchAll()];
-    
-        // Liberar los recursos
-        $meses->closeCursor();
-        $years->closeCursor();
-    
-        // Retornar los datos
-        return $datos;
-    }
+		// Consulta de meses
+		$meses = $conexion->prepare("
+			SELECT DISTINCT MONTH(fecha) AS mes 
+			FROM ventas 
+			WHERE estado = 1 
+			ORDER BY mes ASC
+		");
 
+		// Consulta de años
+		$years = $conexion->prepare("
+			SELECT DISTINCT YEAR(fecha) AS years 
+			FROM ventas 
+			WHERE YEAR(fecha) >= 2000 
+			AND YEAR(fecha) <= :year_actual 
+			AND estado = 1 
+			ORDER BY years ASC
+		");
+
+		// Usar el parámetro correctamente
+		$years->bindParam(':year_actual', $year_actual, PDO::PARAM_INT);
+
+		// Ejecutar
+		$meses->execute();
+		$years->execute();
+
+		// Resultados
+		$datos = [
+			'meses' => $meses->fetchAll(PDO::FETCH_ASSOC),
+			'years' => $years->fetchAll(PDO::FETCH_ASSOC)
+		];
+
+		// Liberar
+		$meses->closeCursor();
+		$years->closeCursor();
+
+		return $datos;
+	}
 /*=============================================
 	RANGO FECHAS
 	=============================================*/	
@@ -177,22 +191,33 @@ class ModeloReportes{
 	OBTENER GANANCIAS DE LAS VENTAS ENTRE AÑOS
 	=============================================*/
     
-    static public function mdlObtenerGananciasYear($yearIni,$yearFin){
+static public function mdlObtenerGananciasYear($yearIni, $yearFin){
 
-		// Consulta SQL
-		$sql = "SELECT YEAR(v.fecha) AS 'year',MONTH(v.fecha) AS mes,COUNT(v.id) AS cantventas,SUM(total) as ventas,COUNT(DISTINCT v.id_mesero) AS meseros FROM `ventas` as v JOIN meseros AS c ON v.id_mesero = c.id WHERE YEAR(v.fecha) BETWEEN :yearIni AND :yearFin AND v.estado=1 GROUP BY YEAR(v.fecha),MONTH(v.fecha) ORDER BY (v.fecha) ASC;";
+    $conexion = Conexion::conectar();
 
-        $ganancias = Conexion::conectar()->prepare($sql);
-        $ganancias->bindParam(':yearIni', $yearIni, PDO::PARAM_INT);
-        $ganancias->bindParam(':yearFin', $yearFin, PDO::PARAM_INT);
-        $ganancias->execute();
-    
-        $datos = $ganancias->fetchAll();
-    
-        // Liberar los recursos
-        $ganancias->closeCursor();
-    
-        // Retornar los datos
-        return $datos;
-    }
+    $sql = "SELECT 
+                YEAR(v.fecha) AS year,
+                MONTH(v.fecha) AS mes,
+                COUNT(v.id) AS cantventas,
+                SUM(v.total) AS ventas,
+                COUNT(DISTINCT v.id_mesero) AS meseros
+            FROM ventas AS v
+            WHERE YEAR(v.fecha) BETWEEN :yearIni AND :yearFin 
+            AND v.estado = 1
+            GROUP BY YEAR(v.fecha), MONTH(v.fecha)
+            ORDER BY year ASC, mes ASC";
+
+    $ganancias = $conexion->prepare($sql);
+
+    $ganancias->bindParam(':yearIni', $yearIni, PDO::PARAM_INT);
+    $ganancias->bindParam(':yearFin', $yearFin, PDO::PARAM_INT);
+
+    $ganancias->execute();
+
+    $datos = $ganancias->fetchAll(PDO::FETCH_ASSOC);
+
+    $ganancias->closeCursor();
+
+    return $datos;
+}
 }
