@@ -57,11 +57,11 @@ class imprimirFactura
             $arqueo["total_egresos"] *= (-1);
        }
 
-       $ResultadoMessage = "NO HAY DIFENCIAS";
-        if($arqueo["resultado_neto"]>$arqueo["efectivo_en_caja"]){
-            $ResultadoMessage = "FALTANTE";
-        }else if($arqueo["resultado_neto"]<$arqueo["efectivo_en_caja"]){
-            $ResultadoMessage = "SOBRANTE";
+       $ResultadoMessage = "TODO CUADRA";
+        if($arqueo["resultado_neto"]>$arqueo["total_efectivo_qr_en_caja"]){
+            $ResultadoMessage = "TE FALTA DINERO";
+        }else if($arqueo["resultado_neto"]<$arqueo["total_efectivo_qr_en_caja"]){
+            $ResultadoMessage = "TE SOBRA DINERO";
         }
 
         // Configuración del PDF para impresora térmica
@@ -249,9 +249,18 @@ class imprimirFactura
 
             <tr> <td colspan="2" ></td> </tr> 
             <tr>
-                <td style="width:70%; text-align:left;"><strong>DINERO EN LA CAJA:</strong></td>
+                <td style="width:70%; text-align:left;">EFECTIVO:</td>
                 <td style="width:28%; text-align:right;"><strong>' . number_format($totalGeneral, 2) . '</strong></td>
             </tr>
+            <tr>
+                <td style="text-align:left;">QR:</td>
+                <td style="text-align:right;"><strong>' . $arqueo["qr_en_caja"] . '</strong></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;"><strong>DINERO EN CAJA:</strong></td>
+                <td style="text-align:right;border-top: 0.5px solid #000000;"><strong>' . $arqueo["total_efectivo_qr_en_caja"] . '</strong></td>
+            </tr>
+
            <tr> <td colspan="2" ></td> </tr> 
          
            <tr>
@@ -263,10 +272,12 @@ class imprimirFactura
                 <td style="text-align:right; ">' . $arqueo["resultado_neto"] . '</td>
             </tr>
             
+      
             <tr>
-                <td style="text-align:left;">DINERO EN LA CAJA:</td>
-                <td style="text-align:right;">' . $arqueo["efectivo_en_caja"] . '</td>
+                <td style="text-align:left;">DINERO EN CAJA:</td>
+                <td style="text-align:right;">' . $arqueo["total_efectivo_qr_en_caja"] . '</td>
             </tr>
+
             <tr>
                 <td style="text-align:left;"><strong>'.$ResultadoMessage.':</strong></td>
                 <td style="border-top: 0.5px solid #000000; text-align:right;"><strong>' . number_format($arqueo["diferencia"],2) . '</strong></td>

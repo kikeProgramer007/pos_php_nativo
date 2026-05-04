@@ -100,13 +100,15 @@ class ModeloVentas
 			}
 
 			// 1. Registrar la venta principal en la tabla "ventas"
-			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total,:total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja)");
+			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total,total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total,:total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja)");
 
 			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_vendedor", $datos["id_vendedor"], PDO::PARAM_INT);
 			$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$stmt->bindParam(":total_efectivo", $datos["total_efectivo"], PDO::PARAM_STR);
+			$stmt->bindParam(":total_qr", $datos["total_qr"], PDO::PARAM_STR);
 			$stmt->bindParam(":total_pagado", $datos["total_pagado"], PDO::PARAM_STR);
 			$stmt->bindParam(":nota", $datos["nota"], PDO::PARAM_STR);
 			$stmt->bindParam(":tipo_pago", $datos["tipo_pago"], PDO::PARAM_STR);
@@ -360,6 +362,8 @@ class ModeloVentas
 						meseros.nombre AS mesero, 
 						clientes.nombre AS cliente, 
 						ventas.tipo_pago,
+						ventas.total_qr,
+						ventas.total_efectivo,
 						SUM(dv.subtotal) AS total
 					FROM $tabla
 					JOIN detalle_venta dv ON ventas.id = dv.id_venta

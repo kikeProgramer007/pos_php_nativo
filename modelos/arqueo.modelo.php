@@ -437,6 +437,8 @@ class ModeloArqueo {
                 monto_compras = :monto_compras,
                 resultado_neto = :resultado_neto,
                 efectivo_en_caja = :efectivo_en_caja,
+                qr_en_caja = :qr_en_caja,
+                total_efectivo_qr_en_caja = :total_efectivo_qr_en_caja,
                 diferencia = :diferencia,
                 estado = :estado
                 WHERE id = :id_arqueo");
@@ -459,6 +461,8 @@ class ModeloArqueo {
             $stmt->bindParam(":monto_compras", $datos["monto_compras"], PDO::PARAM_STR);
             $stmt->bindParam(":resultado_neto", $datos["resultado_neto"], PDO::PARAM_STR);
             $stmt->bindParam(":efectivo_en_caja", $datos["efectivo_en_caja"], PDO::PARAM_STR);
+            $stmt->bindParam(":qr_en_caja", $datos["qr_en_caja"], PDO::PARAM_STR);
+            $stmt->bindParam(":total_efectivo_qr_en_caja", $datos["total_efectivo_qr_en_caja"], PDO::PARAM_STR);
             $stmt->bindParam(":diferencia", $datos["diferencia"], PDO::PARAM_STR);
             $stmt->bindParam(":estado", $datos["estado"], PDO::PARAM_STR);
             $stmt->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);

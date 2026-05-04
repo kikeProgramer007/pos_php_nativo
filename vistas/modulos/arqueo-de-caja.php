@@ -240,7 +240,7 @@
                     </div>
 
                     <!-- Botones -->
-                    <div class="row" style="text-align: center; padding-right: 20px;">
+                    <div class="row" style="text-align: center; padding-right: 20px; margin-top: 15px;">
                         <button type="button" onclick="arqueoCaja.guardarAperturaCierreCaja()" id="aperturar_cierre_caja" class="btn btn-primary btn-sm" style="margin-right: 3px;">Aperturar Caja</button>
                     </div>
 

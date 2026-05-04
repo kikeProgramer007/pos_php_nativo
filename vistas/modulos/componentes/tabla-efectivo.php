@@ -47,7 +47,7 @@
                                    id='cantidad_{$id}' 
                                    name='cantidad_{$id}' 
                                    data-valor='{$valor}'
-                                   pattern='\\d*'
+                                   pattern='\\d*'        
                                    min='0'
                                    inputmode='numeric'
                                    step='1'>
@@ -59,13 +59,23 @@
                 }
                 ?>
                 <tr>
-                    <td colspan="3" style="height: 5px;"></td>
+                    <td colspan="3" style="height: 2px;"></td>
                 </tr>
                 <tfoot style="font-weight: bold; font-size: 16px;">
-                    <tr style="border-top: 2px solid #333;">
-                        <td colspan="2">Total Efectivo en Caja</td>
+                    <tr style="border: 2px solid #555;">
+                        <td colspan="2">&nbsp;<i class="fa fa-money" aria-hidden="true"></i> Total Efectivo en Caja</td>
                         <td class="text-right">
                             <p id="total_efectivo_en_caja_tabla">0.00</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="3" style="height: 10px;"></td>  </tr>
+                    
+                     <tr style="border: 2px solid #555;">
+                        <td colspan="2">&nbsp;<i class="fa fa-qrcode"></i> Total QR en Cuenta</td>
+                        <td class="text-right">
+                            <input type="text" style="width:80px; text-align: right;" id="qr_en_caja" name="qr_en_caja" value="" class="form-control input-sm" min='0' placeholder="0.00">
                         </td>
                     </tr>
                 </tfoot>

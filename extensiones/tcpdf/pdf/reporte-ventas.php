@@ -124,13 +124,15 @@ class reporteVenta extends TCPDF
         $this->Cell(0, 5, 'Detalle De las ventas', 1, 1, 'C', 1);
         $this->SetTextColor(0, 0, 0);
         $this->Cell(10, 5, '#', 1, 0, 'L');
-        $this->Cell(14, 5, 'Ticket', 1, 0, 'C');
-        $this->Cell(34, 5, 'Fecha Y Hora', 1, 0, 'C');
-        $this->Cell(30, 5, 'Usuario', 1, 0, 'C');
-        $this->Cell(30, 5, 'Mesero', 1, 0, 'C');
-        $this->Cell(30, 5, 'Cliente', 1, 0, 'C');
-        $this->Cell(27, 5, 'Tipo de Pago', 1, 0, 'C');
-        $this->Cell(15, 5, 'Monto', 1, 1, 'C');
+        $this->Cell(12, 5, 'Ticket', 1, 0, 'C');
+        $this->Cell(18, 5, 'Fecha', 1, 0, 'C');
+        $this->Cell(22, 5, 'Usuario', 1, 0, 'C');
+        $this->Cell(22, 5, 'Mesero', 1, 0, 'C');
+        $this->Cell(25, 5, 'Cliente', 1, 0, 'C');
+        $this->Cell(21, 5, 'T. Pago', 1, 0, 'C');
+        $this->Cell(20, 5, 'Efectivo', 1, 0, 'C');
+        $this->Cell(20, 5, 'Qr', 1, 0, 'C');
+        $this->Cell(20, 5, 'Total', 1, 1, 'C');
     }
 
     public function generarPdfVentas()
@@ -187,28 +189,64 @@ class reporteVenta extends TCPDF
         //Imprimir los detalles de los productos
         $contador = 1;
         $sumTotal = 0;
+        $sumTotalEfectivo = 0;
+        $sumTotalQr = 0;
+
         foreach ($respuestaVentas as $item) {
-            // Verificar si hay espacio suficiente para la siguiente fila
-            if ($this->GetY() > 250) {
-                $this->AddPage();
-                // Establecer la posición Y después del encabezado en la nueva página
-                $this->SetY(66);
-            }
-            
-            $total =  $item["total"];
-            $this->Cell(10, 5,  $contador, 1, 0, 'L');
-            $this->Cell(14, 5, ltrim($item["codigo"], '0'), 1, 0, 'C');
-            // Mostrar fecha y hora con segundos y am/pm
+
+            $total = $item["total"];
+            $totalEfectivo = $item["total_efectivo"];
+            $totalQr = $item["total_qr"];
+
             $fechaCompleta = $item["fecha"];
             $fechaFormateada = date('Y-m-d h:i:s a', strtotime($fechaCompleta));
-            $this->Cell(34, 5, $fechaFormateada, 1, 0, 'C');
-            $this->Cell(30, 5, $item["usuario"], 1, 0, 'C');
-            $this->Cell(30, 5, strtolower($item["mesero"]), 1, 0, 'C');
-            $this->Cell(30, 5, strtolower($item["cliente"]), 1, 0, 'C');
-            $this->Cell(27, 5, $item["tipo_pago"], 1, 0, 'C');
-            $this->Cell(15, 5, $total . ' Bs', 1, 1, 'C');
+
+            $fila = array(
+                $contador,
+                ltrim($item["codigo"], '0'),
+                $fechaFormateada,
+                $item["usuario"],
+                strtolower($item["mesero"]),
+                strtolower($item["cliente"]),
+                $item["tipo_pago"],
+                number_format($item["total_efectivo"], 2, '.', ','),
+                number_format($item["total_qr"], 2, '.', ','),
+                number_format($total, 2, '.', ',')
+            );
+
+            $anchos = array(10, 12, 18, 22, 22, 25, 21, 20, 20, 20);
+
+            // Calcular altura automática según el texto más largo
+            $altura = 5;
+            foreach ($fila as $i => $texto) {
+                $numLineas = $this->getNumLines($texto, $anchos[$i]);
+                $altura = max($altura, $numLineas * 5);
+            }
+
+            // Salto de página si no entra la fila
+            if ($this->GetY() + $altura > 270) {
+                $this->AddPage();
+                $this->SetY(66);
+            }
+
+            $x = $this->GetX();
+            $y = $this->GetY();
+
+            // Imprimir columnas con altura dinámica
+            $this->MultiCell($anchos[0], $altura, $fila[0], 1, 'L', false, 0, $x, $y);
+            $this->MultiCell($anchos[1], $altura, $fila[1], 1, 'C', false, 0);
+            $this->MultiCell($anchos[2], $altura, $fila[2], 1, 'C', false, 0);
+            $this->MultiCell($anchos[3], $altura, $fila[3], 1, 'C', false, 0);
+            $this->MultiCell($anchos[4], $altura, $fila[4], 1, 'C', false, 0);
+            $this->MultiCell($anchos[5], $altura, $fila[5], 1, 'C', false, 0);
+            $this->MultiCell($anchos[6], $altura, $fila[6], 1, 'C', false, 0);
+            $this->MultiCell($anchos[7], $altura, $fila[7], 1, 'R', false, 0);
+            $this->MultiCell($anchos[8], $altura, $fila[8], 1, 'R', false, 0);
+            $this->MultiCell($anchos[9], $altura, $fila[9], 1, 'R', false, 1);
             $contador++;
             $sumTotal += $total;
+            $sumTotalEfectivo += $totalEfectivo;
+            $sumTotalQr += $totalQr;
         }
 
         // Verificar si hay espacio suficiente para los totales
@@ -218,14 +256,16 @@ class reporteVenta extends TCPDF
             $this->SetY(40);
         }
 
-        // Total de la Venta
+        // Total general
         $this->SetFont('helvetica', 'B', 9);
-        $this->Cell(160, 5, 'Total ', 0, 0, 'R');
-        $this->Cell(30, 5, number_format($sumTotal, 2, '.', ',') . ' Bs.', 1, 1, 'R');
+        $this->Cell(130, 5, 'Totales (Bs)', 0, 0, 'R');
+        $this->Cell(20, 5, number_format($sumTotalEfectivo, 2, '.', ','), 1, 0, 'R');
+        $this->Cell(20, 5, number_format($sumTotalQr, 2, '.', ','), 1, 0, 'R');
+        $this->Cell(20, 5, number_format($sumTotal, 2, '.', ',') , 1, 1, 'R');
 
         // Nro de compras
         $this->SetFont('helvetica', 'B', 9);
-        $this->Cell(30, 5, 'Número de ventas:  ' . $contador - 1, 0, 0, 'L');
+        $this->Cell(30, 5, 'Número de ventas:  ' . ($contador - 1), 0, 0, 'L');
 
         // Salida del archivo PDF
         $this->Output('ReporteVentas.pdf', 'I');

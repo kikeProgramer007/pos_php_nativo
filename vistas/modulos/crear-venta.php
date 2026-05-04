@@ -476,6 +476,24 @@ if ($_SESSION["perfil"] == "") {
       text-align: left;
     }
   }
+
+  .pago-mixto-row > div {
+    padding-left: 0px;
+    padding-right: 5px;
+  }
+
+  .cajasMetodoPago .input-group {
+    width: 100%;
+  }
+
+  .btn-editar-qr {
+    position: absolute;
+    top: 1px;
+    right: 5px;
+    z-index: 10;
+    padding: 2px 8px;
+    font-size: 12px;
+}
 </style>
 
 <div class="content-wrapper text-uppercase ">
@@ -797,8 +815,7 @@ if ($_SESSION["perfil"] == "") {
                       <select class="form-control input-sm" id="tipoPago" name="tipoPago">
                         <option value="1">Efectivo</option>
                         <option value="2">QR</option>
-                        <option value="3">Transferencia</option>
-                        <option value="4">Qr y Efectivo(Mixto)</option>
+                        <option value="4">Qr y Efectivo (Mixto)</option>
                       </select>
                     </div>
             
@@ -823,21 +840,45 @@ if ($_SESSION["perfil"] == "") {
                   </div>
 
                   <div class="col-md-6 cajasMetodoPago">
-                    <div class="form-group ">
-                      <label for="nuevoValorEfectivo">Pagado:</label>
-                      <div class="input-group">
-                        <span class="input-group-addon"><i><b>Bs</b></i></span>
-                        <input type="text" class="form-control" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="0" required>
+
+                    <div class="pago-mixto-row">
+
+                      <div class="col-md-6" id="contenedorEfectivo">
+                        <div class="form-group ">
+                          <label for="nuevoValorEfectivo">Pago en Efectivo:</label>
+                          <div class="input-group">
+                            <span class="input-group-addon"><i><b><i class="fa fa-money" aria-hidden="true"></i></b></i></span>
+                            <input type="text" class="form-control" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="0" min="0" step="0.01"  inputmode="decimal"  required>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div class="form-group " id="capturarCambioEfectivo">
-                      <label for="nuevoCambioEfectivo">Cambio:</label>
-                      <div class="input-group">
-                        <span class="input-group-addon"><i><b>Bs</b></i></span>
-                        <input type="text" class="form-control" id="nuevoCambioEfectivo" name="nuevoCambioEfectivo" placeholder="0" readonly required>
+
+                      <div class="form-group position-relative" id="contenedorQR">
+                        <!-- Botón flotante -->
+                        <!-- <button type="button" class="btn btn-default btnEditarQR btn-editar-qr">
+                          <i class="fa fa-edit" aria-hidden="true"></i>
+                        </button> -->
+                        <label for="nuevoValorQR">Pago en QR:</label>
+                        <div class="input-group">
+                          <span class="input-group-addon">
+                            <i class="fa fa-qrcode"></i>
+                          </span>
+                          <input type="text" class="form-control" id="nuevoValorQR" name="nuevoValorQR" placeholder="0" min="0" step="0.01"  inputmode="decimal" readonly required>
+                        </div>
                       </div>
+
+                      <div class="col-md-12" id="capturarCambioEfectivo">
+                        <div class="form-group">
+                          <label for="nuevoCambioEfectivo">Cambio:</label>
+                          <div class="input-group">
+                            <span class="input-group-addon"><i><b>Bs</b></i></span>
+                            <input type="text" class="form-control" id="nuevoCambioEfectivo" name="nuevoCambioEfectivo" placeholder="0" min="0" step="0.01"  readonly required>
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
-                  </div>
+
                   <input type="hidden" id="listaMetodoPago" name="listaMetodoPago">
                 </div>
 
@@ -981,7 +1022,6 @@ MODAL AGREGAR MESERO
                 <select class="form-control" id="tipo_pago_gasto" name="tipo_pago_gasto">
                         <option value="1">Efectivo</option>
                         <option value="2">QR</option>
-                        <option value="3">Transferencia</option>
                         <option value="4">Qr y Efectivo(Mixto)</option>
                       </select>
               </div>
@@ -1028,7 +1068,58 @@ MODAL AGREGAR MESERO
 </script>
 <script src="vistas/js/validar-caja.js"></script>
 
+
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const tipoPago = document.getElementById("tipoPago");
+  const efectivo = document.getElementById("contenedorEfectivo");
+  const qr = document.getElementById("contenedorQR");
+  const cambio = document.getElementById("capturarCambioEfectivo");
+
+  function setColumna(elemento, size) {
+    elemento.classList.remove("col-md-6", "col-md-12");
+    elemento.classList.add(size);
+  }
+
+  function actualizarCampos() {
+    const valor = tipoPago.value;
+
+    if (valor == "1") { // Efectivo
+      efectivo.style.display = "block";
+      qr.style.display = "none";
+  
+
+      setColumna(efectivo, "col-md-12");
+
+    } 
+    else if (valor == "2") { // QR
+      efectivo.style.display = "none";
+      qr.style.display = "block";
+      
+      setColumna(qr, "col-md-12");
+
+    } 
+    else if (valor == "4") { // Mixto
+      efectivo.style.display = "block";
+      qr.style.display = "block";
+  
+
+      setColumna(efectivo, "col-md-6");
+      setColumna(qr, "col-md-6");
+
+    } 
+    else { // Transferencia
+      efectivo.style.display = "none";
+      qr.style.display = "none";
+    }
+  }
+
+  tipoPago.addEventListener("change", actualizarCampos);
+  actualizarCampos();
+
+});
+
    // Prevenir que el dropdown se cierre al interactuar con el formulario
    $(document).on('click', '.dropdown-menu', function (e) {
       e.stopPropagation();
@@ -1087,18 +1178,46 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
 
   var totalVenta = Number($('#nuevoTotalVenta').val());
   var efectivo = Number($('#nuevoValorEfectivo').val());
-  var cambio = Number(efectivo) - totalVenta;
-  if(!efectivo){
-    swal({
-      type: "error",
-      title: "El campo pagado es requerido",
-      showConfirmButton: true,
-      confirmButtonText: "Cerrar"
-    });
-    return;
+  var tipopagovalue = $('#tipoPago').val();
+  
+  switch(tipopagovalue) {
+    case "1": // Efectivo
+      if(efectivo < totalVenta) {
+        swal({
+          type: "error",
+          title: "El pago en efectivo debe ser igual o mayor al total",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
+      break;
+    case "2": // QR
+      var valorQR = Number($('#nuevoValorQR').val());
+      if(valorQR < totalVenta) {
+        swal({
+          type: "error",
+          title: "El pago en QR debe ser igual o mayor al total",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
+      break;
+    case "4": // Mixto
+      var valorQR = Number($('#nuevoValorQR').val());
+      if((efectivo + valorQR) < totalVenta) {
+        swal({
+          type: "error",
+          title: "La suma del efectivo y el QR debe ser igual o mayor al total",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
+      break;
   }
 
-  if(cambio >= 0 ){
     // Recoge los datos del formulario
     var form = document.getElementById("ventaForm");
     var formData = new FormData(form);
@@ -1152,14 +1271,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
 
       }
     });
-  } else {
-    swal({
-      type: "error",
-      title: "Lo que Canceló debe ser igual o mayor al total",
-      showConfirmButton: true,
-      confirmButtonText: "Cerrar"
-    });
-  }
+
 });
 
 function agregarProductoAVenta(producto) {
@@ -1304,6 +1416,7 @@ function agregarProductoAVenta(producto) {
   });
 
   sumarTotalPrecios();
+  calcularPago();
   listarProductos();
   $(".nuevoPrecioProducto").number(true, 2);
 }

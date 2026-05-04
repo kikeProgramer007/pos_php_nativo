@@ -109,6 +109,8 @@ class ControladorArqueo {
             "monto_compras" => floatval($_POST["montoCompras"]),
             "resultado_neto" => floatval($_POST["resultadoNeto"]),
             "efectivo_en_caja" => floatval($_POST["totalEfectivoEnCaja"]),
+            "qr_en_caja" => floatval($_POST["totalQrEnCuenta"]),
+            "total_efectivo_qr_en_caja" => floatval($_POST["totalEfectivoQrEnCaja"]),
             "diferencia" => floatval($_POST["diferencia"]),
             "estado" => self::sanitizarInput($_POST["estado"]),
             "id_caja" => intval($_POST["idCaja"])

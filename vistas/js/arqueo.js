@@ -25,7 +25,8 @@ class ArqueoCaja {
             totalIngresos: 0,
             totalEgresos: 0,
             resultadoNeto: 0,
-            diferencia: 0
+            diferencia: 0,
+            totalQrEnCuenta: 0
         };
      
         this.inicializarEventos();
@@ -34,6 +35,7 @@ class ArqueoCaja {
     inicializarEventos() {
         document.addEventListener('DOMContentLoaded', () => {
             this.inicializarInputsCantidad();
+            this.inicializarInpuntTotalQrEnCuenta();
             this.verificarEstadoCaja();
             this.inicializarSelectorCaja();
         });
@@ -58,7 +60,6 @@ class ArqueoCaja {
 
     inicializarInputsCantidad() {
         const inputs = document.querySelectorAll('.cantidad-input');
-        
         inputs.forEach(input => {
             input.addEventListener('input', () => {
                 this.calcularSubtotal(input);
@@ -68,6 +69,22 @@ class ArqueoCaja {
             input.addEventListener('keypress', this.validarSoloNumeros);
         });
     }
+    inicializarInpuntTotalQrEnCuenta() {
+        const inputQrEnCuenta = document.getElementById('qr_en_caja');
+        if (inputQrEnCuenta) {
+            inputQrEnCuenta.addEventListener('input', () => {
+                this.totales.totalQrEnCuenta = parseFloat(inputQrEnCuenta.value) || 0;
+                this.calcularTotal();
+            }); 
+            //validar decimales y numeros
+            inputQrEnCuenta.addEventListener('keypress',e => {
+                if (!/\d/.test(e.key) && e.key !== '.' && e.key !== ',') {
+                    e.preventDefault();
+                }   
+            }); 
+        }
+    }
+
 
     validarSoloNumeros(e) {
         if (!/\d/.test(e.key)) {
@@ -114,7 +131,7 @@ class ArqueoCaja {
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
     
         // Diferencia simplificada: efectivo real vs. resultado esperado
-        this.totales.diferencia = this.totales.totalEfectivoEnCaja - Math.abs(this.totales.resultadoNeto);
+        this.totales.diferencia = (this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta) - Math.abs(this.totales.resultadoNeto);
 
         this.actualizarElementos({
             'total_efectivo_en_caja_tabla': this.totales.totalEfectivoEnCaja,
@@ -124,6 +141,7 @@ class ArqueoCaja {
             'resultado_neto': this.totales.resultadoNeto,
             'total_ganancia_perdida': this.totales.resultadoNeto,
             'efectivo_en_caja': this.totales.totalEfectivoEnCaja,
+            'total_efectivo_qr_en_caja': this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta,
             'diferencia': this.totales.diferencia
         });
     }
@@ -216,6 +234,7 @@ class ArqueoCaja {
             'resultado_neto': datos.resultado_neto || '0.00',
             'total_ganancia_perdida': datos.resultado_neto || '0.00',
             'efectivo_en_caja': datos.efectivo_en_caja || '0.00',
+            'total_efectivo_qr_en_caja': datos.total_efectivo_qr_en_caja || '0.00',
             'idVendedor': datos.id_usuario || '0',
             'usuario': datos.nameUsuario || 'no encontrado'
         };
@@ -360,6 +379,8 @@ class ArqueoCaja {
             montoCompras: this.totales.montoCompras,
             resultadoNeto: this.totales.resultadoNeto,
             totalEfectivoEnCaja: this.totales.totalEfectivoEnCaja,
+            totalQrEnCuenta: this.totales.totalQrEnCuenta,
+            totalEfectivoQrEnCaja: this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta,
             diferencia: this.totales.diferencia
         };
     }

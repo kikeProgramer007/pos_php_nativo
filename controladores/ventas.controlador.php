@@ -126,18 +126,41 @@ class ControladorVentas{
 			$fechaMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1b, $valor1b, $valor);
 			$tipoPago = "";
 
+			$totalQR = 0;
+			$totalEfectivo = 0;
+			$totalPagado = 0;
+
 			switch ($_POST["tipoPago"]) {
 				case 1:
 					$tipoPago = "Efectivo";
+					$totalVenta = floatval($_POST["totalVenta"] ?? 0);
+					$totalEfectivo =  floatval($_POST["nuevoValorEfectivo"] ?? 0);
+					$totalPagado = number_format($totalEfectivo, 2, '.', ',');
+					$totalEfectivo = number_format($totalVenta, 2, '.', ',');
 					break;
 				case 2:
 					$tipoPago = "QR";
+					$totalVenta = floatval($_POST["totalVenta"] ?? 0);
+					$totalQR = floatval($_POST["nuevoValorQR"] ?? 0);
+					$totalPagado = number_format($totalQR, 2, '.', ',');
+					$totalQR = number_format($totalVenta, 2, '.', ',');
 					break;
 				case 3:
 					$tipoPago = "Transferencia";
 					break;
 					case 4:
 						$tipoPago = "Qr y Efectivo(Mixto)";
+
+						$totalEfectivo = floatval($_POST["nuevoValorEfectivo"] ?? 0);
+						$totalQR = floatval($_POST["nuevoValorQR"] ?? 0);
+						$totalCambio = floatval($_POST["nuevoCambioEfectivo"] ?? 0);
+						$totalPagado = $totalEfectivo + $totalQR;
+						
+						//Cambio es mayor a 0, entonces el total pagado es igual al total de la venta
+						if ($totalCambio > 0){
+							$totalEfectivo = number_format($totalEfectivo - $totalCambio, 2, '.', ',');
+						}		
+					
 						break;
 				default:
 					$tipoPago = "No Especificado";
@@ -168,6 +191,9 @@ class ControladorVentas{
 			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($_POST["idArqueoCaja"]);
 			$ultimoNroTicket++;
 			
+
+		
+
 			$datos = array("id_vendedor"=>$_POST["idVendedor"],
 						   "id_mesero"=>$_POST["seleccionarMesero"],
 						   "id_cliente"=>$_POST["id_cliente"],
@@ -179,7 +205,9 @@ class ControladorVentas{
 						   "cambio"=>$_POST["nuevoCambioEfectivo"],
 						   "forma_atencion"=>$formaAtencion,
 						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
-							"total_pagado"=>$_POST["nuevoValorEfectivo"],
+							"total_pagado"=>number_format($totalPagado, 2, '.', ','),
+							"total_efectivo"=>number_format($totalEfectivo, 2, '.', ','),
+							"total_qr"=>number_format($totalQR, 2, '.', ','),
 							"cliente"=>$_POST["cliente"]
 						);
 						

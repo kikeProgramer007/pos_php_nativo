@@ -18,6 +18,7 @@ QUITAR PRODUCTOS DE LA VENTA Y RECUPERAR BOTÓN
 =============================================*/
 
 var idQuitarProducto = [];
+var editarQRManual = false;
 
 localStorage.removeItem("quitarProducto");
 
@@ -73,6 +74,7 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
     } else {
         // SUMAR TOTAL DE PRECIOS
         sumarTotalPrecios();
+        calcularPago();
         // AGRUPAR PRODUCTOS EN FORMATO JSON
         listarProductos();
     }
@@ -169,7 +171,7 @@ $(".btnAgregarProducto").click(function(){
 
 	         // SUMAR TOTAL DE PRECIOS
     		sumarTotalPrecios()
-    		
+    		calcularPago();
 
 	        // PONER FORMATO AL PRECIO DE LOS PRODUCTOS
 
@@ -219,7 +221,9 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
       	    $(nuevoPrecioCompraProducto).attr("precioRealCompra", respuesta["precio_compra"]);
   	        // AGRUPAR PRODUCTOS EN FORMATO JSON
 	        listarProductos()
+     
 			sumarTotalPrecios()
+            calcularPago();
       	}
 
       })
@@ -252,6 +256,7 @@ $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 		var precioFinal = $(this).val() * precio.attr("precioReal");
 		precio.val(precioFinal);
 		sumarTotalPrecios();
+		calcularPago();
 		swal({
 	      title: "La cantidad supera el Stock",
 	      text: "¡Sólo hay "+$(this).attr("stock")+" unidades!",
@@ -263,7 +268,7 @@ $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 
 	// SUMAR TOTAL DE PRECIOS----------------
 	sumarTotalPrecios()
-	        
+	calcularPago();        
     // AGRUPAR PRODUCTOS EN FORMATO JSON------------------
     listarProductos()
 
@@ -388,23 +393,132 @@ $("#nuevoMetodoPago").change(function(){
 /*=============================================
 CAMBIO EN EFECTIVO
 =============================================*/
-$(".formularioVenta").on("input", "input#nuevoValorEfectivo", function() {
+// $(".formularioVenta").on("input", "input#nuevoValorEfectivo", function() {
 
-    var efectivo = $(this).val();
-    var totalVenta = Number($('#nuevoTotalVenta').val());
-    var cambio = Number(efectivo) - totalVenta;
+//     var efectivo = $(this).val();
+//     var totalVenta = Number($('#nuevoTotalVenta').val());
+//     var cambio = Number(efectivo) - totalVenta;
 
-    // Asegurarse de que el cambio no sea negativo
-    cambio = cambio < 0 ? 0 : cambio;
+//     // Asegurarse de que el cambio no sea negativo
+//     cambio = cambio < 0 ? 0 : cambio;
 
-    var nuevoCambioEfectivo = $(this).closest('.cajasMetodoPago')
-        .find('#nuevoCambioEfectivo');
+//     var nuevoCambioEfectivo = $(this).closest('.cajasMetodoPago')
+//         .find('#nuevoCambioEfectivo');
 
-    nuevoCambioEfectivo.val(cambio.toFixed(2)); // Asegura dos decimales
+//     nuevoCambioEfectivo.val(cambio.toFixed(2)); // Asegura dos decimales
+
+// });
+
+
+
+/*=============================================
+ACTIVAR / DESACTIVAR EDICIÓN QR
+=============================================*/
+$(".formularioVenta").on("click", ".btnEditarQR", function() {
+
+    editarQRManual = !editarQRManual;
+
+    if (editarQRManual) {
+        $("#nuevoValorQR").prop("readonly", false).focus();
+        $(this).html('<i class="fa fa-lock" aria-hidden="true"></i>');
+    } else {
+        $("#nuevoValorQR").prop("readonly", true);
+          $(this).html('<i class="fa fa-pencil" aria-hidden="true"></i>');
+       
+    }
 
 });
 
 
+/*=============================================
+CALCULAR QR Y CAMBIO
+=============================================*/
+function calcularPago(formatear = true) {
+
+    var tipoPago = $("#tipoPago").val();
+    var totalVenta = Number($("#nuevoTotalVenta").val()) || 0;
+    var efectivo = Number($("#nuevoValorEfectivo").val()) || 0;
+    var qr = Number($("#nuevoValorQR").val()) || 0;
+
+    var cambio = 0;
+
+    if (tipoPago == "1") {
+        // EFECTIVO
+        qr = 0;
+        cambio = efectivo - totalVenta;
+
+        if (formatear) {
+            $("#nuevoValorQR").val("0.00");
+        }
+    } else if (tipoPago == "2") {
+        // QR
+        efectivo = 0;
+        qr = editarQRManual ? qr : totalVenta;
+
+        $("#nuevoValorEfectivo").val("");
+          if (formatear) {
+            $("#nuevoValorQR").val(qr.toFixed(2));
+          }
+        cambio = qr - totalVenta;
+
+    } else if (tipoPago == "4") {
+        // MIXTO
+        if (!editarQRManual) {
+            qr = totalVenta - efectivo;
+
+            if (qr < 0) {
+                qr = 0;
+            }
+            if (formatear) {
+            $("#nuevoValorQR").val(qr.toFixed(2));
+            }
+        }
+
+        cambio = (efectivo + qr) - totalVenta;
+
+    } else {
+        // TRANSFERENCIA
+        efectivo = 0;
+        qr = 0;
+        cambio = 0;
+
+        $("#nuevoValorEfectivo").val("");
+        $("#nuevoValorQR").val("0.00");
+    }
+
+    if (cambio < 0) {
+        cambio = 0;
+    }
+
+    $("#nuevoCambioEfectivo").val(cambio.toFixed(2));
+}
+
+
+/*=============================================
+EVENTOS
+=============================================*/
+$(".formularioVenta").on("input", "#nuevoValorEfectivo, #nuevoValorQR", function() {
+    calcularPago(false); // false = no formatear mientras escribe
+});
+
+$(".formularioVenta").on("input", "#nuevoValorEfectivo", function() {
+    calcularPago(true); // false = no formatear mientras escribe
+});
+
+$(".formularioVenta").on("change", "#tipoPago", function() {
+
+    editarQRManual = false;
+
+    $("#nuevoValorQR").prop("readonly", true);
+    $(".btnEditarQR").html('<i class="fa fa-pencil" aria-hidden="true"></i>');
+
+    calcularPago();
+});
+
+$(document).ready(function() {
+    $("#nuevoValorQR").prop("readonly", true);
+    calcularPago();
+});
 /*=============================================
 CAMBIO TRANSACCIÓN
 =============================================*/
@@ -1021,6 +1135,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
 	
     // Actualizar los totales
     sumarTotalPrecios();
+    calcularPago();
     listarProductos();
 });
 
