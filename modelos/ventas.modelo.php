@@ -338,7 +338,7 @@ class ModeloVentas
 	{
 		date_default_timezone_set('America/La_Paz');
 		$hoy = date('Y-m-d');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total, SUM(total_qr) as total_qr, SUM(total_efectivo) as total_efectivo FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1");
 
 		$stmt->execute();
 

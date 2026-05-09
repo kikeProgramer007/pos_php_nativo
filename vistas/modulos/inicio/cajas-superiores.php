@@ -34,8 +34,60 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 ?>
 
 
+<div class="col-lg-2 col-xs-6  text-uppercase ">
 
-<div class="col-lg-3 col-xs-6 text-uppercase ">
+  <div class="small-box bg-green monto-dia-box">
+
+    <div class="inner">
+
+      <h3><?php echo number_format($ventasTotaldDiaActual["total_efectivo"], 2) . 'BS'; ?></h3>
+
+
+      <p>M. del Día (Efectivo)</p>
+
+    </div>
+
+    <div class="icon">
+      
+     <img src="./vistas/img/plantilla/bs.webp" alt="">
+
+    </div>
+    <a href="reporte-venta" role="button" class="small-box-footer">
+      <?php echo date('d-m-Y'); ?>
+    </a>
+
+  </div>
+
+</div>
+
+<div class="col-lg-2 col-xs-6  text-uppercase ">
+
+  <div class="small-box bg-green monto-dia-box">
+
+    <div class="inner">
+
+      <h3><?php echo number_format($ventasTotaldDiaActual["total_qr"], 2) . 'BS'; ?></h3>
+
+
+      <p>M. del Día (QR)</p>
+
+    </div>
+
+    <div class="icon">
+      
+     <img src="./vistas/img/plantilla/pagos_qr.png" alt="">
+
+    </div>
+    <a href="reporte-venta" role="button" class="small-box-footer">
+      <?php echo date('d-m-Y'); ?>
+    </a>
+
+  </div>
+
+</div>
+
+
+<div class="col-lg-2 col-xs-6  text-uppercase ">
 
   <div class="small-box bg-green monto-dia-box">
 
@@ -50,7 +102,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
     <div class="icon">
       
-     <img src="./vistas/img/plantilla/bs.webp" alt="">
+     <img src="./vistas/img/plantilla/pagos_qr_efectivo.png" alt="">
 
     </div>
     <a href="reporte-venta" role="button" class="small-box-footer">
@@ -68,44 +120,42 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
     color: #fff;
     /* Texto en blanco para contraste */
   }
-</style>
 
-<style>
-.monto-dia-box .icon img {
-  max-width: 200px;
-  max-height: 110px;
-  object-fit: contain;
-  position: absolute;
-  right: 20px;
-  top: 0%;
-  transform: translateY(-80%);
-  opacity: 0.85;
-}
-.monto-dia-box .icon {
-  position: relative;
-  height: 0px;
-}
-.monto-dia2-box .icon img{
-  max-width: 300px;
-  max-height: 150px;
-  object-fit: contain;
-  position: absolute;
-  right: 20px;
-  top: 0%;
-  transform: translateY(-70%);
-  opacity: 0.85;
-}
-.monto-dia2-box .icon {
-  position: relative;
-  height: 0px;
-}
+  .monto-dia-box .icon img {
+    max-width: 90px;
+    max-height: 60px;
+    object-fit: contain;
+    position: absolute;
+    right: 0px;
+    top: 0%;
+    transform: translateY(-80%);
+    opacity: 0.85;
+  }
+  .monto-dia-box .icon {
+    position: relative;
+    height: 0px;
+  }
+  .monto-dia2-box .icon img{
+    max-width: 100px;
+    max-height: 50px;
+    object-fit: contain;
+    position: absolute;
+    right: 5px;
+    top: 0%;
+    transform: translateY(-70%);
+    opacity: 0.85;
+  }
+  .monto-dia2-box .icon {
+    position: relative;
+    height: 0px;
+  }
 
 </style>
 
 
-<div class="col-lg-3 col-xs-6 text-uppercase ">
+<div class="col-lg-3 col-xs-6  text-uppercase ">
 
-<div class="small-box bg-cafe monto-dia-box">
+  <div class="small-box bg-cafe monto-dia-box">
 
     <div class="inner">
 
@@ -131,14 +181,11 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
   </div>
 
-
-
-
 </div>
 
-<div class="col-lg-3 col-xs-6 text-uppercase ">
+<div class="col-lg-3 col-xs-6  text-uppercase ">
 
-<div class="small-box bg-blue monto-dia-box">
+  <div class="small-box bg-blue monto-dia-box">
 
     <div class="inner">
 
@@ -167,38 +214,27 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 </div>
 
 
-<div class="col-lg-3 col-xs-5 text-uppercase ">
-
-<div class="small-box bg-red monto-dia-box">
+<div class=" col-lg-2 col-xs-6  text-uppercase ">
+  <div class="small-box bg-red monto-dia-box">
 
     <div class="inner">
-
       <h3><?php echo number_format($totalProductos); ?></h3>
-
       <p>Productos</p>
-
     </div>
 
     <div class="icon">
-
-    <img src="./pagina/assets/img/food/22.webp" alt="">
-
+      <img src="./pagina/assets/img/food/22.webp" alt="">
     </div>
 
     <a href="productos" class="small-box-footer">
-
       Más info <i class="fa fa-arrow-circle-right"></i>
-
     </a>
 
   </div>
-
 </div>
 
 
-
-
-<div class="col-lg-3 col-xs-6 text-uppercase">
+<div class="col-lg-2 col-xs-6  text-uppercase">
 
   <div class="small-box bg-yellow">
 
@@ -226,7 +262,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
 </div>
 
-<div class="col-lg-2 col-xs-6 text-uppercase">
+<div class="col-lg-2 col-xs-6  text-uppercase">
 
   <div class="small-box bg-black">
 
@@ -255,7 +291,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 </div>
 
 
-<div class="col-lg-2 col-xs-6 text-uppercase">
+<div class="col-lg-2 col-xs-6  text-uppercase">
 
   <div class="small-box bg-blue">
 
@@ -285,10 +321,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
 </div>
 
-
-
-
-<div class="col-lg-2 col-xs-6 text-uppercase">
+<div class="col-lg-2 col-xs-6  text-uppercase">
 
   <div class="small-box bg-cafe">
 
@@ -318,14 +351,11 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
 </div>
 
-
-
-
-<div class="col-lg-3 col-xs-6 text-uppercase">
+<div class="col-lg-2 col-xs-6  text-uppercase">
 
 <div class="small-box bg-yellow monto-dia2-box">
 
-    <div class="inner">
+  <div class="inner">
 
       <h3><?php echo number_format($totalcliente); ?></h3>
 
