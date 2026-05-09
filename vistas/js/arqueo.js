@@ -19,6 +19,8 @@ class ArqueoCaja {
         this.totales = {
             montoApertura: 0,
             montoVentas: 0,
+            montoVentasEfectivo: 0,
+            montoVentasQr: 0,
             totalEfectivoEnCaja: 0,
             gastosOperativos: 0,
             montoCompras: 0,

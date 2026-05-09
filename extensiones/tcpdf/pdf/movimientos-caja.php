@@ -155,8 +155,17 @@ class imprimirFactura
                 <td style="text-align:right; ">' . $arqueo["monto_apertura"] . '</td>
             </tr>
             <tr>
-                <td style="text-align:left; "> VENTAS:</td>
-                <td style="text-align:right; ">' . $arqueo["monto_ventas"] . '</td>
+                <td style="text-align:left; "> <strong>VENTAS</strong></td>
+                <td style="text-align:right; "></td>
+            </tr>
+
+            <tr>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp;- QR:</td>
+                <td style="text-align:right; ">' . $arqueo["monto_ventas_qr"] . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp;- EFECTIVO:</td>
+                <td style="text-align:right; ">' . $arqueo["monto_ventas_efectivo"] . '</td>
             </tr>
             <tr>
                 <td style="width:70%; text-align:left;"><strong>TOTAL INGRESOS:</strong></td>

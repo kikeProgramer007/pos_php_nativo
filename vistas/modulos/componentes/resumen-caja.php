@@ -1,6 +1,9 @@
 
 <!-- Resumen de Movimientos de Caja -->
 <h4 class="text-center"><strong>Resumen de Movimientos de Caja</strong></h4>
+
+
+
 <table class="dt-responsive tabla-resumen-arbol">
     <tbody>
         <tr class="row-dark">

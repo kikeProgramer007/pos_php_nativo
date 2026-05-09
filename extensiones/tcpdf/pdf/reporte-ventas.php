@@ -120,7 +120,7 @@ class reporteVenta extends TCPDF
         $this->Cell(50, 5, $this->DateAndTime, 0, 1, 'L');
 
         // Agregar espacio después del encabezado
-        $this->Ln(8);
+        $this->Ln(4);
         
         // Encabezado de la tabla
         $this->SetFont('helvetica', 'B', 9);
@@ -178,7 +178,7 @@ class reporteVenta extends TCPDF
         $this->setPrintFooter(false);
 
         // Configurar salto de página automático
-        $this->SetAutoPageBreak(true, 20);
+        $this->SetAutoPageBreak(true, 8);
 
         // Ajustar márgenes
         $this->SetMargins(10, 10, 10);
@@ -187,7 +187,7 @@ class reporteVenta extends TCPDF
         $this->AddPage();
 
         // Establecer la posición Y después del encabezado
-        $this->SetY(66);
+        $this->SetY(62);
 
         $this->SetFont('helvetica', '', 8);
 
@@ -222,7 +222,7 @@ class reporteVenta extends TCPDF
             $anchos = array(10, 12, 18, 22, 22, 25, 21, 20, 20, 20);
 
             // Calcular altura automática según el texto más largo
-            $altura = 4;
+            $altura = 0;
             foreach ($fila as $i => $texto) {
                 $numLineas = $this->getNumLines($texto, $anchos[$i]);
                 $altura = max($altura, $numLineas * 4);
@@ -232,7 +232,7 @@ class reporteVenta extends TCPDF
             $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
             if (($this->GetY() + $altura) > $limiteInferior) {
                 $this->AddPage();
-                $this->SetY(66);
+                $this->SetY(62);
             }
 
             $x = $this->GetX();
@@ -256,7 +256,7 @@ class reporteVenta extends TCPDF
         }
 
         // Altura aproximada necesaria para imprimir totales
-        $alturaTotales = 4;
+        $alturaTotales = 4 ; // 2 líneas de totales + espacio
 
         // Obtener límite inferior real de la página
         $limiteInferior  = $this->getPageHeight() - $this->getBreakMargin();
@@ -264,7 +264,7 @@ class reporteVenta extends TCPDF
         // Si no entra, crear nueva página
         if (($this->GetY() + $alturaTotales) > $limiteInferior) {
             $this->AddPage();
-            $this->SetY(66);
+            $this->SetY(62);
         }
         // Total general
         $this->SetFont('helvetica', 'B', 9);
