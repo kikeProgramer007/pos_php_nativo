@@ -1,5 +1,10 @@
 <?php
 
+// Arriba del archivo
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
 
@@ -217,14 +222,15 @@ class reporteVenta extends TCPDF
             $anchos = array(10, 12, 18, 22, 22, 25, 21, 20, 20, 20);
 
             // Calcular altura automática según el texto más largo
-            $altura = 5;
+            $altura = 4;
             foreach ($fila as $i => $texto) {
                 $numLineas = $this->getNumLines($texto, $anchos[$i]);
-                $altura = max($altura, $numLineas * 5);
+                $altura = max($altura, $numLineas * 4);
             }
 
             // Salto de página si no entra la fila
-            if ($this->GetY() + $altura > 270) {
+            $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
+            if (($this->GetY() + $altura) > $limiteInferior) {
                 $this->AddPage();
                 $this->SetY(66);
             }
@@ -249,13 +255,17 @@ class reporteVenta extends TCPDF
             $sumTotalQr += $totalQr;
         }
 
-        // Verificar si hay espacio suficiente para los totales
-        if ($this->GetY() > 250) {
-            $this->AddPage();
-            // Establecer la posición Y después del encabezado en la nueva página
-            $this->SetY(40);
-        }
+        // Altura aproximada necesaria para imprimir totales
+        $alturaTotales = 4;
 
+        // Obtener límite inferior real de la página
+        $limiteInferior  = $this->getPageHeight() - $this->getBreakMargin();
+
+        // Si no entra, crear nueva página
+        if (($this->GetY() + $alturaTotales) > $limiteInferior) {
+            $this->AddPage();
+            $this->SetY(66);
+        }
         // Total general
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(130, 5, 'Totales (Bs)', 0, 0, 'R');

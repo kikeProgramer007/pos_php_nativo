@@ -224,7 +224,7 @@ class ModeloArqueo {
       * @param int $totalVentas Total de Ingresos
       * @return string Resultado de la operación ('ok' o 'error')
       */
-    public static function mdlRegistrarIngreso($Arqueo, $nroTicket, $totalVentas) {
+    public static function mdlRegistrarIngreso($Arqueo, $nroTicket, $totalVentas, $totalEfectivo, $totalQR) {
         $db = Conexion::conectar(); // Obtener la conexión PDO
         $db->beginTransaction(); // Iniciar transacción
         try {
@@ -232,13 +232,17 @@ class ModeloArqueo {
             // Preparar y ejecutar la actualización en la tabla arqueo_caja
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
             SET nroTicket = :nroTicket,
+             monto_ventas_efectivo = monto_ventas_efectivo + (:totalEfectivo),
+             monto_ventas_qr = monto_ventas_qr + (:totalQR),
              monto_ventas = monto_ventas + (:totalVentas), 
              total_ingresos = total_ingresos + (:totalVentas), 
              resultado_neto = total_ingresos - total_egresos 
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $Arqueo["id"], PDO::PARAM_INT);
             $stmtArqueo->bindParam(":nroTicket", $nroTicket, PDO::PARAM_STR);
-            $stmtArqueo->bindParam(":totalVentas", $totalVentas, PDO::PARAM_STR); 
+            $stmtArqueo->bindParam(":totalVentas", $totalVentas, PDO::PARAM_STR);
+            $stmtArqueo->bindParam(":totalEfectivo", $totalEfectivo, PDO::PARAM_STR);
+            $stmtArqueo->bindParam(":totalQR", $totalQR, PDO::PARAM_STR);
 
             $actualizacionExitosa = $stmtArqueo->execute();
 
@@ -282,7 +286,7 @@ class ModeloArqueo {
       * @param int $totalIngreso Total de Ingresos
       * @return string Resultado de la operación ('ok' o 'error')
       */
-    public static function mdlEliminarIngreso($idArqueo, $totalIngreso) {
+    public static function mdlEliminarIngreso($idArqueo, $totalIngreso, $totalEfectivo, $totalQR) {
         $db = Conexion::conectar(); // Obtener la conexión PDO
         $db->beginTransaction(); // Iniciar transacción
         try {
@@ -290,11 +294,15 @@ class ModeloArqueo {
             // Preparar y ejecutar la actualización en la tabla arqueo_caja
             $stmtArqueo = $db->prepare("UPDATE arqueo_caja 
             SET monto_ventas = monto_ventas - (:totalCompra),
+             monto_ventas_efectivo = monto_ventas_efectivo - (:totalEfectivo),
+             monto_ventas_qr = monto_ventas_qr - (:totalQR),
              total_ingresos = total_ingresos - (:totalCompra),
              resultado_neto = (total_ingresos - total_egresos)
              WHERE id = :idArqueo");
             $stmtArqueo->bindParam(":idArqueo", $idArqueo, PDO::PARAM_INT);
-            $stmtArqueo->bindParam(":totalCompra", $totalIngreso, PDO::PARAM_STR); 
+            $stmtArqueo->bindParam(":totalCompra", $totalIngreso, PDO::PARAM_STR);
+            $stmtArqueo->bindParam(":totalEfectivo", $totalEfectivo, PDO::PARAM_STR);
+            $stmtArqueo->bindParam(":totalQR", $totalQR, PDO::PARAM_STR); 
 
             $actualizacionExitosa = $stmtArqueo->execute();
 
@@ -431,6 +439,8 @@ class ModeloArqueo {
                 Bs050 = :Bs050,
                 Bs020 = :Bs020,
                 total_ingresos = :total_ingresos,
+                monto_ventas_efectivo = :monto_ventas_efectivo,
+                monto_ventas_qr = :monto_ventas_qr,
                 monto_ventas = :monto_ventas,
                 total_egresos = :total_egresos,
                 gastos_operativos = :gastos_operativos,
@@ -455,6 +465,8 @@ class ModeloArqueo {
             $stmt->bindParam(":Bs050", $datos["Bs050"], PDO::PARAM_INT);
             $stmt->bindParam(":Bs020", $datos["Bs020"], PDO::PARAM_INT);
             $stmt->bindParam(":total_ingresos", $datos["total_ingresos"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_ventas_efectivo", $datos["monto_ventas_efectivo"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_ventas_qr", $datos["monto_ventas_qr"], PDO::PARAM_STR);
             $stmt->bindParam(":monto_ventas", $datos["monto_ventas"], PDO::PARAM_STR);
             $stmt->bindParam(":total_egresos", $datos["total_egresos"], PDO::PARAM_STR);
             $stmt->bindParam(":gastos_operativos", $datos["gastos_operativos"], PDO::PARAM_STR);

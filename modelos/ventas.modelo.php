@@ -395,7 +395,16 @@ class ModeloVentas
 			$query .= " AND ventas.estado =1 ";
 		}
 		
-		$query .= " GROUP BY ventas.codigo, ventas.fecha, usuarios.nombre, meseros.nombre, clientes.nombre, ventas.tipo_pago ORDER BY ventas.fecha ASC;";
+		$query .= " GROUP BY 
+                ventas.codigo, 
+                ventas.fecha, 
+                usuarios.nombre, 
+                meseros.nombre, 
+                clientes.nombre, 
+                ventas.tipo_pago,
+                ventas.total_qr,
+                ventas.total_efectivo
+            ORDER BY ventas.fecha ASC;";
 
 		// Preparar la consulta
 		$stmt = Conexion::conectar()->prepare($query);

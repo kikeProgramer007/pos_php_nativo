@@ -1,6 +1,69 @@
 <!-- Estilos CSS -->
 <link rel="stylesheet" href="vistas/plugins/toastr/css/toastr.min.css">
 <style>
+
+.tabla-resumen-arbol td {
+    vertical-align: top;
+}
+
+.tree-cell {
+    padding: 2px 6px;
+}
+
+.tree-view,
+.tree-view ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tree-view ul {
+    margin-left: 14px;
+}
+
+.tree-view li {
+    position: relative;
+    padding-left: 14px;
+    line-height: 16px;
+    margin: 1px 0;
+}
+
+/* línea vertical */
+.tree-view li::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 4px;
+    width: 1px;
+    height: 18px;
+    border-left: 1px dotted #777;
+}
+
+/* línea horizontal */
+.tree-view li::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 4px;
+    width: 10px;
+    border-top: 1px dotted #777;
+}
+
+/* cortar línea del último */
+.tree-view li:last-child::before {
+    height: 14px;
+}
+
+/* columna valores */
+.tree-values {
+    padding: 2px 6px;
+    text-align: right;
+}
+
+.tree-values div {
+    line-height: 16px;
+    margin: 1px 0;
+}
     .custom-radio-group {
         display: flex;
         gap: 20px; /* Espaciado entre opciones */
@@ -80,7 +143,7 @@
     padding-left: 6px;
     padding-right: 6px;
     padding-top: 6px;
-    padding-bottom: 6px;
+    padding-bottom: 0px;
 }
 
 .cell-padded {

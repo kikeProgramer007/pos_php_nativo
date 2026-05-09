@@ -1,37 +1,52 @@
 
 <!-- Resumen de Movimientos de Caja -->
 <h4 class="text-center"><strong>Resumen de Movimientos de Caja</strong></h4>
-<table class="dt-responsive">
-    <thead>
-        <tr class="row-dark">
-            <th>INGRESOS</th>
-            <th class="text-right total-column" id="total_ingresos">0.00</th>
-        </tr>
-    </thead>
+<table class="dt-responsive tabla-resumen-arbol">
     <tbody>
-        <!-- Ingresos -->
-        <tr>
-            <td class="cell-padded">Saldo Inicial en Caja</td>
-            <td class="text-right cell-value total-column" id="monto_apertura">0.00</td>
-        </tr>
-        <tr>
-            <td class="cell-padded">Ventas</td>
-            <td class="text-right cell-value total-column" id="monto_ventas">0.00</td>
+        <tr class="row-dark">
+            <td>INGRESOS</td>
+            <td class="text-right total-column" id="total_ingresos">0.00</td>
         </tr>
 
-        <!-- Egresos -->
+        <tr>
+            <td class="tree-cell">
+                <ul class="tree-view">
+                    <li>Saldo Inicial en Caja</li>
+                    <li>
+                        Ventas
+                        <ul>
+                            <li>Qr</li>
+                            <li>Efectivo</li>
+                        </ul>
+                    </li>
+                </ul>
+            </td>
+            <td class="tree-values">
+                <div id="monto_apertura" class="text-bold">0.00</div>
+                <div id="monto_ventas" class="text-bold">0.00</div>
+                <div id="monto_ventas_qr">0.00</div>
+                <div id="monto_ventas_efectivo">0.00</div>
+            </td>
+        </tr>
+
         <tr class="row-dark">
-            <td>Egresos</td>
+            <td>EGRESOS</td>
             <td class="text-right total-column" id="total_egresos">0.00</td>
         </tr>
+
         <tr>
-            <td class="cell-padded">Gastos</td>
-            <td class="text-right cell-value total-column" id="gastos_operativos">0.00</td>
+            <td class="tree-cell">
+                <ul class="tree-view">
+                    <li>Gastos</li>
+                    <li>Compras</li>
+                </ul>
+            </td>
+            <td class="tree-values">
+                <div id="gastos_operativos" class="text-bold">0.00</div>
+                <div id="monto_compras" class="text-bold">0.00</div>
+            </td>
         </tr>
-        <tr>
-            <td class="cell-padded">Compras</td>
-            <td class="text-right cell-value total-column" id="monto_compras">0.00</td>
-        </tr>
+
         <tr class="row-dark">
             <td>SALDO NETO</td>
             <td class="text-right total-column" id="resultado_neto">0.00</td>

@@ -103,6 +103,8 @@ class ControladorArqueo {
             "Bs050" => self::sanitizarCantidad($_POST["cantidad_05"]),
             "Bs020" => self::sanitizarCantidad($_POST["cantidad_02"]),
             "total_ingresos" => floatval($_POST["totalIngresos"]),
+            "monto_ventas_efectivo" => floatval($_POST["montoVentasEfectivo"]),
+            "monto_ventas_qr" => floatval($_POST["montoVentasQR"]),
             "monto_ventas" => floatval($_POST["montoVentas"]),
             "total_egresos" => floatval($_POST["totalEgresos"]),
             "gastos_operativos" => floatval($_POST["gastosOperativos"]),

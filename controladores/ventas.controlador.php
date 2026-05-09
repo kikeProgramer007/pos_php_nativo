@@ -219,7 +219,7 @@ class ControladorVentas{
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
 				$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
 
-				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"]);
+				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
 
 				$imprimir = isset($_POST["sinImprimir"]) ? $_POST["sinImprimir"] : false;
 				if ($imprimir == false) {
@@ -399,7 +399,7 @@ class ControladorVentas{
 			$respuesta = ModeloVentas::mdlEliminarVenta($tabla, $_GET["idVenta"]);
 			
 			if($respuesta == "ok"){
-				ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"]);
+				ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"], $traerVenta["total_efectivo"], $traerVenta["total_qr"]);
 				echo'<script>
 
 				swal({

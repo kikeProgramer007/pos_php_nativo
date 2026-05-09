@@ -124,6 +124,8 @@ class ArqueoCaja {
         
         this.totales.montoApertura = parseFloat(document.getElementById('monto_apertura').textContent),
         this.totales.montoVentas = parseFloat(document.getElementById('monto_ventas').textContent),
+        this.totales.montoVentasEfectivo = parseFloat(document.getElementById('monto_ventas_efectivo').textContent),
+        this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent),
         this.totales.gastosOperativos = parseFloat(document.getElementById('gastos_operativos').textContent),
         this.totales.montoCompras = parseFloat(document.getElementById('monto_compras').textContent)
         this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas;
@@ -227,6 +229,8 @@ class ArqueoCaja {
             'monto_apertura': datos.monto_apertura || '0.00',
             'idCaja': datos.id_caja,
             'monto_ventas': datos.monto_ventas || '0.00',
+            'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
+            'monto_ventas_qr': datos.monto_ventas_qr || '0.00',
             'total_ingresos': datos.total_ingresos || '0.00',
             'gastos_operativos': datos.gastos_operativos || '0.00',
             'monto_compras': datos.monto_compras || '0.00',
