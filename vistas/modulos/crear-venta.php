@@ -890,10 +890,6 @@ if ($_SESSION["perfil"] == "") {
             <div class="box-footer">
               <div class="row">
                 <div class="col-xs-6 text-left ">
-              <!--<div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="sinImprimir" name="sinImprimir">
-                    <label class="form-check-label" for="sinImprimir"> Sin Imprimir</label>
-                  </div> -->
                      <div class="">
                       <div class="input-group">
                         <span class="input-group-addon text-bold">IMPRIMIR EN</span>
@@ -901,6 +897,7 @@ if ($_SESSION["perfil"] == "") {
                           <option value="1" selected>CAJA Y COCINA</option>
                           <option value="2">CAJA</option>
                           <option value="3">COCINA</option>
+                          <option value="4">NO IMPRIMIR</option>
                         </select>
                       </div>
                     </div>
@@ -1184,7 +1181,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
     case "1": // Efectivo
       if(efectivo < totalVenta) {
         swal({
-          type: "error",
+          type: "warning",
           title: "El pago en efectivo debe ser igual o mayor al total",
           showConfirmButton: true,
           confirmButtonText: "Cerrar"
@@ -1196,7 +1193,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       var valorQR = Number($('#nuevoValorQR').val());
       if(valorQR < totalVenta) {
         swal({
-          type: "error",
+          type: "warning",
           title: "El pago en QR debe ser igual o mayor al total",
           showConfirmButton: true,
           confirmButtonText: "Cerrar"
@@ -1208,7 +1205,7 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
       var valorQR = Number($('#nuevoValorQR').val());
       if((efectivo + valorQR) < totalVenta) {
         swal({
-          type: "error",
+          type: "warning",
           title: "La suma del efectivo y el QR debe ser igual o mayor al total",
           showConfirmButton: true,
           confirmButtonText: "Cerrar"
@@ -1216,6 +1213,17 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
         return;
       }
       break;
+  }
+
+
+  if ($(".nuevoProducto .nuevaDescripcionProducto").length <= 0) {
+    swal({
+      type: "warning",
+      title: "Debe agregar al menos un producto a la venta",
+      showConfirmButton: true,
+      confirmButtonText: "Cerrar"
+    });
+    return;
   }
 
     // Recoge los datos del formulario
@@ -1234,18 +1242,18 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
             imprimirVentaSegunTipo(respuesta.idVenta);
         }else if(respuesta.status == "recargar"){
           swal({
-                        title:"Actualice de la caja",
-                        text: "es necesario recargar la pagina para continuar",
-                        type: "warning",
-                        showCancelButton: false,
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "Sí, recargar pagina",
-                     
-                    }).then((result) => {
-                        if (result.value) {
-                            window.location.href = "crear-venta";
-                        }
-                    }); 
+                  title:"Actualice de la caja",
+                  text: "es necesario recargar la pagina para continuar",
+                  type: "warning",
+                  showCancelButton: false,
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "Sí, recargar pagina",
+                
+              }).then((result) => {
+                  if (result.value) {
+                      window.location.href = "crear-venta";
+                  }
+              }); 
         }
         else {
           $("#guardarVentaBtn").prop("disabled", false);

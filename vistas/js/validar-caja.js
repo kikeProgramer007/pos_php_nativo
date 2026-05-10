@@ -47,8 +47,7 @@ class ValidadorCaja {
             'formaAtencion',
             'nuevoValorEfectivo',
             'tipoPago',
-            'nota',
-            'sinImprimir'
+            'nota'
         ];
 
         elementos.forEach(id => {

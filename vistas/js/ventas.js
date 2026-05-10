@@ -810,9 +810,11 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
         if (idTipoImpresion == 1) {//Caja y Cocina
             await imprimirCajaCocina(codigoVenta);
         } else if (idTipoImpresion == 2) {//Solo Caja
-          await imprimirSoloCaja(codigoVenta);
+            await imprimirSoloCaja(codigoVenta);
         } else if (idTipoImpresion == 3) {//Solo Cocina
-           await imprimirSoloCocina(codigoVenta);
+            await imprimirSoloCocina(codigoVenta);
+        } else if (idTipoImpresion == 4) {//Sin Imprimir
+            await imprimirSoloCaja(codigoVenta, imprimir = false);
         }
     }catch (error) {
         console.error('❌ Error al determinar el tipo de impresión:', error);
@@ -881,7 +883,7 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
     }
 }
 
-async function imprimirSoloCaja(codigoVenta) {
+async function imprimirSoloCaja(codigoVenta, imprimir = true) {
     // 1 Pedir el PDF al servidor PHP     
     const response = await fetch(
         `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
@@ -899,6 +901,9 @@ async function imprimirSoloCaja(codigoVenta) {
     }
     await mostrarVenta(data.facturaBase64);
 
+    if (!imprimir) {
+        return;
+    }
     try {
         // Imprimir FACTURA (CAJA)
         const printResponse = await fetch('http://localhost:3000/print-pdf', {
@@ -916,7 +921,7 @@ async function imprimirSoloCaja(codigoVenta) {
         console.log('✅ Impresión enviada correctamente');
     } catch (error) {
         console.error('❌ Error de impresión:', error);
-    }   
+    }
 }
 
 async function imprimirSoloCocina(codigoVenta) {

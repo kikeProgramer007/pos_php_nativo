@@ -221,21 +221,13 @@ class ControladorVentas{
 
 				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
 
-				$imprimir = isset($_POST["sinImprimir"]) ? $_POST["sinImprimir"] : false;
-				if ($imprimir == false) {
-					echo json_encode([
-						"status" => "ok",
-						"idVenta" => $respuesta['idVenta'],
-						"imprimir" => true
-					]);
-				} else {
-					echo json_encode([
-						"status" => "ok",
-						"idVenta" => $respuesta['idVenta'],
-						"imprimir" => false
-					]);
-				}
-				return;
+				echo json_encode([
+					"status" => "ok",
+					"mensaje" => "La venta ha sido registrada correctamente",
+					"idVenta" => $respuesta["idVenta"]
+				]);
+				return ;
+				
 			} else {
 				echo json_encode([
 					"status" => "error",
