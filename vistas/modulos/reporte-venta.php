@@ -56,7 +56,7 @@ $fechaActual = date('Y-m-d');
                     <option value="0">Todos</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="QR">QR</option>
-                    <option value="Transferencia">Transferencia</option>
+                <!--     <option value="Transferencia">Transferencia</option> -->
                     <option value="Qr y Efectivo(Mixto)">Qr y Efectivo(Mixto)</option>
                   </select>
                 </div>

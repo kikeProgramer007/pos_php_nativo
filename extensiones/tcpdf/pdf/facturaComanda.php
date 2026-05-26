@@ -111,7 +111,7 @@ class imprimirFacturaComanda
             <tr>
                 <td style="text-align:center;">
                     <span style="font-size: 10px;">POLLOS ROSSY</span><br>
-                    <span style="font-size: 14px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
+                    <span style="font-size: 25px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
             </tr>
@@ -155,7 +155,7 @@ class imprimirFacturaComanda
             <tr>
                 <td style="text-align:center;">
                     <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
-                    <span style="font-size: 15px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
+                    <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
                 </td>
             </tr>
             </tbody>
@@ -174,11 +174,13 @@ class imprimirFacturaComanda
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
             </tr>
+            <!--
             <tr>
                 <td width="25%"><strong>MESERO/A</strong></td>
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaMesero["nombre"] . '</td>
             </tr>
+            -->
             <tr>
                 <td width="25%"><strong>FECHA</strong></td>
                 <td width="3%"><strong>:</strong></td>

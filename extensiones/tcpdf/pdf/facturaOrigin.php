@@ -195,7 +195,7 @@ class imprimirFactura
             <tr>
                <td style="text-align:center;">
                 <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
-                <span style="font-size: 15px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
+                <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
                </td>
             </tr>
             <tbody>
