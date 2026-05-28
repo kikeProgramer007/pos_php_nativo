@@ -160,11 +160,11 @@ class imprimirFactura
             </tr>
 
             <tr>
-                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp;- QR:</td>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; QR:</td>
                 <td style="text-align:right; ">' . $arqueo["monto_ventas_qr"] . '</td>
             </tr>
             <tr>
-                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp;- EFECTIVO:</td>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
                 <td style="text-align:right; ">' . $arqueo["monto_ventas_efectivo"] . '</td>
             </tr>
             <tr>
