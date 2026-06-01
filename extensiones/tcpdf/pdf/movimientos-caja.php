@@ -46,6 +46,7 @@ class imprimirFactura
 
         $totalMonedas = ($arqueo["Bs5"] * 5)
                     + ($arqueo["Bs2"] * 2)
+                    + ($arqueo["Bs1"] * 1)
                     + ($arqueo["Bs050"] * 0.5)
                     + ($arqueo["Bs020"] * 0.20);
    
@@ -68,7 +69,7 @@ class imprimirFactura
         require_once('tcpdf_include.php');
 
         // Definir altura base (en mm) para encabezado y márgenes.
-        $alturaBase = 230;
+        $alturaBase = 260;
   
 
         // Crear el documento con la altura calculada
@@ -242,6 +243,10 @@ class imprimirFactura
             <tr>
                 <td style="text-align:left; "> ' . $arqueo["Bs2"] . ' MONEDAS DE BS. 2:</td>
                 <td style="text-align:right; ">' .number_format($arqueo["Bs2"] * 2, 2). '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; "> ' . $arqueo["Bs1"] . ' MONEDAS DE BS. 1:</td>
+                <td style="text-align:right; ">' .number_format($arqueo["Bs1"] * 1, 2). '</td>
             </tr>
              <tr>
                 <td style="text-align:left; "> ' . $arqueo["Bs050"] . ' MONEDAS DE BS. 0.50:</td>
