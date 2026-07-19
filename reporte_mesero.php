@@ -23,13 +23,12 @@ class PDF extends FPDF
         $this->Line(0, 40, 210, 40);
 
         // Logos
-        $this->Image('vistas/img/plantilla/logo-blanco-bloque.png', 12, 4.5, 31);
-        $this->Image('vistas/img/plantilla/log2.jpg', 170, 10, 28);
+              $this->Image('vistas/img/plantilla/logo-blanco-bloque.png', 12, 4.5, 31);
 
 
         // Título principal
         $this->SetFont('Arial', 'B', 16);
-        $this->Cell(0, 15, iconv('UTF-8', 'ISO-8859-1', 'POLLOS ROSSY'), 0, 1, 'C');
+        $this->Cell(0, 15, iconv('UTF-8', 'ISO-8859-1', 'El Gato Rico -Churrasqueria'), 0, 1, 'C');
         
         // Subtítulo en un recuadro
         $this->SetFont('Arial', 'B', 12);
@@ -93,7 +92,7 @@ class PDF extends FPDF
         // Información del pie de página
         $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Fecha de impresión: ') . date('d/m/Y H:i:s'), 0, 0, 'L');
         $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Página ') . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Cell(50, 10, 'POLLOS ROSSY', 0, 0, 'R');
+        $this->Cell(50, 10, 'El Gato Rico -Churrasqueria', 0, 0, 'R');
     }
 }
 

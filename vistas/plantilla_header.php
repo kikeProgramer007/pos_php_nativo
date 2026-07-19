@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>Pollos Rossy</title>
+  <title>El Gato Rico -Churrasqueria</title>
 
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -117,12 +117,10 @@
 
 <style>
 .skin-blue .main-header .navbar {
- 
-  background-color: #f39c12;;
-
-    color: white; /* Cambiar el color del texto a blanco para que sea legible en el degradado oscuro */
-  
-} 
+    background: linear-gradient(to right, #6E3B0B, #A86514, #C87A18, #E09A2A);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(240, 160, 32, 0.35);
+}
 .select2-container--default .select2-selection--single {
      border: 1px solid #d2d6de !important;
     border-radius: 0 !important;
@@ -149,9 +147,12 @@ resto bar -->
     transition: background-color 0.3s, color 0.3s;
   }
 
-  .skin-blue .main-header .logo:hover {
+ .skin-blue .main-header .logo:hover {
+    background: linear-gradient(90deg, #8A4E0F, #C87A18, #E09A2A);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(240, 160, 32, 0.7);
+    transition: all .3s ease;
 
-    background-color: #f39c12;;
 
  /* Degradado de naranja a negro */
  

@@ -170,7 +170,7 @@ foreach ($categorias as $cat) {
                             
                             
                             <div class="header-button mt-4">
-                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn" data-wow-delay=".5s">
+                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn" data-wow-delay=".5s">
                                 <span class="button-content-wrapper d-flex align-items-center justify-content-center">
                                 <span class="button-icon"><i class="flaticon-delivery"></i></span>
                                 <span class="button-text">ordenar ahora</span>
@@ -240,7 +240,7 @@ foreach ($categorias as $cat) {
                               
                                 <div class="header-button">
 
-                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
+                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
                    
                     </div>
                                 
@@ -687,7 +687,7 @@ foreach ($categorias as $cat) {
                         <span class="theme-color-3">delivery</span>
                     </h2>
       </div>
-                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
+                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
                     <span class="button-content-wrapper d-flex align-items-center">
                         <span class="button-icon"><i class="flaticon-delivery"></i></span>
                         <span class="button-text">Ordenar Ahora</span>
@@ -711,7 +711,7 @@ foreach ($categorias as $cat) {
         <div class="container">
                 <div class="footer-bottom-wrapper d-flex align-items-center justify-content-between">
                     <p class="wow fadeInLeft" data-wow-delay=".3s">
-                        © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">Pollos Rossy </a>.Todos los derechos reservados.
+                        © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">El Gato Rico -Churrasqueria </a>.Todos los derechos reservados.
                     </p>
                     <div class="card-image wow fadeInRight" data-wow-delay=".5s">
                         <img src="assets/img/card.webp" alt="card-img">

@@ -18,8 +18,8 @@ class reporteProductoPorCategoria extends FPDF
 {
     public $idCategoria;
     public $idUsuario;
-    private $nombreTienda = "Pollos Rosy";
-    private $direccionTienda = "Refineria";
+    private $nombreTienda = "El Gato Rico ";
+    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
     private $respuestaUsuario;
     private $respuestaCategoria;
     private $DateAndTime;

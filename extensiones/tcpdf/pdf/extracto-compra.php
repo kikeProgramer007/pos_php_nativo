@@ -66,8 +66,8 @@ class imprimirCompra {
         $pdf->AddPage();
 
         // Definir variables de restaurante y dirección
-        $nombreTienda = "Pollos Rossy"; // Puedes cambiarlo por una variable si lo deseas
-        $direccionTienda = "Refineria"; // Puedes cambiarlo por una variable si lo deseas
+        $nombreTienda = "El Gato Rico "; // Puedes cambiarlo por una variable si lo deseas
+        $direccionTienda = "Heroes Del Chaco 9,Cotoca"; // Puedes cambiarlo por una variable si lo deseas
 
         // --- ENCABEZADO TIPO TABLA DE TRES COLUMNAS ---
         $y_inicial = $pdf->GetY();

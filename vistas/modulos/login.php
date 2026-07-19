@@ -9,7 +9,7 @@
 <!--   <img src="vistas/img/plantilla/logo-blanco-bloque2.png" class="img-responsive" style="padding:30px 100px 0px 100px"> -->
 
 
-  <!-- este login sera para pollos rossyy -->
+  <!-- este login sera para El Gato Rico -Churrasqueriay -->
      <img src="vistas/img/plantilla/logo-blanco-bloque.png" class="img-responsive" style="padding:10px 50px 0px 50px"> 
   </div>
   

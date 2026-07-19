@@ -110,7 +110,7 @@ class imprimirFacturaComanda
             <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <span style="font-size: 10px;">POLLOS ROSSY</span><br>
+                    <span style="font-size: 10px;">El Gato Rico </span><br>
                     <span style="font-size: 25px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
