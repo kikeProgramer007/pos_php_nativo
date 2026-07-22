@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 19, 2026 at 11:51 AM
+-- Generation Time: Jul 22, 2026 at 08:46 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -60,6 +60,14 @@ CREATE TABLE `arqueo_caja` (
   `id_caja` int NOT NULL,
   `id_usuario` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `arqueo_caja`
+--
+
+INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
+(1, '2026-07-19 22:48:05', '2026-07-19 22:49:25', 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0.00, 0.00, 22.00, 0.00, 22.00, 0.00, 1800.00, 1800.00, -1778.00, 22.00, 0.00, 22.00, -1756.00, 'cerrada', 1, NULL, 1, 1),
+(2, '2026-07-19 22:52:46', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 1.00, 1.00, 0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 'abierta', 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -138,6 +146,13 @@ CREATE TABLE `compras` (
   `id_arqueo_caja` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `compras`
+--
+
+INSERT INTO `compras` (`id`, `codigo`, `total`, `id_usuario`, `id_proveedor`, `fecha_alta`, `estado`, `id_arqueo_caja`) VALUES
+(1, 1, 1800.00, 1, 1, '2026-07-20 02:48:18', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -153,6 +168,13 @@ CREATE TABLE `detalle_compra` (
   `precio_compra` decimal(10,2) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `detalle_compra`
+--
+
+INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `cantidad`, `precio_compra`, `subtotal`) VALUES
+(1, 1, 1, 'soda 2l', 100, 18.00, 1800.00);
 
 -- --------------------------------------------------------
 
@@ -173,6 +195,13 @@ CREATE TABLE `detalle_venta` (
   `nota_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `forma_atencion` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`) VALUES
+(1, 1, 1, 'soda 2l', 1, 22.00, 18.00, 22.00, NULL, NULL, 'M');
 
 -- --------------------------------------------------------
 
@@ -214,7 +243,7 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', 'sin carnet', '000-00-000', 'sin direccion', 12438, '2026-07-19 08:54:57', '2026-07-19 12:54:57', 1);
+(1, 's/n', 'sin carnet', '000-00-000', 'sin direccion', 12439, '2026-07-19 22:48:31', '2026-07-20 02:48:31', 1);
 
 -- --------------------------------------------------------
 
@@ -236,6 +265,13 @@ CREATE TABLE `productos` (
   `inventariable` tinyint NOT NULL,
   `estado` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
+
+--
+-- Dumping data for table `productos`
+--
+
+INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
+(1, 2, '201', 'soda 2l', 'vistas/img/productos/201/790.webp', 99, 22, 18, 1, '2026-07-20 02:48:31', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -307,7 +343,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2026-07-19 10:40:41', '2026-07-19 14:40:41', 1),
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2026-07-19 22:42:42', '2026-07-20 02:42:42', 1),
 (2, 'ROSMERY QUIZPE', 'rosmery', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/rosmery/468.png', 1, '2026-05-30 13:11:09', '2026-05-30 17:11:09', 1);
 
 -- --------------------------------------------------------
@@ -335,6 +371,13 @@ CREATE TABLE `ventas` (
   `id_vendedor` int DEFAULT NULL,
   `id_arqueo_caja` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
+
+--
+-- Dumping data for table `ventas`
+--
+
+INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`, `total`, `total_pagado`, `fecha`, `nota`, `tipo_pago`, `cambio`, `forma_atencion`, `estado`, `id_mesero`, `id_cliente`, `id_vendedor`, `id_arqueo_caja`) VALUES
+(1, 1, NULL, 0, 22, 22, 100, '2026-07-20 02:48:31', '', 'Efectivo', 78, 'En Mesa', 1, 1, 1, 1, 1);
 
 --
 -- Indexes for dumped tables
@@ -449,7 +492,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `cajas`
@@ -473,19 +516,19 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT for table `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `gastos`
@@ -503,7 +546,7 @@ ALTER TABLE `meseros`
 -- AUTO_INCREMENT for table `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `proveedor`
@@ -527,7 +570,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
