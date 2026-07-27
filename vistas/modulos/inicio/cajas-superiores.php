@@ -75,7 +75,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 
     <div class="icon">
       
-     <img src="./vistas/img/plantilla/pagos_qr.png" alt="">
+     <img src="./vistas/img/plantilla/qr.png" alt="">
 
     </div>
     <a href="reporte-venta" role="button" class="small-box-footer">
@@ -96,7 +96,7 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
       <h3><?php echo number_format($ventasTotaldDiaActual["total"], 2) . 'BS'; ?></h3>
 
 
-      <p>Monto del Día</p>
+      <p>Monto del Día Total</p>
 
     </div>
 

@@ -115,6 +115,13 @@ class imprimirFactura
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
             </tr>
            
+                <tr>
+                <td width="25%"><strong>MESERO/A</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaMesero["nombre"] . '</td>
+            </tr>
+
+
             <tr >
                 <td width="25%"><strong>CAJERO/A</strong></td>
                 <td width="3%"><strong>:</strong></td>

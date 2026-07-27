@@ -102,7 +102,7 @@ class imprimirFacturaComanda
     /**
      * Genera el encabezado de la factura
      */
-    private function generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaVendedor, $tipoPago) {
+    private function generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago) {
         $fechaSolo = date('d-m-Y', strtotime($respuestaVenta["fecha"]));
         $horaSolo = date('H:i:s a', strtotime($respuestaVenta["fecha"]));
 
@@ -130,6 +130,12 @@ class imprimirFacturaComanda
                 <td width="25%"><strong>CLIENTE</strong></td>
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
+            </tr>
+
+            <tr>
+                <td width="25%"><strong>MESERO/A</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaMesero["nombre"] . '</td>
             </tr>
             <tr>
                 <td width="25%"><strong>CAJERO/A</strong></td>
@@ -174,13 +180,13 @@ class imprimirFacturaComanda
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
             </tr>
-            <!--
+            
             <tr>
                 <td width="25%"><strong>MESERO/A</strong></td>
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaMesero["nombre"] . '</td>
             </tr>
-            -->
+            
             <tr>
                 <td width="25%"><strong>FECHA</strong></td>
                 <td width="3%"><strong>:</strong></td>
@@ -233,7 +239,7 @@ class imprimirFacturaComanda
             $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas);
 
             // Generar encabezados reutilizables
-            $encabezadoFactura = $this->generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaVendedor, $tipoPago);
+            $encabezadoFactura = $this->generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago);
             $tablaProductos = $this->generarTablaProductos($productos, $total, $totalPagado, $cambio, '', false);
             
             $encabezadoComanda = $this->generarEncabezadoComanda($respuestaVenta, $respuestaCliente, $respuestaMesero, $fecha, $respuestaVenta["forma_atencion"]);
