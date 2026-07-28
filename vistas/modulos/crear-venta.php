@@ -620,7 +620,69 @@ if ($modoEdicionCuenta) {
     z-index: 10;
     padding: 2px 8px;
     font-size: 12px;
-}
+  }
+
+  .cantidad-stepper {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+  }
+
+  .cantidad-stepper .btn-cantidad-ajuste {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+  }
+
+  .cantidad-stepper .btn-cantidad-ajuste.btn-minus {
+    background-color: #b7b7b7;
+    border-color: #9e9e9e;
+    color: #fff;
+  }
+
+  .cantidad-stepper .btn-cantidad-ajuste.btn-plus {
+    background-color: #28a745;
+    border-color: #1f8a39;
+    color: #fff;
+  }
+
+  .cantidad-stepper .nuevaCantidadProducto {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 30px;
+    text-align: center;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .cantidad-stepper .nuevaCantidadProducto::-webkit-outer-spin-button,
+  .cantidad-stepper .nuevaCantidadProducto::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .cantidad-stepper .nuevaCantidadProducto[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .cantidad-stepper .btn-minus {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+
+  .cantidad-stepper .btn-plus {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
 </style>
 
 <div class="content-wrapper text-uppercase ">
@@ -1574,9 +1636,17 @@ function agregarLineaProductoEdicion(linea) {
         </select>
       </div>
       <div class="col-xs-2">
-        <input type="number" class="form-control input-sm nuevaCantidadProducto"
-               name="nuevaCantidadProducto" min="1" value="${linea.cantidad}"
-               stock="${stockLinea}" data-idProducto="${linea.id_producto}" required>
+        <div class="cantidad-stepper">
+          <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad">
+            <i class="fa fa-minus"></i>
+          </button>
+          <input type="number" class="form-control input-sm nuevaCantidadProducto"
+                 name="nuevaCantidadProducto" min="1" value="${linea.cantidad}"
+                 stock="${stockLinea}" data-idProducto="${linea.id_producto}" required>
+          <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
       </div>
       <div class="col-xs-4 ingresoPrecio" style="padding-left:0px">
         <div class="input-group">
@@ -1692,9 +1762,17 @@ function agregarProductoAVenta(producto) {
 
       <!-- Columna para cantidad -->
       <div class="col-xs-2">
-        <input type="number" class="form-control input-sm nuevaCantidadProducto" 
-               name="nuevaCantidadProducto" min="1" value="1" 
-               stock="${producto.stock}" data-idProducto="${producto.id}" required>
+        <div class="cantidad-stepper">
+          <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad">
+            <i class="fa fa-minus"></i>
+          </button>
+          <input type="number" class="form-control input-sm nuevaCantidadProducto" 
+                 name="nuevaCantidadProducto" min="1" value="1" 
+                 stock="${producto.stock}" data-idProducto="${producto.id}" required>
+          <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Columna para precio -->

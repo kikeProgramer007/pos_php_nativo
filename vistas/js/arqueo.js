@@ -71,6 +71,25 @@ class ArqueoCaja {
 
             input.addEventListener('keypress', this.validarSoloNumeros);
         });
+
+        document.querySelectorAll('.btn-cantidad-ajuste[data-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = document.getElementById(button.dataset.target);
+                if (!input) {
+                    return;
+                }
+
+                const minimo = Number(input.min || 0);
+                const valorActual = Number(input.value) || 0;
+                const incremento = button.dataset.action === 'incrementar' ? 1 : -1;
+                const nuevoValor = Math.max(minimo, valorActual + incremento);
+
+                input.value = nuevoValor;
+                this.calcularSubtotal(input);
+                this.calcularTotal();
+                input.focus();
+            });
+        });
     }
     inicializarInpuntTotalQrEnCuenta() {
         const inputQrEnCuenta = document.getElementById('qr_en_caja');

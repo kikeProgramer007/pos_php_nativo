@@ -130,9 +130,11 @@ $(".btnAgregarProducto").click(function(){
 	          '<!-- Cantidad del producto -->'+
 
 	          '<div class="col-xs-3 ingresoCantidad">'+
-	            
-	             '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="0" stock required>'+
-
+	            '<div class="cantidad-stepper">'+
+	              '<button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad"><i class="fa fa-minus"></i></button>'+
+	              '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock required>'+
+	              '<button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad"><i class="fa fa-plus"></i></button>'+
+	            '</div>'+
 	          '</div>' +
 
 	          '<!-- Precio del producto -->'+
@@ -234,14 +236,19 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
 MODIFICAR LA CANTIDAD
 =============================================*/
 
-$(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
-	var row = $(this).closest(".row"); // Encuentra el contenedor más cercano
-	var idProducto = row.find(".nuevaDescripcionProducto").attr("idProducto"); // Busca dentro del row
-	var precio = row.find(".ingresoPrecio").children().children(".nuevoPrecioProducto"); // Busca dentro del row
-	var cantidad = $(this).val() || 0; // Si no hay valor, usar 0
-	var precioFinal = cantidad * precio.attr("precioReal");
+function actualizarCantidadProducto($input) {
+	var row = $input.closest(".row");
+	var idProducto = row.find(".nuevaDescripcionProducto").attr("idProducto");
+	var precio = row.find(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var cantidadMinima = Number($input.attr("min")) || 1;
+	var cantidad = Number($input.val()) || 0;
 
+	if(cantidad < cantidadMinima){
+		cantidad = cantidadMinima;
+		$input.val(cantidad);
+	}
 
+	var precioFinal = cantidad * Number(precio.attr("precioReal") || 0);
 	precio.val(parseFloat(precioFinal).toFixed(2));
 
     var apariciones = contarProductoEnVenta(idProducto);
@@ -250,28 +257,47 @@ $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 	}
 
 	/*SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES*/
-	if(Number(cantidad) > Number($(this).attr("stock"))){
+	if(Number(cantidad) > Number($input.attr("stock"))){
 
-		$(this).val(1);
-		var precioFinal = $(this).val() * precio.attr("precioReal");
-		precio.val(precioFinal);
+		$input.val(cantidadMinima);
+		precioFinal = Number($input.val()) * Number(precio.attr("precioReal") || 0);
+		precio.val(parseFloat(precioFinal).toFixed(2));
 		sumarTotalPrecios();
 		calcularPago();
 		swal({
 	      title: "La cantidad supera el Stock",
-	      text: "¡Sólo hay "+$(this).attr("stock")+" unidades!",
+	      text: "¡Sólo hay "+$input.attr("stock")+" unidades!",
 	      type: "error",
 	      confirmButtonText: "¡Cerrar!"
 	    });
 	    return;
 	}
 
-	// SUMAR TOTAL DE PRECIOS----------------
-	sumarTotalPrecios()
-	calcularPago();        
-    // AGRUPAR PRODUCTOS EN FORMATO JSON------------------
-    listarProductos()
+	sumarTotalPrecios();
+	calcularPago();
+    listarProductos();
+}
 
+$(".formularioVenta").on("click", ".btn-cantidad-ajuste", function(){
+	var $input = $(this).siblings("input.nuevaCantidadProducto");
+	if(!$input.length){
+		return;
+	}
+
+	var cantidadActual = Number($input.val()) || 0;
+	var cantidadMinima = Number($input.attr("min")) || 1;
+	var incremento = $(this).data("action") === "incrementar" ? 1 : -1;
+	var nuevaCantidad = cantidadActual + incremento;
+
+	if(nuevaCantidad < cantidadMinima){
+		nuevaCantidad = cantidadMinima;
+	}
+
+	$input.val(nuevaCantidad).trigger("input").focus();
+});
+
+$(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
+	actualizarCantidadProducto($(this));
 })
 
 
