@@ -100,7 +100,7 @@ class ModeloVentas
 			}
 
 			// 1. Registrar la venta principal en la tabla "ventas"
-			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total,total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total,:total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja)");
+			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total,total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja, estado_pago, fecha_pago) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total,:total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja, :estado_pago, :fecha_pago)");
 
 			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
@@ -115,6 +115,8 @@ class ModeloVentas
 			$stmt->bindParam(":cambio", $datos["cambio"], PDO::PARAM_STR);
 			$stmt->bindParam(":forma_atencion", $datos["forma_atencion"], PDO::PARAM_STR);
 			$stmt->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
+			$stmt->bindParam(":estado_pago", $datos["estado_pago"], PDO::PARAM_STR);
+			$stmt->bindParam(":fecha_pago", $datos["fecha_pago"], PDO::PARAM_STR);
 
 			if (!$stmt->execute()) {
 				throw new Exception("Error al registrar la venta");
@@ -493,37 +495,281 @@ class ModeloVentas
 		}
 	}
 
-	static public function mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado=1)
+	static public function mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null)
 	{
 		date_default_timezone_set('America/La_Paz');
 
-		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total,ventas.tipo_pago,clientes.nombre as cliente 
+		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, ventas.estado_pago, ventas.id_mesero,
+				  usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total, ventas.tipo_pago, clientes.nombre as cliente 
 				  FROM $tabla 
 				  JOIN usuarios ON ventas.id_vendedor = usuarios.id
 				  JOIN clientes ON ventas.id_cliente = clientes.id
-				  JOIN meseros ON ventas.id_mesero = meseros.id";
-				  
+				  JOIN meseros ON ventas.id_mesero = meseros.id
+				  WHERE ventas.estado = :estado";
 
-		if ($fechaInicial == null && $fechaFinal == null) {
-			$stmt = Conexion::conectar()->prepare($query . " WHERE ventas.estado =:estado ORDER BY ventas.fecha DESC");
-			$stmt->bindParam(":estado", $estado, PDO::PARAM_STR);
-			$stmt->execute();
-			return $stmt->fetchAll();
+		if ($estadoPago !== null && $estadoPago !== "" && $estadoPago !== "todos") {
+			$query .= " AND ventas.estado_pago = :estado_pago";
 		}
 
-		if ($fechaInicial == null) {
-			$stmt = Conexion::conectar()->prepare($query . " WHERE ventas.estado =:estado ORDER BY ventas.fecha DESC");
-		} else if ($fechaInicial == $fechaFinal) {
-			$stmt = Conexion::conectar()->prepare($query . " WHERE DATE(ventas.fecha) = :fecha AND ventas.estado =:estado ORDER BY ventas.fecha DESC");
-			$stmt->bindParam(":fecha", $fechaFinal, PDO::PARAM_STR);
-		} else {
-			$stmt = Conexion::conectar()->prepare($query . " WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicial) AND DATE(:fechaFinal) AND ventas.estado =:estado ORDER BY ventas.fecha DESC");
-			$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
-			$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0") {
+			$query .= " AND ventas.id_mesero = :id_mesero";
 		}
+
+		if ($fechaInicial != null && $fechaFinal != null) {
+			if ($fechaInicial == $fechaFinal) {
+				$query .= " AND DATE(ventas.fecha) = :fecha";
+			} else {
+				$query .= " AND DATE(ventas.fecha) BETWEEN DATE(:fechaInicial) AND DATE(:fechaFinal)";
+			}
+		}
+
+		$query .= " ORDER BY ventas.fecha DESC";
+
+		$stmt = Conexion::conectar()->prepare($query);
 		$stmt->bindParam(":estado", $estado, PDO::PARAM_STR);
-		
+
+		if ($estadoPago !== null && $estadoPago !== "" && $estadoPago !== "todos") {
+			$stmt->bindParam(":estado_pago", $estadoPago, PDO::PARAM_STR);
+		}
+
+		if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0") {
+			$stmt->bindParam(":id_mesero", $idMesero, PDO::PARAM_INT);
+		}
+
+		if ($fechaInicial != null && $fechaFinal != null) {
+			if ($fechaInicial == $fechaFinal) {
+				$stmt->bindParam(":fecha", $fechaFinal, PDO::PARAM_STR);
+			} else {
+				$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+				$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+			}
+		}
+
 		$stmt->execute();
 		return $stmt->fetchAll();
+	}
+
+	/*=============================================
+	RESUMEN DE CUENTAS PENDIENTES (informativo)
+	=============================================*/
+	static public function mdlResumenCuentasPendientes()
+	{
+		$stmt = Conexion::conectar()->prepare(
+			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+			 FROM ventas
+			 WHERE estado = 1 AND estado_pago = 'PENDIENTE'"
+		);
+		$stmt->execute();
+		return $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+	/*=============================================
+	ACTUALIZAR CUENTA PENDIENTE
+	=============================================*/
+	static public function mdlActualizarCuentaPendiente($datos)
+	{
+		$conexion = Conexion::conectar();
+
+		try {
+			$conexion->beginTransaction();
+
+			$stmtVenta = $conexion->prepare(
+				"SELECT * FROM ventas WHERE id = :id AND estado = 1 AND estado_pago = 'PENDIENTE' FOR UPDATE"
+			);
+			$stmtVenta->bindParam(":id", $datos["id_venta"], PDO::PARAM_INT);
+			$stmtVenta->execute();
+			$ventaActual = $stmtVenta->fetch(PDO::FETCH_ASSOC);
+
+			if (!$ventaActual) {
+				throw new Exception("La cuenta no existe o ya fue cobrada.");
+			}
+
+			if ($datos["id_cliente"] == 0) {
+				if (empty($datos["cliente"])) {
+					$datos["id_cliente"] = 1;
+				} else {
+					$stmtCliente = $conexion->prepare("INSERT INTO clientes(nombre) VALUES (:nombre)");
+					$stmtCliente->bindParam(":nombre", $datos["cliente"], PDO::PARAM_STR);
+					if ($stmtCliente->execute()) {
+						$datos["id_cliente"] = $conexion->lastInsertId();
+					}
+				}
+			}
+
+			$stmtUpdate = $conexion->prepare(
+				"UPDATE ventas SET id_mesero = :id_mesero, id_cliente = :id_cliente, total = :total,
+				 nota = :nota, forma_atencion = :forma_atencion
+				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
+			);
+			$stmtUpdate->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
+			$stmtUpdate->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
+			$stmtUpdate->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":nota", $datos["nota"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":forma_atencion", $datos["forma_atencion"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
+
+			if (!$stmtUpdate->execute()) {
+				throw new Exception("Error al actualizar la cuenta pendiente.");
+			}
+
+			$detalleActual = self::mdlMostrarDetalleVentas($datos["id_venta"]);
+			$productosNuevos = json_decode($datos["productos"], true);
+			if (!is_array($productosNuevos)) {
+				throw new Exception("Lista de productos inválida.");
+			}
+
+			$idsDetalleUsados = [];
+			$idsDetalleNuevos = [];
+
+			$stmtDetalle = $conexion->prepare(
+				"INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion)
+				 VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)"
+			);
+			$stmtDetalle->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
+
+			$stmtUpdateDetalle = $conexion->prepare(
+				"UPDATE detalle_venta SET id_producto = :id_producto, producto = :producto, cantidad = :cantidad,
+				 precio_venta = :precio_venta, precio_compra = :precio_compra, subtotal = :subtotal,
+				 preferencias = :preferencias, nota_adicional = :nota_adicional, forma_atencion = :forma_atencion
+				 WHERE id = :id_detalle AND id_venta = :id_venta"
+			);
+			$stmtUpdateDetalle->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
+
+			foreach ($productosNuevos as $producto) {
+				if (!isset($producto["id"], $producto["descripcion"], $producto["cantidad"], $producto["precio"], $producto["precioCompra"], $producto["total"])) {
+					throw new Exception("Producto incompleto en la lista.");
+				}
+
+				$formaAtencion = "";
+				switch ($producto["forma_atencion"]) {
+					case 1:
+					case "1":
+						$formaAtencion = "M";
+						break;
+					case 2:
+					case "2":
+						$formaAtencion = "LL";
+						break;
+					default:
+						$formaAtencion = "";
+						break;
+				}
+
+				$idDetalle = isset($producto["idDetalle"]) ? intval($producto["idDetalle"]) : 0;
+
+				if ($idDetalle > 0) {
+					$idsDetalleUsados[] = $idDetalle;
+					$stmtUpdateDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
+					$stmtUpdateDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
+					$stmtUpdateDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":id_detalle", $idDetalle, PDO::PARAM_INT);
+
+					if (!$stmtUpdateDetalle->execute()) {
+						throw new Exception("Error al actualizar detalle de venta.");
+					}
+				} else {
+					$stmtDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
+					$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
+					$stmtDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
+
+					if (!$stmtDetalle->execute()) {
+						throw new Exception("Error al registrar nuevo detalle de venta.");
+					}
+
+					$idsDetalleNuevos[] = $conexion->lastInsertId();
+				}
+			}
+
+			foreach ($detalleActual as $linea) {
+				if (!in_array($linea["id"], $idsDetalleUsados)) {
+					$stmtDelete = $conexion->prepare("DELETE FROM detalle_venta WHERE id = :id AND id_venta = :id_venta");
+					$stmtDelete->bindParam(":id", $linea["id"], PDO::PARAM_INT);
+					$stmtDelete->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
+					$stmtDelete->execute();
+				}
+			}
+
+			$conexion->commit();
+
+			return [
+				"status" => "ok",
+				"idVenta" => $datos["id_venta"],
+				"idsDetalleNuevos" => $idsDetalleNuevos
+			];
+		} catch (Exception $e) {
+			$conexion->rollBack();
+			return "error: " . $e->getMessage();
+		}
+	}
+
+	/*=============================================
+	COBRAR CUENTA PENDIENTE
+	=============================================*/
+	static public function mdlCobrarCuentaPendiente($datos)
+	{
+		$conexion = Conexion::conectar();
+
+		try {
+			$conexion->beginTransaction();
+
+			$stmtVenta = $conexion->prepare(
+				"SELECT * FROM ventas WHERE id = :id AND estado = 1 AND estado_pago = 'PENDIENTE' FOR UPDATE"
+			);
+			$stmtVenta->bindParam(":id", $datos["id_venta"], PDO::PARAM_INT);
+			$stmtVenta->execute();
+			$venta = $stmtVenta->fetch(PDO::FETCH_ASSOC);
+
+			if (!$venta) {
+				throw new Exception("La cuenta no existe o ya fue cobrada.");
+			}
+
+			$stmtUpdate = $conexion->prepare(
+				"UPDATE ventas SET estado_pago = 'PAGADA', fecha_pago = :fecha_pago,
+				 tipo_pago = :tipo_pago, total_efectivo = :total_efectivo, total_qr = :total_qr,
+				 total_pagado = :total_pagado, cambio = :cambio, total = :total,
+				 id_arqueo_caja = :id_arqueo_caja
+				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
+			);
+
+			$stmtUpdate->bindParam(":fecha_pago", $datos["fecha_pago"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":tipo_pago", $datos["tipo_pago"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":total_efectivo", $datos["total_efectivo"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":total_qr", $datos["total_qr"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":total_pagado", $datos["total_pagado"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":cambio", $datos["cambio"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
+			$stmtUpdate->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
+
+			if (!$stmtUpdate->execute()) {
+				throw new Exception("Error al cobrar la cuenta.");
+			}
+
+			$conexion->commit();
+
+			return [
+				"status" => "ok",
+				"idVenta" => $datos["id_venta"],
+				"total" => $datos["total"],
+				"total_efectivo" => $datos["total_efectivo"],
+				"total_qr" => $datos["total_qr"],
+				"codigo" => $venta["codigo"]
+			];
+		} catch (Exception $e) {
+			$conexion->rollBack();
+			return "error: " . $e->getMessage();
+		}
 	}
 }

@@ -38,6 +38,13 @@ class imprimirComanda
         $horaSolo = date('H:i:s a', strtotime($respuestaVenta["fecha"]));
         $productos = ControladorVentas::ctrMostrarDetalleVentas($respuestaVenta['id']);
 
+        if (isset($_GET['idsDetalle']) && $_GET['idsDetalle'] !== '') {
+            $idsFiltrados = array_map('intval', explode(',', $_GET['idsDetalle']));
+            $productos = array_values(array_filter($productos, function($item) use ($idsFiltrados) {
+                return in_array(intval($item['id']), $idsFiltrados);
+            }));
+        }
+
         $total = number_format($respuestaVenta["total"], 2);
         $cambio = number_format($respuestaVenta["cambio"], 2);
         $tipoPago = $respuestaVenta["tipo_pago"];

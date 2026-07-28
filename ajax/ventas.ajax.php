@@ -11,13 +11,29 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Solo procesa si es una petición POST y viene el dato de nuevaVenta
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["nuevaVenta"])) {
-    // Llama al método estático del controlador
-    ControladorVentas::ctrCrearVenta();
-    // El método ya imprime el JSON y hace return
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     exit;
 }
 
-// Si quieres puedes agregar más acciones aquí para otros métodos AJAX
+// IMPORTANTE: actualizar/cobrar deben evaluarse ANTES que nuevaVenta,
+// porque el formulario de edición también envía el campo name="nuevaVenta" (número de ticket).
+
+// Actualizar cuenta pendiente
+if (isset($_POST["actualizarCuentaPendiente"])) {
+    ControladorVentas::ctrActualizarCuentaPendiente();
+    exit;
+}
+
+// Cobrar cuenta pendiente
+if (isset($_POST["cobrarCuentaPendiente"])) {
+    ControladorVentas::ctrCobrarCuentaPendiente();
+    exit;
+}
+
+// Registrar nueva venta o cuenta pendiente
+if (isset($_POST["nuevaVenta"])) {
+    ControladorVentas::ctrCrearVenta();
+    exit;
+}
+
 ?>

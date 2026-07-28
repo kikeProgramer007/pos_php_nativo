@@ -4,6 +4,8 @@ require_once "../controladores/arqueo.controlador.php";
 require_once "../modelos/arqueo.modelo.php";
 require_once "../controladores/cajas.controlador.php";
 require_once "../modelos/cajas.modelo.php";
+require_once "../controladores/ventas.controlador.php";
+require_once "../modelos/ventas.modelo.php";
 
 /**
  * Clase para manejar las peticiones AJAX relacionadas con el arqueo de caja
@@ -26,6 +28,18 @@ class AjaxArqueo {
         try {
             $idUsuario = intval($_GET["idUsuario"]);
             $respuesta = ControladorArqueo::ctrVerificarCajaAbierta($idUsuario);
+            if ($respuesta) {
+                ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+                $arqueoActualizado = ModeloArqueo::mdlObtnerArqueoPorIDArqueo($respuesta["id"]);
+                if ($arqueoActualizado) {
+                    $respuesta["cuentas_pendientes"] = [
+                        "cantidad" => intval($arqueoActualizado["cuentas_pendientes_cantidad"] ?? 0),
+                        "total_por_cobrar" => floatval($arqueoActualizado["cuentas_pendientes_total"] ?? 0)
+                    ];
+                } else {
+                    $respuesta["cuentas_pendientes"] = ControladorVentas::ctrResumenCuentasPendientes();
+                }
+            }
             echo json_encode($respuesta);
         } catch(Exception $e) {
             error_log("Error en ajaxVerificarCaja: " . $e->getMessage());
@@ -97,6 +111,10 @@ if(isset($_GET["accion"])) {
             break;
         case "obtenerNroTicket":
             $arqueo->ajaxObtenerNroTicket();
+            break;
+        case "cuentasPendientes":
+            ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+            echo json_encode(ControladorVentas::ctrResumenCuentasPendientes());
             break;
         default:
             echo json_encode([

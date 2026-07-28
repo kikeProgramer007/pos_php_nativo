@@ -194,6 +194,30 @@ class imprimirFactura
                 <td style="text-align:left; "><strong>DINERO EN EL SISTEMA:</strong></td>
                 <td style="text-align:right; "><strong>' . $arqueo["resultado_neto"] . '</strong></td>
             </tr>
+             <tr> <td colspan="2" ></td> </tr>';
+
+        $resumenPendientes = ControladorVentas::ctrResumenCuentasPendientes();
+        if (isset($arqueo["cuentas_pendientes_cantidad"]) || isset($arqueo["cuentas_pendientes_total"])) {
+            $cantidadPendientes = intval($arqueo["cuentas_pendientes_cantidad"] ?? 0);
+            $totalPendientes = number_format(floatval($arqueo["cuentas_pendientes_total"] ?? 0), 2);
+        } else {
+            $cantidadPendientes = isset($resumenPendientes["cantidad"]) ? intval($resumenPendientes["cantidad"]) : 0;
+            $totalPendientes = isset($resumenPendientes["total_por_cobrar"]) ? number_format($resumenPendientes["total_por_cobrar"], 2) : "0.00";
+        }
+
+        $html .= '
+            <tr>
+                <td colspan="2" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">CUENTAS PENDIENTES</td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="text-align:left;">CANTIDAD:</td>
+                <td style="text-align:right;">' . $cantidadPendientes . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">TOTAL POR COBRAR:</td>
+                <td style="text-align:right;">' . $totalPendientes . '</td>
+            </tr>
              <tr> <td colspan="2" ></td> </tr> 
           
                 <tr>

@@ -221,7 +221,7 @@ class CatalogoProductos {
                  alt="${producto.descripcion}" 
                  class="thumbnail-image" 
                  style="object-fit: cover;"
-                 onerror="this.src='vistas/img/productos/default/anonymous.png'">
+                 onerror="this.src='vistas/img/productos/default/d.webp'">
           </div>
           <div class="caption" style=" display: flex; flex-direction: column; justify-content: space-between;">
             <div>

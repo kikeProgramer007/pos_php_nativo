@@ -118,6 +118,11 @@ class ControladorArqueo {
             "id_caja" => intval($_POST["idCaja"])
         );
 
+        ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+        $arqueoAbierto = ModeloArqueo::mdlObtnerArqueoPorIDArqueo($datos["id_arqueo"]);
+        $datos["cuentas_pendientes_cantidad"] = intval($arqueoAbierto["cuentas_pendientes_cantidad"] ?? 0);
+        $datos["cuentas_pendientes_total"] = floatval($arqueoAbierto["cuentas_pendientes_total"] ?? 0);
+
         $respuesta = ModeloArqueo::mdlRegistrarCierreCaja($datos);
         return json_encode(["status" => $respuesta]);
     }

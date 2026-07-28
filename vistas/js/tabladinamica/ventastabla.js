@@ -6,7 +6,14 @@ var perfilOculto = $("#perfilOculto").val();
 
 if ($.fn.DataTable) { 
 $('.tablaVentasRealizadas').DataTable( {
-    "ajax": "ajax/datatable-ventas-realizadas.ajax.php?perfilOculto="+perfilOculto,
+    "ajax": {
+        "url": "ajax/datatable-ventas-realizadas.ajax.php",
+        "data": function(d) {
+            d.perfilOculto = perfilOculto;
+            d.estadoPago = $("#filtroEstadoPago").length ? $("#filtroEstadoPago").val() : "todos";
+            d.idMesero = $("#filtroMesero").length ? $("#filtroMesero").val() : "0";
+        }
+    },
     "deferRender": true,
     "retrieve": true,
     "processing": true,

@@ -450,7 +450,9 @@ class ModeloArqueo {
                 qr_en_caja = :qr_en_caja,
                 total_efectivo_qr_en_caja = :total_efectivo_qr_en_caja,
                 diferencia = :diferencia,
-                estado = :estado
+                estado = :estado,
+                cuentas_pendientes_cantidad = :cuentas_pendientes_cantidad,
+                cuentas_pendientes_total = :cuentas_pendientes_total
                 WHERE id = :id_arqueo");
 
             $stmt->bindParam(":fecha_cierre", $datos["fecha_cierre"], PDO::PARAM_STR);
@@ -477,6 +479,8 @@ class ModeloArqueo {
             $stmt->bindParam(":total_efectivo_qr_en_caja", $datos["total_efectivo_qr_en_caja"], PDO::PARAM_STR);
             $stmt->bindParam(":diferencia", $datos["diferencia"], PDO::PARAM_STR);
             $stmt->bindParam(":estado", $datos["estado"], PDO::PARAM_STR);
+            $stmt->bindParam(":cuentas_pendientes_cantidad", $datos["cuentas_pendientes_cantidad"], PDO::PARAM_INT);
+            $stmt->bindParam(":cuentas_pendientes_total", $datos["cuentas_pendientes_total"], PDO::PARAM_STR);
             $stmt->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);
 
             if($stmt->execute()) {
@@ -564,5 +568,37 @@ class ModeloArqueo {
             }
         }
     }
+
+    /**
+     * Sincroniza en el arqueo abierto el resumen informativo de cuentas pendientes
+     */
+    static public function mdlSincronizarCuentasPendientesEnArqueoAbierto() {
+        try {
+            $pdo = Conexion::conectar();
+
+            $stmtResumen = $pdo->query(
+                "SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+                 FROM ventas
+                 WHERE estado = 1 AND estado_pago = 'PENDIENTE'"
+            );
+            $resumen = $stmtResumen->fetch(PDO::FETCH_ASSOC);
+
+            if (!$resumen) {
+                return;
+            }
+
+            $stmt = $pdo->prepare(
+                "UPDATE arqueo_caja
+                 SET cuentas_pendientes_cantidad = :cantidad,
+                     cuentas_pendientes_total = :total
+                 WHERE estado = 'abierta'"
+            );
+            $stmt->bindValue(":cantidad", intval($resumen["cantidad"]), PDO::PARAM_INT);
+            $stmt->bindValue(":total", $resumen["total_por_cobrar"], PDO::PARAM_STR);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error en mdlSincronizarCuentasPendientesEnArqueoAbierto: " . $e->getMessage());
+        }
+    }
     
-} 
+}

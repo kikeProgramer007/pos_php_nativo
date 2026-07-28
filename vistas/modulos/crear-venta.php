@@ -11,6 +11,44 @@ if ($_SESSION["perfil"] == "") {
   return;
 }
 
+$modoEdicionCuenta = false;
+$ventaEditar = null;
+$detalleEditar = [];
+$clienteEditarNombre = "";
+
+if (isset($_GET["editarCuenta"]) && is_numeric($_GET["editarCuenta"])) {
+  $ventaEditar = ControladorVentas::ctrMostrarVentas("id", $_GET["editarCuenta"]);
+  if ($ventaEditar && isset($ventaEditar["estado_pago"]) && $ventaEditar["estado_pago"] === "PENDIENTE" && $ventaEditar["estado"] == 1) {
+    $modoEdicionCuenta = true;
+    $detalleEditar = ControladorVentas::ctrMostrarDetalleVentas($ventaEditar["id"]);
+    foreach ($detalleEditar as $key => $linea) {
+      $productoLinea = ControladorProductos::ctrMostrarProductos("id", $linea["id_producto"], "id");
+      $detalleEditar[$key]["stock_actual"] = $productoLinea ? $productoLinea["stock"] : 0;
+      $detalleEditar[$key]["inventariable"] = $productoLinea ? $productoLinea["inventariable"] : 1;
+    }
+    $clienteEditar = ControladorClientes::ctrMostrarClientes("id", $ventaEditar["id_cliente"]);
+    $clienteEditarNombre = $clienteEditar ? $clienteEditar["nombre"] : "";
+  } else {
+    echo '<script>window.location = "ventas";</script>';
+    return;
+  }
+}
+
+$formaAtencionEditar = 1;
+if ($modoEdicionCuenta) {
+  switch ($ventaEditar["forma_atencion"]) {
+    case "Para Llevar":
+      $formaAtencionEditar = 2;
+      break;
+    case "Mixto":
+      $formaAtencionEditar = 3;
+      break;
+    default:
+      $formaAtencionEditar = 1;
+      break;
+  }
+}
+
 ?>
 <style>
   .select2-results__option[aria-selected=true] {
@@ -721,9 +759,14 @@ if ($_SESSION["perfil"] == "") {
                         if (isset($_SESSION["idArqueoCaja"])) {
                           echo '<input type="hidden" name="idArqueoCaja" value="' . $_SESSION["idArqueoCaja"] . '" hidden>';
                           echo '<input type="hidden" name="idCaja" value="' . $_SESSION["idCaja"] . '" hidden>';
-                          $ultimoNroTicket = ControladorArqueo::ctrObtenerUltimoNroTicket($_SESSION["idArqueoCaja"]);
-                          $ultimoNroTicket++;
-                          echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' . $ultimoNroTicket . '" readonly>';
+                          if ($modoEdicionCuenta) {
+                            echo '<input type="hidden" id="idVentaEditar" name="idVentaEditar" value="' . $ventaEditar["id"] . '">';
+                            echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' . $ventaEditar["codigo"] . '" readonly>';
+                          } else {
+                            $ultimoNroTicket = ControladorArqueo::ctrObtenerUltimoNroTicket($_SESSION["idArqueoCaja"]);
+                            $ultimoNroTicket++;
+                            echo '<input type="text" class="form-control" id="nuevaVenta" name="nuevaVenta" value="' . $ultimoNroTicket . '" readonly>';
+                          }
                         } else {
                           echo '<input type="text" class="form-control" value="0" readonly>';
                         }
@@ -758,7 +801,8 @@ if ($_SESSION["perfil"] == "") {
 
 
                       foreach ($categorias as $key => $value) {
-                        echo "<option value='" . $value['id'] . "' " . ($value['id'] == 1 ? 'selected' : '') . ">" . $value['nombre'] . "</option>";
+                        $selectedMesero = $modoEdicionCuenta && $ventaEditar["id_mesero"] == $value['id'] ? 'selected' : ($value['id'] == 1 ? 'selected' : '');
+                        echo "<option value='" . $value['id'] . "' " . $selectedMesero . ">" . $value['nombre'] . "</option>";
                       }
 
 
@@ -797,8 +841,8 @@ if ($_SESSION["perfil"] == "") {
                 <div class="form-group">
                   <div class="input-group">
                     <span class="input-group-addon">CLIENTES</span>
-                    <input type="text" class="form-control text-uppercase" id="cliente" name="cliente" value="" placeholder="Ingrese el Cliente (Opcional)" autocomplete="off"  >
-                    <input type="hidden" id="id_cliente" name="id_cliente" value="0"/>
+                    <input type="text" class="form-control text-uppercase" id="cliente" name="cliente" value="<?php echo $modoEdicionCuenta ? htmlspecialchars($clienteEditarNombre) : ''; ?>" placeholder="Ingrese el Cliente (Opcional)" autocomplete="off"  >
+                    <input type="hidden" id="id_cliente" name="id_cliente" value="<?php echo $modoEdicionCuenta ? $ventaEditar["id_cliente"] : '0'; ?>"/>
                   </div>
                 </div>
 
@@ -811,9 +855,9 @@ if ($_SESSION["perfil"] == "") {
                   <div class="col-md-6">
                     <div class="form-group">
                     <select class="form-control input-sm" id="formaAtencion" name="formaAtencion">
-                        <option value="1" selected>🍽️ En Mesa</option>
-                        <option value="2">🚚 Para Llevar</option>
-                        <option value="3">🔀 Mixto</option>
+                        <option value="1" <?php echo $formaAtencionEditar == 1 ? 'selected' : ''; ?>>🍽️ En Mesa</option>
+                        <option value="2" <?php echo $formaAtencionEditar == 2 ? 'selected' : ''; ?>>🚚 Para Llevar</option>
+                        <option value="3" <?php echo $formaAtencionEditar == 3 ? 'selected' : ''; ?>>🔀 Mixto</option>
                       </select>
                     </div>
                   </div>
@@ -926,7 +970,7 @@ if ($_SESSION["perfil"] == "") {
                             <div class="input-group-prepend">
                               <label class="input-group-text">NOTA GENERAL(OPCIONAL)</label>
                             </div>
-                            <textarea class="form-control text-uppercase" id="nota" cols="100" rows="2" name="nota" aria-label="With textarea"></textarea>
+                            <textarea class="form-control text-uppercase" id="nota" cols="100" rows="2" name="nota" aria-label="With textarea"><?php echo $modoEdicionCuenta ? htmlspecialchars($ventaEditar["nota"]) : ''; ?></textarea>
                           </div>
                         </div>
                       </div>
@@ -997,7 +1041,12 @@ if ($_SESSION["perfil"] == "") {
                     </div>
                 </div>
                 <div class="col-xs-6 text-right">
-                  <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right">Guardar venta</button>
+                  <?php if ($modoEdicionCuenta): ?>
+                  <button type="button" id="actualizarCuentaBtn" class="btn btn-warning pull-right" style="margin-right:8px;">Actualizar cuenta</button>
+                  <?php else: ?>
+                  <button type="button" id="cuentaPendienteBtn" class="btn btn-default pull-right" style="margin-right:8px;">Dejar cuenta pendiente</button>
+                  <?php endif; ?>
+                  <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Guardar venta</button>
                 </div>
               </div>
             </div>
@@ -1264,7 +1313,7 @@ $(document).ready(function() {
     });
 });
 
-document.getElementById("guardarVentaBtn").addEventListener("click", function(e) {
+document.getElementById("guardarVentaBtn") && document.getElementById("guardarVentaBtn").addEventListener("click", function(e) {
   e.preventDefault(); // Evita el submit tradicional
 
   var totalVenta = Number($('#nuevoTotalVenta').val());
@@ -1375,6 +1424,192 @@ document.getElementById("guardarVentaBtn").addEventListener("click", function(e)
     });
 
 });
+
+function validarProductosEnVenta() {
+  if ($(".nuevoProducto .nuevaDescripcionProducto").length <= 0) {
+    swal({
+      type: "warning",
+      title: "Debe agregar al menos un producto a la venta",
+      showConfirmButton: true,
+      confirmButtonText: "Cerrar"
+    });
+    return false;
+  }
+  return true;
+}
+
+function enviarVentaAjax(extraData, onSuccess) {
+  var form = document.getElementById("ventaForm");
+  var formData = new FormData(form);
+  if (extraData) {
+    Object.keys(extraData).forEach(function(key) {
+      formData.append(key, extraData[key]);
+    });
+  }
+
+  $.ajax({
+    url: "ajax/ventas.ajax.php",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function(respuesta) {
+      if (respuesta.status == "ok") {
+        onSuccess(respuesta);
+      } else if (respuesta.status == "recargar") {
+        swal({
+          title: "Actualice de la caja",
+          text: "Es necesario recargar la página para continuar",
+          type: "warning",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Sí, recargar página"
+        }).then(function(result) {
+          if (result.value) {
+            window.location.href = "crear-venta";
+          }
+        });
+      } else {
+        swal({
+          type: "error",
+          title: "Error",
+          text: respuesta.mensaje || "Error desconocido",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+      }
+    },
+    error: function() {
+      swal({
+        type: "error",
+        title: "Error de comunicación",
+        text: "No se pudo completar la operación",
+        showConfirmButton: true,
+        confirmButtonText: "Cerrar"
+      });
+    }
+  });
+}
+
+var cuentaPendienteBtn = document.getElementById("cuentaPendienteBtn");
+if (cuentaPendienteBtn) {
+  cuentaPendienteBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (!validarProductosEnVenta()) return;
+    listarProductos();
+    $("#cuentaPendienteBtn").prop("disabled", true);
+    enviarVentaAjax({ estadoPago: "PENDIENTE" }, function(respuesta) {
+      swal({
+        type: "success",
+        title: respuesta.mensaje,
+        showConfirmButton: true,
+        confirmButtonText: "Cerrar"
+      }).then(function() {
+        var idImpresion = $("#idTipoImpresion").val();
+        if (idImpresion == "3" || idImpresion == "1") {
+          imprimirSoloCocina(respuesta.idVenta).finally(function() {
+            window.location.href = "crear-venta";
+          });
+        } else {
+          window.location.href = "crear-venta";
+        }
+      });
+    });
+    $("#cuentaPendienteBtn").prop("disabled", false);
+  });
+}
+
+var actualizarCuentaBtn = document.getElementById("actualizarCuentaBtn");
+if (actualizarCuentaBtn) {
+  actualizarCuentaBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (!validarProductosEnVenta()) return;
+    listarProductos();
+    $("#actualizarCuentaBtn").prop("disabled", true);
+    enviarVentaAjax({ actualizarCuentaPendiente: "1" }, function(respuesta) {
+      var idsNuevos = respuesta.idsDetalleNuevos || [];
+      swal({
+        type: "success",
+        title: respuesta.mensaje,
+        showConfirmButton: true,
+        confirmButtonText: "Cerrar"
+      }).then(function() {
+        if (idsNuevos.length > 0) {
+          imprimirSoloCocina(respuesta.idVenta, idsNuevos.join(",")).finally(function() {
+            window.location.href = "ventas";
+          });
+        } else {
+          window.location.href = "ventas";
+        }
+      });
+    });
+    $("#actualizarCuentaBtn").prop("disabled", false);
+  });
+}
+
+function agregarLineaProductoEdicion(linea) {
+  var formaAtencionLinea = linea.forma_atencion === "LL" ? "2" : "1";
+  var formaAtencionGeneral = $("#formaAtencion").val();
+  var stockLinea = parseInt(linea.stock_actual || 0) + parseInt(linea.cantidad || 0);
+
+  $(".nuevoProducto").append(`
+    <div class="row" style="padding:4px 15px">
+      <div class="col-xs-4" style="padding-right:0px">
+        <div class="input-group">
+          <span class="input-group-addon" style="padding: 0px 4px">
+           <button type="button" class="btn btn-danger btn-xs quitarProducto" idProducto="${linea.id_producto}">
+              <i class="fa fa-times"></i>
+            </button>
+          </span>
+          <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
+                 idProducto="${linea.id_producto}" data-idDetalle="${linea.id}" name="agregarProducto"
+                 value="${linea.producto}" readonly required>
+        </div>
+      </div>
+      <div class="col-xs-2" style="padding-right:0px">
+        <select class="form-control input-sm" name="formaAtencionDetalle" style="padding:2px">
+          <option value="1" ${formaAtencionLinea === "1" ? "selected" : ""}>🍽️ M</option>
+          <option value="2" ${formaAtencionLinea === "2" ? "selected" : ""}>🚚 LL</option>
+        </select>
+      </div>
+      <div class="col-xs-2">
+        <input type="number" class="form-control input-sm nuevaCantidadProducto"
+               name="nuevaCantidadProducto" min="1" value="${linea.cantidad}"
+               stock="${stockLinea}" data-idProducto="${linea.id_producto}" required>
+      </div>
+      <div class="col-xs-4 ingresoPrecio" style="padding-left:0px">
+        <div class="input-group">
+          <span class="input-group-addon"><i><b>Bs</b></i></span>
+          <input type="text" class="form-control input-sm nuevoPrecioProducto"
+                 precioReal="${linea.precio_venta}" name="nuevoPrecioProducto"
+                 value="${linea.subtotal}" readonly required>
+          <input type="hidden" precioRealCompra="${linea.precio_compra}"
+                 name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto"
+                 value="${linea.precio_compra}">
+        </div>
+      </div>
+    </div>`);
+
+  var nuevoSelector = $(".nuevoProducto").find("select[name='formaAtencionDetalle']").last();
+  if (formaAtencionGeneral !== "3") {
+    nuevoSelector.prop("disabled", true);
+  }
+}
+
+<?php if ($modoEdicionCuenta): ?>
+var detalleCuentaEditar = <?php echo json_encode($detalleEditar, JSON_UNESCAPED_UNICODE); ?>;
+$(document).ready(function() {
+  if (detalleCuentaEditar && detalleCuentaEditar.length) {
+    detalleCuentaEditar.forEach(function(linea) {
+      agregarLineaProductoEdicion(linea);
+    });
+    sumarTotalPrecios();
+    listarProductos();
+    $(".nuevoPrecioProducto").number(true, 2);
+  }
+});
+<?php endif; ?>
 
 function agregarProductoAVenta(producto) {
   if(producto.stock == 0) {

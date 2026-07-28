@@ -448,30 +448,34 @@ function calcularPago(formatear = true) {
         cambio = efectivo - totalVenta;
 
         if (formatear) {
+            $("#nuevoValorEfectivo").prop("readonly", false);
+            $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val("0.00");
         }
     } else if (tipoPago == "2") {
         // QR
         efectivo = 0;
-        qr = editarQRManual ? qr : totalVenta;
+        qr = totalVenta;
 
-        $("#nuevoValorEfectivo").val("");
-          if (formatear) {
+        $("#nuevoValorEfectivo").val("0");
+        if (formatear) {
+            $("#nuevoValorEfectivo").prop("readonly", true);
+            $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val(qr.toFixed(2));
-          }
+        }
         cambio = qr - totalVenta;
 
     } else if (tipoPago == "4") {
         // MIXTO
-        if (!editarQRManual) {
-            qr = totalVenta - efectivo;
+        qr = totalVenta - efectivo;
 
-            if (qr < 0) {
-                qr = 0;
-            }
-            if (formatear) {
+        if (qr < 0) {
+            qr = 0;
+        }
+        if (formatear) {
+            $("#nuevoValorEfectivo").prop("readonly", false);
+            $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val(qr.toFixed(2));
-            }
         }
 
         cambio = (efectivo + qr) - totalVenta;
@@ -516,6 +520,7 @@ $(".formularioVenta").on("change", "#tipoPago", function() {
 });
 
 $(document).ready(function() {
+    $("#nuevoValorEfectivo").prop("readonly", false);
     $("#nuevoValorQR").prop("readonly", true);
     calcularPago();
 });
@@ -557,6 +562,7 @@ function listarProductos() {
 
         listaProductos.push({
             id: $producto.attr('idProducto'),
+            idDetalle: $producto.attr('data-idDetalle') || null,
             descripcion: $producto.val(),
             cantidad: $cantidad.val(),
             stock: $cantidad.attr('stock'),
@@ -924,10 +930,13 @@ async function imprimirSoloCaja(codigoVenta, imprimir = true) {
     }
 }
 
-async function imprimirSoloCocina(codigoVenta) {
-    // Pedir el PDF al servidor PHP         
-    const response = await fetch(
-        `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`,{
+async function imprimirSoloCocina(codigoVenta, idsDetalle = null) {
+    // Pedir el PDF al servidor PHP
+    var url = `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`;
+    if (idsDetalle) {
+        url += `&idsDetalle=${idsDetalle}`;
+    }
+    const response = await fetch(url, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
         }
@@ -959,7 +968,7 @@ async function imprimirSoloCocina(codigoVenta) {
 /*=============================================
 FUNCIÓN PARA INICIALIZAR LA TABLA
 =============================================*/
-function cargarTablaVentas(fechaInicial, fechaFinal) {
+function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
 
 	// Destruir la tabla si ya está inicializada
 	if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
@@ -973,7 +982,10 @@ function cargarTablaVentas(fechaInicial, fechaFinal) {
 		"type": "GET",
 		"data": {
 		  fechaInicial: fechaInicial,
-		  fechaFinal: fechaFinal
+		  fechaFinal: fechaFinal,
+		  estadoPago: estadoPago || "todos",
+		  idMesero: idMesero || "0",
+		  perfilOculto: $("#perfilOculto").val()
 		}
 	  },
 	  "deferRender": true,
@@ -1024,9 +1036,34 @@ function cargarTablaVentas(fechaInicial, fechaFinal) {
 	  localStorage.setItem("capturarRango", capturarRango);
   
 	  // Llamada a la función optimizada para cargar la tabla
-	  cargarTablaVentas(fechaInicial, fechaFinal);
+	  cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
 	}
   );
+  
+  $("#filtroEstadoPago, #filtroMesero").on("change", function() {
+	if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
+		$('.tablaVentasRealizadas').DataTable().ajax.reload();
+		return;
+	}
+	var fechaInicial = null;
+	var fechaFinal = null;
+	var rango = localStorage.getItem("capturarRango");
+	if (rango && rango !== "Hoy") {
+	  var fechas = $("#daterange-btn").data('daterangepicker');
+	  if (fechas) {
+		fechaInicial = fechas.startDate.format('YYYY-MM-DD');
+		fechaFinal = fechas.endDate.format('YYYY-MM-DD');
+	  }
+	} else if (rango === "Hoy") {
+	  var d = new Date();
+	  var dia = ("0" + d.getDate()).slice(-2);
+	  var mes = ("0" + (d.getMonth() + 1)).slice(-2);
+	  var año = d.getFullYear();
+	  fechaInicial = año + "-" + mes + "-" + dia;
+	  fechaFinal = fechaInicial;
+	}
+	cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
+  });
   
   /*=============================================
   CAPTURAR HOY
@@ -1048,7 +1085,7 @@ function cargarTablaVentas(fechaInicial, fechaFinal) {
 	  localStorage.setItem("capturarRango", "Hoy");
   
 	  // Llamada a la función optimizada para cargar la tabla
-	  cargarTablaVentas(fechaInicial, fechaFinal);
+	  cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
 	}
   });
   
@@ -1197,4 +1234,146 @@ $(document).ready(function() {
             $(this).prop("disabled", false);
         }
     });
+});
+
+/*=============================================
+COBRAR CUENTA PENDIENTE
+=============================================*/
+function actualizarCamposCobro() {
+    var tipo = $("#tipoPagoCobro").val();
+    if (tipo === "1") {
+        $("#grupoEfectivoCobro").show();
+        $("#grupoQRCobro").hide();
+        $("#grupoCambioCobro").show();
+        $("#nuevoValorEfectivoCobro").prop("readonly", false);
+        $("#nuevoValorQRCobro").prop("readonly", true);
+    } else if (tipo === "2") {
+        $("#grupoEfectivoCobro").hide();
+        $("#grupoQRCobro").show();
+        $("#grupoCambioCobro").hide();
+        $("#nuevoValorEfectivoCobro").prop("readonly", true);
+        $("#nuevoValorQRCobro").prop("readonly", true);
+    } else if (tipo === "4") {
+        $("#grupoEfectivoCobro").show();
+        $("#grupoQRCobro").show();
+        $("#grupoCambioCobro").show();
+        $("#nuevoValorEfectivoCobro").prop("readonly", false);
+        $("#nuevoValorQRCobro").prop("readonly", true);
+    }
+}
+
+function calcularCambioCobro() {
+    var total = Number($("#totalVentaCobro").val()) || 0;
+    var efectivo = Number($("#nuevoValorEfectivoCobro").val()) || 0;
+    var qr = Number($("#nuevoValorQRCobro").val()) || 0;
+    var tipo = $("#tipoPagoCobro").val();
+    var cambio = 0;
+
+    if (tipo === "1") {
+        qr = 0;
+        $("#nuevoValorQRCobro").val("0.00");
+        cambio = efectivo - total;
+    } else if (tipo === "2") {
+        efectivo = 0;
+        qr = total;
+        $("#nuevoValorEfectivoCobro").val("0");
+        $("#nuevoValorQRCobro").val(qr.toFixed(2));
+        cambio = 0;
+    } else if (tipo === "4") {
+        qr = total - efectivo;
+        if (qr < 0) {
+            qr = 0;
+        }
+        $("#nuevoValorQRCobro").val(qr.toFixed(2));
+        cambio = (efectivo + qr) - total;
+        if (cambio < 0) cambio = 0;
+    }
+
+    $("#nuevoCambioEfectivoCobro").val(cambio > 0 ? cambio.toFixed(2) : "0.00");
+}
+
+$(".tablas").on("click", ".btnCobrarCuenta", function() {
+    $("#idVentaCobrar").val($(this).attr("idVenta"));
+    $("#totalVentaCobro").val($(this).attr("totalVenta"));
+    $("#ticketCobrar").val($(this).attr("codigoVenta"));
+    $("#nuevoValorEfectivoCobro").val($(this).attr("totalVenta"));
+    $("#nuevoValorQRCobro").val("0");
+    $("#tipoPagoCobro").val("1");
+    actualizarCamposCobro();
+    calcularCambioCobro();
+    $("#modalCobrarCuenta").modal("show");
+});
+
+$("#tipoPagoCobro").on("change", function() {
+    actualizarCamposCobro();
+    calcularCambioCobro();
+});
+
+$("#nuevoValorEfectivoCobro").on("input", calcularCambioCobro);
+
+$("#btnConfirmarCobro").on("click", function() {
+    var total = Number($("#totalVentaCobro").val()) || 0;
+    var efectivo = Number($("#nuevoValorEfectivoCobro").val()) || 0;
+    var qr = Number($("#nuevoValorQRCobro").val()) || 0;
+    var tipo = $("#tipoPagoCobro").val();
+
+    if (tipo === "1" && efectivo < total) {
+        swal({ type: "warning", title: "El pago en efectivo debe ser igual o mayor al total" });
+        return;
+    }
+    if (tipo === "2" && qr < total) {
+        swal({ type: "warning", title: "El pago en QR debe ser igual o mayor al total" });
+        return;
+    }
+    if (tipo === "4" && (efectivo + qr) < total) {
+        swal({ type: "warning", title: "La suma del efectivo y el QR debe ser igual o mayor al total" });
+        return;
+    }
+
+  var formData = new FormData();
+  formData.append("cobrarCuentaPendiente", "1");
+  formData.append("idVentaCobrar", $("#idVentaCobrar").val());
+  formData.append("idVendedorCobro", $("#idVendedorCobro").val());
+  formData.append("totalVentaCobro", $("#totalVentaCobro").val());
+  formData.append("tipoPagoCobro", tipo);
+  formData.append("nuevoValorEfectivoCobro", efectivo);
+  formData.append("nuevoValorQRCobro", qr);
+  formData.append("nuevoCambioEfectivoCobro", $("#nuevoCambioEfectivoCobro").val());
+
+  $("#btnConfirmarCobro").prop("disabled", true);
+
+  $.ajax({
+    url: "ajax/ventas.ajax.php",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function(respuesta) {
+      $("#btnConfirmarCobro").prop("disabled", false);
+      if (respuesta.status === "ok") {
+        $("#modalCobrarCuenta").modal("hide");
+        swal({
+          type: "success",
+          title: respuesta.mensaje,
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        }).then(function() {
+          if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
+            $('.tablaVentasRealizadas').DataTable().ajax.reload();
+          }
+        });
+      } else {
+        swal({
+          type: "error",
+          title: "Error",
+          text: respuesta.mensaje || "No se pudo cobrar la cuenta"
+        });
+      }
+    },
+    error: function() {
+      $("#btnConfirmarCobro").prop("disabled", false);
+      swal({ type: "error", title: "Error de comunicación al cobrar la cuenta" });
+    }
+  });
 });

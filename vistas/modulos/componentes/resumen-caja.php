@@ -57,6 +57,21 @@
     </tbody>
 </table>
 
+<!-- Cuentas pendientes (informativo) -->
+<div class="summary-table" style="margin-top:15px;">
+    <h4 class="text-center"><strong>Cuentas pendientes</strong></h4>
+    <table class="dt-responsive">
+        <tr>
+            <td>Cantidad de cuentas:</td>
+            <td class="text-right" id="cuentas_pendientes_cantidad">0</td>
+        </tr>
+        <tr>
+            <td>Total por cobrar:</td>
+            <td class="text-right" id="cuentas_pendientes_total">Bs 0.00</td>
+        </tr>
+    </table>
+</div>
+
 <!-- Comparación: Efectivo vs Sistema -->
 <div class="summary-table">
     <h4 class="text-center" ><strong>Efectivo/QR <span class="vs-text">VS</span> Sistema</strong></h4>

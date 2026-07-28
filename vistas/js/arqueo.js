@@ -40,6 +40,7 @@ class ArqueoCaja {
             this.inicializarInpuntTotalQrEnCuenta();
             this.verificarEstadoCaja();
             this.inicializarSelectorCaja();
+            this.cargarCuentasPendientes();
         });
         setInterval(() => this.actualizarFechaHora(), CONFIG.INTERVALO_ACTUALIZACION);
         this.actualizarFechaHora();
@@ -174,6 +175,29 @@ class ArqueoCaja {
         }
     }
 
+    mostrarCuentasPendientes(resumen) {
+        const cantidadEl = document.getElementById('cuentas_pendientes_cantidad');
+        const totalEl = document.getElementById('cuentas_pendientes_total');
+        const cantidad = parseInt(resumen?.cantidad || 0, 10);
+        const total = parseFloat(resumen?.total_por_cobrar || 0);
+        if (cantidadEl) {
+            cantidadEl.textContent = cantidad;
+        }
+        if (totalEl) {
+            totalEl.textContent = 'Bs ' + total.toFixed(CONFIG.DECIMALES);
+        }
+    }
+
+    async cargarCuentasPendientes() {
+        try {
+            const response = await fetch('ajax/arqueo.ajax.php?accion=cuentasPendientes');
+            const data = await response.json();
+            this.mostrarCuentasPendientes(data);
+        } catch (error) {
+            console.warn('No se pudo cargar el resumen de cuentas pendientes');
+        }
+    }
+
     actualizarInterfazSegunEstado(data) {
         const elementos = {
             idArqueo: document.getElementById('idArqueo'),
@@ -254,6 +278,10 @@ class ArqueoCaja {
                 }
             }
         });
+
+        if (datos.cuentas_pendientes) {
+            this.mostrarCuentasPendientes(datos.cuentas_pendientes);
+        }
     }
 
     inicializarSelectorCaja() {

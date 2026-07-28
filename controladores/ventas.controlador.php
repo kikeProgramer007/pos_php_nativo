@@ -30,6 +30,16 @@ class ControladorVentas{
 	static public function ctrCrearVenta(){
 
 		if(isset($_POST["nuevaVenta"])){
+
+			// Evitar crear venta nueva si se está editando una cuenta pendiente
+			if (isset($_POST["idVentaEditar"]) && intval($_POST["idVentaEditar"]) > 0) {
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => "Use el botón Actualizar cuenta para modificar una cuenta pendiente."
+				]);
+				return;
+			}
+
             if(ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_POST["idArqueoCaja"]) == false){
 				if (session_status() == PHP_SESSION_NONE) {
                     session_start();
@@ -125,11 +135,14 @@ class ControladorVentas{
 
 			$fechaMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1b, $valor1b, $valor);
 			$tipoPago = "";
-
 			$totalQR = 0;
 			$totalEfectivo = 0;
 			$totalPagado = 0;
 
+			$estadoPago = (isset($_POST["estadoPago"]) && $_POST["estadoPago"] === "PENDIENTE") ? "PENDIENTE" : "PAGADA";
+			$esPendiente = ($estadoPago === "PENDIENTE");
+
+			if (!$esPendiente) {
 			switch ($_POST["tipoPago"]) {
 				case 1:
 					$tipoPago = "Efectivo";
@@ -165,6 +178,12 @@ class ControladorVentas{
 				default:
 					$tipoPago = "No Especificado";
 					break;
+			}
+			} else {
+				$tipoPago = "";
+				$totalQR = 0;
+				$totalEfectivo = 0;
+				$totalPagado = 0;
 			}
 			$formaAtencion = "";
 
@@ -202,13 +221,15 @@ class ControladorVentas{
 						   "total"=>$_POST["totalVenta"],
 						   "nota"=>strtoupper($_POST["nota"]),
 						   "tipo_pago"=>$tipoPago,
-						   "cambio"=>$_POST["nuevoCambioEfectivo"],
+						   "cambio"=>$esPendiente ? 0 : $_POST["nuevoCambioEfectivo"],
 						   "forma_atencion"=>$formaAtencion,
 						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
 							"total_pagado"=>number_format($totalPagado, 2, '.', ','),
 							"total_efectivo"=>number_format($totalEfectivo, 2, '.', ','),
 							"total_qr"=>number_format($totalQR, 2, '.', ','),
-							"cliente"=>$_POST["cliente"]
+							"cliente"=>$_POST["cliente"],
+							"estado_pago"=>$estadoPago,
+							"fecha_pago"=>$esPendiente ? null : ($fecha.' '.$hora)
 						);
 						
 						
@@ -217,14 +238,21 @@ class ControladorVentas{
 
 			
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
-				$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
+				if (!$esPendiente) {
+					$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
+					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
+				}
+				ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
 
-				ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
+				$mensaje = $esPendiente
+					? "Cuenta pendiente registrada correctamente."
+					: "La venta ha sido registrada correctamente";
 
 				echo json_encode([
 					"status" => "ok",
-					"mensaje" => "La venta ha sido registrada correctamente",
-					"idVenta" => $respuesta["idVenta"]
+					"mensaje" => $mensaje,
+					"idVenta" => $respuesta["idVenta"],
+					"esPendiente" => $esPendiente
 				]);
 				return ;
 				
@@ -391,7 +419,9 @@ class ControladorVentas{
 			$respuesta = ModeloVentas::mdlEliminarVenta($tabla, $_GET["idVenta"]);
 			
 			if($respuesta == "ok"){
-				ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"], $traerVenta["total_efectivo"], $traerVenta["total_qr"]);
+				if (isset($traerVenta["estado_pago"]) && $traerVenta["estado_pago"] === "PAGADA") {
+					ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"], $traerVenta["total_efectivo"], $traerVenta["total_qr"]);
+				}
 				echo'<script>
 
 				swal({
@@ -427,14 +457,297 @@ class ControladorVentas{
 		
 	}
 
-	static public function ctrRangoFechasVentasRealizadas($fechaInicial, $fechaFinal, $estado = 1){
+	static public function ctrRangoFechasVentasRealizadas($fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null){
 
 		$tabla = "ventas";
 
-		$respuesta = ModeloVentas::mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal,$estado);
+		$respuesta = ModeloVentas::mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado, $estadoPago, $idMesero);
 
 		return $respuesta;
 		
+	}
+
+	/*=============================================
+	ACTUALIZAR CUENTA PENDIENTE
+	=============================================*/
+	static public function ctrActualizarCuentaPendiente(){
+
+		if(!isset($_POST["actualizarCuentaPendiente"])){
+			return;
+		}
+
+		if(ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_POST["idArqueoCaja"]) == false){
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "No hay caja abierta. No se puede actualizar la cuenta."
+			]);
+			return;
+		}
+
+		$listaProductos = json_decode($_POST["listaProductos"], true);
+		if (empty($listaProductos)) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "La cuenta debe tener al menos un producto."
+			]);
+			return;
+		}
+
+		$idVenta = intval($_POST["idVentaEditar"]);
+		$ventaActual = ModeloVentas::mdlMostrarVentas("ventas", "id", $idVenta);
+
+		if (!$ventaActual || $ventaActual["estado_pago"] !== "PENDIENTE" || $ventaActual["estado"] != 1) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "La cuenta no está pendiente o no existe."
+			]);
+			return;
+		}
+
+		$detalleAnterior = ModeloVentas::mdlMostrarDetalleVentas($idVenta);
+		self::ajustarInventarioPorDiferencia($detalleAnterior, $listaProductos);
+		self::ajustarMeseroPorDiferencia(
+			$ventaActual["id_mesero"],
+			intval($_POST["seleccionarMesero"]),
+			$detalleAnterior,
+			$listaProductos
+		);
+
+		$formaAtencion = self::obtenerFormaAtencionTexto($_POST["formaAtencion"]);
+
+		$datos = array(
+			"id_venta" => $idVenta,
+			"id_mesero" => $_POST["seleccionarMesero"],
+			"id_cliente" => $_POST["id_cliente"],
+			"total" => $_POST["totalVenta"],
+			"nota" => strtoupper($_POST["nota"]),
+			"forma_atencion" => $formaAtencion,
+			"productos" => $_POST["listaProductos"],
+			"cliente" => $_POST["cliente"]
+		);
+
+		$respuesta = ModeloVentas::mdlActualizarCuentaPendiente($datos);
+
+		if (is_array($respuesta) && $respuesta["status"] === "ok") {
+			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+			echo json_encode([
+				"status" => "ok",
+				"mensaje" => "Cuenta pendiente actualizada correctamente.",
+				"idVenta" => $respuesta["idVenta"],
+				"idsDetalleNuevos" => $respuesta["idsDetalleNuevos"]
+			]);
+			return;
+		}
+
+		echo json_encode([
+			"status" => "error",
+			"mensaje" => is_string($respuesta) ? $respuesta : "Error al actualizar la cuenta."
+		]);
+	}
+
+	/*=============================================
+	COBRAR CUENTA PENDIENTE
+	=============================================*/
+	static public function ctrCobrarCuentaPendiente(){
+
+		if(!isset($_POST["cobrarCuentaPendiente"])){
+			return;
+		}
+
+		$idVenta = intval($_POST["idVentaCobrar"]);
+		$venta = ModeloVentas::mdlMostrarVentas("ventas", "id", $idVenta);
+
+		if (!$venta || $venta["estado_pago"] !== "PENDIENTE" || $venta["estado"] != 1) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "La cuenta no está pendiente o ya fue cobrada."
+			]);
+			return;
+		}
+
+		$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedorCobro"]);
+		if (!$arqueoActual || !ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($arqueoActual["id"])) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "No hay caja abierta. No se puede cobrar la cuenta."
+			]);
+			return;
+		}
+
+		$tipoPago = "";
+		$totalQR = 0;
+		$totalEfectivo = 0;
+		$totalPagado = 0;
+		$totalVenta = floatval($_POST["totalVentaCobro"] ?? $venta["total"]);
+
+		switch ($_POST["tipoPagoCobro"]) {
+			case 1:
+				$tipoPago = "Efectivo";
+				$totalEfectivo = number_format($totalVenta, 2, '.', ',');
+				$totalPagado = number_format(floatval($_POST["nuevoValorEfectivoCobro"] ?? 0), 2, '.', ',');
+				break;
+			case 2:
+				$tipoPago = "QR";
+				$totalQR = number_format($totalVenta, 2, '.', ',');
+				$totalPagado = number_format(floatval($_POST["nuevoValorQRCobro"] ?? 0), 2, '.', ',');
+				break;
+			case 4:
+				$tipoPago = "Qr y Efectivo(Mixto)";
+				$efectivo = floatval($_POST["nuevoValorEfectivoCobro"] ?? 0);
+				$qr = floatval($_POST["nuevoValorQRCobro"] ?? 0);
+				$totalCambio = floatval($_POST["nuevoCambioEfectivoCobro"] ?? 0);
+				$totalPagado = $efectivo + $qr;
+				if ($totalCambio > 0) {
+					$totalEfectivo = number_format($efectivo - $totalCambio, 2, '.', ',');
+				} else {
+					$totalEfectivo = number_format($efectivo, 2, '.', ',');
+				}
+				$totalQR = number_format($qr, 2, '.', ',');
+				break;
+			default:
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => "Tipo de pago no válido."
+				]);
+				return;
+		}
+
+		date_default_timezone_set('America/La_Paz');
+		$fechaPago = date('Y-m-d H:i:s');
+
+		$datos = array(
+			"id_venta" => $idVenta,
+			"fecha_pago" => $fechaPago,
+			"tipo_pago" => $tipoPago,
+			"total_efectivo" => $totalEfectivo,
+			"total_qr" => $totalQR,
+			"total_pagado" => number_format($totalPagado, 2, '.', ','),
+			"cambio" => $_POST["nuevoCambioEfectivoCobro"] ?? 0,
+			"total" => $totalVenta,
+			"id_arqueo_caja" => $arqueoActual["id"]
+		);
+
+		$respuesta = ModeloVentas::mdlCobrarCuentaPendiente($datos);
+
+		if (is_array($respuesta) && $respuesta["status"] === "ok") {
+			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($arqueoActual["id"]);
+			ModeloArqueo::mdlRegistrarIngreso(
+				$arqueoActual,
+				$ultimoNroTicket,
+				$totalVenta,
+				$totalEfectivo,
+				$totalQR
+			);
+			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+
+			echo json_encode([
+				"status" => "ok",
+				"mensaje" => "Cuenta cobrada correctamente.",
+				"idVenta" => $respuesta["idVenta"]
+			]);
+			return;
+		}
+
+		echo json_encode([
+			"status" => "error",
+			"mensaje" => is_string($respuesta) ? $respuesta : "Error al cobrar la cuenta."
+		]);
+	}
+
+	/*=============================================
+	RESUMEN CUENTAS PENDIENTES
+	=============================================*/
+	static public function ctrResumenCuentasPendientes(){
+		return ModeloVentas::mdlResumenCuentasPendientes();
+	}
+
+	private static function obtenerFormaAtencionTexto($formaAtencion){
+		switch ($formaAtencion) {
+			case 1:
+				return "En Mesa";
+			case 2:
+				return "Para Llevar";
+			case 3:
+				return "Mixto";
+			default:
+				return "No Especificado";
+		}
+	}
+
+	private static function sumarCantidadesPorProducto($detalle){
+		$mapa = [];
+		foreach ($detalle as $linea) {
+			$idProducto = isset($linea["id_producto"]) ? $linea["id_producto"] : $linea["id"];
+			$mapa[$idProducto] = ($mapa[$idProducto] ?? 0) + intval($linea["cantidad"]);
+		}
+		return $mapa;
+	}
+
+	private static function sumarCantidadesDesdeJson($productos){
+		$mapa = [];
+		foreach ($productos as $producto) {
+			$idProducto = $producto["id"];
+			$mapa[$idProducto] = ($mapa[$idProducto] ?? 0) + intval($producto["cantidad"]);
+		}
+		return $mapa;
+	}
+
+	private static function ajustarInventarioPorDiferencia($detalleAnterior, $productosNuevos){
+		$antes = self::sumarCantidadesPorProducto($detalleAnterior);
+		$despues = self::sumarCantidadesDesdeJson($productosNuevos);
+		$idsProductos = array_unique(array_merge(array_keys($antes), array_keys($despues)));
+
+		foreach ($idsProductos as $idProducto) {
+			$qtyAntes = $antes[$idProducto] ?? 0;
+			$qtyDespues = $despues[$idProducto] ?? 0;
+			$diff = $qtyDespues - $qtyAntes;
+
+			if ($diff === 0) {
+				continue;
+			}
+
+			$tablaProductos = "productos";
+			$traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, "id", $idProducto, "id");
+			if (!$traerProducto) {
+				continue;
+			}
+
+			$nuevoStock = $traerProducto["stock"] - $diff;
+			$nuevasVentas = $traerProducto["ventas"] + $diff;
+
+			ModeloProductos::mdlActualizarProducto($tablaProductos, "stock", $nuevoStock, $idProducto);
+			ModeloProductos::mdlActualizarProducto($tablaProductos, "ventas", $nuevasVentas, $idProducto);
+		}
+	}
+
+	private static function ajustarMeseroPorDiferencia($idMeseroAnterior, $idMeseroNuevo, $detalleAnterior, $productosNuevos){
+		$totalAnterior = array_sum(array_column($detalleAnterior, "cantidad"));
+		$totalNuevo = 0;
+		foreach ($productosNuevos as $producto) {
+			$totalNuevo += intval($producto["cantidad"]);
+		}
+
+		$tablaMeseros = "meseros";
+		$estado = 1;
+
+		if ($idMeseroAnterior != $idMeseroNuevo) {
+			$meseroAnterior = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroAnterior, $estado);
+			if ($meseroAnterior) {
+				ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $meseroAnterior["compras"] - $totalAnterior, $idMeseroAnterior);
+			}
+			$meseroNuevo = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroNuevo, $estado);
+			if ($meseroNuevo) {
+				ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $meseroNuevo["compras"] + $totalNuevo, $idMeseroNuevo);
+			}
+		} else {
+			$diff = $totalNuevo - $totalAnterior;
+			if ($diff !== 0) {
+				$mesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroNuevo, $estado);
+				if ($mesero) {
+					ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $mesero["compras"] + $diff, $idMeseroNuevo);
+				}
+			}
+		}
 	}
 
 	/*=============================================
