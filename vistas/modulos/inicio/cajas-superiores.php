@@ -31,8 +31,84 @@ $totalProductos = count($productos);
 $ventas = ControladorVentas::ctrSumaTotalVentas();
 $ventasTotalMesActual = ControladorVentas::ctrVentasTotalMes();
 $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
+$ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
+$arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
+
 ?>
 
+<section class="content">
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title" style="text-align: center; font-size: 24px; width: 100%; font-weight: bold; text-decoration: underline;">ARQUEO DE CAJA</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body row">
+
+        <div class="col-lg-4 col-xs-6  text-uppercase" >
+          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
+
+            <div class="inner">
+
+              <h3><?php echo number_format($arqueoCaja["monto_ventas_efectivo"]??0, 2) . 'BS'; ?></h3>
+
+              <p>Caja (Efectivo)</p>
+
+            </div>
+
+            <div class="icon">
+              
+            <img src="./vistas/img/plantilla/bs.webp" alt="">
+
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer">
+              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
+            </a>
+
+          </div>
+        </div>
+       
+        <div class="col-lg-4 col-xs-6  text-uppercase " >
+          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
+
+            <div class="inner">
+
+              <h3><?php echo number_format($arqueoCaja["monto_ventas_qr"]??0, 2) . 'BS'; ?></h3>
+
+
+              <p>Caja (QR)</p>
+
+            </div>
+
+            <div class="icon">
+              
+            <img src="./vistas/img/plantilla/bs.webp" alt="">
+
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer">
+              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
+            </a>
+
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-xs-6  text-uppercase ">
+          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($arqueoCaja["monto_ventas"]??0, 2) . 'BS'; ?></h3>
+              <p>Caja (Total)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/bs.webp" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer">
+              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
+            </a>
+          </div>
+        </div>
+    </div> <!-- /.box-body -->
+  </div> <!-- /.box -->
+
+<h3 class="box-title" style="text-align: center; font-size: 24px; width: 100%; font-weight: bold; text-decoration: underline;">RESUMEN</h3>
 
 <div class="col-lg-2 col-xs-6  text-uppercase ">
 
@@ -41,8 +117,6 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
     <div class="inner">
 
       <h3><?php echo number_format($ventasTotaldDiaActual["total_efectivo"], 2) . 'BS'; ?></h3>
-
-
       <p>M. del Día (Efectivo)</p>
 
     </div>
@@ -378,3 +452,4 @@ $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
   </div>
 
 </div>
+</section>
