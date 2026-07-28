@@ -72,11 +72,12 @@ if ($_SESSION["perfil"] == "") {
 
   .catalogo-header {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
     justify-content: space-between;
-    
-    margin-bottom: 0px;
+    margin-bottom: 0;
     padding: 15px;
-  
     border-bottom: 2px solid #f4f4f4;
   }
 
@@ -175,23 +176,109 @@ if ($_SESSION["perfil"] == "") {
   /* Estilos para el filtro y búsqueda */
   .catalogo-filtros {
     display: flex;
+    flex: 1 1 280px;
     gap: 15px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
+    min-width: 220px;
   }
 
   .catalogo-busqueda {
     flex: 1;
-    max-width: 300px;
+    max-width: none;
+    width: 100%;
   }
 
-  .catalogo-busqueda input {
+  .catalogo-busqueda .input-group {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    display: flex;
+    align-items: stretch;
+    box-shadow: 0 1px 4px rgba(40, 167, 69, 0.15);
+  }
+
+  .catalogo-busqueda .input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    background: #28a745;
+    color: #fff;
+    border: 2px solid #28a745;
+    border-right: none;
+    border-radius: 0;
+    font-size: 16px;
+    line-height: 1;
+    box-sizing: border-box;
+  }
+
+  .catalogo-busqueda input,
+  .catalogo-busqueda .form-control {
+    flex: 1;
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 40px;
+    border: 2px solid #28a745;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .catalogo-busqueda input:focus,
+  .catalogo-busqueda .form-control:focus {
+    outline: none;
+    border-color: #218838;
+    box-shadow: none;
+  }
+
+  .catalogo-busqueda .input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
+  }
+
+  .catalogo-busqueda input::placeholder {
+    color: #6c757d;
+    font-weight: 400;
   }
 
   /* Responsividad */
+  @media (max-width: 992px) {
+    .catalogo-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .catalogo-filtros,
+    .catalogo-busqueda {
+      width: 100%;
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+
+    .catalogo-busqueda .input-group-addon,
+    .catalogo-busqueda input,
+    .catalogo-busqueda .form-control {
+      height: 48px;
+    }
+
+    .catalogo-busqueda .input-group-addon {
+      width: 48px;
+      min-width: 48px;
+    }
+
+    .catalogo-busqueda input,
+    .catalogo-busqueda .form-control {
+      font-size: 16px;
+      line-height: 44px;
+    }
+  }
+
   @media (max-width: 768px) {
       /*.catalogo-grid {
       grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -212,8 +299,10 @@ if ($_SESSION["perfil"] == "") {
   .filtros-categorias {
     display: flex;
     gap: 10px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     flex-wrap: wrap;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .btn-categoria {
@@ -543,7 +632,12 @@ if ($_SESSION["perfil"] == "") {
             </div>
               <div class="catalogo-filtros">
                 <div class="catalogo-busqueda">
-                  <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos...">
+                  <div class="input-group">
+                    <span class="input-group-addon">
+                      <i class="fa fa-search"></i>
+                    </span>
+                    <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos..." autocomplete="off">
+                  </div>
                 </div>
               </div>
             </div>
