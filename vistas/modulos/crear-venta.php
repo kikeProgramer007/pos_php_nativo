@@ -1103,12 +1103,26 @@ if ($modoEdicionCuenta) {
                     </div>
                 </div>
                 <div class="col-xs-6 text-right">
+                  <style>
+                    /* Estilos locales profesionales para los botones de pago */
+                    .pago-actions { display:flex; justify-content:flex-end; gap:12px; align-items:center; }
+                    .btn-pagar-ahora { background:#1e73be; color:#fff; border:none; padding:10px 22px; border-radius:8px; font-weight:700; box-shadow:0 6px 14px rgba(30,115,190,0.16); }
+                    .btn-pagar-ahora:hover { background:#165f9b; }
+                    .btn-pagar-despues { background:#f39c12; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; box-shadow:0 6px 14px rgba(243,156,18,0.14); }
+                    .btn-pagar-despues:hover { background:#d98a0f; }
+                    .btn-actualizar { background:#ffd54a; color:#222; border:none; padding:10px 18px; border-radius:8px; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+                    /* Asegurar que no colisione con utilidades existentes */
+                    .pago-actions .btn-pagar-ahora, .pago-actions .btn-pagar-despues, .pago-actions .btn-actualizar { display:inline-block; }
+                  </style>
+
+                  <div class="pago-actions">
                   <?php if ($modoEdicionCuenta): ?>
-                  <button type="button" id="actualizarCuentaBtn" class="btn btn-warning pull-right" style="margin-right:8px;">Actualizar cuenta</button>
+                  <button type="button" id="actualizarCuentaBtn" class="btn-actualizar" style="margin-right:0;">Actualizar cuenta</button>
                   <?php else: ?>
-                  <button type="button" id="cuentaPendienteBtn" class="btn btn-default pull-right" style="margin-right:8px;">Pagar Despues</button>
+                  <button type="button" id="cuentaPendienteBtn" class="btn-pagar-despues">Cobrar Despues</button>
                   <?php endif; ?>
-                  <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Pagar Ahora</button>
+                  <button type="button" id="guardarVentaBtn" class="btn-pagar-ahora" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Cobrar Ahora</button>
+                  </div>
                 </div>
               </div>
             </div>
