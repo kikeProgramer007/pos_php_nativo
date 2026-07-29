@@ -641,7 +641,7 @@ if ($modoEdicionCuenta) {
   }
 
   .cantidad-stepper .btn-cantidad-ajuste.btn-minus {
-    background-color: #b7b7b7;
+    background-color: #f01111;
     border-color: #9e9e9e;
     color: #fff;
   }
@@ -1106,9 +1106,9 @@ if ($modoEdicionCuenta) {
                   <?php if ($modoEdicionCuenta): ?>
                   <button type="button" id="actualizarCuentaBtn" class="btn btn-warning pull-right" style="margin-right:8px;">Actualizar cuenta</button>
                   <?php else: ?>
-                  <button type="button" id="cuentaPendienteBtn" class="btn btn-default pull-right" style="margin-right:8px;">Dejar cuenta pendiente</button>
+                  <button type="button" id="cuentaPendienteBtn" class="btn btn-default pull-right" style="margin-right:8px;">Pagar Despues</button>
                   <?php endif; ?>
-                  <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Guardar venta</button>
+                  <button type="button" id="guardarVentaBtn" class="btn btn-primary pull-right" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Pagar Ahora</button>
                 </div>
               </div>
             </div>

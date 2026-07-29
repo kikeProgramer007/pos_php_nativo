@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 28, 2026 at 10:52 PM
+-- Generation Time: Jul 29, 2026 at 01:02 AM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -68,8 +68,12 @@ CREATE TABLE `arqueo_caja` (
 --
 
 INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `cuentas_pendientes_cantidad`, `cuentas_pendientes_total`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
-(1, '2026-07-27 00:02:07', '2026-07-27 00:38:13', 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 700.00, 0.00, 700.00, 0.00, 29500.00, 29500.00, -28800.00, 700.00, 0.00, 700.00, -28100.00, 0, 0.00, 'cerrada', 7, NULL, 1, 1),
-(2, '2026-07-28 20:22:36', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15.00, 68.00, 83.00, 0.00, 83.00, 0.00, 0.00, 0.00, 83.00, 0.00, 0.00, 0.00, 0.00, 1, 15.00, 'abierta', 2, NULL, 1, 1);
+(1, '2026-07-28 23:19:49', '2026-07-28 23:32:41', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0.00, 0.00, 15.00, 0.00, 15.00, 0.00, 0.00, 0.00, 15.00, 15.00, 0.00, 15.00, 0.00, 1, 15.00, 'cerrada', 2, NULL, 1, 1),
+(2, '2026-07-28 23:33:42', '2026-07-28 23:33:59', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 18.00, 0.00, 18.00, 0.00, 0.00, 0.00, 18.00, 50.00, 0.00, 50.00, 32.00, 1, 15.00, 'cerrada', 1, NULL, 1, 1),
+(3, '2026-07-28 23:34:25', '2026-07-28 23:34:40', 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0.00, 0.00, 15.00, 0.00, 15.00, 0.00, 0.00, 0.00, 15.00, 15.00, 0.00, 15.00, 0.00, 1, 15.00, 'cerrada', 1, NULL, 1, 1),
+(4, '2026-07-28 23:39:16', '2026-07-28 23:40:24', 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0.00, 0.00, 25.00, 0.00, 25.00, 0.00, 100.00, 100.00, -75.00, 25.00, 0.00, 25.00, -50.00, 1, 15.00, 'cerrada', 1, NULL, 1, 1),
+(5, '2026-07-28 23:45:49', '2026-07-28 23:46:54', 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0.00, 0.00, 210.00, 1.00, 211.00, 0.00, 0.00, 0.00, 211.00, 211.00, 0.00, 211.00, 0.00, 0, 0.00, 'cerrada', 4, NULL, 1, 1),
+(6, '2026-07-28 23:56:08', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1, 15.00, 'abierta', 0, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -90,7 +94,7 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 2, 1),
+(1, 'Caja de ventas', '1', 0, 1),
 (2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
@@ -160,7 +164,8 @@ CREATE TABLE `compras` (
 --
 
 INSERT INTO `compras` (`id`, `codigo`, `total`, `id_usuario`, `id_proveedor`, `fecha_alta`, `estado`, `id_arqueo_caja`) VALUES
-(1, 1, 29500.00, 1, 1, '2026-07-27 04:35:06', 1, 1);
+(1, 1, 29500.00, 1, 1, '2026-07-27 04:35:06', 1, 1),
+(2, 2, 100.00, 1, 1, '2026-07-29 03:39:39', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -200,7 +205,8 @@ INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `can
 (15, 5, 1, 'Vino Kohlberg', 50, 40.00, 2000.00),
 (16, 6, 1, 'Vino Campos del Solana', 50, 40.00, 2000.00),
 (17, 7, 1, 'Balde de Coronas (5 unidades)', 50, 100.00, 5000.00),
-(18, 8, 1, 'Corona', 50, 20.00, 1000.00);
+(18, 8, 1, 'Corona', 50, 20.00, 1000.00),
+(19, 8, 2, 'Corona', 5, 20.00, 100.00);
 
 -- --------------------------------------------------------
 
@@ -227,17 +233,16 @@ CREATE TABLE `detalle_venta` (
 --
 
 INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`) VALUES
-(1, 36, 1, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(2, 36, 2, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(3, 36, 3, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(4, 36, 4, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(5, 36, 5, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(6, 36, 6, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(7, 36, 7, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
-(8, 1, 8, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M'),
-(9, 6, 9, 'Vino Campos del Solana', 1, 50.00, 40.00, 50.00, NULL, NULL, 'M'),
-(10, 28, 9, 'Sopa de Maní', 1, 18.00, 15.00, 18.00, NULL, NULL, 'M'),
-(11, 1, 10, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M');
+(1, 1, 1, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M'),
+(2, 1, 2, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M'),
+(3, 28, 3, 'Sopa de Maní', 1, 18.00, 15.00, 18.00, NULL, NULL, 'M'),
+(4, 1, 4, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M'),
+(5, 8, 5, 'Corona', 1, 25.00, 20.00, 25.00, NULL, NULL, 'M'),
+(6, 6, 6, 'Vino Campos del Solana', 1, 50.00, 40.00, 50.00, NULL, NULL, 'M'),
+(7, 21, 7, 'Chicha Jarra Grande', 1, 20.00, 15.00, 20.00, NULL, NULL, 'M'),
+(8, 36, 8, 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 1, 100.00, 90.00, 100.00, NULL, NULL, 'M'),
+(9, 8, 9, 'Corona', 1, 25.00, 20.00, 25.00, NULL, NULL, 'M'),
+(10, 1, 10, 'Paletas Q\' Deli', 1, 15.00, 10.00, 15.00, NULL, NULL, 'M');
 
 -- --------------------------------------------------------
 
@@ -279,7 +284,7 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 9, '2026-07-28 21:21:59', '2026-07-29 01:21:59', 1),
+(1, 's/n', '0000000', '00000000', 's/n', 25, '2026-07-28 23:57:14', '2026-07-29 03:57:14', 1),
 (2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 1, '2026-07-27 00:02:53', '2026-07-27 04:28:34', 1),
 (3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 0, NULL, '2026-07-27 03:58:16', 1),
 (4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 0, NULL, '2026-07-27 03:59:02', 1),
@@ -311,14 +316,14 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
-(1, 1, '101', 'Paletas Q\' Deli', 'vistas/img/productos/101/641.jpg', 48, 15, 10, 2, '2026-07-29 01:21:59', 1, 1),
+(1, 1, '101', 'Paletas Q\' Deli', 'vistas/img/productos/101/641.jpg', 44, 15, 10, 6, '2026-07-29 03:57:14', 1, 1),
 (2, 1, '102', 'Cheesecake de Oreo', 'vistas/img/productos/default/anonymous.webp', 50, 15, 10, 0, '2026-07-27 04:35:04', 1, 1),
 (3, 2, '201', 'ron flor de caña', 'vistas/img/productos/default/anonymous.webp', 50, 120, 100, 0, '2026-07-27 04:35:04', 1, 1),
 (4, 2, '202', 'Ron Habana Club', 'vistas/img/productos/default/anonymous.webp', 50, 180, 150, 0, '2026-07-27 04:35:04', 1, 1),
 (5, 2, '203', 'Vino Kohlberg', 'vistas/img/productos/default/anonymous.webp', 50, 50, 40, 0, '2026-07-27 04:35:04', 1, 1),
-(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/default/anonymous.webp', 49, 50, 40, 1, '2026-07-29 01:12:10', 1, 1),
-(7, 2, '205', 'Balde de Coronas (5 unidades)', 'vistas/img/productos/default/anonymous.webp', 50, 120, 100, 0, '2026-07-27 04:35:05', 1, 1),
-(8, 2, '206', 'Corona', 'vistas/img/productos/default/anonymous.webp', 50, 25, 20, 0, '2026-07-27 04:35:05', 1, 1),
+(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/default/anonymous.webp', 47, 50, 40, 3, '2026-07-29 03:45:58', 1, 1),
+(7, 2, '205', 'Balde de Coronas (5 unidades)', 'vistas/img/productos/default/anonymous.webp', 49, 120, 100, 1, '2026-07-29 02:45:52', 1, 1),
+(8, 2, '206', 'Corona', 'vistas/img/productos/default/anonymous.webp', 53, 25, 20, 2, '2026-07-29 03:46:24', 1, 1),
 (9, 2, '207', 'Huari 620 ml', 'vistas/img/productos/default/anonymous.webp', 50, 32, 30, 0, '2026-07-27 04:35:03', 1, 1),
 (10, 3, '301', 'Agua con Gas (500 ml)', 'vistas/img/productos/default/anonymous.webp', 50, 8, 5, 0, '2026-07-27 04:35:03', 1, 1),
 (11, 3, '302', 'Powerade 1 Lt', 'vistas/img/productos/default/anonymous.webp', 50, 15, 10, 0, '2026-07-27 04:35:02', 1, 1),
@@ -331,14 +336,14 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (18, 3, '309', 'Limonada Jarra Mediana', 'vistas/img/productos/default/anonymous.webp', 0, 16, 14, 0, '2026-07-27 03:24:39', 0, 1),
 (19, 3, '310', 'Limonada Jarra Grande', 'vistas/img/productos/default/anonymous.webp', 0, 22, 20, 0, '2026-07-27 03:25:11', 0, 1),
 (20, 3, '311', 'Chicha Jarra Mediana', 'vistas/img/productos/default/anonymous.webp', 0, 15, 10, 0, '2026-07-27 03:25:39', 0, 1),
-(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/default/anonymous.webp', 50, 20, 15, 0, '2026-07-27 04:35:00', 1, 1),
+(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/default/anonymous.webp', 47, 20, 15, 3, '2026-07-29 03:46:09', 1, 1),
 (22, 4, '401', 'Cuadril (Carne Extra)', 'vistas/img/productos/default/anonymous.webp', 0, 40, 30, 0, '2026-07-27 03:27:27', 0, 1),
 (23, 4, '402', 'Cordon Blue', 'vistas/img/productos/default/anonymous.webp', 50, 35, 30, 0, '2026-07-27 04:33:52', 0, 1),
 (24, 4, '403', 'Chorizo', 'vistas/img/productos/default/anonymous.webp', 50, 12, 10, 0, '2026-07-27 04:33:30', 0, 1),
 (25, 4, '404', 'Arroz', 'vistas/img/productos/default/anonymous.webp', 50, 10, 8, 0, '2026-07-27 04:33:11', 0, 1),
 (26, 4, '405', 'Yuca Frita', 'vistas/img/productos/default/anonymous.webp', 50, 13, 10, 0, '2026-07-27 04:33:05', 0, 1),
 (27, 4, '406', 'Papas Fritas', 'vistas/img/productos/default/anonymous.webp', 50, 15, 10, 0, '2026-07-27 04:32:57', 0, 1),
-(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/default/anonymous.webp', 49, 18, 15, 1, '2026-07-29 01:15:15', 0, 1),
+(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/default/anonymous.webp', 46, 18, 15, 4, '2026-07-29 03:33:54', 0, 1),
 (29, 6, '601', 'Keperí (Arroz con queso, yuca y ensalada)', 'vistas/img/productos/default/anonymous.webp', 50, 55, 40, 0, '2026-07-27 04:32:46', 0, 1),
 (30, 6, '602', 'Ojo de Bife (Arroz con queso, yuca y ensalada)', 'vistas/img/productos/default/anonymous.webp', 50, 60, 50, 0, '2026-07-27 04:32:39', 0, 1),
 (31, 6, '603', 'Costilla a la Parrilla (Corte español, arroz con queso, yuca frita y ensalada)', 'vistas/img/productos/default/anonymous.webp', 50, 60, 50, 0, '2026-07-27 04:32:34', 0, 1),
@@ -346,7 +351,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (33, 6, '605', 'Chancho a la Caja China Personal (Chancho, arroz, yuca y ensalada)', 'vistas/img/productos/default/anonymous.webp', 50, 55, 50, 0, '2026-07-27 04:32:22', 0, 1),
 (34, 6, '606', 'Costilla a la Parrilla 2 personas(Corte español, arroz con queso, yuca frita y ensalada)', 'vistas/img/productos/default/anonymous.webp', 50, 85, 70, 0, '2026-07-27 04:32:17', 0, 1),
 (35, 6, '607', 'Tablita Personal (Cuadril, chorizo, yuca frita y papas fritas)', 'vistas/img/productos/default/anonymous.webp', 50, 75, 70, 0, '2026-07-27 04:32:12', 0, 1),
-(36, 6, '608', 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 'vistas/img/productos/default/anonymous.webp', 43, 100, 90, 7, '2026-07-27 04:18:02', 0, 1);
+(36, 6, '608', 'Tablita Mixta 2 personas(Cuadril, cordon blue, chorizo, yuca frita y papas fritas)', 'vistas/img/productos/default/anonymous.webp', 42, 100, 90, 8, '2026-07-29 03:46:16', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -408,8 +413,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2026-07-28 21:08:59', '2026-07-29 01:08:59', 1),
-(2, 'ROSMERY QUIZPE', 'rosmery', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/rosmery/468.png', 1, '2026-05-26 16:25:06', '2026-05-26 20:25:06', 1);
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 'vistas/img/usuarios/admin/997.webp', 1, '2026-07-28 21:08:59', '2026-07-29 03:07:18', 1);
 
 -- --------------------------------------------------------
 
@@ -444,16 +448,16 @@ CREATE TABLE `ventas` (
 --
 
 INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`, `total`, `total_pagado`, `fecha`, `nota`, `tipo_pago`, `cambio`, `forma_atencion`, `estado`, `estado_pago`, `fecha_pago`, `id_mesero`, `id_cliente`, `id_vendedor`, `id_arqueo_caja`) VALUES
-(1, 1, NULL, 0, 100, 100, 100, '2026-07-27 04:02:54', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 2, 1, 1, 1),
-(2, 2, NULL, 0, 100, 100, 100, '2026-07-27 04:06:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 1, 1, 1, 1),
-(3, 3, NULL, 0, 100, 100, 100, '2026-07-27 04:08:36', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 1, 1, 1, 1),
-(4, 4, NULL, 0, 100, 100, 100, '2026-07-27 04:11:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 5, 1, 1, 1),
-(5, 5, NULL, 0, 100, 100, 100, '2026-07-27 04:14:14', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 1, 1, 1, 1),
-(6, 6, NULL, 0, 100, 100, 100, '2026-07-27 04:14:35', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 1, 1, 1, 1),
-(7, 7, NULL, 0, 100, 100, 100, '2026-07-27 04:18:02', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', NULL, 1, 1, 1, 1),
-(8, 1, NULL, 0, 15, 15, 15, '2026-07-29 01:21:36', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 21:21:36', 1, 1, 1, 2),
-(9, 2, NULL, 68, 0, 68, 68, '2026-07-29 01:18:25', '', 'QR', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 21:18:25', 1, 1, 1, 2),
-(10, 3, NULL, 0, 0, 15, 0, '2026-07-29 01:21:59', '', '', 0, 'En Mesa', 1, 'PENDIENTE', NULL, 1, 1, 1, 2);
+(1, 1, NULL, 0, 15, 15, 15, '2026-07-29 03:46:36', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:46:36', 1, 1, 1, 5),
+(2, 2, NULL, 0, 15, 15, 15, '2026-07-29 03:20:38', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:20:38', 1, 1, 1, 1),
+(3, 1, NULL, 0, 18, 18, 50, '2026-07-29 03:33:54', '', 'Efectivo', 32, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:33:54', 1, 1, 1, 2),
+(4, 1, NULL, 0, 15, 15, 15, '2026-07-29 03:34:34', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:34:34', 1, 1, 1, 3),
+(5, 1, NULL, 0, 25, 25, 25, '2026-07-29 03:40:13', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:40:13', 1, 1, 1, 4),
+(6, 1, NULL, 0, 50, 50, 50, '2026-07-29 03:45:58', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:45:58', 1, 1, 1, 5),
+(7, 2, NULL, 0, 20, 20, 50, '2026-07-29 03:46:09', '', 'Efectivo', 30, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:46:09', 1, 1, 1, 5),
+(8, 3, NULL, 0, 100, 100, 100, '2026-07-29 03:46:16', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:46:16', 1, 1, 1, 5),
+(9, 4, NULL, 0, 25, 25, 25, '2026-07-29 03:46:33', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-07-28 23:46:33', 1, 1, 1, 5),
+(10, 1, NULL, 0, 0, 15, 0, '2026-07-29 03:57:14', '', '', 0, 'En Mesa', 1, 'PENDIENTE', NULL, 1, 1, 1, 6);
 
 --
 -- Indexes for dumped tables
@@ -569,7 +573,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `cajas`
@@ -593,19 +597,19 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT for table `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `gastos`
