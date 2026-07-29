@@ -47,7 +47,7 @@ foreach ($categorias as $cat) {
         <meta name="author" content="modinatheme">
         <meta name="description" content="Foodking - Fast Food Restaurant Html">
         <!-- ======== Page title ============ -->
-        <title>PollosRossy</title>
+        <title>El Gato Rico</title>
         <!--<< Favcion >>-->
         <link rel="shortcut icon" href="../vistas/img/plantilla/logo-blanco-bloque.png">
         <!--<< Bootstrap min.css >>-->
@@ -91,38 +91,36 @@ foreach ($categorias as $cat) {
                 </div>
                 <div class="txt-loading">
                     <span  class="letters-loading">
-                    P
+                    E
                     </span>
                     <span class="letters-loading">
-                    O
-                    </span>
-                    <span  class="letters-loading">
                     L
                     </span>
                     <span  class="letters-loading">
-                    L
+                    G
+                    </span>
+                    <span  class="letters-loading">
+                    A
                     </span>
                     <span " class="letters-loading">
-                    O
+                    T
                     </span>
                     <span  class="letters-loading">
-                    S
+                    O
                     </span>
                     <span  class="letters-loading">
                     R
                     </span>
                     <span  class="letters-loading">
+                    I
+                    </span>
+                    <span  class="letters-loading">
+                    C
+                    </span>
+                    <span  class="letters-loading">
                     O
                     </span>
-                    <span  class="letters-loading">
-                    S
-                    </span>
-                    <span  class="letters-loading">
-                    S
-                    </span>
-                    <span  class="letters-loading">
-                    Y
-                    </span>
+                   
                 </div>
                 <p class="text-center">Cargando..</p>
             </div>
@@ -162,7 +160,7 @@ foreach ($categorias as $cat) {
                              </div>
                         </div>
                         <p class="text d-none d-lg-block">
-                            Los Mejores Pollo de la Ciudad
+                            La Mejor Churrrasqueria de la Ciudad
                         </p>
                       
                         <div class="mobile-menu fix mb-3"></div>
@@ -327,7 +325,7 @@ foreach ($categorias as $cat) {
                                             <p data-animation="fadeInUp">Ven por el sabor, quédate por la experiencia.</p>
                                             <h1  data-animation="fadeInUp" data-delay="0.5s">
                                                 MAS QUE
-                                                <span>POLLO</span>
+                                                <span>Comida</span>
                                                 PASIÓN
                                             </h1>
                                         
@@ -577,7 +575,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            "El mejor pollo que he probado en Santa Cruz. Jugoso, bien sazonado y servido . ¡Volveria sin dudar!"
+                                            "La mejor carne que he probado en Cotoca. Jugoso, bien sazonado y servido . ¡Volveria sin dudar!"
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -595,7 +593,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            "Llevé a mi familia el domingo y quedamos encantados. El pollo a la brasa estaba perfecto y las guarniciones riquísimas."
+                                            "Llevé a mi familia el domingo y quedamos encantados. con la carne estaba perfecto y las guarniciones riquísimas."
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -613,7 +611,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            Siempre paso después del trabajo por mi cuarto de pollo. La atención es rapida
+                                            Siempre paso después del trabajo por tablita. La atención es rapida
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -633,7 +631,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            Pedí para llevar y me gustó que todo vino bien empacado. El pollo estaba rico
+                                            Pedí para llevar y me gustó que todo vino bien empacado. la tablita estaba rico
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>

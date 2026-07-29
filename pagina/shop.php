@@ -86,7 +86,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <meta name="author" content="modinatheme">
         <meta name="description" content="Foodking - Fast Food Restaurant Html">
         <!-- ======== Page title ============ -->
-        <title>PollosRossy</title>
+        <title>El Gato Rico</title>
         <!--<< Favcion >>-->
         <link rel="shortcut icon" href="../vistas/img/plantilla/logo-blanco-bloque.png">
         <!--<< Bootstrap min.css >>-->
@@ -115,38 +115,36 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="txt-loading">
                     <span  class="letters-loading">
-                    P
+                    E
                     </span>
                     <span class="letters-loading">
-                    O
-                    </span>
-                    <span  class="letters-loading">
                     L
                     </span>
                     <span  class="letters-loading">
-                    L
+                    G
+                    </span>
+                    <span  class="letters-loading">
+                    A
                     </span>
                     <span " class="letters-loading">
-                    O
+                    T
                     </span>
                     <span  class="letters-loading">
-                    S
+                    O
                     </span>
                     <span  class="letters-loading">
                     R
                     </span>
                     <span  class="letters-loading">
+                    I
+                    </span>
+                    <span  class="letters-loading">
+                    C
+                    </span>
+                    <span  class="letters-loading">
                     O
                     </span>
-                    <span  class="letters-loading">
-                    S
-                    </span>
-                    <span  class="letters-loading">
-                    S
-                    </span>
-                    <span  class="letters-loading">
-                    Y
-                    </span>
+                   
                 </div>
                 <p class="text-center">Cargando..</p>
             </div>
@@ -186,7 +184,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                         <p class="text d-none d-lg-block">
-                            Los Mejores Pollo de la Ciudad
+                            Los Mejor carne de la Ciudad
                         </p>
                       
                         <div class="mobile-menu fix mb-3"></div>
@@ -194,7 +192,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             
                             
                             <div class="header-button mt-4">
-                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn" data-wow-delay=".5s">
+                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EL gato rico" target="BLANK" class="theme-btn" data-wow-delay=".5s">
                                 <span class="button-content-wrapper d-flex align-items-center justify-content-center">
                                 <span class="button-icon"><i class="flaticon-delivery"></i></span>
                                 <span class="button-text">ordenar ahora</span>
@@ -277,7 +275,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                              
                                 <div class="header-button">
 
-                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
+                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN EL GATO RICO" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
 
                                 </div>
                                 
@@ -533,7 +531,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <span class="theme-color-3">delivery</span>
                     </h2>
                 </div>
-                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS ROSSY" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
+                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
                     <span class="button-content-wrapper d-flex align-items-center">
                         <span class="button-icon"><i class="flaticon-delivery"></i></span>
                         <span class="button-text">Ordenar Ahora</span>
@@ -558,7 +556,7 @@ $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="container">
                     <div class="footer-bottom-wrapper d-flex align-items-center justify-content-between">
                         <p class="wow fadeInLeft" data-wow-delay=".3s">
-                            © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">Pollos PollosRossy </a>.Todos los derechos reservados.
+                            © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">El Gato Rico -Churrasqueria </a>.Todos los derechos reservados.
                         </p>
                         <div class="card-image wow fadeInRight" data-wow-delay=".5s">
                             <img src="assets/img/card.webp" alt="card-img">

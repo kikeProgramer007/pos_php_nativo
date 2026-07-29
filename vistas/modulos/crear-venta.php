@@ -207,7 +207,7 @@ if ($modoEdicionCuenta) {
   }
 
   .btn-agregar.disabled {
-    background-color: #6c757d;
+    background-color: #7d6c6c;
     cursor: not-allowed;
   }
 
