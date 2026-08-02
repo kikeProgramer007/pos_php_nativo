@@ -65,22 +65,24 @@ class TablaProductosVentas{
 			  $botones = "
 			  <div class='acciones-ventas-wrap'>";
 
-			  $estadoPagoLabel = "CUENTA PAGADA";
+			  $estadoPagoLabel = "PAGADO";
 			  $estadoPagoClass = "label-success";
 			  if (isset($ventas[$i]["estado_pago"]) && $ventas[$i]["estado_pago"] === "PENDIENTE") {
 				$cajaAbierta = isset($ventas[$i]["estado_arqueo"]) && $ventas[$i]["estado_arqueo"] === "abierta";
 				if ($cajaAbierta) {
-					$estadoPagoLabel = "CUENTA PENDIENTE";
+					$estadoPagoLabel = "PENDIENTE";
 					$estadoPagoClass = "label-danger";
 					$botones .= "
 					<button type='button' class='btn btn-success btn-sm btnCobrarCuenta action-charge-button' idVenta='".$ventas[$i]["id"]."' totalVenta='".$ventas[$i]["total"]."' codigoVenta='".$ventas[$i]["codigo"]."'>
 					  <i class='fa fa-money'></i> Cobrar
 					</button>";
 				} else {
-					$estadoPagoLabel = "Pendiente de caja cerrada";
+					$estadoPagoLabel = "PENDIENTE";
 					$estadoPagoClass = "label-warning";
 					$botones .= "
-					<span class='label label-warning' title='Esta cuenta pertenece a una caja cerrada y no puede cobrarse'>Pendiente de caja cerrada</span>";
+					<button type='button' class='btn btn-warning btn-sm btnCobrarCajaCerrada action-charge-locked' idVenta='".$ventas[$i]["id"]."' codigoVenta='".$ventas[$i]["codigo"]."' title='La caja de esta venta ya fue cerrada'>
+					  <i class='fa fa-lock'></i> Cobrar
+					</button>";
 				}
 			  }
 

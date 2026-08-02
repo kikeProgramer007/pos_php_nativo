@@ -5,31 +5,20 @@ $valor = null;
 $orden = "id";
 
 $productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
+if (!is_array($productos)) {
+  $productos = [];
+}
+$limite = min(10, count($productos));
 
  ?>
 
 
-<div class="box box-primary text-uppercase ">
+<div class="box box-primary text-uppercase box-productos-recientes">
 
   <div class="box-header with-border">
 
     <h3 class="box-title">Productos agregados recientemente</h3>
 
-    <div class="box-tools pull-right">
-
-      <button type="button" class="btn btn-box-tool" data-widget="collapse">
-
-        <i class="fa fa-minus"></i>
-
-      </button>
-
-      <button type="button" class="btn btn-box-tool" data-widget="remove">
-
-        <i class="fa fa-times"></i>
-
-      </button>
-
-    </div>
 
   </div>
   
@@ -39,13 +28,13 @@ $productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
 
     <?php
 
-    for($i = 0; $i < 10; $i++){
+    for($i = 0; $i < $limite; $i++){
 
       echo '<li class="item">
 
         <div class="product-img">
 
-          <img src="'.$productos[$i]["imagen"].'" alt="Product Image">
+          <img src="'.htmlspecialchars($productos[$i]["imagen"]).'" alt="Product Image">
 
         </div>
 
@@ -53,9 +42,9 @@ $productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
 
           <a href="" class="product-title">
 
-            '.$productos[$i]["descripcion"].'
+            '.htmlspecialchars($productos[$i]["descripcion"]).'
 
-            <span class="label label-success pull-right">Bs'.$productos[$i]["precio_venta"].'</span>
+            <span class="label label-success pull-right">Bs'.htmlspecialchars($productos[$i]["precio_venta"]).'</span>
 
           </a>
     
@@ -78,3 +67,26 @@ $productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
   </div>
 
 </div>
+
+<style>
+  .box-productos-recientes > .box-header {
+    position: relative;
+    padding-right: 70px;
+  }
+  .box-productos-recientes > .box-header > .box-title {
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .box-productos-recientes > .box-header > .box-tools {
+    position: absolute !important;
+    right: 10px !important;
+    top: 8px !important;
+    float: none !important;
+    margin: 0 !important;
+  }
+</style>

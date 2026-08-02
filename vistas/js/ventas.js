@@ -1334,6 +1334,17 @@ $(".tablas").on("click", ".btnCobrarCuenta", function() {
     $("#modalCobrarCuenta").modal("show");
 });
 
+$(".tablas").on("click", ".btnCobrarCajaCerrada", function() {
+    var ticket = $(this).attr("codigoVenta") || "";
+    swal({
+        type: "warning",
+        title: "Caja cerrada",
+        text: "No se puede cobrar esta venta porque la caja asociada ya fue cerrada" + (ticket ? " (Ticket " + String(ticket).replace(/^0+/, "") + ")." : "."),
+        showConfirmButton: true,
+        confirmButtonText: "Entendido"
+    });
+});
+
 $("#tipoPagoCobro").on("change", function() {
     actualizarCamposCobro();
     calcularCambioCobro();

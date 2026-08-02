@@ -5,11 +5,28 @@ $valor = null;
 $orden = "ventas";
 
 $productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
+if (!is_array($productos)) {
+	$productos = [];
+}
 
 $colores = array("red","green","yellow","aqua","purple","blue","cyan","magenta","orange","gold");
+$coloresHex = array("#f56954","#00a65a","#f39c12","#00c0ef","#605ca8","#3c8dbc","#39cccc","#D81B60","#ff851b","#ffd700");
 
 $totalVentas = ControladorProductos::ctrMostrarSumaVentas();
+$totalVentasNum = floatval($totalVentas["total"] ?? 0);
 
+$limiteLeyenda = min(10, count($productos));
+$limiteLista = min(5, count($productos));
+
+$pieData = [];
+for ($i = 0; $i < $limiteLeyenda; $i++) {
+	$pieData[] = [
+		"value" => floatval($productos[$i]["ventas"] ?? 0),
+		"color" => $coloresHex[$i],
+		"highlight" => $coloresHex[$i],
+		"label" => $productos[$i]["descripcion"] ?? ("Producto " . ($i + 1))
+	];
+}
 
 ?>
 
@@ -31,9 +48,9 @@ PRODUCTOS MÁS VENDIDOS
 
 	        <div class="col-md-7">
 
-	 			<div class="chart-responsive">
+	 			<div class="chart-responsive" style="height: 220px; position: relative;">
 	            
-	            	<canvas id="pieChart" height="150"></canvas>
+	            	<canvas id="pieChart" height="220" width="220" style="width:100%; height:220px;"></canvas>
 	          
 	          	</div>
 
@@ -45,9 +62,9 @@ PRODUCTOS MÁS VENDIDOS
 
 		  	 	<?php
 
-					for($i = 0; $i < 10; $i++){
+					for($i = 0; $i < $limiteLeyenda; $i++){
 
-					echo '   <li><i class="fa fa-circle-o text-'.$colores[$i].'"></i>   '.$productos[$i]["descripcion"].'</li>';
+					echo '   <li><i class="fa fa-circle-o text-'.$colores[$i].'"></i>   '.htmlspecialchars($productos[$i]["descripcion"]).'</li>';
 
 					}
 
@@ -69,17 +86,20 @@ PRODUCTOS MÁS VENDIDOS
 			
 			 <?php
 
-          	for($i = 0; $i <5; $i++){
+          	for($i = 0; $i < $limiteLista; $i++){
+				$porcentaje = $totalVentasNum > 0
+					? ceil(floatval($productos[$i]["ventas"]) * 100 / $totalVentasNum)
+					: 0;
 			
           		echo '<li>
 						 
 						 <a>
 
-						 <img src="'.$productos[$i]["imagen"].'" class="img-thumbnail" width="60px" style="margin-right:10px"> 
-						 '.$productos[$i]["descripcion"].'
+						 <img src="'.htmlspecialchars($productos[$i]["imagen"]).'" class="img-thumbnail" width="60px" style="margin-right:10px"> 
+						 '.htmlspecialchars($productos[$i]["descripcion"]).'
 
 						 <span class="pull-right text-'.$colores[$i].'">   
-						 '.ceil($productos[$i]["ventas"]*100/$totalVentas["total"]).'%
+						 '.$porcentaje.'%
 						 </span>
 							
 						 </a>
@@ -98,63 +118,39 @@ PRODUCTOS MÁS VENDIDOS
 </div>
 
 <script>
-	
+(function() {
+  function renderPieChartProductos() {
+    var canvas = document.getElementById('pieChart');
+    if (!canvas || typeof Chart === 'undefined') {
+      return;
+    }
 
-  // -------------
-  // - PIE CHART -
-  // -------------
-  // Get context with jQuery - using jQuery's .get() method.
-  var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
-  var pieChart       = new Chart(pieChartCanvas);
-  var PieData        = [
+    var PieData = <?php echo json_encode($pieData, JSON_UNESCAPED_UNICODE); ?>;
+    if (!PieData || !PieData.length) {
+      return;
+    }
 
-  <?php
-
-  for($i = 0; $i < 10; $i++){
-
-  	echo "{
-      value    : ".$productos[$i]["ventas"].",
-      color    : '".$colores[$i]."',
-      highlight: '".$colores[$i]."',
-      label    : '".$productos[$i]["descripcion"]."'
-    },";
-
+    var ctx = canvas.getContext('2d');
+    var pieChart = new Chart(ctx);
+    pieChart.Doughnut(PieData, {
+      segmentShowStroke: true,
+      segmentStrokeColor: '#fff',
+      segmentStrokeWidth: 2,
+      percentageInnerCutout: 50,
+      animationSteps: 100,
+      animationEasing: 'easeOutBounce',
+      animateRotate: true,
+      animateScale: false,
+      responsive: true,
+      maintainAspectRatio: true,
+      tooltipTemplate: '<%=value %> <%=label%>'
+    });
   }
-    
-   ?>
-  ];
-  var pieOptions     = {
-    // Boolean - Whether we should show a stroke on each segment
-    segmentShowStroke    : true,
-    // String - The colour of each segment stroke
-    segmentStrokeColor   : '#fff',
-    // Number - The width of each segment stroke
-    segmentStrokeWidth   : 1,
-    // Number - The percentage of the chart that we cut out of the middle
-    percentageInnerCutout: 50, // This is 0 for Pie charts
-    // Number - Amount of animation steps
-    animationSteps       : 100,
-    // String - Animation easing effect
-    animationEasing      : 'easeOutBounce',
-    // Boolean - Whether we animate the rotation of the Doughnut
-    animateRotate        : true,
-    // Boolean - Whether we animate scaling the Doughnut from the centre
-    animateScale         : false,
-    // Boolean - whether to make the chart responsive to window resizing
-    responsive           : true,
-    // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-    maintainAspectRatio  : false,
-    // String - A legend template
-    legendTemplate       : '<ul class=\'<%=name.toLowerCase()%>-legend\'><% for (var i=0; i<segments.length; i++){%><li><span style=\'background-color:<%=segments[i].fillColor%>\'></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
-    // String - A tooltip template
-    tooltipTemplate      : '<%=value %> <%=label%>'
-  };
-  // Create pie or douhnut chart
-  // You can switch between pie and douhnut using the method below.
-  pieChart.Doughnut(PieData, pieOptions);
-  // -----------------
-  // - END PIE CHART -
-  // -----------------
 
-
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderPieChartProductos);
+  } else {
+    renderPieChartProductos();
+  }
+})();
 </script>
