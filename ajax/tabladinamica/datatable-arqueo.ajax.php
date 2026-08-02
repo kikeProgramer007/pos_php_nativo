@@ -36,6 +36,12 @@ class DatatableArqueosCaja{
 			
 		
 		  	// Formateamos cada registro de compra como un array
+			$montoPorCobrar = floatval($arqueos[$i]["monto_por_cobrar"] ?? 0);
+			$montoPorCobrarHtml = number_format($montoPorCobrar, 2);
+			if ($montoPorCobrar > 0) {
+				$montoPorCobrarHtml = "<span class='text-danger' style='font-weight:bold;'>".number_format($montoPorCobrar, 2)."</span>";
+			}
+
 		  	$datos[] = [
 			      ($i+1),
 			      $arqueos[$i]["usuario"],
@@ -45,6 +51,7 @@ class DatatableArqueosCaja{
 			      number_format($arqueos[$i]["total_ingresos"], 2),
 				  number_format($arqueos[$i]["total_egresos"], 2),
 				  $arqueos[$i]["resultado_neto"],
+				  $montoPorCobrarHtml,
 				  $botones
 			      
 		  	];

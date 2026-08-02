@@ -339,6 +339,7 @@
                                 <th>Ingresos</th>
                                 <th>Egresos</th>
                                 <th>Saldo Neto</th>
+                                <th>Monto por Cobrar</th>
                                 <th width="1%"></th>
                             </tr>
                         </thead>
@@ -415,7 +416,7 @@
     autoWidth: false,
     columnDefs: [
   
-    { targets: 8, width: '1%' }
+    { targets: 9, width: '1%' }
   ]
 
 } );

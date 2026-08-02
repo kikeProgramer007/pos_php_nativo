@@ -30,7 +30,7 @@ $fechaActual = date('Y-m-d');
           <div class="card-body">
             <input type="hidden" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION["id"]; ?>">
             <div class="row">
-              <div class="col-12 col-sm-2">
+              <div class="col-12 col-sm-1">
                 <div class="form-group">
                   <label><i class="text-danger">*</i> Fecha de inicio:</label>
                   <div class="input-group date">
@@ -39,7 +39,7 @@ $fechaActual = date('Y-m-d');
                 </div>
               </div>
 
-              <div class="col-12 col-sm-2">
+              <div class="col-12 col-sm-1 ">
                 <div class="form-group">
                   <label><i class="text-danger">*</i> Fecha de fin:</label>
                   <div class="input-group date">
@@ -48,6 +48,16 @@ $fechaActual = date('Y-m-d');
                 </div>
               </div>
 
+              <div class="col-12 col-sm-2">
+                <div class="form-group">
+                  <label>Estado de Pago</label>
+                  <select class="select2" class="form-control" id="estado_pago" name="estado_pago" required>
+                    <option value="0">Todos</option>
+                    <option value="1">Pendiente</option>
+                    <option value="2" selected>Pagado</option>
+                  </select>
+                </div>
+              </div>
 
               <div class="col-12 col-sm-2">
                 <div class="form-group">
@@ -118,6 +128,7 @@ $fechaActual = date('Y-m-d');
                 </div>
               </div>
             </div>
+
             <div class="row">
               <div class="col-md-3 col-sm-6  col-xs-4">
                 <div class="input-group">
@@ -168,6 +179,7 @@ $fechaActual = date('Y-m-d');
     const idCategoria = document.getElementById('id_categoria').value;
     const idCliente = document.getElementById('id_cliente').value;
     const tipoPago = document.getElementById('tipo_pago').value;
+    const estadoPago = document.getElementById('estado_pago').value;
     const registroEliminados = document.getElementById('registros_eliminados').checked;
  
     // Validar campos
@@ -221,6 +233,7 @@ $fechaActual = date('Y-m-d');
       "&idCategoria=" + encodeURIComponent(idCategoria) +
       "&idCliente=" + encodeURIComponent(idCliente) +
       "&tipoPago=" + encodeURIComponent(tipoPago) +
+      "&estadoPago=" + encodeURIComponent(estadoPago) +
       "&registroEliminados=" + encodeURIComponent(registroEliminados);
 
     // Abre la URL en una nueva ventana (popup)

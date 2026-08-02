@@ -1022,7 +1022,7 @@ if ($modoEdicionCuenta) {
                 
                   <div class="col-md-6">
 
-                    <div class="form-group">
+                    <div class="form-group" id="contenedorTipoPago">
                       <label for="tipo_pago">TIPO DE PAGO:</label>
                       <select class="form-control input-sm" id="tipoPago" name="tipoPago">
                         <option value="1">Efectivo</option>
@@ -1106,8 +1106,8 @@ if ($modoEdicionCuenta) {
                       <div class="input-group">
                         <span class="input-group-addon text-bold">IMPRIMIR EN</span>
                         <select class="form-control input-sm text-uppercase text-bold" id="idTipoImpresion" name="idTipoImpresion">
-                          <option value="1" selected>CAJA Y COCINA</option>
-                          <option value="2">CAJA</option>
+                          <option value="1">CAJA Y COCINA</option>
+                          <option value="2" selected>CAJA</option>
                           <option value="3">COCINA</option>
                           <option value="4">NO IMPRIMIR</option>
                         </select>
@@ -1293,6 +1293,7 @@ MODAL AGREGAR MESERO
 
 <script>
   const idUsuario = <?php echo $_SESSION["id"]; ?>;
+  var modoEdicionCuenta = <?php echo $modoEdicionCuenta ? 'true' : 'false'; ?>;
 </script>
 <script src="vistas/js/validar-caja.js"></script>
 
@@ -1304,6 +1305,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const efectivo = document.getElementById("contenedorEfectivo");
   const qr = document.getElementById("contenedorQR");
   const cambio = document.getElementById("capturarCambioEfectivo");
+  const contenedorTipoPago = document.getElementById("contenedorTipoPago");
+  const cajasMetodoPago = document.querySelector(".cajasMetodoPago");
+
+  if (modoEdicionCuenta) {
+    if (contenedorTipoPago) contenedorTipoPago.style.display = "none";
+    if (efectivo) efectivo.style.display = "none";
+    if (qr) qr.style.display = "none";
+    if (cambio) cambio.style.display = "none";
+    if (cajasMetodoPago) cajasMetodoPago.style.display = "none";
+    return;
+  }
 
   function setColumna(elemento, size) {
     elemento.classList.remove("col-md-6", "col-md-12");
@@ -1595,8 +1607,20 @@ if (cuentaPendienteBtn) {
         confirmButtonText: "Cerrar"
       }).then(function() {
         var idImpresion = $("#idTipoImpresion").val();
-        if (idImpresion == "3" || idImpresion == "1") {
+        if (idImpresion == "2" ) {
+          imprimirSoloCaja(respuesta.idVenta).finally(function() {
+            window.location.href = "crear-venta";
+          });
+        } else if (idImpresion == "1") {
+          imprimirCajaCocina(respuesta.idVenta).finally(function() {
+            window.location.href = "crear-venta";
+          });
+        } else if (idImpresion == "3") {
           imprimirSoloCocina(respuesta.idVenta).finally(function() {
+            window.location.href = "crear-venta";
+          });
+        } else if (idImpresion == "4") {
+          imprimirSoloCaja(respuesta.idVenta, null, false).finally(function() {
             window.location.href = "crear-venta";
           });
         } else {
@@ -1624,9 +1648,27 @@ if (actualizarCuentaBtn) {
         confirmButtonText: "Cerrar"
       }).then(function() {
         if (idsNuevos.length > 0) {
-          imprimirSoloCocina(respuesta.idVenta, idsNuevos.join(",")).finally(function() {
+          var idsDetalle = idsNuevos.join(",");
+          var idImpresion = $("#idTipoImpresion").val();
+          if (idImpresion == "2") {
+            imprimirSoloCaja(respuesta.idVenta, idsDetalle).finally(function() {
+              window.location.href = "ventas";
+            });
+          } else if (idImpresion == "1") {
+            imprimirCajaCocina(respuesta.idVenta, idsDetalle).finally(function() {
+              window.location.href = "ventas";
+            });
+          } else if (idImpresion == "3") {
+            imprimirSoloCocina(respuesta.idVenta, idsDetalle).finally(function() {
+              window.location.href = "ventas";
+            });
+          } else if (idImpresion == "4") {
+            imprimirSoloCaja(respuesta.idVenta, idsDetalle, false).finally(function() {
+              window.location.href = "ventas";
+            });
+          } else {
             window.location.href = "ventas";
-          });
+          }
         } else {
           window.location.href = "ventas";
         }

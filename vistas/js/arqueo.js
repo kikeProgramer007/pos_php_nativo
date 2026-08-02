@@ -204,22 +204,13 @@ class ArqueoCaja {
 
     mostrarCuentasPendientes(resumen) {
         const cajaActual = resumen?.caja_actual || resumen || {};
-        const cajasCerradas = resumen?.cajas_cerradas || resumen?.cuentas_pendientes_cerradas || {
-            cantidad: 0,
-            total_por_cobrar: 0
-        };
 
         const cantidad = parseInt(cajaActual?.cantidad || 0, 10);
         const total = parseFloat(cajaActual?.total_por_cobrar || 0);
-        const cantidadCerradas = parseInt(cajasCerradas?.cantidad || 0, 10);
-        const totalCerradas = parseFloat(cajasCerradas?.total_por_cobrar || 0);
 
         const cantidadEl = document.getElementById('cuentas_pendientes_cantidad');
         const totalEl = document.getElementById('cuentas_pendientes_total');
-        const cantidadCerradasEl = document.getElementById('cuentas_pendientes_cerradas_cantidad');
-        const totalCerradasEl = document.getElementById('cuentas_pendientes_cerradas_total');
         const bloqueActual = document.getElementById('bloque_cuentas_pendientes_actual');
-        const bloqueCerradas = document.getElementById('bloque_cuentas_pendientes_cerradas');
 
         if (cantidadEl) {
             cantidadEl.textContent = cantidad;
@@ -227,18 +218,9 @@ class ArqueoCaja {
         if (totalEl) {
             totalEl.textContent = 'Bs ' + total.toFixed(CONFIG.DECIMALES);
         }
-        if (cantidadCerradasEl) {
-            cantidadCerradasEl.textContent = cantidadCerradas;
-        }
-        if (totalCerradasEl) {
-            totalCerradasEl.textContent = 'Bs ' + totalCerradas.toFixed(CONFIG.DECIMALES);
-        }
 
         if (bloqueActual) {
             bloqueActual.style.display = this.estado === ESTADO.ABIERTA ? '' : 'none';
-        }
-        if (bloqueCerradas) {
-            bloqueCerradas.style.display = cantidadCerradas > 0 ? '' : 'none';
         }
     }
 
@@ -289,10 +271,7 @@ class ArqueoCaja {
         }
 
         this.mostrarDatosApertura(data);
-        this.mostrarCuentasPendientes({
-            caja_actual: data.cuentas_pendientes || { cantidad: 0, total_por_cobrar: 0 },
-            cajas_cerradas: data.cuentas_pendientes_cerradas || { cantidad: 0, total_por_cobrar: 0 }
-        });
+        this.mostrarCuentasPendientes(data.cuentas_pendientes || { cantidad: 0, total_por_cobrar: 0 });
     }
 
     configurarCajaCerrada(elementos) {

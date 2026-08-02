@@ -828,10 +828,7 @@ async function mostrarVenta(base64) {
     }
 }
 
-async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, recargarPagina = true) {
-    // Aquí puedes agregar lógica para determinar el tipo de venta
-    // Por ejemplo, podrías hacer una solicitud AJAX para obtener el tipo de venta
-    // y luego llamar a la función de impresión correspondiente.
+async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, recargarPagina = true, idsDetalle = null) {
     var idTipoImpresion = idParameterImpresion;
     if (!idTipoImpresion){
      idTipoImpresion = $("#idTipoImpresion").val();  
@@ -840,13 +837,13 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
     try {
       
         if (idTipoImpresion == 1) {//Caja y Cocina
-            await imprimirCajaCocina(codigoVenta);
+            await imprimirCajaCocina(codigoVenta, idsDetalle);
         } else if (idTipoImpresion == 2) {//Solo Caja
-            await imprimirSoloCaja(codigoVenta);
+            await imprimirSoloCaja(codigoVenta, idsDetalle);
         } else if (idTipoImpresion == 3) {//Solo Cocina
-            await imprimirSoloCocina(codigoVenta);
+            await imprimirSoloCocina(codigoVenta, idsDetalle);
         } else if (idTipoImpresion == 4) {//Sin Imprimir
-            await imprimirSoloCaja(codigoVenta, imprimir = false);
+            await imprimirSoloCaja(codigoVenta, idsDetalle, false);
         }
     }catch (error) {
         console.error('❌ Error al determinar el tipo de impresión:', error);
@@ -859,10 +856,18 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
     }
 }
 
- async function imprimirCajaCocina(codigoVenta) {
+function construirUrlImpresion(baseUrl, codigoVenta, idsDetalle = null) {
+    var url = `${baseUrl}?codigo=${codigoVenta}`;
+    if (idsDetalle) {
+        url += `&idsDetalle=${idsDetalle}`;
+    }
+    return url;
+}
+
+ async function imprimirCajaCocina(codigoVenta, idsDetalle = null) {
     // 1 Pedir los PDFs al servidor PHP
     const response = await fetch(
-        `extensiones/tcpdf/pdf/facturaComanda.php?codigo=${codigoVenta}`,{
+        construirUrlImpresion('extensiones/tcpdf/pdf/facturaComanda.php', codigoVenta, idsDetalle),{
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
         }
@@ -915,10 +920,10 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
     }
 }
 
-async function imprimirSoloCaja(codigoVenta, imprimir = true) {
-    // 1 Pedir el PDF al servidor PHP     
+async function imprimirSoloCaja(codigoVenta, idsDetalle = null, imprimir = true) {
+    // 1 Pedir los PDFs al servidor PHP
     const response = await fetch(
-        `extensiones/tcpdf/pdf/factura.php?codigo=${codigoVenta}`,{
+        construirUrlImpresion('extensiones/tcpdf/pdf/facturaComanda.php', codigoVenta, idsDetalle),{
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
         }
@@ -926,12 +931,14 @@ async function imprimirSoloCaja(codigoVenta, imprimir = true) {
     if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status}`);
     }
-    const data = await response.json(); 
+    const data = await response.json();
+    console.log('📋 Respuesta del servidor:', data);
     if (!data.success) {
-        alert('Error al generar el PDF');
+        alert('Error al generar los PDFs');
         return;
     }
-    await mostrarVenta(data.facturaBase64);
+    await mostrarVenta(data.facturaComandaBase64);
+
 
     if (!imprimir) {
         return;
@@ -942,7 +949,7 @@ async function imprimirSoloCaja(codigoVenta, imprimir = true) {
              method: 'POST',    
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    pdfBase64: data.facturaBase64,
+                    pdfBase64: data.facturaComandaBase64,
                     printerName: 'IMPRESORA-CAJA'
                 })
          });
@@ -958,11 +965,8 @@ async function imprimirSoloCaja(codigoVenta, imprimir = true) {
 
 async function imprimirSoloCocina(codigoVenta, idsDetalle = null) {
     // Pedir el PDF al servidor PHP
-    var url = `extensiones/tcpdf/pdf/comanda.php?codigo=${codigoVenta}`;
-    if (idsDetalle) {
-        url += `&idsDetalle=${idsDetalle}`;
-    }
-    const response = await fetch(url, {
+    const response = await fetch(
+        construirUrlImpresion('extensiones/tcpdf/pdf/comanda.php', codigoVenta, idsDetalle), {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
         }

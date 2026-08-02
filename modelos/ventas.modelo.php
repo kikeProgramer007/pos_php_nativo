@@ -357,7 +357,7 @@ class ModeloVentas
 	RANGO DE VENTAS - POR MESERO
 	=============================================*/
 
-	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados, $tipoPago = "0")
+	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados, $tipoPago = "0", $estadoPago = "0")
 	{
 		$query = "SELECT 
 						ventas.codigo, 
@@ -366,6 +366,7 @@ class ModeloVentas
 						meseros.nombre AS mesero, 
 						clientes.nombre AS cliente, 
 						ventas.tipo_pago,
+						ventas.estado_pago,
 						ventas.total_qr,
 						ventas.total_efectivo,
 						SUM(dv.subtotal) AS total
@@ -396,7 +397,14 @@ class ModeloVentas
 		if ($soloEliminados=='true'){
 			$query .= " AND ventas.estado =0 ";
 		}else{
-			$query .= " AND ventas.estado =1 AND ventas.estado_pago = 'PAGADA' ";
+			$query .= " AND ventas.estado =1 ";
+		}
+
+		// 0 = Todos, 1 = Pendiente, 2 = Pagado
+		if ($estadoPago == "1") {
+			$query .= " AND ventas.estado_pago = 'PENDIENTE'";
+		} elseif ($estadoPago == "2") {
+			$query .= " AND ventas.estado_pago = 'PAGADA'";
 		}
 		
 		$query .= " GROUP BY 
@@ -406,6 +414,7 @@ class ModeloVentas
                 meseros.nombre, 
                 clientes.nombre, 
                 ventas.tipo_pago,
+                ventas.estado_pago,
                 ventas.total_qr,
                 ventas.total_efectivo
             ORDER BY ventas.fecha ASC;";

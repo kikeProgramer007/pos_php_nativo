@@ -19,7 +19,19 @@ class ModeloArqueo {
 			$stmt -> execute();
 			return $stmt -> fetch();
 		}else{
-			$stmt = Conexion::conectar()->prepare("SELECT $tabla.*, usuarios.usuario FROM $tabla JOIN usuarios ON ($tabla.id_usuario=usuarios.id) ORDER BY fecha_apertura DESC ");
+			$stmt = Conexion::conectar()->prepare(
+				"SELECT $tabla.*, usuarios.usuario,
+					COALESCE(pend.monto_por_cobrar, 0) AS monto_por_cobrar
+				 FROM $tabla
+				 JOIN usuarios ON ($tabla.id_usuario = usuarios.id)
+				 LEFT JOIN (
+					SELECT id_arqueo_caja, COALESCE(SUM(total), 0) AS monto_por_cobrar
+					FROM ventas
+					WHERE estado = 1 AND estado_pago = 'PENDIENTE'
+					GROUP BY id_arqueo_caja
+				 ) pend ON pend.id_arqueo_caja = $tabla.id
+				 ORDER BY fecha_apertura DESC"
+			);
 			$stmt -> execute();
 			return $stmt -> fetchAll();
 		}

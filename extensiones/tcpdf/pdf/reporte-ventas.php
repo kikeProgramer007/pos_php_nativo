@@ -31,13 +31,37 @@ class reporteVenta extends TCPDF
     public $idCliente;
     public $registroEliminados;
     public $tipoPago;
+    public $estadoPago;
     private $nombreTienda = "El Gato Rico ";
     private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
     private $respuestaUsuario;
     private $respuestaMesero;
     private $respuestaCategoria;
     private $respuestaCliente;
+    private $etiquetaEstadoPago;
     private $DateAndTime;
+
+    private function etiquetaEstadoPagoFiltro()
+    {
+        if ($this->estadoPago == "1") {
+            return "Pendiente";
+        }
+        if ($this->estadoPago == "2") {
+            return "Pagado";
+        }
+        return "Todos";
+    }
+
+    private function etiquetaEstadoPagoFila($estadoPago)
+    {
+        if ($estadoPago === "PENDIENTE") {
+            return "PENDIENTE";
+        }
+        if ($estadoPago === "PAGADA") {
+            return "PAGADO";
+        }
+        return $estadoPago ?: "-";
+    }
 
     // Método Header que se repetirá en cada página
     public function Header()
@@ -65,6 +89,11 @@ class reporteVenta extends TCPDF
         $this->Cell(23, 5, 'Usuario: ', 0, 0, 'L');
         $this->SetFont('helvetica', '', 9);
         $this->Cell(50, 5, $this->respuestaUsuario["nombre"], 0, 1, 'L');
+
+        $this->SetFont('helvetica', 'B', 9);
+        $this->Cell(23, 5, 'Estado: ', 0, 0, 'L');
+        $this->SetFont('helvetica', '', 9);
+        $this->Cell(50, 5, $this->etiquetaEstadoPago, 0, 1, 'L');
 
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(23, 5, 'Pagos: ', 0, 0, 'L');
@@ -120,24 +149,25 @@ class reporteVenta extends TCPDF
         $this->Cell(50, 5, $this->DateAndTime, 0, 1, 'L');
 
         // Agregar espacio después del encabezado
-        $this->Ln(4);
+        $this->Ln(10);
         
         // Encabezado de la tabla
-        $this->SetFont('helvetica', 'B', 9);
+        $this->SetFont('helvetica', 'B', 8);
         $this->SetFillColor(0, 0, 0);
         $this->SetTextColor(255, 255, 255);
         $this->Cell(0, 5, 'Detalle De las ventas', 1, 1, 'C', 1);
         $this->SetTextColor(0, 0, 0);
-        $this->Cell(10, 5, '#', 1, 0, 'L');
+        $this->Cell(8, 5, '#', 1, 0, 'L');
         $this->Cell(12, 5, 'Ticket', 1, 0, 'C');
-        $this->Cell(18, 5, 'Fecha', 1, 0, 'C');
-        $this->Cell(22, 5, 'Usuario', 1, 0, 'C');
+        $this->Cell(17, 5, 'Fecha', 1, 0, 'C');
+        $this->Cell(20, 5, 'Usuario', 1, 0, 'C');
         $this->Cell(22, 5, 'Mesero', 1, 0, 'C');
-        $this->Cell(25, 5, 'Cliente', 1, 0, 'C');
-        $this->Cell(21, 5, 'T. Pago', 1, 0, 'C');
-        $this->Cell(20, 5, 'Efectivo', 1, 0, 'C');
-        $this->Cell(20, 5, 'Qr', 1, 0, 'C');
-        $this->Cell(20, 5, 'Total', 1, 1, 'C');
+        $this->Cell(24, 5, 'Cliente', 1, 0, 'C');
+        $this->Cell(18, 5, 'Estado', 1, 0, 'C');
+        $this->Cell(19, 5, 'T. Pago', 1, 0, 'C');
+        $this->Cell(17, 5, 'Efectivo', 1, 0, 'C');
+        $this->Cell(17, 5, 'Qr', 1, 0, 'C');
+        $this->Cell(16, 5, 'Total', 1, 1, 'C');
     }
 
     public function generarPdfVentas()
@@ -145,7 +175,8 @@ class reporteVenta extends TCPDF
         // Establecer la zona horaria de Bolivia
         date_default_timezone_set('America/La_Paz');
         
-        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasPdf($this->fechaInicio, $this->fechaFin, $this->idMesero, $this->idCategoria, $this->idCliente, $this->registroEliminados, $this->tipoPago);
+        $this->etiquetaEstadoPago = $this->etiquetaEstadoPagoFiltro();
+        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasPdf($this->fechaInicio, $this->fechaFin, $this->idMesero, $this->idCategoria, $this->idCliente, $this->registroEliminados, $this->tipoPago, $this->estadoPago);
 
         $itemUsuario = "id";
         $this->respuestaUsuario = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($itemUsuario, $this->idUsuario);
@@ -186,10 +217,10 @@ class reporteVenta extends TCPDF
         // Agregar primera página
         $this->AddPage();
 
-        // Establecer la posición Y después del encabezado
-        $this->SetY(62);
+        // Establecer la posición Y después del encabezado (más líneas en header)
+        $this->SetY(68);
 
-        $this->SetFont('helvetica', '', 8);
+        $this->SetFont('helvetica', '', 7);
 
         //Imprimir los detalles de los productos
         $contador = 1;
@@ -213,13 +244,14 @@ class reporteVenta extends TCPDF
                 $item["usuario"],
                 strtolower($item["mesero"]),
                 strtolower($item["cliente"]),
+                $this->etiquetaEstadoPagoFila($item["estado_pago"] ?? ''),
                 $item["tipo_pago"],
                 number_format($item["total_efectivo"], 2, '.', ','),
                 number_format($item["total_qr"], 2, '.', ','),
                 number_format($total, 2, '.', ',')
             );
 
-            $anchos = array(10, 12, 18, 22, 22, 25, 21, 20, 20, 20);
+            $anchos = array(8, 12, 17, 20, 22, 24, 18, 19, 17, 17, 16);
 
             // Calcular altura automática según el texto más largo
             $altura = 0;
@@ -232,7 +264,7 @@ class reporteVenta extends TCPDF
             $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
             if (($this->GetY() + $altura) > $limiteInferior) {
                 $this->AddPage();
-                $this->SetY(62);
+                $this->SetY(68);
             }
 
             $x = $this->GetX();
@@ -246,9 +278,10 @@ class reporteVenta extends TCPDF
             $this->MultiCell($anchos[4], $altura, $fila[4], 1, 'C', false, 0);
             $this->MultiCell($anchos[5], $altura, $fila[5], 1, 'C', false, 0);
             $this->MultiCell($anchos[6], $altura, $fila[6], 1, 'C', false, 0);
-            $this->MultiCell($anchos[7], $altura, $fila[7], 1, 'R', false, 0);
+            $this->MultiCell($anchos[7], $altura, $fila[7], 1, 'C', false, 0);
             $this->MultiCell($anchos[8], $altura, $fila[8], 1, 'R', false, 0);
-            $this->MultiCell($anchos[9], $altura, $fila[9], 1, 'R', false, 1);
+            $this->MultiCell($anchos[9], $altura, $fila[9], 1, 'R', false, 0);
+            $this->MultiCell($anchos[10], $altura, $fila[10], 1, 'R', false, 1);
             $contador++;
             $sumTotal += $total;
             $sumTotalEfectivo += $totalEfectivo;
@@ -268,10 +301,10 @@ class reporteVenta extends TCPDF
         }
         // Total general
         $this->SetFont('helvetica', 'B', 9);
-        $this->Cell(130, 5, 'Totales (Bs)', 0, 0, 'R');
-        $this->Cell(20, 5, number_format($sumTotalEfectivo, 2, '.', ','), 1, 0, 'R');
-        $this->Cell(20, 5, number_format($sumTotalQr, 2, '.', ','), 1, 0, 'R');
-        $this->Cell(20, 5, number_format($sumTotal, 2, '.', ',') , 1, 1, 'R');
+        $this->Cell(140, 5, 'Totales (Bs)', 0, 0, 'R');
+        $this->Cell(17, 5, number_format($sumTotalEfectivo, 2, '.', ','), 1, 0, 'R');
+        $this->Cell(17, 5, number_format($sumTotalQr, 2, '.', ','), 1, 0, 'R');
+        $this->Cell(16, 5, number_format($sumTotal, 2, '.', ',') , 1, 1, 'R');
 
         // Nro de compras
         $this->SetFont('helvetica', 'B', 9);
@@ -291,4 +324,5 @@ $factura->idCategoria = $_GET["idCategoria"];
 $factura->idCliente = $_GET["idCliente"];
 $factura->registroEliminados = $_GET["registroEliminados"];
 $factura->tipoPago = $_GET["tipoPago"];
+$factura->estadoPago = isset($_GET["estadoPago"]) ? $_GET["estadoPago"] : "0";
 $factura->generarPdfVentas();
