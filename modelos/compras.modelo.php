@@ -1,6 +1,7 @@
 <?php
 
 require_once "conexion.php";
+require_once "arqueo.modelo.php";
 
 class ModeloCompras{
 
@@ -84,73 +85,120 @@ class ModeloCompras{
 	}
 
 /*=============================================
-	REGISTRO DE COMPRAS Y DETALLE (OPTIMIZADO PARA COLUMNAS VIRTUALES)
+	REGISTRO DE COMPRAS Y DETALLE (CON VALIDACIÓN DE EFECTIVO Y CAJA)
 =============================================*/
 static public function mdlRegistrarCompra($tabla, $datos){
 
-	// Conexión a la base de datos
 	$conexion = Conexion::conectar();
 
 	try {
-		// Iniciar la transacción
 		$conexion->beginTransaction();
 
-		// 1. Registrar la compra principal en la tabla "compras"
-		$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, total,id_usuario, id_proveedor, id_arqueo_caja) 
-									VALUES (:codigo, :total, :id_usuario,:id_proveedor ,:id_arqueo_caja)");
+		$idArqueo = intval($datos["id_arqueo_caja"] ?? 0);
+		$totalCompra = round(floatval($datos["total"] ?? 0), 2);
+
+		if ($idArqueo <= 0) {
+			throw new Exception("No hay caja abierta. No se puede registrar la compra.");
+		}
+
+		if ($totalCompra <= 0) {
+			throw new Exception("El monto de la compra debe ser mayor a cero.");
+		}
+
+		$disponibilidad = ModeloArqueo::mdlCalcularEfectivoDisponible($idArqueo, $conexion);
+		if (!$disponibilidad["ok"]) {
+			throw new Exception($disponibilidad["mensaje"]);
+		}
+
+		$disponible = floatval($disponibilidad["disponible"]);
+		if ($totalCompra > $disponible + 0.0001) {
+			$faltante = round($totalCompra - $disponible, 2);
+			throw new Exception(
+				"No hay suficiente efectivo disponible en caja.\n\n" .
+				"Disponible: Bs " . number_format($disponible, 2, '.', '') . "\n" .
+				"Monto de la compra: Bs " . number_format($totalCompra, 2, '.', '') . "\n" .
+				"Faltante: Bs " . number_format($faltante, 2, '.', '')
+			);
+		}
+
+		$stmt = $conexion->prepare(
+			"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
+			 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
+		);
 
 		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
 		$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
 		$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
 		$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
-		$stmt->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
+		$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
 			throw new Exception("Error al registrar la compra");
 		}
 
-		// Obtener el ID de la compra recién registrada
 		$idCompra = $conexion->lastInsertId();
-		// Decodificar el JSON de productos a un array
-		$productos = json_decode($datos["productos"], true);  // true para convertir a array asociativo
+		$productos = json_decode($datos["productos"], true);
 
 		if (!is_array($productos)) {
 			throw new Exception("Error: los productos no son un array válido.");
 		}
-		// 2. Preparar el statement para insertar los productos en "detalle_compra"
-		$stmtDetalle = $conexion->prepare("INSERT INTO detalle_compra(id_compra, id_producto, producto, cantidad, precio_compra,subtotal) 
-										   VALUES (:id_compra, :id_producto, :producto, :cantidad, :precio_compra, :subtotal)");
 
-		// Enlazamos los parámetros estáticos (que no cambian en el bucle)
+		$stmtDetalle = $conexion->prepare(
+			"INSERT INTO detalle_compra(id_compra, id_producto, producto, cantidad, precio_compra, subtotal)
+			 VALUES (:id_compra, :id_producto, :producto, :cantidad, :precio_compra, :subtotal)"
+		);
 		$stmtDetalle->bindParam(":id_compra", $idCompra, PDO::PARAM_INT);
 
-		// 3. Iterar sobre los productos para registrar el detalle de la compra
 		foreach ($productos as $producto) {
-
-			// Enlazar los parámetros dinámicos (que cambian en cada iteración)
 			$stmtDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
 			$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 			$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
-			$stmtDetalle->bindValue(":precio_compra", $producto["precio"], PDO::PARAM_INT);
+			$stmtDetalle->bindValue(":precio_compra", $producto["precio"], PDO::PARAM_STR);
 			$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
 
-			// Ejecutar el registro para cada producto
 			if (!$stmtDetalle->execute()) {
 				throw new Exception("Error al registrar el detalle de la compra: " . implode(", ", $stmtDetalle->errorInfo()));
 			}
 		}
 
-		// Confirmar la transacción si todo sale bien
+		$comprasActualizadas = ModeloArqueo::mdlSumarComprasPorArqueo($idArqueo, $conexion);
+		$gastosActualizados = ModeloArqueo::mdlSumarGastosPorArqueo($idArqueo, $conexion);
+		$totalEgresos = $comprasActualizadas + $gastosActualizados;
+
+		$stmtArqueo = $conexion->prepare(
+			"UPDATE arqueo_caja
+			 SET monto_compras = :monto_compras,
+			     total_egresos = :total_egresos,
+			     resultado_neto = (total_ingresos - :total_egresos2)
+			 WHERE id = :id_arqueo
+			   AND estado = 'abierta'"
+		);
+		$stmtArqueo->bindValue(":monto_compras", $comprasActualizadas, PDO::PARAM_STR);
+		$stmtArqueo->bindValue(":total_egresos", $totalEgresos, PDO::PARAM_STR);
+		$stmtArqueo->bindValue(":total_egresos2", $totalEgresos, PDO::PARAM_STR);
+		$stmtArqueo->bindValue(":id_arqueo", $idArqueo, PDO::PARAM_INT);
+
+		if (!$stmtArqueo->execute() || $stmtArqueo->rowCount() === 0) {
+			throw new Exception("No se pudo actualizar el arqueo de caja. Verifique que la caja siga abierta.");
+		}
+
 		$conexion->commit();
 
-		return "ok";
+		return [
+			"status" => "ok",
+			"idCompra" => $idCompra,
+			"disponible_restante" => round($disponible - $totalCompra, 2)
+		];
 
 	} catch (Exception $e) {
-		// Revertir la transacción en caso de error y mostrar el mensaje de error detallado
-		$conexion->rollBack();
-		return "error: " . $e->getMessage();
+		if ($conexion->inTransaction()) {
+			$conexion->rollBack();
+		}
+		return [
+			"status" => "error",
+			"mensaje" => $e->getMessage()
+		];
 	} finally {
-		// Cerrar las conexiones
 		$stmt = null;
 		$stmtDetalle = null;
 		$conexion = null;

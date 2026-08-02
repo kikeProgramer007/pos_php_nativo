@@ -52,7 +52,10 @@ class TablaProductosVentas{
 			  $menuAcciones .= "<li><a href='javascript:void(0)' class='btnImprimirFactura action-print' codigoVenta='".$ventas[$i]["id"]."'><i class='fa fa-print'></i> Imprimir</a></li>";
 
 			  if (isset($ventas[$i]["estado_pago"]) && $ventas[$i]["estado_pago"] === "PENDIENTE") {
-				$menuAcciones .= "<li><a class='btnEditarCuenta action-edit' href='index.php?ruta=crear-venta&editarCuenta=".$ventas[$i]["id"]."'><i class='fa fa-pencil'></i> Editar cuenta</a></li>";
+				$cajaAbierta = isset($ventas[$i]["estado_arqueo"]) && $ventas[$i]["estado_arqueo"] === "abierta";
+				if ($cajaAbierta) {
+					$menuAcciones .= "<li><a class='btnEditarCuenta action-edit' href='index.php?ruta=crear-venta&editarCuenta=".$ventas[$i]["id"]."'><i class='fa fa-pencil'></i> Editar cuenta</a></li>";
+				}
 			  }
 
 			  if ((isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Administrador") || (isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor")) {
@@ -62,11 +65,23 @@ class TablaProductosVentas{
 			  $botones = "
 			  <div class='acciones-ventas-wrap'>";
 
+			  $estadoPagoLabel = "CUENTA PAGADA";
+			  $estadoPagoClass = "label-success";
 			  if (isset($ventas[$i]["estado_pago"]) && $ventas[$i]["estado_pago"] === "PENDIENTE") {
-				$botones .= "
-				<button type='button' class='btn btn-success btn-sm btnCobrarCuenta action-charge-button' idVenta='".$ventas[$i]["id"]."' totalVenta='".$ventas[$i]["total"]."' codigoVenta='".$ventas[$i]["codigo"]."'>
-				  <i class='fa fa-money'></i> Cobrar
-				</button>";
+				$cajaAbierta = isset($ventas[$i]["estado_arqueo"]) && $ventas[$i]["estado_arqueo"] === "abierta";
+				if ($cajaAbierta) {
+					$estadoPagoLabel = "CUENTA PENDIENTE";
+					$estadoPagoClass = "label-danger";
+					$botones .= "
+					<button type='button' class='btn btn-success btn-sm btnCobrarCuenta action-charge-button' idVenta='".$ventas[$i]["id"]."' totalVenta='".$ventas[$i]["total"]."' codigoVenta='".$ventas[$i]["codigo"]."'>
+					  <i class='fa fa-money'></i> Cobrar
+					</button>";
+				} else {
+					$estadoPagoLabel = "Pendiente de caja cerrada";
+					$estadoPagoClass = "label-warning";
+					$botones .= "
+					<span class='label label-warning' title='Esta cuenta pertenece a una caja cerrada y no puede cobrarse'>Pendiente de caja cerrada</span>";
+				}
 			  }
 
 			  $botones .= "
@@ -79,13 +94,6 @@ class TablaProductosVentas{
 				</ul>
 			  </div>
 			  </div>";
-
-			$estadoPagoLabel = "CUENTA PAGADA";
-			$estadoPagoClass = "label-success";
-			if (isset($ventas[$i]["estado_pago"]) && $ventas[$i]["estado_pago"] === "PENDIENTE") {
-				$estadoPagoLabel = "CUENTA PENDIENTE";
-				$estadoPagoClass = "label-danger";
-			}
 
 		  	// Formateamos cada registro de compra como un array
 		  	$datos[] = [

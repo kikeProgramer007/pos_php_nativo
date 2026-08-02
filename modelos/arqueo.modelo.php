@@ -334,6 +334,194 @@ class ModeloArqueo {
         }
     }
 
+/**
+     * Suma compras activas asociadas a un arqueo
+     */
+    static public function mdlSumarComprasPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        $stmt = $conexion->prepare(
+            "SELECT COALESCE(SUM(total), 0) AS total
+             FROM compras
+             WHERE id_arqueo_caja = :id_arqueo_caja
+               AND estado = 1"
+        );
+        $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return floatval($row["total"] ?? 0);
+    }
+
+    /**
+     * Suma gastos asociados a un arqueo
+     */
+    static public function mdlSumarGastosPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        $stmt = $conexion->prepare(
+            "SELECT COALESCE(SUM(monto), 0) AS total
+             FROM gastos
+             WHERE id_arqueo = :id_arqueo"
+        );
+        $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return floatval($row["total"] ?? 0);
+    }
+
+    /**
+     * Suma ventas pagadas en efectivo de un arqueo
+     */
+    static public function mdlSumarVentasEfectivoPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        $stmt = $conexion->prepare(
+            "SELECT COALESCE(SUM(total_efectivo), 0) AS total
+             FROM ventas
+             WHERE id_arqueo_caja = :id_arqueo_caja
+               AND estado = 1
+               AND estado_pago = 'PAGADA'"
+        );
+        $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return floatval($row["total"] ?? 0);
+    }
+
+    /**
+     * Suma ventas pagadas (todas) de un arqueo
+     */
+    static public function mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        $stmt = $conexion->prepare(
+            "SELECT
+                COALESCE(SUM(total), 0) AS total,
+                COALESCE(SUM(total_efectivo), 0) AS total_efectivo,
+                COALESCE(SUM(total_qr), 0) AS total_qr
+             FROM ventas
+             WHERE id_arqueo_caja = :id_arqueo_caja
+               AND estado = 1
+               AND estado_pago = 'PAGADA'"
+        );
+        $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [
+            "total" => floatval($row["total"] ?? 0),
+            "total_efectivo" => floatval($row["total_efectivo"] ?? 0),
+            "total_qr" => floatval($row["total_qr"] ?? 0)
+        ];
+    }
+
+    /**
+     * Efectivo disponible para egresos en efectivo (compras/gastos)
+     */
+    static public function mdlCalcularEfectivoDisponible($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        $forUpdate = ($pdo && $pdo->inTransaction()) ? " FOR UPDATE" : "";
+
+        $stmt = $conexion->prepare(
+            "SELECT monto_apertura, estado
+             FROM arqueo_caja
+             WHERE id = :id" . $forUpdate
+        );
+        $stmt->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $arqueo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$arqueo) {
+            return [
+                "ok" => false,
+                "mensaje" => "La caja no existe.",
+                "disponible" => 0,
+                "arqueo" => null
+            ];
+        }
+
+        if (($arqueo["estado"] ?? "") !== "abierta") {
+            return [
+                "ok" => false,
+                "mensaje" => "La caja no está abierta.",
+                "disponible" => 0,
+                "arqueo" => $arqueo
+            ];
+        }
+
+        $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
+        $ventasEfectivo = self::mdlSumarVentasEfectivoPorArqueo($idArqueo, $conexion);
+        $compras = self::mdlSumarComprasPorArqueo($idArqueo, $conexion);
+        $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $conexion);
+        $disponible = $montoApertura + $ventasEfectivo - $gastos - $compras;
+
+        return [
+            "ok" => true,
+            "disponible" => round($disponible, 2),
+            "monto_apertura" => $montoApertura,
+            "ventas_efectivo" => $ventasEfectivo,
+            "compras" => $compras,
+            "gastos" => $gastos,
+            "arqueo" => $arqueo
+        ];
+    }
+
+    /**
+     * Recalcula y sincroniza montos denormalizados del arqueo desde tablas fuente
+     */
+    static public function mdlSincronizarMontosArqueo($idArqueo) {
+        try {
+            $pdo = Conexion::conectar();
+            $stmt = $pdo->prepare("SELECT * FROM arqueo_caja WHERE id = :id LIMIT 1");
+            $stmt->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $arqueo = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$arqueo) {
+                return null;
+            }
+
+            $ventas = self::mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo);
+            $compras = self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
+            $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
+            $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
+            $totalIngresos = $montoApertura + $ventas["total"];
+            $totalEgresos = $compras + $gastos;
+            $resultadoNeto = $totalIngresos - $totalEgresos;
+
+            $stmtUpdate = $pdo->prepare(
+                "UPDATE arqueo_caja SET
+                    monto_ventas = :monto_ventas,
+                    monto_ventas_efectivo = :monto_ventas_efectivo,
+                    monto_ventas_qr = :monto_ventas_qr,
+                    monto_compras = :monto_compras,
+                    gastos_operativos = :gastos_operativos,
+                    total_ingresos = :total_ingresos,
+                    total_egresos = :total_egresos,
+                    resultado_neto = :resultado_neto
+                 WHERE id = :id"
+            );
+            $stmtUpdate->bindValue(":monto_ventas", $ventas["total"], PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":monto_ventas_efectivo", $ventas["total_efectivo"], PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":monto_ventas_qr", $ventas["total_qr"], PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":monto_compras", $compras, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":gastos_operativos", $gastos, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":total_ingresos", $totalIngresos, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":total_egresos", $totalEgresos, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":resultado_neto", $resultadoNeto, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
+            $stmtUpdate->execute();
+
+            $arqueo["monto_ventas"] = $ventas["total"];
+            $arqueo["monto_ventas_efectivo"] = $ventas["total_efectivo"];
+            $arqueo["monto_ventas_qr"] = $ventas["total_qr"];
+            $arqueo["monto_compras"] = $compras;
+            $arqueo["gastos_operativos"] = $gastos;
+            $arqueo["total_ingresos"] = $totalIngresos;
+            $arqueo["total_egresos"] = $totalEgresos;
+            $arqueo["resultado_neto"] = $resultadoNeto;
+
+            return $arqueo;
+        } catch (PDOException $e) {
+            error_log("Error en mdlSincronizarMontosArqueo: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public static function mdlRegistrarEgreso($idArqueo, $totalEgreso, $nombreCampo = "monto_compras") {
         $db = Conexion::conectar(); // Obtener la conexión PDO
         $db->beginTransaction(); // Iniciar transacción
@@ -422,11 +610,66 @@ class ModeloArqueo {
     /**
      * Registra el cierre de una caja
      * @param array $datos Datos del cierre
-     * @return string Resultado de la operación ('ok' o 'error')
+     * @return array Resultado de la operación
      */
     static public function mdlRegistrarCierreCaja($datos) {
+        $pdo = null;
         try {
-            $stmt = Conexion::conectar()->prepare("UPDATE arqueo_caja SET 
+            $pdo = Conexion::conectar();
+            $pdo->beginTransaction();
+
+            $stmtArqueo = $pdo->prepare(
+                "SELECT id, id_caja, estado
+                 FROM arqueo_caja
+                 WHERE id = :id_arqueo
+                 FOR UPDATE"
+            );
+            $stmtArqueo->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);
+            $stmtArqueo->execute();
+            $arqueo = $stmtArqueo->fetch(PDO::FETCH_ASSOC);
+
+            if (!$arqueo || $arqueo["estado"] !== "abierta") {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "mensaje" => "La caja no está abierta o no existe."
+                ];
+            }
+
+            $stmtPendientes = $pdo->prepare(
+                "SELECT id, total
+                 FROM ventas
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1
+                   AND estado_pago = 'PENDIENTE'
+                 FOR UPDATE"
+            );
+            $stmtPendientes->bindParam(":id_arqueo_caja", $datos["id_arqueo"], PDO::PARAM_INT);
+            $stmtPendientes->execute();
+            $pendientes = $stmtPendientes->fetchAll(PDO::FETCH_ASSOC);
+            $cantidadPendientes = count($pendientes);
+            $totalPendiente = array_reduce($pendientes, function ($carry, $item) {
+                return $carry + floatval($item["total"]);
+            }, 0);
+
+            if ($cantidadPendientes > 0) {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "codigo" => "cuentas_pendientes",
+                    "cantidad" => $cantidadPendientes,
+                    "total_pendiente" => $totalPendiente,
+                    "mensaje" => "No se puede cerrar la caja porque existen cuentas pendientes de cobro.\n\n"
+                        . "Cantidad de cuentas: " . $cantidadPendientes . "\n"
+                        . "Total pendiente: Bs " . number_format($totalPendiente, 2, '.', '') . "\n\n"
+                        . "Debe cobrar o anular estas cuentas antes de cerrar la caja."
+                ];
+            }
+
+            $datos["cuentas_pendientes_cantidad"] = 0;
+            $datos["cuentas_pendientes_total"] = 0;
+
+            $stmt = $pdo->prepare("UPDATE arqueo_caja SET 
                 fecha_cierre = :fecha_cierre,
                 Bs200 = :Bs200,
                 Bs100 = :Bs100,
@@ -453,7 +696,8 @@ class ModeloArqueo {
                 estado = :estado,
                 cuentas_pendientes_cantidad = :cuentas_pendientes_cantidad,
                 cuentas_pendientes_total = :cuentas_pendientes_total
-                WHERE id = :id_arqueo");
+                WHERE id = :id_arqueo
+                  AND estado = 'abierta'");
 
             $stmt->bindParam(":fecha_cierre", $datos["fecha_cierre"], PDO::PARAM_STR);
             $stmt->bindParam(":Bs200", $datos["Bs200"], PDO::PARAM_INT);
@@ -483,22 +727,34 @@ class ModeloArqueo {
             $stmt->bindParam(":cuentas_pendientes_total", $datos["cuentas_pendientes_total"], PDO::PARAM_STR);
             $stmt->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);
 
-            if($stmt->execute()) {
-                // Reiniciar el número de ticket al cerrar la caja
-                self::mdlActualizarNroCaja($datos["id_caja"], 0);
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-                $_SESSION["idArqueoCaja"] = null; // Elimina solo esa clave
-                $_SESSION["idCaja"] = null;
-
-                return "ok";
+            if(!$stmt->execute() || $stmt->rowCount() === 0) {
+                $pdo->rollBack();
+                return [
+                    "status" => "error",
+                    "mensaje" => "No se pudo cerrar la caja."
+                ];
             }
-            
-            return "error";
+
+            $idCaja = intval($datos["id_caja"] ?? $arqueo["id_caja"]);
+            self::mdlActualizarNroCaja($idCaja, 0);
+
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION["idArqueoCaja"] = null;
+            $_SESSION["idCaja"] = null;
+
+            $pdo->commit();
+            return ["status" => "ok"];
         } catch (PDOException $e) {
+            if ($pdo && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log("Error en mdlRegistrarCierreCaja: " . $e->getMessage());
-            return "error";
+            return [
+                "status" => "error",
+                "mensaje" => "Error al cerrar la caja."
+            ];
         } finally {
             if(isset($stmt)) {
                 $stmt->closeCursor();
@@ -571,31 +827,64 @@ class ModeloArqueo {
 
     /**
      * Sincroniza en el arqueo abierto el resumen informativo de cuentas pendientes
+     * Solo considera ventas pendientes asociadas a esa misma caja (id_arqueo_caja).
      */
-    static public function mdlSincronizarCuentasPendientesEnArqueoAbierto() {
+    static public function mdlSincronizarCuentasPendientesEnArqueoAbierto($idArqueo = null) {
         try {
             $pdo = Conexion::conectar();
 
-            $stmtResumen = $pdo->query(
-                "SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
-                 FROM ventas
-                 WHERE estado = 1 AND estado_pago = 'PENDIENTE'"
-            );
-            $resumen = $stmtResumen->fetch(PDO::FETCH_ASSOC);
+            $obtenerResumen = function ($pdoConn, $id) {
+                $stmtResumen = $pdoConn->prepare(
+                    "SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+                     FROM ventas
+                     WHERE id_arqueo_caja = :id_arqueo_caja
+                       AND estado = 1
+                       AND estado_pago = 'PENDIENTE'"
+                );
+                $stmtResumen->bindValue(":id_arqueo_caja", intval($id), PDO::PARAM_INT);
+                $stmtResumen->execute();
+                $resumen = $stmtResumen->fetch(PDO::FETCH_ASSOC);
+                return [
+                    "cantidad" => intval($resumen["cantidad"] ?? 0),
+                    "total_por_cobrar" => floatval($resumen["total_por_cobrar"] ?? 0)
+                ];
+            };
 
-            if (!$resumen) {
+            if ($idArqueo !== null) {
+                $resumen = $obtenerResumen($pdo, $idArqueo);
+                $stmt = $pdo->prepare(
+                    "UPDATE arqueo_caja
+                     SET cuentas_pendientes_cantidad = :cantidad,
+                         cuentas_pendientes_total = :total
+                     WHERE id = :id_arqueo
+                       AND estado = 'abierta'"
+                );
+                $stmt->bindValue(":cantidad", intval($resumen["cantidad"]), PDO::PARAM_INT);
+                $stmt->bindValue(":total", $resumen["total_por_cobrar"], PDO::PARAM_STR);
+                $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+                $stmt->execute();
                 return;
             }
 
-            $stmt = $pdo->prepare(
-                "UPDATE arqueo_caja
-                 SET cuentas_pendientes_cantidad = :cantidad,
-                     cuentas_pendientes_total = :total
-                 WHERE estado = 'abierta'"
+            $stmtAbiertos = $pdo->query(
+                "SELECT id FROM arqueo_caja WHERE estado = 'abierta'"
             );
-            $stmt->bindValue(":cantidad", intval($resumen["cantidad"]), PDO::PARAM_INT);
-            $stmt->bindValue(":total", $resumen["total_por_cobrar"], PDO::PARAM_STR);
-            $stmt->execute();
+            $abiertos = $stmtAbiertos->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($abiertos as $arqueo) {
+                $resumen = $obtenerResumen($pdo, $arqueo["id"]);
+                $stmt = $pdo->prepare(
+                    "UPDATE arqueo_caja
+                     SET cuentas_pendientes_cantidad = :cantidad,
+                         cuentas_pendientes_total = :total
+                     WHERE id = :id_arqueo
+                       AND estado = 'abierta'"
+                );
+                $stmt->bindValue(":cantidad", intval($resumen["cantidad"]), PDO::PARAM_INT);
+                $stmt->bindValue(":total", $resumen["total_por_cobrar"], PDO::PARAM_STR);
+                $stmt->bindValue(":id_arqueo", intval($arqueo["id"]), PDO::PARAM_INT);
+                $stmt->execute();
+            }
         } catch (PDOException $e) {
             error_log("Error en mdlSincronizarCuentasPendientesEnArqueoAbierto: " . $e->getMessage());
         }

@@ -144,18 +144,26 @@ class ArqueoCaja {
             document.getElementById('monto_apertura').textContent = this.totales.totalEfectivoEnCaja.toFixed(CONFIG.DECIMALES);
         }
         
-        this.totales.montoApertura = parseFloat(document.getElementById('monto_apertura').textContent),
-        this.totales.montoVentas = parseFloat(document.getElementById('monto_ventas').textContent),
-        this.totales.montoVentasEfectivo = parseFloat(document.getElementById('monto_ventas_efectivo').textContent),
-        this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent),
-        this.totales.gastosOperativos = parseFloat(document.getElementById('gastos_operativos').textContent),
-        this.totales.montoCompras = parseFloat(document.getElementById('monto_compras').textContent)
+        this.totales.montoApertura = parseFloat(document.getElementById('monto_apertura').textContent) || 0;
+        this.totales.montoVentas = parseFloat(document.getElementById('monto_ventas').textContent) || 0;
+        this.totales.montoVentasEfectivo = parseFloat(document.getElementById('monto_ventas_efectivo').textContent) || 0;
+        this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent) || 0;
+        this.totales.gastosOperativos = Math.abs(parseFloat(document.getElementById('gastos_operativos').textContent) || 0);
+        this.totales.montoCompras = Math.abs(parseFloat(document.getElementById('monto_compras').textContent) || 0);
         this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas;
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
-    
-        // Diferencia simplificada: efectivo real vs. resultado esperado
-        this.totales.diferencia = (this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta) - Math.abs(this.totales.resultadoNeto);
+
+        // efectivo_esperado = apertura + ventas efectivo - compras - gastos
+        const efectivoEsperado = this.totales.montoApertura
+            + this.totales.montoVentasEfectivo
+            - this.totales.montoCompras
+            - this.totales.gastosOperativos;
+        const totalContado = this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta;
+
+        // Diferencia = contado - esperado (sin forzar a cero ni usar Math.abs del neto)
+        this.totales.diferencia = totalContado - this.totales.resultadoNeto;
+        this.totales.efectivoEsperado = efectivoEsperado;
 
         this.actualizarElementos({
             'total_efectivo_en_caja_tabla': this.totales.totalEfectivoEnCaja,
@@ -165,7 +173,7 @@ class ArqueoCaja {
             'resultado_neto': this.totales.resultadoNeto,
             'total_ganancia_perdida': this.totales.resultadoNeto,
             'efectivo_en_caja': this.totales.totalEfectivoEnCaja,
-            'total_efectivo_qr_en_caja': this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta,
+            'total_efectivo_qr_en_caja': totalContado,
             'diferencia': this.totales.diferencia
         });
     }
@@ -195,21 +203,49 @@ class ArqueoCaja {
     }
 
     mostrarCuentasPendientes(resumen) {
+        const cajaActual = resumen?.caja_actual || resumen || {};
+        const cajasCerradas = resumen?.cajas_cerradas || resumen?.cuentas_pendientes_cerradas || {
+            cantidad: 0,
+            total_por_cobrar: 0
+        };
+
+        const cantidad = parseInt(cajaActual?.cantidad || 0, 10);
+        const total = parseFloat(cajaActual?.total_por_cobrar || 0);
+        const cantidadCerradas = parseInt(cajasCerradas?.cantidad || 0, 10);
+        const totalCerradas = parseFloat(cajasCerradas?.total_por_cobrar || 0);
+
         const cantidadEl = document.getElementById('cuentas_pendientes_cantidad');
         const totalEl = document.getElementById('cuentas_pendientes_total');
-        const cantidad = parseInt(resumen?.cantidad || 0, 10);
-        const total = parseFloat(resumen?.total_por_cobrar || 0);
+        const cantidadCerradasEl = document.getElementById('cuentas_pendientes_cerradas_cantidad');
+        const totalCerradasEl = document.getElementById('cuentas_pendientes_cerradas_total');
+        const bloqueActual = document.getElementById('bloque_cuentas_pendientes_actual');
+        const bloqueCerradas = document.getElementById('bloque_cuentas_pendientes_cerradas');
+
         if (cantidadEl) {
             cantidadEl.textContent = cantidad;
         }
         if (totalEl) {
             totalEl.textContent = 'Bs ' + total.toFixed(CONFIG.DECIMALES);
         }
+        if (cantidadCerradasEl) {
+            cantidadCerradasEl.textContent = cantidadCerradas;
+        }
+        if (totalCerradasEl) {
+            totalCerradasEl.textContent = 'Bs ' + totalCerradas.toFixed(CONFIG.DECIMALES);
+        }
+
+        if (bloqueActual) {
+            bloqueActual.style.display = this.estado === ESTADO.ABIERTA ? '' : 'none';
+        }
+        if (bloqueCerradas) {
+            bloqueCerradas.style.display = cantidadCerradas > 0 ? '' : 'none';
+        }
     }
 
     async cargarCuentasPendientes() {
         try {
-            const response = await fetch('ajax/arqueo.ajax.php?accion=cuentasPendientes');
+            const idArqueo = this.idArqueo || document.getElementById('idArqueo')?.value || 0;
+            const response = await fetch(`ajax/arqueo.ajax.php?accion=cuentasPendientes&idArqueo=${idArqueo}`);
             const data = await response.json();
             this.mostrarCuentasPendientes(data);
         } catch (error) {
@@ -238,6 +274,7 @@ class ArqueoCaja {
 
     configurarCajaAbierta(elementos, data) {
         this.idArqueo = data.id;
+        this.estado = ESTADO.ABIERTA;
         elementos.idArqueo.value = data.id;
         elementos.radioApertura.checked = true;
         elementos.radioCierre.checked = false;
@@ -252,10 +289,15 @@ class ArqueoCaja {
         }
 
         this.mostrarDatosApertura(data);
+        this.mostrarCuentasPendientes({
+            caja_actual: data.cuentas_pendientes || { cantidad: 0, total_por_cobrar: 0 },
+            cajas_cerradas: data.cuentas_pendientes_cerradas || { cantidad: 0, total_por_cobrar: 0 }
+        });
     }
 
     configurarCajaCerrada(elementos) {
         this.estado = ESTADO.CERRADA;
+        this.idArqueo = 0;
         elementos.idArqueo.value = '0';
         elementos.radioApertura.checked = false;
         elementos.radioCierre.checked = true;
@@ -266,6 +308,7 @@ class ArqueoCaja {
         elementos.idCaja.disabled = false;
         elementos.nroTicket.disabled = false;
         elementos.btnImprimirMovimientos.disabled = true;
+        this.cargarCuentasPendientes();
     }
 
     mostrarDatosApertura(datos) {
@@ -297,10 +340,6 @@ class ArqueoCaja {
                 }
             }
         });
-
-        if (datos.cuentas_pendientes) {
-            this.mostrarCuentasPendientes(datos.cuentas_pendientes);
-        }
     }
 
     inicializarSelectorCaja() {
@@ -342,17 +381,32 @@ class ArqueoCaja {
                 mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja'
             }
         }
+        const cantidadPendientes = parseInt(document.getElementById('cuentas_pendientes_cantidad')?.textContent || '0', 10);
         const validaciones = [
             { condicion: !document.getElementById('idVendedor').value, mensaje: 'El usuario es obligatorio' },
             { condicion: !document.getElementById('idCaja').value, mensaje: 'Debe seleccionar una caja' },
             { condicion: !document.getElementById('nro_ticket').value || parseFloat(document.getElementById('nro_ticket').value) < 0, mensaje: 'El número de ticket es obligatorio' },
             { condicion: !document.getElementById('total_efectivo_en_caja').value, mensaje: 'Debe ingresar el campo efectivo en caja' },
-            condicionalEfeCaj
+            condicionalEfeCaj,
+            {
+                condicion: this.estado === ESTADO.ABIERTA && cantidadPendientes > 0,
+                mensaje: 'No se puede cerrar la caja porque existen cuentas pendientes de cobro.'
+            }
         ];
     
         const error = validaciones.find(v => v.condicion);
         if (error) {
-            toastr.error(error.mensaje, 'Error');
+            if (this.estado === ESTADO.ABIERTA && cantidadPendientes > 0) {
+                const totalPendiente = document.getElementById('cuentas_pendientes_total')?.textContent || 'Bs 0.00';
+                this.mostrarError(
+                    'No se puede cerrar la caja porque existen cuentas pendientes de cobro.\n\n' +
+                    'Cantidad de cuentas: ' + cantidadPendientes + '\n' +
+                    'Total pendiente: ' + totalPendiente + '\n\n' +
+                    'Debe cobrar o anular estas cuentas antes de cerrar la caja.'
+                );
+            } else {
+                toastr.error(error.mensaje, 'Error');
+            }
             return false;
         }
         return true;
@@ -490,7 +544,7 @@ class ArqueoCaja {
                     window.location.reload();
                 }
             } else {
-                throw new Error(respuesta.mensaje || 'Error desconocido en la operación');
+                this.mostrarError(respuesta.mensaje || 'Error desconocido en la operación');
             }
         } catch (error) {
             console.error('Error completo:', error);
@@ -499,7 +553,7 @@ class ArqueoCaja {
                 console.error('Respuesta del servidor:', error.responseText);
                 mensajeError = 'Error en la comunicación con el servidor';
             }
-            this.mostrarError('Error al procesar la operación: ' + mensajeError);
+            this.mostrarError(mensajeError);
         }
     }
 
@@ -517,7 +571,7 @@ class ArqueoCaja {
         swal({
             type: 'error',
             title: 'Error',
-            text: mensaje
+            html: String(mensaje || '').replace(/\n/g, '<br>')
         });
     }
 }

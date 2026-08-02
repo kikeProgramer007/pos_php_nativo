@@ -29,16 +29,13 @@ class AjaxArqueo {
             $idUsuario = intval($_GET["idUsuario"]);
             $respuesta = ControladorArqueo::ctrVerificarCajaAbierta($idUsuario);
             if ($respuesta) {
-                ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
-                $arqueoActualizado = ModeloArqueo::mdlObtnerArqueoPorIDArqueo($respuesta["id"]);
-                if ($arqueoActualizado) {
-                    $respuesta["cuentas_pendientes"] = [
-                        "cantidad" => intval($arqueoActualizado["cuentas_pendientes_cantidad"] ?? 0),
-                        "total_por_cobrar" => floatval($arqueoActualizado["cuentas_pendientes_total"] ?? 0)
-                    ];
-                } else {
-                    $respuesta["cuentas_pendientes"] = ControladorVentas::ctrResumenCuentasPendientes();
+                $arqueoSincronizado = ModeloArqueo::mdlSincronizarMontosArqueo($respuesta["id"]);
+                if ($arqueoSincronizado) {
+                    $respuesta = array_merge($respuesta, $arqueoSincronizado);
                 }
+                ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($respuesta["id"]);
+                $respuesta["cuentas_pendientes"] = ControladorVentas::ctrResumenCuentasPendientes($respuesta["id"]);
+                $respuesta["cuentas_pendientes_cerradas"] = ControladorVentas::ctrResumenCuentasPendientesCajasCerradas();
             }
             echo json_encode($respuesta);
         } catch(Exception $e) {
@@ -113,8 +110,30 @@ if(isset($_GET["accion"])) {
             $arqueo->ajaxObtenerNroTicket();
             break;
         case "cuentasPendientes":
-            ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
-            echo json_encode(ControladorVentas::ctrResumenCuentasPendientes());
+            $idArqueo = isset($_GET["idArqueo"]) ? intval($_GET["idArqueo"]) : 0;
+            $cajaActual = [
+                "cantidad" => 0,
+                "total_por_cobrar" => 0
+            ];
+
+            if ($idArqueo > 0 && ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($idArqueo)) {
+                ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($idArqueo);
+                $cajaActual = ControladorVentas::ctrResumenCuentasPendientes($idArqueo);
+            } else {
+                $arqueoAbierto = ModeloArqueo::mdlObtnerArqueoPorIDUsuario(0);
+                if ($arqueoAbierto) {
+                    ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($arqueoAbierto["id"]);
+                    $cajaActual = ControladorVentas::ctrResumenCuentasPendientes($arqueoAbierto["id"]);
+                }
+            }
+
+            echo json_encode([
+                "caja_actual" => $cajaActual,
+                "cajas_cerradas" => ControladorVentas::ctrResumenCuentasPendientesCajasCerradas(),
+                // Compatibilidad con consumidores anteriores
+                "cantidad" => intval($cajaActual["cantidad"] ?? 0),
+                "total_por_cobrar" => floatval($cajaActual["total_por_cobrar"] ?? 0)
+            ]);
             break;
         default:
             echo json_encode([

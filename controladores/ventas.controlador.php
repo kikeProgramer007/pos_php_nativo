@@ -242,7 +242,7 @@ class ControladorVentas{
 					$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
 					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
 				}
-				ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+				ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($_POST["idArqueoCaja"]);
 
 				$mensaje = $esPendiente
 					? "Cuenta pendiente registrada correctamente."
@@ -421,6 +421,8 @@ class ControladorVentas{
 			if($respuesta == "ok"){
 				if (isset($traerVenta["estado_pago"]) && $traerVenta["estado_pago"] === "PAGADA") {
 					ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"], $traerVenta["total_efectivo"], $traerVenta["total_qr"]);
+				} elseif (isset($traerVenta["estado_pago"]) && $traerVenta["estado_pago"] === "PENDIENTE" && !empty($traerVenta["id_arqueo_caja"])) {
+					ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($traerVenta["id_arqueo_caja"]);
 				}
 				echo'<script>
 
@@ -504,6 +506,22 @@ class ControladorVentas{
 			return;
 		}
 
+		if (empty($ventaActual["id_arqueo_caja"]) || !ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($ventaActual["id_arqueo_caja"])) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "Esta cuenta pertenece a una caja cerrada y no puede editarse."
+			]);
+			return;
+		}
+
+		if (intval($ventaActual["id_arqueo_caja"]) !== intval($_POST["idArqueoCaja"])) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "Esta cuenta pertenece a una caja diferente y no puede editarse en la caja actual."
+			]);
+			return;
+		}
+
 		$detalleAnterior = ModeloVentas::mdlMostrarDetalleVentas($idVenta);
 		self::ajustarInventarioPorDiferencia($detalleAnterior, $listaProductos);
 		self::ajustarMeseroPorDiferencia(
@@ -529,7 +547,7 @@ class ControladorVentas{
 		$respuesta = ModeloVentas::mdlActualizarCuentaPendiente($datos);
 
 		if (is_array($respuesta) && $respuesta["status"] === "ok") {
-			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($ventaActual["id_arqueo_caja"]);
 			echo json_encode([
 				"status" => "ok",
 				"mensaje" => "Cuenta pendiente actualizada correctamente.",
@@ -565,11 +583,36 @@ class ControladorVentas{
 			return;
 		}
 
+		if (empty($venta["id_arqueo_caja"])) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "Esta cuenta no tiene una caja asociada y no puede cobrarse."
+			]);
+			return;
+		}
+
+		$idArqueoVenta = intval($venta["id_arqueo_caja"]);
+		if (!ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($idArqueoVenta)) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "Esta cuenta pertenece a una caja cerrada y no puede cobrarse."
+			]);
+			return;
+		}
+
 		$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedorCobro"]);
 		if (!$arqueoActual || !ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($arqueoActual["id"])) {
 			echo json_encode([
 				"status" => "error",
 				"mensaje" => "No hay caja abierta. No se puede cobrar la cuenta."
+			]);
+			return;
+		}
+
+		if (intval($arqueoActual["id"]) !== $idArqueoVenta) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "Esta cuenta pertenece a una caja cerrada y no puede cobrarse."
 			]);
 			return;
 		}
@@ -624,13 +667,13 @@ class ControladorVentas{
 			"total_pagado" => number_format($totalPagado, 2, '.', ','),
 			"cambio" => $_POST["nuevoCambioEfectivoCobro"] ?? 0,
 			"total" => $totalVenta,
-			"id_arqueo_caja" => $arqueoActual["id"]
+			"id_arqueo_caja" => $idArqueoVenta
 		);
 
 		$respuesta = ModeloVentas::mdlCobrarCuentaPendiente($datos);
 
 		if (is_array($respuesta) && $respuesta["status"] === "ok") {
-			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($arqueoActual["id"]);
+			$ultimoNroTicket = ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($idArqueoVenta);
 			ModeloArqueo::mdlRegistrarIngreso(
 				$arqueoActual,
 				$ultimoNroTicket,
@@ -638,7 +681,7 @@ class ControladorVentas{
 				$totalEfectivo,
 				$totalQR
 			);
-			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto();
+			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($idArqueoVenta);
 
 			echo json_encode([
 				"status" => "ok",
@@ -648,17 +691,25 @@ class ControladorVentas{
 			return;
 		}
 
+		$mensajeError = is_string($respuesta) ? preg_replace('/^error:\s*/', '', $respuesta) : "Error al cobrar la cuenta.";
 		echo json_encode([
 			"status" => "error",
-			"mensaje" => is_string($respuesta) ? $respuesta : "Error al cobrar la cuenta."
+			"mensaje" => $mensajeError
 		]);
 	}
 
 	/*=============================================
 	RESUMEN CUENTAS PENDIENTES
 	=============================================*/
-	static public function ctrResumenCuentasPendientes(){
+	static public function ctrResumenCuentasPendientes($idArqueo = null){
+		if ($idArqueo !== null) {
+			return ModeloVentas::mdlResumenCuentasPendientesPorArqueo(intval($idArqueo));
+		}
 		return ModeloVentas::mdlResumenCuentasPendientes();
+	}
+
+	static public function ctrResumenCuentasPendientesCajasCerradas(){
+		return ModeloVentas::mdlResumenCuentasPendientesCajasCerradas();
 	}
 
 	private static function obtenerFormaAtencionTexto($formaAtencion){

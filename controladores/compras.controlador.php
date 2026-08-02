@@ -30,10 +30,6 @@ class ControladorCompras{
 
 		if(isset($_POST["nuevaCompra"])){
 
-			/*=============================================
-			ACTUALIZAR LAS COMPRAS DEL MESERO Y REDUCIR EL STOCK Y AUMENTAR LAS VENTAS DE LOS PRODUCTOS
-			=============================================*/
-
 			if($_POST["listaProductos"] == ""){
 
 					 echo'<script>
@@ -56,58 +52,96 @@ class ControladorCompras{
 				return;
 			}
 
+			$idArqueoCaja = intval($_POST["idArqueoCaja"] ?? 0);
+			if ($idArqueoCaja <= 0 || !ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($idArqueoCaja)) {
+				echo'<script>
+					swal({
+					  type: "error",
+					  title: "No hay caja abierta",
+					  text: "Debe aperturar una caja antes de registrar compras.",
+					  showConfirmButton: true,
+					  confirmButtonText: "Cerrar"
+					}).then(function(result){
+						if (result.value) {
+							window.location = "crear-compra";
+						}
+					});
+				</script>';
+				return;
+			}
 
 			$listaProductos = json_decode($_POST["listaProductos"], true);
-	
-
-			$totalProductosComprados = array();
-
-			foreach ($listaProductos as $key => $value) {
-
-			   array_push($totalProductosComprados, $value["cantidad"]);
-				
-			   $tablaProductos = "productos";
-
-			    $item = "id";
-			    $valor = $value["id"];
-			    $orden = "id";
-
-			    $traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
-
-				$item1a = "stock";
-				$valor1a = $value["cantidad"] + $traerProducto["stock"];
-
-			    $nuevasVentas = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
-
+			if (!is_array($listaProductos) || count($listaProductos) === 0) {
+				echo'<script>
+					swal({
+					  type: "error",
+					  title: "Lista de productos inválida",
+					  showConfirmButton: true,
+					  confirmButtonText: "Cerrar"
+					}).then(function(result){
+						if (result.value) {
+							window.location = "crear-compra";
+						}
+					});
+				</script>';
+				return;
 			}
 
 			date_default_timezone_set('America/La_Paz');
-		
-			/*=============================================
-			GUARDAR LA COMPRA
-			=============================================*/	
-			echo  $_POST["idUsuario"];
+
 			$tabla = "compras";
 
 			$datos = array("id_usuario"=> isset($_POST["idUsuario"]) ? $_POST["idUsuario"] : null,
 						   "id_proveedor"=>$_POST["seleccionarProveedor"],
 						   "codigo"=>$_POST["nuevaCompra"],
 						   "productos"=>$_POST["listaProductos"],
-						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
+						   "id_arqueo_caja" => $idArqueoCaja,
 						   "total"=>$_POST["totalCompra"]
 						);
-			
-			// $respuesta = ModeloCompras::mdlIngresarCompra($tabla, $datos);
+
 			$respuesta = ModeloCompras::mdlRegistrarCompra($tabla, $datos);
 
-			if($respuesta == "ok"){
-				ModeloArqueo::mdlRegistrarEgreso($_POST["idArqueoCaja"], $_POST["totalCompra"]);
+			if(is_array($respuesta) && $respuesta["status"] === "ok"){
+
+				foreach ($listaProductos as $key => $value) {
+					$tablaProductos = "productos";
+					$item = "id";
+					$valor = $value["id"];
+					$orden = "id";
+					$traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
+					if ($traerProducto) {
+						$item1a = "stock";
+						$valor1a = $value["cantidad"] + $traerProducto["stock"];
+						ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
+					}
+				}
+
 			    $codigoCompra = $_POST["nuevaCompra"];
 				echo "<script type='text/javascript'>
 				     window.open('extensiones/tcpdf/pdf/extracto-compra.php?codigo={$codigoCompra}', '_blank');
 					 window.location = 'crear-compra';
 				</script>";
+				return;
 			}
+
+			$mensajeError = is_array($respuesta)
+				? ($respuesta["mensaje"] ?? "Error al registrar la compra")
+				: (is_string($respuesta) ? preg_replace('/^error:\s*/', '', $respuesta) : "Error al registrar la compra");
+			$mensajeJs = json_encode($mensajeError);
+
+			echo "<script>
+				swal({
+				  type: 'error',
+				  title: 'No se pudo registrar la compra',
+				  html: String($mensajeJs).replace(/\\n/g, '<br>'),
+				  showConfirmButton: true,
+				  confirmButtonText: 'Cerrar'
+				}).then(function(result){
+					if (result.value) {
+						window.location = 'crear-compra';
+					}
+				});
+			</script>";
 
 		}
 
@@ -163,7 +197,9 @@ class ControladorCompras{
 			$respuesta = ModeloCompras::mdlEliminarCompra($tabla, $_GET["idCompra"]);
 
 			if($respuesta == "ok"){
-				ModeloArqueo::mdlEliminarEgreso($traerCompra["id_arqueo_caja"], $traerCompra["total"]);
+				if (!empty($traerCompra["id_arqueo_caja"])) {
+					ModeloArqueo::mdlSincronizarMontosArqueo($traerCompra["id_arqueo_caja"]);
+				}
 				echo'<script>
 
 				swal({

@@ -57,12 +57,12 @@
     </tbody>
 </table>
 
-<!-- Cuentas pendientes (informativo) -->
-<div class="summary-table" style="margin-top:15px;">
-    <h4 class="text-center"><strong>Cuentas pendientes</strong></h4>
+<!-- Cuentas pendientes de la caja actual -->
+<div class="summary-table" id="bloque_cuentas_pendientes_actual" style="margin-top:15px;">
+    <h4 class="text-center"><strong>CUENTAS PENDIENTES DE LA CAJA ACTUAL</strong></h4>
     <table class="dt-responsive">
         <tr>
-            <td>Cantidad de cuentas:</td>
+            <td>Cantidad:</td>
             <td class="text-right" id="cuentas_pendientes_cantidad">0</td>
         </tr>
         <tr>
@@ -70,6 +70,24 @@
             <td class="text-right" id="cuentas_pendientes_total">Bs 0.00</td>
         </tr>
     </table>
+</div>
+
+<!-- Cuentas pendientes históricas de cajas cerradas (solo informativo) -->
+<div class="summary-table" id="bloque_cuentas_pendientes_cerradas" style="margin-top:15px;">
+    <h4 class="text-center"><strong>CUENTAS PENDIENTES DE CAJAS CERRADAS</strong></h4>
+    <table class="dt-responsive">
+        <tr>
+            <td>Cantidad:</td>
+            <td class="text-right" id="cuentas_pendientes_cerradas_cantidad">0</td>
+        </tr>
+        <tr>
+            <td>Total:</td>
+            <td class="text-right" id="cuentas_pendientes_cerradas_total">Bs 0.00</td>
+        </tr>
+    </table>
+    <p class="text-muted text-center" style="margin:8px 0 0; font-size:12px;">
+        Solo informativo. No se pueden cobrar desde una caja nueva.
+    </p>
 </div>
 
 <!-- Comparación: Efectivo vs Sistema -->

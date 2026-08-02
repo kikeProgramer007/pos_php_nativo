@@ -51,17 +51,24 @@ class imprimirFactura
                     + ($arqueo["Bs020"] * 0.20);
    
         $totalGeneral = $totalBilletes + $totalMonedas;
-    
-       if($arqueo["total_egresos"]>0){
-            $arqueo["gastos_operativos"] *= $arqueo["gastos_operativos"]>0? (-1): 1;
-            $arqueo["monto_compras"] *= $arqueo["monto_compras"]>0? (-1) :1;
-            $arqueo["total_egresos"] *= (-1);
-       }
+
+        // Recalcular montos desde tablas fuente (compras/gastos/ventas pagadas)
+        $arqueoSincronizado = ModeloArqueo::mdlSincronizarMontosArqueo($arqueo["id"]);
+        if ($arqueoSincronizado) {
+            $arqueo = array_merge($arqueo, $arqueoSincronizado);
+        }
+
+        // Egresos se muestran como valores positivos; la resta solo aplica al saldo neto
+        $gastosOperativos = abs(floatval($arqueo["gastos_operativos"] ?? 0));
+        $montoCompras = abs(floatval($arqueo["monto_compras"] ?? 0));
+        $totalEgresos = abs(floatval($arqueo["total_egresos"] ?? ($gastosOperativos + $montoCompras)));
+        $resultadoNeto = floatval($arqueo["resultado_neto"] ?? 0);
 
        $ResultadoMessage = "TODO CUADRA";
-        if($arqueo["resultado_neto"]>$arqueo["total_efectivo_qr_en_caja"]){
+        $dineroEnCaja = floatval($arqueo["total_efectivo_qr_en_caja"] ?? 0);
+        if($resultadoNeto > $dineroEnCaja){
             $ResultadoMessage = "TE FALTA DINERO";
-        }else if($arqueo["resultado_neto"]<$arqueo["total_efectivo_qr_en_caja"]){
+        }else if($resultadoNeto < $dineroEnCaja){
             $ResultadoMessage = "TE SOBRA DINERO";
         }
 
@@ -179,30 +186,33 @@ class imprimirFactura
             </tr>
               <tr>
                 <td style="text-align:left; "> GASTOS:</td>
-                <td style="text-align:right; ">' . number_format($arqueo["gastos_operativos"],2) . '</td>
+                <td style="text-align:right; ">' . number_format($gastosOperativos,2) . '</td>
             </tr>
               <tr>
                 <td style="text-align:left;"> COMPRAS:</td>
-                <td style="text-align:right; ">' . number_format($arqueo["monto_compras"],2) . '</td>
+                <td style="text-align:right; ">' . number_format($montoCompras,2) . '</td>
             </tr>
             <tr>
                 <td style="width:70%; text-align:left;"><strong>TOTAL EGRESOS:</strong></td>
-                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($arqueo["total_egresos"],2) . '</strong></td>
+                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format($totalEgresos,2) . '</strong></td>
             </tr>
             <tr><td colspan="2"></td></tr>
             <tr>
                 <td style="text-align:left; "><strong>DINERO EN EL SISTEMA:</strong></td>
-                <td style="text-align:right; "><strong>' . $arqueo["resultado_neto"] . '</strong></td>
+                <td style="text-align:right; "><strong>' . number_format($resultadoNeto, 2) . '</strong></td>
             </tr>
              <tr> <td colspan="2" ></td> </tr>';
 
-        $resumenPendientes = ControladorVentas::ctrResumenCuentasPendientes();
-        if (isset($arqueo["cuentas_pendientes_cantidad"]) || isset($arqueo["cuentas_pendientes_total"])) {
+        if (($arqueo["estado"] ?? "") === "abierta") {
+            $resumenPendientes = ControladorVentas::ctrResumenCuentasPendientes($arqueo["id"]);
+            $cantidadPendientes = intval($resumenPendientes["cantidad"] ?? 0);
+            $totalPendientes = number_format(floatval($resumenPendientes["total_por_cobrar"] ?? 0), 2);
+        } elseif (isset($arqueo["cuentas_pendientes_cantidad"]) || isset($arqueo["cuentas_pendientes_total"])) {
             $cantidadPendientes = intval($arqueo["cuentas_pendientes_cantidad"] ?? 0);
             $totalPendientes = number_format(floatval($arqueo["cuentas_pendientes_total"] ?? 0), 2);
         } else {
-            $cantidadPendientes = isset($resumenPendientes["cantidad"]) ? intval($resumenPendientes["cantidad"]) : 0;
-            $totalPendientes = isset($resumenPendientes["total_por_cobrar"]) ? number_format($resumenPendientes["total_por_cobrar"], 2) : "0.00";
+            $cantidadPendientes = 0;
+            $totalPendientes = "0.00";
         }
 
         $html .= '
@@ -307,7 +317,7 @@ class imprimirFactura
            <tr><td colspan="2"></td></tr>
             <tr>
                 <td style="text-align:left; ">DINERO EN EL SISTEMA:</td>
-                <td style="text-align:right; ">' . $arqueo["resultado_neto"] . '</td>
+                <td style="text-align:right; ">' . number_format($resultadoNeto, 2) . '</td>
             </tr>
             
       

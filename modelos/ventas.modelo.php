@@ -504,11 +504,13 @@ class ModeloVentas
 		date_default_timezone_set('America/La_Paz');
 
 		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, ventas.estado_pago, ventas.id_mesero,
+				  ventas.id_arqueo_caja, arqueo_caja.estado AS estado_arqueo,
 				  usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total, ventas.tipo_pago, clientes.nombre as cliente 
 				  FROM $tabla 
 				  JOIN usuarios ON ventas.id_vendedor = usuarios.id
 				  JOIN clientes ON ventas.id_cliente = clientes.id
 				  JOIN meseros ON ventas.id_mesero = meseros.id
+				  LEFT JOIN arqueo_caja ON ventas.id_arqueo_caja = arqueo_caja.id
 				  WHERE ventas.estado = :estado";
 
 		if ($estadoPago !== null && $estadoPago !== "" && $estadoPago !== "todos") {
@@ -554,7 +556,7 @@ class ModeloVentas
 	}
 
 	/*=============================================
-	RESUMEN DE CUENTAS PENDIENTES (informativo)
+	RESUMEN DE CUENTAS PENDIENTES (informativo / global)
 	=============================================*/
 	static public function mdlResumenCuentasPendientes()
 	{
@@ -565,6 +567,50 @@ class ModeloVentas
 		);
 		$stmt->execute();
 		return $stmt->fetch(PDO::FETCH_ASSOC);
+	}
+
+	/*=============================================
+	RESUMEN DE CUENTAS PENDIENTES POR ARQUEO
+	=============================================*/
+	static public function mdlResumenCuentasPendientesPorArqueo($idArqueo)
+	{
+		$stmt = Conexion::conectar()->prepare(
+			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+			 FROM ventas
+			 WHERE id_arqueo_caja = :id_arqueo_caja
+			   AND estado = 1
+			   AND estado_pago = 'PENDIENTE'"
+		);
+		$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
+		$stmt->execute();
+		$resumen = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return [
+			"cantidad" => intval($resumen["cantidad"] ?? 0),
+			"total_por_cobrar" => floatval($resumen["total_por_cobrar"] ?? 0)
+		];
+	}
+
+	/*=============================================
+	RESUMEN DE CUENTAS PENDIENTES DE CAJAS CERRADAS
+	=============================================*/
+	static public function mdlResumenCuentasPendientesCajasCerradas()
+	{
+		$stmt = Conexion::conectar()->prepare(
+			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(v.total), 0) AS total_por_cobrar
+			 FROM ventas v
+			 LEFT JOIN arqueo_caja a ON a.id = v.id_arqueo_caja
+			 WHERE v.estado = 1
+			   AND v.estado_pago = 'PENDIENTE'
+			   AND (a.id IS NULL OR a.estado = 'cerrada')"
+		);
+		$stmt->execute();
+		$resumen = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		return [
+			"cantidad" => intval($resumen["cantidad"] ?? 0),
+			"total_por_cobrar" => floatval($resumen["total_por_cobrar"] ?? 0)
+		];
 	}
 
 	/*=============================================
@@ -729,7 +775,11 @@ class ModeloVentas
 			$conexion->beginTransaction();
 
 			$stmtVenta = $conexion->prepare(
-				"SELECT * FROM ventas WHERE id = :id AND estado = 1 AND estado_pago = 'PENDIENTE' FOR UPDATE"
+				"SELECT v.*, a.estado AS estado_arqueo
+				 FROM ventas v
+				 LEFT JOIN arqueo_caja a ON a.id = v.id_arqueo_caja
+				 WHERE v.id = :id AND v.estado = 1 AND v.estado_pago = 'PENDIENTE'
+				 FOR UPDATE"
 			);
 			$stmtVenta->bindParam(":id", $datos["id_venta"], PDO::PARAM_INT);
 			$stmtVenta->execute();
@@ -739,12 +789,35 @@ class ModeloVentas
 				throw new Exception("La cuenta no existe o ya fue cobrada.");
 			}
 
+			if (empty($venta["id_arqueo_caja"])) {
+				throw new Exception("Esta cuenta no tiene una caja asociada y no puede cobrarse.");
+			}
+
+			if (($venta["estado_arqueo"] ?? "") !== "abierta") {
+				throw new Exception("Esta cuenta pertenece a una caja cerrada y no puede cobrarse.");
+			}
+
+			if (intval($venta["id_arqueo_caja"]) !== intval($datos["id_arqueo_caja"])) {
+				throw new Exception("Esta cuenta pertenece a una caja diferente y no puede cobrarse en la caja actual.");
+			}
+
+			$stmtArqueo = $conexion->prepare(
+				"SELECT id FROM arqueo_caja WHERE id = :id AND estado = 'abierta' FOR UPDATE"
+			);
+			$stmtArqueo->bindParam(":id", $datos["id_arqueo_caja"], PDO::PARAM_INT);
+			$stmtArqueo->execute();
+			if (!$stmtArqueo->fetch(PDO::FETCH_ASSOC)) {
+				throw new Exception("Esta cuenta pertenece a una caja cerrada y no puede cobrarse.");
+			}
+
 			$stmtUpdate = $conexion->prepare(
 				"UPDATE ventas SET estado_pago = 'PAGADA', fecha_pago = :fecha_pago,
 				 tipo_pago = :tipo_pago, total_efectivo = :total_efectivo, total_qr = :total_qr,
-				 total_pagado = :total_pagado, cambio = :cambio, total = :total,
-				 id_arqueo_caja = :id_arqueo_caja
-				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
+				 total_pagado = :total_pagado, cambio = :cambio, total = :total
+				 WHERE id = :id_venta
+				   AND estado = 1
+				   AND estado_pago = 'PENDIENTE'
+				   AND id_arqueo_caja = :id_arqueo_caja"
 			);
 
 			$stmtUpdate->bindParam(":fecha_pago", $datos["fecha_pago"], PDO::PARAM_STR);
@@ -757,7 +830,7 @@ class ModeloVentas
 			$stmtUpdate->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
 			$stmtUpdate->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
 
-			if (!$stmtUpdate->execute()) {
+			if (!$stmtUpdate->execute() || $stmtUpdate->rowCount() === 0) {
 				throw new Exception("Error al cobrar la cuenta.");
 			}
 

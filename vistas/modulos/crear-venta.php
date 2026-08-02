@@ -18,7 +18,11 @@ $clienteEditarNombre = "";
 
 if (isset($_GET["editarCuenta"]) && is_numeric($_GET["editarCuenta"])) {
   $ventaEditar = ControladorVentas::ctrMostrarVentas("id", $_GET["editarCuenta"]);
-  if ($ventaEditar && isset($ventaEditar["estado_pago"]) && $ventaEditar["estado_pago"] === "PENDIENTE" && $ventaEditar["estado"] == 1) {
+  $cajaCuentaAbierta = $ventaEditar
+    && !empty($ventaEditar["id_arqueo_caja"])
+    && ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($ventaEditar["id_arqueo_caja"]);
+
+  if ($ventaEditar && isset($ventaEditar["estado_pago"]) && $ventaEditar["estado_pago"] === "PENDIENTE" && $ventaEditar["estado"] == 1 && $cajaCuentaAbierta) {
     $modoEdicionCuenta = true;
     $detalleEditar = ControladorVentas::ctrMostrarDetalleVentas($ventaEditar["id"]);
     foreach ($detalleEditar as $key => $linea) {
@@ -29,7 +33,15 @@ if (isset($_GET["editarCuenta"]) && is_numeric($_GET["editarCuenta"])) {
     $clienteEditar = ControladorClientes::ctrMostrarClientes("id", $ventaEditar["id_cliente"]);
     $clienteEditarNombre = $clienteEditar ? $clienteEditar["nombre"] : "";
   } else {
-    echo '<script>window.location = "ventas";</script>';
+    echo '<script>
+      swal({
+        type: "warning",
+        title: "No se puede editar",
+        text: "Esta cuenta pertenece a una caja cerrada o ya no está pendiente.",
+        showConfirmButton: true,
+        confirmButtonText: "Cerrar"
+      }).then(function(){ window.location = "ventas"; });
+    </script>';
     return;
   }
 }
