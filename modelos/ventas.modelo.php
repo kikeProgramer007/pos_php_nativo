@@ -249,17 +249,19 @@ class ModeloVentas
 
 	static public function mdlRangoFechasVentas($tabla, $fechaInicial, $fechaFinal, $estado = 1)
 	{
+		// Solo ventas cobradas deben alimentar gráficos y totales monetarios
+		$filtroPago = ($estado == 1) ? " AND $tabla.estado_pago = 'PAGADA'" : "";
 
 		if ($fechaInicial == null) {
 
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla  WHERE $tabla.estado=$estado ORDER BY id DESC");
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla  WHERE $tabla.estado=$estado$filtroPago ORDER BY id DESC");
 
 			$stmt->execute();
 
 			return $stmt->fetchAll();
 		} else if ($fechaInicial == $fechaFinal) {
 
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha like '%$fechaFinal%' AND $tabla.estado=$estado");
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha like '%$fechaFinal%' AND $tabla.estado=$estado$filtroPago");
 
 			/* $stmt -> bindParam(":fecha", $fechaFinal, PDO::PARAM_STR); */
 
@@ -278,11 +280,11 @@ class ModeloVentas
 
 			if ($fechaFinalMasUno == $fechaActualMasUno) {
 
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinalMasUno' AND $tabla.estado=$estado");
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinalMasUno' AND $tabla.estado=$estado$filtroPago");
 			} else {
 
 
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinal' AND $tabla.estado=$estado ORDER BY id DESC");
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinal' AND $tabla.estado=$estado$filtroPago ORDER BY id DESC");
 			}
 
 			$stmt->execute();
@@ -302,7 +304,7 @@ class ModeloVentas
 		date_default_timezone_set('America/La_Paz');
 		$anio = date('Y'); // Obtener el año actual
 
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE YEAR(fecha) = :anio AND $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE YEAR(fecha) = :anio AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->bindParam(":anio", $anio, PDO::PARAM_INT);
 		$stmt->execute();
@@ -321,7 +323,7 @@ class ModeloVentas
 		date_default_timezone_set('America/La_Paz');
 		$yearactual = date('Y');
 		$mesActual = date('m');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' AND $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->execute();
 
@@ -340,7 +342,7 @@ class ModeloVentas
 	{
 		date_default_timezone_set('America/La_Paz');
 		$hoy = date('Y-m-d');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total, SUM(total_qr) as total_qr, SUM(total_efectivo) as total_efectivo FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total, SUM(total_qr) as total_qr, SUM(total_efectivo) as total_efectivo FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->execute();
 
@@ -394,7 +396,7 @@ class ModeloVentas
 		if ($soloEliminados=='true'){
 			$query .= " AND ventas.estado =0 ";
 		}else{
-			$query .= " AND ventas.estado =1 ";
+			$query .= " AND ventas.estado =1 AND ventas.estado_pago = 'PAGADA' ";
 		}
 		
 		$query .= " GROUP BY 
@@ -449,6 +451,7 @@ class ModeloVentas
 					JOIN meseros ON ventas.id_mesero = meseros.id
 					WHERE DATE(ventas.fecha) BETWEEN DATE('$fechaInicial') AND DATE('$fechaFinal') 
 					AND ventas.estado=1
+					AND ventas.estado_pago = 'PAGADA'
 					GROUP BY meseros.nombre ORDER BY SUM(ventas.total) DESC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
@@ -477,6 +480,7 @@ class ModeloVentas
 						JOIN productos AS p ON p.id = dv.id_producto
 						WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 						AND ventas.estado=1
+						AND ventas.estado_pago = 'PAGADA'
 						GROUP BY dv.id_producto, p.descripcion
 						ORDER BY SUM(dv.cantidad) DESC;";
 

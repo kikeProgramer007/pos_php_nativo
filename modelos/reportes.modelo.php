@@ -16,6 +16,7 @@ class ModeloReportes{
 			SELECT DISTINCT MONTH(fecha) AS mes 
 			FROM ventas 
 			WHERE estado = 1 
+			AND estado_pago = 'PAGADA'
 			ORDER BY mes ASC
 		");
 
@@ -26,6 +27,7 @@ class ModeloReportes{
 			WHERE YEAR(fecha) >= 2000 
 			AND YEAR(fecha) <= :year_actual 
 			AND estado = 1 
+			AND estado_pago = 'PAGADA'
 			ORDER BY years ASC
 		");
 
@@ -54,9 +56,11 @@ class ModeloReportes{
 
 	static public function mdlRangoFechasVentas($tabla, $fechaInicial, $fechaFinal, $estado = 1){
 
+		$filtroPago = ($estado == 1) ? " AND $tabla.estado_pago = 'PAGADA'" : "";
+
 		if($fechaInicial == null){
 
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $tabla.estado=$estado ORDER BY id ASC");
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $tabla.estado=$estado$filtroPago ORDER BY id ASC");
 
 			$stmt -> execute();
 
@@ -65,7 +69,7 @@ class ModeloReportes{
 
 		}else if($fechaInicial == $fechaFinal){
 
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha like '%$fechaFinal%' AND $tabla.estado=$estado");
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha like '%$fechaFinal%' AND $tabla.estado=$estado$filtroPago");
 
 			/* $stmt -> bindParam(":fecha", $fechaFinal, PDO::PARAM_STR); */
 
@@ -84,9 +88,9 @@ class ModeloReportes{
 			$fechaFinalMasUno = $fechaFinal2->format("Y-m-d");
 
 			if($fechaFinalMasUno == $fechaActualMasUno){
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinalMasUno' AND $tabla.estado=$estado");
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinalMasUno' AND $tabla.estado=$estado$filtroPago");
 			}else{
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinal' AND $tabla.estado=$estado");
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinal' AND $tabla.estado=$estado$filtroPago");
 			}
 		
 			$stmt -> execute();
@@ -106,7 +110,7 @@ class ModeloReportes{
 		// Consulta SQL
 		$sql = "SELECT dv.id_venta,v.codigo,DATE(v.fecha) AS fecha,u.usuario as vendedor,c.nombre as mesero,v.total,SUM((p.precio_venta-p.precio_compra)*dv.cantidad) as ganancias
 				FROM detalle_venta as dv
-				JOIN ventas AS v ON (dv.id_venta = v.id AND v.estado=1)
+				JOIN ventas AS v ON (dv.id_venta = v.id AND v.estado=1 AND v.estado_pago = 'PAGADA')
 				JOIN productos AS p ON dv.id_producto = p.id
 				JOIN meseros AS c ON v.id_mesero = c.id
 				JOIN usuarios AS u ON v.id_vendedor = u.id
@@ -139,7 +143,7 @@ class ModeloReportes{
 
 	static public function mdlSumaTotalVentas($tabla){	
 
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt -> execute();
 
@@ -157,7 +161,7 @@ class ModeloReportes{
 	static public function mdlVentasTotalMes($tabla){	
 		$yearactual= date('Y');
 		$mesActual= date('m');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt -> execute();
 
@@ -175,7 +179,7 @@ class ModeloReportes{
 
 	static public function mdlVentasTotalDia($tabla){	
 		$hoy= date('Y-m-d');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1");
+		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt -> execute();
 
@@ -204,6 +208,7 @@ static public function mdlObtenerGananciasYear($yearIni, $yearFin){
             FROM ventas AS v
             WHERE YEAR(v.fecha) BETWEEN :yearIni AND :yearFin 
             AND v.estado = 1
+            AND v.estado_pago = 'PAGADA'
             GROUP BY YEAR(v.fecha), MONTH(v.fecha)
             ORDER BY year ASC, mes ASC";
 

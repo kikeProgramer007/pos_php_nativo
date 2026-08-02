@@ -766,10 +766,7 @@ class ControladorVentas{
 
 			}else{
 
-				$item = null;
-				$valor = null;
-
-				$ventas = ModeloVentas::mdlMostrarVentas($tabla, $item, $valor);
+				$ventas = ModeloVentas::mdlRangoFechasVentas($tabla, null, null);
 
 			}
 

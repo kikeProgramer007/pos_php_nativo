@@ -4,7 +4,7 @@ class CatalogoProductos {
     this.categorias = [];
     this.paginaActual = 1;
     this.registrosPorPagina = 12;
-    this.categoriaSeleccionada = '2';
+    this.categoriaSeleccionada = 'todos';
     this.terminoBusqueda = '';
     this.productosAgregados = new Set();
     
@@ -156,10 +156,9 @@ class CatalogoProductos {
   renderizarFiltrosCategorias() {
     const contenedor = $('#filtrosCategorias');
     contenedor.empty();
-
     // Agregar botón "Todos"
     contenedor.append(`
-      <button class="btn-categoria" data-categoria="todos">
+      <button class="btn-categoria active" data-categoria="todos">
         Todos
       </button>
     `);
@@ -167,7 +166,7 @@ class CatalogoProductos {
     // Agregar botón para cada categoría
     this.categorias.forEach(categoria => {
       contenedor.append(`
-        <button class="btn-categoria ${categoria.id === '2' ? 'active' : ''}" data-categoria="${categoria.id}">
+        <button class="btn-categoria ${categoria.id ===  this.categoriaSeleccionada.toString() ? 'active' : ''}" data-categoria="${categoria.id}">
           ${categoria.nombre}
         </button>
       `);
