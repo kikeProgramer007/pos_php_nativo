@@ -227,12 +227,16 @@ class reporteVenta extends TCPDF
         $sumTotal = 0;
         $sumTotalEfectivo = 0;
         $sumTotalQr = 0;
+        $sumTotalBruto = 0;
+        $sumTotalDescuento = 0;
 
         foreach ($respuestaVentas as $item) {
 
             $total = $item["total"];
             $totalEfectivo = $item["total_efectivo"];
             $totalQr = $item["total_qr"];
+            $totalBruto = floatval($item["total_bruto"] ?? $total);
+            $totalDescuento = floatval($item["total_descuento"] ?? 0);
 
             $fechaCompleta = $item["fecha"];
             $fechaFormateada = date('Y-m-d h:i:s a', strtotime($fechaCompleta));
@@ -286,10 +290,12 @@ class reporteVenta extends TCPDF
             $sumTotal += $total;
             $sumTotalEfectivo += $totalEfectivo;
             $sumTotalQr += $totalQr;
+            $sumTotalBruto += $totalBruto;
+            $sumTotalDescuento += $totalDescuento;
         }
 
         // Altura aproximada necesaria para imprimir totales
-        $alturaTotales = 4 ; // 2 líneas de totales + espacio
+        $alturaTotales = 20;
 
         // Obtener límite inferior real de la página
         $limiteInferior  = $this->getPageHeight() - $this->getBreakMargin();
@@ -305,6 +311,16 @@ class reporteVenta extends TCPDF
         $this->Cell(17, 5, number_format($sumTotalEfectivo, 2, '.', ','), 1, 0, 'R');
         $this->Cell(17, 5, number_format($sumTotalQr, 2, '.', ','), 1, 0, 'R');
         $this->Cell(16, 5, number_format($sumTotal, 2, '.', ',') , 1, 1, 'R');
+
+        $this->Ln(2);
+        $this->SetFont('helvetica', '', 8);
+        $this->Cell(140, 5, 'Total items (bruto):', 0, 0, 'R');
+        $this->Cell(50, 5, 'Bs ' . number_format($sumTotalBruto, 2, '.', ','), 0, 1, 'R');
+        $this->Cell(140, 5, 'Total descuentos:', 0, 0, 'R');
+        $this->Cell(50, 5, 'Bs ' . number_format($sumTotalDescuento, 2, '.', ','), 0, 1, 'R');
+        $this->SetFont('helvetica', 'B', 8);
+        $this->Cell(140, 5, 'Total neto cobrado:', 0, 0, 'R');
+        $this->Cell(50, 5, 'Bs ' . number_format($sumTotal, 2, '.', ','), 0, 1, 'R');
 
         // Nro de compras
         $this->SetFont('helvetica', 'B', 9);

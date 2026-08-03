@@ -9,6 +9,7 @@
 <script src="vistas/js/reportes.js"></script>
 <script src="vistas/js/proveedor.js"></script>
 <script src="vistas/js/ventas.js"></script> 
+<script src="vistas/js/promociones.js"></script>
 <script src="vistas/js/gastos.js"></script> 
 <!-- ------------------------- -->
 <!-- vinculamos  LAS CARPETAS de la tablas dinamicas -->

@@ -100,13 +100,17 @@ class ModeloVentas
 			}
 
 			// 1. Registrar la venta principal en la tabla "ventas"
-			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total,total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja, estado_pago, fecha_pago) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total,:total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja, :estado_pago, :fecha_pago)");
+			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total, total_bruto, total_descuento, total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja, estado_pago, fecha_pago) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total, :total_bruto, :total_descuento, :total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja, :estado_pago, :fecha_pago)");
 
 			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_vendedor", $datos["id_vendedor"], PDO::PARAM_INT);
 			$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$totalBruto = $datos["total_bruto"] ?? $datos["total"];
+			$totalDescuento = $datos["total_descuento"] ?? 0;
+			$stmt->bindParam(":total_bruto", $totalBruto, PDO::PARAM_STR);
+			$stmt->bindParam(":total_descuento", $totalDescuento, PDO::PARAM_STR);
 			$stmt->bindParam(":total_efectivo", $datos["total_efectivo"], PDO::PARAM_STR);
 			$stmt->bindParam(":total_qr", $datos["total_qr"], PDO::PARAM_STR);
 			$stmt->bindParam(":total_pagado", $datos["total_pagado"], PDO::PARAM_STR);
@@ -126,8 +130,8 @@ class ModeloVentas
 			$idVenta = $conexion->lastInsertId();
 
 			// 2. Preparar el statement para insertar los productos en "detalle_venta"
-			$stmtDetalle = $conexion->prepare("INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion) 
-											   VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)");
+			$stmtDetalle = $conexion->prepare("INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion) 
+											   VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)");
 
 			// Enlazamos los parámetros estáticos (que no cambian en el bucle)
 			$stmtDetalle->bindParam(":id_venta", $idVenta, PDO::PARAM_INT);
@@ -145,6 +149,7 @@ class ModeloVentas
 				$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
 				$stmtDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+				self::bindPromocionDetalle($stmtDetalle, $producto);
 				$stmtDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
@@ -369,7 +374,9 @@ class ModeloVentas
 						ventas.estado_pago,
 						ventas.total_qr,
 						ventas.total_efectivo,
-						SUM(dv.subtotal) AS total
+						SUM(dv.subtotal) AS total,
+						SUM(COALESCE(dv.descuento_total, 0)) AS total_descuento,
+						SUM(COALESCE(dv.precio_original, dv.precio_venta, 0) * dv.cantidad) AS total_bruto
 					FROM $tabla
 					JOIN detalle_venta dv ON ventas.id = dv.id_venta
 					JOIN productos p ON dv.id_producto = p.id
@@ -657,12 +664,17 @@ class ModeloVentas
 
 			$stmtUpdate = $conexion->prepare(
 				"UPDATE ventas SET id_mesero = :id_mesero, id_cliente = :id_cliente, total = :total,
+				 total_bruto = :total_bruto, total_descuento = :total_descuento,
 				 nota = :nota, forma_atencion = :forma_atencion
 				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
 			);
 			$stmtUpdate->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
 			$stmtUpdate->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
 			$stmtUpdate->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$totalBrutoUpd = $datos["total_bruto"] ?? $datos["total"];
+			$totalDescUpd = $datos["total_descuento"] ?? 0;
+			$stmtUpdate->bindParam(":total_bruto", $totalBrutoUpd, PDO::PARAM_STR);
+			$stmtUpdate->bindParam(":total_descuento", $totalDescUpd, PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":nota", $datos["nota"], PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":forma_atencion", $datos["forma_atencion"], PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
@@ -681,14 +693,17 @@ class ModeloVentas
 			$idsDetalleNuevos = [];
 
 			$stmtDetalle = $conexion->prepare(
-				"INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion)
-				 VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)"
+				"INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion)
+				 VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)"
 			);
 			$stmtDetalle->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
 
 			$stmtUpdateDetalle = $conexion->prepare(
 				"UPDATE detalle_venta SET id_producto = :id_producto, producto = :producto, cantidad = :cantidad,
-				 precio_venta = :precio_venta, precio_compra = :precio_compra, subtotal = :subtotal,
+				 precio_venta = :precio_venta, precio_original = :precio_original, tipo_descuento = :tipo_descuento,
+				 valor_descuento = :valor_descuento, descuento_unitario = :descuento_unitario, descuento_total = :descuento_total,
+				 id_promocion = :id_promocion, id_intervalo_promocion = :id_intervalo_promocion, nombre_promocion = :nombre_promocion,
+				 precio_compra = :precio_compra, subtotal = :subtotal,
 				 preferencias = :preferencias, nota_adicional = :nota_adicional, forma_atencion = :forma_atencion
 				 WHERE id = :id_detalle AND id_venta = :id_venta"
 			);
@@ -722,6 +737,7 @@ class ModeloVentas
 					$stmtUpdateDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
 					$stmtUpdateDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					self::bindPromocionDetalle($stmtUpdateDetalle, $producto);
 					$stmtUpdateDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
@@ -737,6 +753,7 @@ class ModeloVentas
 					$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
 					$stmtDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					self::bindPromocionDetalle($stmtDetalle, $producto);
 					$stmtDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
@@ -857,5 +874,51 @@ class ModeloVentas
 			$conexion->rollBack();
 			return "error: " . $e->getMessage();
 		}
+	}
+
+	/*=============================================
+	EXTRAER / BINDEAR DATOS DE PROMOCIÓN EN DETALLE
+	=============================================*/
+	static private function extraerDatosPromocionProducto($producto)
+	{
+		$promo = isset($producto["promo"]) && is_array($producto["promo"]) ? $producto["promo"] : [];
+		$precioOriginal = isset($producto["precioOriginal"])
+			? $producto["precioOriginal"]
+			: ($promo["precio_original"] ?? ($producto["precio"] ?? null));
+
+		$idPromocion = !empty($promo["id_promocion"]) ? intval($promo["id_promocion"]) : null;
+		$idIntervalo = !empty($promo["id_intervalo_promocion"]) ? intval($promo["id_intervalo_promocion"]) : null;
+
+		return [
+			"precio_original" => $precioOriginal !== null ? round(floatval($precioOriginal), 2) : null,
+			"tipo_descuento" => $idPromocion ? ($promo["tipo_descuento"] ?? null) : null,
+			"valor_descuento" => $idPromocion ? round(floatval($promo["valor_descuento"] ?? 0), 2) : null,
+			"descuento_unitario" => round(floatval($promo["descuento_unitario"] ?? 0), 2),
+			"descuento_total" => round(floatval($promo["descuento_total"] ?? 0), 2),
+			"id_promocion" => $idPromocion,
+			"id_intervalo_promocion" => $idIntervalo,
+			"nombre_promocion" => $idPromocion ? ($promo["nombre_promocion"] ?? null) : null
+		];
+	}
+
+	static private function bindPromocionDetalle($stmt, $producto)
+	{
+		$promo = self::extraerDatosPromocionProducto($producto);
+		$stmt->bindValue(":precio_original", $promo["precio_original"], PDO::PARAM_STR);
+		$stmt->bindValue(":tipo_descuento", $promo["tipo_descuento"], PDO::PARAM_STR);
+		$stmt->bindValue(":valor_descuento", $promo["valor_descuento"], PDO::PARAM_STR);
+		$stmt->bindValue(":descuento_unitario", $promo["descuento_unitario"], PDO::PARAM_STR);
+		$stmt->bindValue(":descuento_total", $promo["descuento_total"], PDO::PARAM_STR);
+		if ($promo["id_promocion"] === null) {
+			$stmt->bindValue(":id_promocion", null, PDO::PARAM_NULL);
+		} else {
+			$stmt->bindValue(":id_promocion", $promo["id_promocion"], PDO::PARAM_INT);
+		}
+		if ($promo["id_intervalo_promocion"] === null) {
+			$stmt->bindValue(":id_intervalo_promocion", null, PDO::PARAM_NULL);
+		} else {
+			$stmt->bindValue(":id_intervalo_promocion", $promo["id_intervalo_promocion"], PDO::PARAM_INT);
+		}
+		$stmt->bindValue(":nombre_promocion", $promo["nombre_promocion"], PDO::PARAM_STR);
 	}
 }

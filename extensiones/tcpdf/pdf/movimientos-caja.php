@@ -176,6 +176,10 @@ class imprimirFactura
                 <td style="text-align:right; ">' . $arqueo["monto_ventas_efectivo"] . '</td>
             </tr>
             <tr>
+                <td style="text-align:left; "> DESCUENTOS (INFO):</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["total_descuentos_ventas"] ?? 0), 2) . '</td>
+            </tr>
+            <tr>
                 <td style="width:70%; text-align:left;"><strong>TOTAL INGRESOS:</strong></td>
                 <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . $arqueo["total_ingresos"] . '</strong></td>
             </tr>

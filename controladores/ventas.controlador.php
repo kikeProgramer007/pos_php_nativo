@@ -134,6 +134,18 @@ class ControladorVentas{
 			$valor1b = $fecha.' '.$hora;
 
 			$fechaMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1b, $valor1b, $valor);
+
+			/*=============================================
+			RECALCULAR PROMOCIONES EN BACKEND (antes de pagos)
+			=============================================*/
+			$promoCalc = self::aplicarPromocionesAListaProductos($listaProductos);
+			$listaProductos = $promoCalc["productos"];
+			$_POST["listaProductos"] = json_encode($listaProductos);
+			$totalNeto = $promoCalc["total_neto"];
+			$totalBruto = $promoCalc["total_bruto"];
+			$totalDescuento = $promoCalc["total_descuento"];
+			$_POST["totalVenta"] = number_format($totalNeto, 2, '.', '');
+
 			$tipoPago = "";
 			$totalQR = 0;
 			$totalEfectivo = 0;
@@ -146,14 +158,14 @@ class ControladorVentas{
 			switch ($_POST["tipoPago"]) {
 				case 1:
 					$tipoPago = "Efectivo";
-					$totalVenta = floatval($_POST["totalVenta"] ?? 0);
+					$totalVenta = floatval($totalNeto);
 					$totalEfectivo =  floatval($_POST["nuevoValorEfectivo"] ?? 0);
 					$totalPagado = number_format($totalEfectivo, 2, '.', ',');
 					$totalEfectivo = number_format($totalVenta, 2, '.', ',');
 					break;
 				case 2:
 					$tipoPago = "QR";
-					$totalVenta = floatval($_POST["totalVenta"] ?? 0);
+					$totalVenta = floatval($totalNeto);
 					$totalQR = floatval($_POST["nuevoValorQR"] ?? 0);
 					$totalPagado = number_format($totalQR, 2, '.', ',');
 					$totalQR = number_format($totalVenta, 2, '.', ',');
@@ -218,7 +230,9 @@ class ControladorVentas{
 						   "id_cliente"=>$_POST["id_cliente"],
 						   "codigo"=>$ultimoNroTicket,
 						   "productos"=>$_POST["listaProductos"],
-						   "total"=>$_POST["totalVenta"],
+						   "total"=>number_format($totalNeto, 2, '.', ''),
+						   "total_bruto"=>number_format($totalBruto, 2, '.', ''),
+						   "total_descuento"=>number_format($totalDescuento, 2, '.', ''),
 						   "nota"=>strtoupper($_POST["nota"]),
 						   "tipo_pago"=>$tipoPago,
 						   "cambio"=>$esPendiente ? 0 : $_POST["nuevoCambioEfectivo"],
@@ -240,7 +254,7 @@ class ControladorVentas{
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
 				if (!$esPendiente) {
 					$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
-					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, $_POST["totalVenta"],$totalEfectivo, $totalQR);
+					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, number_format($totalNeto, 2, '.', ''),$totalEfectivo, $totalQR);
 				}
 				ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($_POST["idArqueoCaja"]);
 
@@ -533,14 +547,19 @@ class ControladorVentas{
 
 		$formaAtencion = self::obtenerFormaAtencionTexto($_POST["formaAtencion"]);
 
+		$promoCalc = self::aplicarPromocionesAListaProductos($listaProductos);
+		$listaProductos = $promoCalc["productos"];
+
 		$datos = array(
 			"id_venta" => $idVenta,
 			"id_mesero" => $_POST["seleccionarMesero"],
 			"id_cliente" => $_POST["id_cliente"],
-			"total" => $_POST["totalVenta"],
+			"total" => number_format($promoCalc["total_neto"], 2, '.', ''),
+			"total_bruto" => number_format($promoCalc["total_bruto"], 2, '.', ''),
+			"total_descuento" => number_format($promoCalc["total_descuento"], 2, '.', ''),
 			"nota" => strtoupper($_POST["nota"]),
 			"forma_atencion" => $formaAtencion,
-			"productos" => $_POST["listaProductos"],
+			"productos" => json_encode($listaProductos),
 			"cliente" => $_POST["cliente"]
 		);
 
@@ -972,5 +991,109 @@ class ControladorVentas{
 		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal);
 	
 		return $respuesta;
+	}
+
+	static public function aplicarPromocionesAListaProductos($listaProductos)
+	{
+		$totalBruto = 0;
+		$totalDescuento = 0;
+
+		if (!is_array($listaProductos)) {
+			$listaProductos = array();
+		}
+
+		$itemsCalc = array();
+		foreach ($listaProductos as $i => $producto) {
+			$id = intval(isset($producto["id"]) ? $producto["id"] : 0);
+			$cant = intval(isset($producto["cantidad"]) ? $producto["cantidad"] : 0);
+			$traer = ModeloProductos::mdlMostrarProductos("productos", "id", $id, "id");
+			if ($traer) {
+				$precioOriginal = round(floatval($traer["precio_venta"]), 2);
+				$listaProductos[$i]["precioCompra"] = $traer["precio_compra"];
+			} else {
+				$precioOriginal = round(floatval(isset($producto["precioOriginal"]) ? $producto["precioOriginal"] : (isset($producto["precio"]) ? $producto["precio"] : 0)), 2);
+			}
+			$listaProductos[$i]["precioOriginal"] = $precioOriginal;
+			$totalBruto += round($precioOriginal * $cant, 2);
+			$itemsCalc[] = array("id" => $id, "cantidad" => $cant, "precio" => $precioOriginal);
+		}
+
+		$mapa = array();
+		if (class_exists("ControladorPromociones")) {
+			$mapa = ControladorPromociones::ctrCalcularPromocionesParaVenta($itemsCalc);
+		}
+
+		foreach ($listaProductos as $i => $producto) {
+			$id = intval($producto["id"]);
+			$cant = intval($producto["cantidad"]);
+			$precioOriginal = floatval($producto["precioOriginal"]);
+			$info = isset($mapa[$id]) ? $mapa[$id] : null;
+			$descUnit = 0;
+			$descTotal = 0;
+			$precioFinal = $precioOriginal;
+			$subtotalOriginal = round($precioOriginal * $cant, 2);
+			$promo = array(
+				"id_promocion" => null,
+				"id_intervalo_promocion" => null,
+				"nombre_promocion" => null,
+				"tipo_descuento" => null,
+				"valor_descuento" => null,
+				"descuento_unitario" => 0,
+				"descuento_total" => 0,
+				"precio_original" => $precioOriginal,
+				"precio_unitario_final" => $precioOriginal,
+				"subtotal_original" => $subtotalOriginal,
+				"subtotal_final" => $subtotalOriginal
+			);
+
+			if ($info && !empty($info["id_promocion"]) && floatval($info["descuento_unitario"]) > 0) {
+				$descUnit = round(floatval($info["descuento_unitario"]), 2);
+				if ($descUnit > $precioOriginal) {
+					$descUnit = $precioOriginal;
+				}
+				$precioFinal = round($precioOriginal - $descUnit, 2);
+				if ($precioFinal < 0) {
+					$precioFinal = 0;
+					$descUnit = $precioOriginal;
+				}
+				$descTotal = round($descUnit * $cant, 2);
+				if ($descTotal > $subtotalOriginal) {
+					$descTotal = $subtotalOriginal;
+					$precioFinal = 0;
+				}
+				$promo = array(
+					"id_promocion" => $info["id_promocion"],
+					"id_intervalo_promocion" => $info["id_intervalo_promocion"],
+					"nombre_promocion" => $info["nombre_promocion"],
+					"tipo_descuento" => $info["tipo_descuento"],
+					"valor_descuento" => $info["valor_descuento"],
+					"descuento_unitario" => $descUnit,
+					"descuento_total" => $descTotal,
+					"precio_original" => $precioOriginal,
+					"precio_unitario_final" => $precioFinal,
+					"subtotal_original" => $subtotalOriginal,
+					"subtotal_final" => round($subtotalOriginal - $descTotal, 2)
+				);
+			}
+
+			$totalDescuento += $descTotal;
+			$listaProductos[$i]["precio"] = $precioFinal;
+			$listaProductos[$i]["total"] = round($precioFinal * $cant, 2);
+			$listaProductos[$i]["promo"] = $promo;
+		}
+
+		$totalBruto = round($totalBruto, 2);
+		$totalDescuento = round($totalDescuento, 2);
+		$totalNeto = round($totalBruto - $totalDescuento, 2);
+		if ($totalNeto < 0) {
+			$totalNeto = 0;
+		}
+
+		return array(
+			"productos" => $listaProductos,
+			"total_bruto" => $totalBruto,
+			"total_descuento" => $totalDescuento,
+			"total_neto" => $totalNeto
+		);
 	}
 }

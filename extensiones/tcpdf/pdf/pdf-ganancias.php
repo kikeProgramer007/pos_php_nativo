@@ -104,6 +104,7 @@ class PdfGanancias extends FPDF
         $contador = 1;
         $sum = 0;
         $sum_ganancias = 0;
+        $sum_descuentos = 0;
 
         foreach ($ganancias as $ganancia) {
             $pdf->Cell(12, 5, $contador, 1, 0, 'L');
@@ -115,6 +116,7 @@ class PdfGanancias extends FPDF
             $pdf->Cell(24, 5, number_format($ganancia['ganancias'], 2, '.', ','). ' Bs.', 1, 1, 'C');
             $sum += $ganancia['total'];
             $sum_ganancias += $ganancia['ganancias'];
+            $sum_descuentos += floatval($ganancia['total_descuento'] ?? 0);
             $contador++;
         }
 
@@ -127,6 +129,8 @@ class PdfGanancias extends FPDF
         $pdf->Cell(20, 5, $contador - 1, 0, 1, 'L');
         $pdf->Cell(38, 5, utf8_decode('Monto total de ventas:'), 0, 0, 'L');
         $pdf->Cell(20, 5, number_format($sum, 2, '.', ',') . ' Bs.', 0, 1, 'L');
+        $pdf->Cell(38, 5, utf8_decode('Total descuentos:'), 0, 0, 'L');
+        $pdf->Cell(20, 5, number_format($sum_descuentos, 2, '.', ',') . ' Bs.', 0, 1, 'L');
         $pdf->Cell(38, 5, utf8_decode('Total Ganancia:'), 0, 0, 'L');
         $pdf->Cell(20, 5, number_format($sum_ganancias, 2, '.', ',') . ' Bs.', 0, 1, 'L');
 

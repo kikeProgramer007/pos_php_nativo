@@ -116,7 +116,18 @@ class CatalogoProductos {
       this.terminoBusqueda = e.target.value.toLowerCase();
       this.paginaActual = 1;
       this.renderizarCatalogo();
+      this.actualizarBotonLimpiarBusqueda();
     });
+
+    $('#btnLimpiarBusquedaProducto').on('click', () => {
+      $('#buscarProducto').val('').focus();
+      this.terminoBusqueda = '';
+      this.paginaActual = 1;
+      this.renderizarCatalogo();
+      this.actualizarBotonLimpiarBusqueda();
+    });
+
+    this.actualizarBotonLimpiarBusqueda();
 
     $(document).on('click', '.btn-categoria', (e) => {
       const categoria = $(e.target).data('categoria');
@@ -151,6 +162,12 @@ class CatalogoProductos {
         }
       });
     });
+  }
+
+  actualizarBotonLimpiarBusqueda() {
+    var $btn = $('#btnLimpiarBusquedaProducto');
+    var tieneTexto = ($('#buscarProducto').val() || '').trim().length > 0;
+    $btn.toggleClass('is-visible', tieneTexto);
   }
 
   renderizarFiltrosCategorias() {

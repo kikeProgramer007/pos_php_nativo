@@ -70,6 +70,15 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
         $("#nuevoTotalVenta").val(0);
         $("#totalVenta").val(0);
         $("#nuevoTotalVenta").attr("total",0);
+        $("#nuevoTotalItems").val("0.00");
+        $("#totalItems").val("0");
+        $("#nuevoTotalDescuento").val("0.00");
+        $("#totalDescuento").val("0");
+        if ($("#vistaTotalItems").length) {
+            $("#vistaTotalItems").text("Bs 0.00");
+            $("#vistaTotalDescuento").text("- Bs 0.00");
+            $("#vistaTotalVenta").text("Bs 0.00");
+        }
         $("#listaProductos").val("");
     } else {
         // SUMAR TOTAL DE PRECIOS
@@ -77,6 +86,12 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
         calcularPago();
         // AGRUPAR PRODUCTOS EN FORMATO JSON
         listarProductos();
+		if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
+			PromocionesVenta.recalcular(function() {
+				listarProductos();
+				calcularPago();
+			});
+		}
     }
 });
 
@@ -218,14 +233,20 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
       	    $(nuevaCantidadProducto).attr("stock", respuesta["stock"]);
       	    $(nuevoPrecioProducto).val(respuesta["precio_venta"]);
       	    $(nuevoPrecioProducto).attr("precioReal", respuesta["precio_venta"]);
+      	    $(nuevoPrecioProducto).attr("precioOriginal", respuesta["precio_venta"]);
 			$(nuevaCantidadProducto).val(1);
 			$(formaAtencion).val(1);
       	    $(nuevoPrecioCompraProducto).attr("precioRealCompra", respuesta["precio_compra"]);
   	        // AGRUPAR PRODUCTOS EN FORMATO JSON
-	        listarProductos()
-     
-			sumarTotalPrecios()
+	        listarProductos();
+			sumarTotalPrecios();
             calcularPago();
+			if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
+				PromocionesVenta.recalcular(function() {
+					listarProductos();
+					calcularPago();
+				});
+			}
       	}
 
       })
@@ -248,8 +269,11 @@ function actualizarCantidadProducto($input) {
 		$input.val(cantidad);
 	}
 
-	var precioFinal = cantidad * Number(precio.attr("precioReal") || 0);
-	precio.val(parseFloat(precioFinal).toFixed(2));
+	var precioOriginal = Number(precio.attr("precioOriginal") || precio.attr("precioReal") || 0);
+	precio.attr("precioOriginal", precioOriginal);
+	precio.attr("precioReal", precioOriginal);
+	var subtotalOriginal = cantidad * precioOriginal;
+	precio.val(parseFloat(subtotalOriginal).toFixed(2));
 
     var apariciones = contarProductoEnVenta(idProducto);
 	if(apariciones > 1){
@@ -260,8 +284,8 @@ function actualizarCantidadProducto($input) {
 	if(Number(cantidad) > Number($input.attr("stock"))){
 
 		$input.val(cantidadMinima);
-		precioFinal = Number($input.val()) * Number(precio.attr("precioReal") || 0);
-		precio.val(parseFloat(precioFinal).toFixed(2));
+		subtotalOriginal = Number($input.val()) * precioOriginal;
+		precio.val(parseFloat(subtotalOriginal).toFixed(2));
 		sumarTotalPrecios();
 		calcularPago();
 		swal({
@@ -276,6 +300,12 @@ function actualizarCantidadProducto($input) {
 	sumarTotalPrecios();
 	calcularPago();
     listarProductos();
+	if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
+		PromocionesVenta.recalcular(function() {
+			listarProductos();
+			calcularPago();
+		});
+	}
 }
 
 $(".formularioVenta").on("click", ".btn-cantidad-ajuste", function(){
@@ -306,38 +336,79 @@ $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 =============================================*/
 
 function sumarTotalPrecios(){
-    var precioItem = $(".nuevoPrecioProducto");
-    var sumaTotalPrecio = 0;
+    var sumaTotalItems = 0;
+    var sumaTotalDescuento = 0;
 
-    // Sumar directamente los valores sin usar reduce
-    precioItem.each(function() {
-        sumaTotalPrecio += Number($(this).val()) || 0;
+    $(".nuevoPrecioProducto").each(function() {
+        var $precio = $(this);
+        var cant = Number($precio.closest(".row").find(".nuevaCantidadProducto").val()) || 0;
+        var precioOriginal = Number($precio.attr("precioOriginal") || $precio.attr("precioReal") || 0);
+        var subtotalOriginal = precioOriginal * cant;
+        sumaTotalItems += subtotalOriginal;
+
+        var descLinea = 0;
+        try {
+            var promo = JSON.parse($precio.attr("data-promo") || "{}");
+            if (promo && Number(promo.descuento_total) > 0) {
+                descLinea = Number(promo.descuento_total);
+            }
+        } catch (e) {}
+
+        if (descLinea <= 0) {
+            var subtotalFinalAttr = Number($precio.attr("data-subtotal-final"));
+            if (!isNaN(subtotalFinalAttr) && subtotalOriginal > subtotalFinalAttr) {
+                descLinea = subtotalOriginal - subtotalFinalAttr;
+            }
+        }
+
+        if (descLinea > subtotalOriginal) {
+            descLinea = subtotalOriginal;
+        }
+        sumaTotalDescuento += descLinea;
     });
-	
+
+    sumaTotalItems = Math.round((sumaTotalItems + Number.EPSILON) * 100) / 100;
+    sumaTotalDescuento = Math.round((sumaTotalDescuento + Number.EPSILON) * 100) / 100;
+    var totalNeto = Math.round((sumaTotalItems - sumaTotalDescuento + Number.EPSILON) * 100) / 100;
+    if (totalNeto < 0) totalNeto = 0;
+
 	$("#nuevoCambioEfectivo").val("");
     $("#nuevoValorEfectivo").val("");
-    $("#nuevoTotalVenta").val(sumaTotalPrecio);
-    $("#totalVenta").val(sumaTotalPrecio);
-    $("#nuevoTotalVenta").attr("total", sumaTotalPrecio);
+
+    if ($("#nuevoTotalItems").length) {
+        $("#nuevoTotalItems").val(sumaTotalItems.toFixed(2));
+        $("#totalItems").val(sumaTotalItems.toFixed(2));
+    }
+
+    if ($("#nuevoTotalDescuento").length) {
+        $("#nuevoTotalDescuento").val(sumaTotalDescuento.toFixed(2));
+        $("#totalDescuento").val(sumaTotalDescuento.toFixed(2));
+    }
+
+    $("#nuevoTotalVenta").val(totalNeto.toFixed(2));
+    $("#totalVenta").val(totalNeto.toFixed(2));
+    $("#nuevoTotalVenta").attr("total", totalNeto);
+
+    if ($("#vistaTotalItems").length) {
+        $("#vistaTotalItems").text("Bs " + sumaTotalItems.toFixed(2));
+        $("#vistaTotalDescuento").text("- Bs " + sumaTotalDescuento.toFixed(2));
+        $("#vistaTotalVenta").text("Bs " + totalNeto.toFixed(2));
+    }
 }
 
+/* Los totales visibles son spans; los inputs ocultos siguen alimentando el flujo de venta */
 
-
-
-/*=============================================
-BORRAR LUEGO-----------------------
-=============================================*/
-
-
-
-
-
-
-/*=============================================
-FORMATO AL PRECIO FINAL
-=============================================*/
-
-$("#nuevoTotalVenta").number(true, 2);
+$(document).ready(function() {
+  if ($("#filaDescuentoResumen").length && typeof $.fn.tooltip === "function") {
+    $("#filaDescuentoResumen").tooltip({
+      container: "body",
+      placement: "left"
+    });
+  }
+  if (typeof sumarTotalPrecios === "function" && $("#vistaTotalItems").length) {
+    sumarTotalPrecios();
+  }
+});
 
 /*=============================================
 SELECCIONAR MÉTODO DE PAGO
@@ -592,12 +663,37 @@ function listarProductos() {
             descripcion: $producto.val(),
             cantidad: $cantidad.val(),
             stock: $cantidad.attr('stock'),
-            precio: $precio.attr('precioReal'),
             precioCompra: $precioCompra.attr('precioRealCompra'),
-            total: $precio.val(),
             preferencias: preferencias,
             nota_adicional: $descAdicional.val() || null,
-            forma_atencion: $formaAtencion.val() || null
+            forma_atencion: $formaAtencion.val() || null,
+            precioOriginal: (function() {
+                var orig = Number($precio.attr('precioOriginal') || $precio.attr('precioReal') || 0);
+                return orig;
+            })(),
+            precio: (function() {
+                try {
+                    var promo = JSON.parse($precio.attr('data-promo') || '{}');
+                    if (promo && promo.precio_unitario_final != null && Number(promo.descuento_total) > 0) {
+                        return Number(promo.precio_unitario_final);
+                    }
+                } catch (e) {}
+                return Number($precio.attr('precioOriginal') || $precio.attr('precioReal') || 0);
+            })(),
+            total: (function() {
+                try {
+                    var promo = JSON.parse($precio.attr('data-promo') || '{}');
+                    if (promo && promo.subtotal_final != null && Number(promo.descuento_total) > 0) {
+                        return Number(promo.subtotal_final);
+                    }
+                } catch (e) {}
+                var cant = Number($cantidad.val()) || 0;
+                var orig = Number($precio.attr('precioOriginal') || $precio.attr('precioReal') || 0);
+                return Math.round((orig * cant + Number.EPSILON) * 100) / 100;
+            })(),
+            promo: (function() {
+                try { return JSON.parse($precio.attr('data-promo') || '{}'); } catch (e) { return {}; }
+            })()
         });
     });
     $("#listaProductos").val(JSON.stringify(listaProductos));
@@ -1178,9 +1274,14 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $cantidadInput.val(1);
     $cantidadInput.attr('stock', stockOriginal);
     
-    // Actualizar el precio según la cantidad
-	var precioUnitario = $nuevoProducto.find('.nuevoPrecioProducto').attr('precioReal');
-	$nuevoProducto.find('.nuevoPrecioProducto').val(parseFloat(precioUnitario).toFixed(2));
+	// Mantener precio unitario ORIGINAL; el subtotal visible = qty × original
+	var $precioDup = $nuevoProducto.find('.nuevoPrecioProducto');
+	var precioUnitario = Number($precioDup.attr('precioOriginal') || $precioDup.attr('precioReal') || 0);
+	$precioDup.attr('precioOriginal', precioUnitario);
+	$precioDup.attr('precioReal', precioUnitario);
+	$precioDup.removeAttr('data-promo data-subtotal-final data-precio-final');
+	$precioDup.val(parseFloat(precioUnitario).toFixed(2));
+	$nuevoProducto.find('.promo-aplicada-info').remove();
 
     // Insertar el nuevo producto después del original
     $productoRow.after($nuevoProducto);
@@ -1209,6 +1310,12 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     sumarTotalPrecios();
     calcularPago();
     listarProductos();
+	if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
+		PromocionesVenta.recalcular(function() {
+			listarProductos();
+			calcularPago();
+		});
+	}
 });
 
 /*=============================================

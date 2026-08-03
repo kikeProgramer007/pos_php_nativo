@@ -63,6 +63,13 @@
 					<span>Productos</span>
 				</a>
 
+			</li>
+
+			<li>
+				<a href="promociones">
+					<i class="fa fa-tags"></i>
+					<span>Ofertas y Promociones</span>
+				</a>
 			</li>';
 			}
 

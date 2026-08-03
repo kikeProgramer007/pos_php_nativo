@@ -5,6 +5,8 @@ require_once "../modelos/ventas.modelo.php";
 require_once "../modelos/productos.modelo.php";
 require_once "../modelos/meseros.modelo.php";
 require_once "../modelos/arqueo.modelo.php";
+require_once "../controladores/promociones.controlador.php";
+require_once "../modelos/promociones.modelo.php";
 
 // Si usas sesiones para el usuario, inicia la sesión
 if (session_status() == PHP_SESSION_NONE) {

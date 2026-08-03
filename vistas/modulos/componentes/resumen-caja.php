@@ -22,6 +22,7 @@
                             <li>Efectivo</li>
                         </ul>
                     </li>
+                    <li class="text-muted">Descuentos (informativo)</li>
                 </ul>
             </td>
             <td class="tree-values">
@@ -29,6 +30,7 @@
                 <div id="monto_ventas" class="text-bold">0.00</div>
                 <div id="monto_ventas_qr">0.00</div>
                 <div id="monto_ventas_efectivo">0.00</div>
+                <div id="total_descuentos_ventas" class="text-muted">0.00</div>
             </td>
         </tr>
 

@@ -406,7 +406,9 @@ class ModeloArqueo {
             "SELECT
                 COALESCE(SUM(total), 0) AS total,
                 COALESCE(SUM(total_efectivo), 0) AS total_efectivo,
-                COALESCE(SUM(total_qr), 0) AS total_qr
+                COALESCE(SUM(total_qr), 0) AS total_qr,
+                COALESCE(SUM(COALESCE(total_bruto, total)), 0) AS total_bruto,
+                COALESCE(SUM(COALESCE(total_descuento, 0)), 0) AS total_descuento
              FROM ventas
              WHERE id_arqueo_caja = :id_arqueo_caja
                AND estado = 1
@@ -418,7 +420,9 @@ class ModeloArqueo {
         return [
             "total" => floatval($row["total"] ?? 0),
             "total_efectivo" => floatval($row["total_efectivo"] ?? 0),
-            "total_qr" => floatval($row["total_qr"] ?? 0)
+            "total_qr" => floatval($row["total_qr"] ?? 0),
+            "total_bruto" => floatval($row["total_bruto"] ?? 0),
+            "total_descuento" => floatval($row["total_descuento"] ?? 0)
         ];
     }
 
@@ -526,6 +530,9 @@ class ModeloArqueo {
             $arqueo["total_ingresos"] = $totalIngresos;
             $arqueo["total_egresos"] = $totalEgresos;
             $arqueo["resultado_neto"] = $resultadoNeto;
+            // Informativo comercial: no afecta ingresos/egresos de caja
+            $arqueo["total_bruto_ventas"] = $ventas["total_bruto"];
+            $arqueo["total_descuentos_ventas"] = $ventas["total_descuento"];
 
             return $arqueo;
         } catch (PDOException $e) {

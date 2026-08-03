@@ -107,8 +107,21 @@ class ModeloReportes{
     
     static public function mdlObtenerGanancias($mes,$anio){
 
-		// Consulta SQL
-		$sql = "SELECT dv.id_venta,v.codigo,DATE(v.fecha) AS fecha,u.usuario as vendedor,c.nombre as mesero,v.total,SUM((p.precio_venta-p.precio_compra)*dv.cantidad) as ganancias
+		// Ganancia = cobrado real (subtotal neto) - costo del detalle
+		// Usa precio_compra del detalle; si falta, cae al del producto.
+		$sql = "SELECT
+					dv.id_venta,
+					v.codigo,
+					DATE(v.fecha) AS fecha,
+					u.usuario as vendedor,
+					c.nombre as mesero,
+					v.total,
+					COALESCE(v.total_bruto, v.total) AS total_bruto,
+					COALESCE(v.total_descuento, 0) AS total_descuento,
+					SUM(
+						COALESCE(dv.subtotal, 0)
+						- (COALESCE(dv.precio_compra, p.precio_compra, 0) * dv.cantidad)
+					) as ganancias
 				FROM detalle_venta as dv
 				JOIN ventas AS v ON (dv.id_venta = v.id AND v.estado=1 AND v.estado_pago = 'PAGADA')
 				JOIN productos AS p ON dv.id_producto = p.id
@@ -116,7 +129,7 @@ class ModeloReportes{
 				JOIN usuarios AS u ON v.id_vendedor = u.id
 				WHERE MONTH(v.fecha)= :mes 
 				AND YEAR(v.fecha)= :anio 
-				GROUP BY (dv.id_venta)
+				GROUP BY dv.id_venta, v.codigo, DATE(v.fecha), u.usuario, c.nombre, v.total, v.total_bruto, v.total_descuento
 				ORDER BY v.fecha ASC;";
 
         $ganancias = Conexion::conectar()->prepare($sql);

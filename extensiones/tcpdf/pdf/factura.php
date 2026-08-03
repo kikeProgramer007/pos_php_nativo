@@ -137,7 +137,12 @@ class imprimirFactura
             <tr >
                 <td width="25%"><strong>VÍA PAGO</strong></td>
                 <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $tipoPago . '</td>
+                <td width="72%">' . (($tipoPago !== '' && $tipoPago !== null) ? $tipoPago : 'Pendiente') . '</td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>ESTADO</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . ((strtoupper(trim((string)($respuestaVenta["estado_pago"] ?? ''))) === "PENDIENTE") ? "Cuenta pendiente" : "Cuenta pagada") . '</td>
             </tr>
             <tr><td colspan="2"></td></tr>
           </tbody>
@@ -158,8 +163,15 @@ class imprimirFactura
              ';
 
         foreach ($productos as $item) {
-            $valorUnitario = number_format($item["precio_venta"], 2);
-            $precioTotal = number_format($item["subtotal"], 2);
+            $precioOrigTicket = floatval($item['precio_original'] ?? 0);
+            if ($precioOrigTicket <= 0) {
+                $precioOrigTicket = floatval($item['precio_venta']);
+            }
+            $cantItem = floatval($item["cantidad"]);
+            $subtotalOriginal = round($precioOrigTicket * $cantItem, 2);
+            $descTotal = floatval($item['descuento_total'] ?? 0);
+            $valorUnitario = number_format($precioOrigTicket, 2);
+            $precioTotal = number_format($subtotalOriginal, 2);
             $preferencias = $item['preferencias'] ?? '';
             $nota = $item['nota_adicional'] ?? '';
             
@@ -172,15 +184,46 @@ class imprimirFactura
             $preferenciasYNotaAdicional = $texto 
                 ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
+
+            $infoPromo = '';
+            if ($descTotal > 0) {
+                $infoPromo = '<br><span style="font-size: 8px; color: #666;">Promo: - Bs ' . number_format($descTotal, 2) .
+                    (!empty($item['nombre_promocion']) ? ' (' . htmlspecialchars($item['nombre_promocion']) . ')' : '') .
+                    '</span>';
+            }
           
             $htmlFactura .= '
                 <tr>
-                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
+                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . $infoPromo . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $precioTotal . '</td>
                 </tr>';
+        }
+
+        $sumaDescuentos = floatval($respuestaVenta["total_descuento"] ?? 0);
+        $sumaBruto = floatval($respuestaVenta["total_bruto"] ?? 0);
+        if ($sumaDescuentos <= 0 || $sumaBruto <= 0) {
+            $sumaDescuentos = 0;
+            $sumaBruto = 0;
+            foreach ($productos as $item) {
+                $sumaDescuentos += floatval($item['descuento_total'] ?? 0);
+                $precioOrig = floatval($item['precio_original'] ?? $item['precio_venta']);
+                $sumaBruto += $precioOrig * floatval($item['cantidad']);
+            }
+        }
+
+        if ($sumaDescuentos > 0) {
+            $htmlFactura .= '
+            <tr>
+                <td colspan="3" style="border-top: 0.5px solid #000000; text-align:left; font-size: 9px;"> <strong>TOTAL ÍTEMS:</strong></td>
+                <td colspan="2" style="border-top: 0.5px solid #000000; text-align:right; font-size: 9px;"> Bs ' . number_format($sumaBruto, 2) . '</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:left; font-size: 9px;"> <strong>TOTAL DESCUENTOS:</strong></td>
+                <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . number_format($sumaDescuentos, 2) . '</td>
+            </tr>';
         }
 
         $htmlFactura .= '

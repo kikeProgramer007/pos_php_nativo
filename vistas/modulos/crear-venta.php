@@ -263,17 +263,24 @@ if ($modoEdicionCuenta) {
     box-sizing: border-box;
   }
 
+  .catalogo-busqueda-field {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+
   .catalogo-busqueda input,
   .catalogo-busqueda .form-control {
-    flex: 1;
+    display: block;
     width: 100%;
     height: 44px;
-    padding: 0 16px;
+    padding: 0 40px 0 16px;
     margin: 0;
     font-size: 16px;
     font-weight: 500;
     line-height: 40px;
     border: 2px solid #28a745;
+    border-left: none;
     border-radius: 0;
     background: #fff;
     box-shadow: none;
@@ -297,6 +304,141 @@ if ($modoEdicionCuenta) {
     font-weight: 400;
   }
 
+  .btn-limpiar-busqueda {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #888;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+  }
+
+  .btn-limpiar-busqueda.is-visible {
+    display: inline-flex;
+  }
+
+  .btn-limpiar-busqueda:hover,
+  .btn-limpiar-busqueda:focus {
+    color: #333;
+    background: #e9ecef;
+    outline: none;
+  }
+
+  /* Etiqueta compacta de promoción en línea de producto */
+  .promo-aplicada-info {
+    margin-top: 2px;
+    line-height: 1.2;
+    min-height: 0;
+  }
+
+  .promo-etiqueta {
+    display: inline-block;
+    max-width: 100%;
+    font-size: 11px;
+    color: #27ae60;
+    cursor: help;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .promo-tooltip-detalle {
+    text-align: left;
+    line-height: 1.45;
+  }
+
+  .promo-etiqueta .fa {
+    margin-left: 2px;
+    opacity: 0.75;
+    font-size: 11px;
+  }
+
+  /* Resumen compacto de totales */
+  .resumen-venta-totales {
+    width: 100%;
+    padding: 2px 0 4px;
+  }
+
+  .resumen-fila {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 3px 0;
+    line-height: 1.25;
+  }
+
+  .resumen-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 13px;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  .resumen-monto {
+    flex: 0 0 auto;
+    font-size: 13px;
+    color: #333;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .resumen-fila-descuento .resumen-monto {
+    color: #c0392b;
+    font-weight: 600;
+  }
+
+  .resumen-fila-descuento .resumen-label .fa {
+    font-size: 11px;
+    margin-left: 3px;
+    color: #999;
+    cursor: help;
+  }
+
+  .resumen-fila-total {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px dashed #ccc;
+  }
+
+  .resumen-fila-total .resumen-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+    text-transform: uppercase;
+  }
+
+  .resumen-fila-total .resumen-monto {
+    font-size: 16px;
+    font-weight: 700;
+    color: #28a745;
+  }
+
+  @media (max-width: 767px) {
+    .resumen-fila {
+      flex-wrap: nowrap;
+    }
+
+    .resumen-monto,
+    .resumen-label {
+      white-space: nowrap;
+    }
+  }
+
   /* Responsividad */
   @media (max-width: 992px) {
     .catalogo-header {
@@ -313,7 +455,8 @@ if ($modoEdicionCuenta) {
 
     .catalogo-busqueda .input-group-addon,
     .catalogo-busqueda input,
-    .catalogo-busqueda .form-control {
+    .catalogo-busqueda .form-control,
+    .catalogo-busqueda-field {
       height: 48px;
     }
 
@@ -326,6 +469,7 @@ if ($modoEdicionCuenta) {
     .catalogo-busqueda .form-control {
       font-size: 16px;
       line-height: 44px;
+      padding-right: 40px;
     }
   }
 
@@ -572,20 +716,10 @@ if ($modoEdicionCuenta) {
     font-size: 20px;
   }
 
-  /* Estilos para el campo Total */
+  /* Estilos legacy del total (inputs ocultos; el resumen usa .resumen-venta-totales) */
   .cajaTotal th {
     font-size: 15px;
     padding-bottom: 5px;
-  }
-
-  .cajaTotal .form-control {
-    height: 45px;
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-  .cajaTotal .input-group-addon {
-    font-size: 20px;
   }
 
   @media (max-width: 767px) {
@@ -748,7 +882,12 @@ if ($modoEdicionCuenta) {
                     <span class="input-group-addon">
                       <i class="fa fa-search"></i>
                     </span>
-                    <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos..." autocomplete="off">
+                    <div class="catalogo-busqueda-field">
+                      <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar productos..." autocomplete="off">
+                      <button type="button" class="btn-limpiar-busqueda" id="btnLimpiarBusquedaProducto" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+                        &times;
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -965,45 +1104,31 @@ if ($modoEdicionCuenta) {
 
                   <div class="col-xs-6 pull-right cajaTotal">
 
-                    <table style="width:100%">
+                    <input type="hidden" id="nuevoImpuestoVenta" name="nuevoImpuestoVenta" value="0">
+                    <input type="hidden" name="nuevoPrecioImpuesto" id="nuevoPrecioImpuesto" required>
+                    <input type="hidden" name="nuevoPrecioNeto" id="nuevoPrecioNeto" required>
 
-                      <thead>
-
-                        <tr>
-                          <th class="text-uppercase">Total</th>
-                        </tr>
-
-                      </thead>
-
-                      <tbody>
-
-                        <tr>
-                          <input type="hidden" id="nuevoImpuestoVenta" name="nuevoImpuestoVenta" value="0">
-
-                          <input type="hidden" name="nuevoPrecioImpuesto" id="nuevoPrecioImpuesto" required>
-
-                          <input type="hidden" name="nuevoPrecioNeto" id="nuevoPrecioNeto" required>
-
-                          <td>
-
-                            <div class="input-group">
-
-                              <span class="input-group-addon"><i><b>Bs</b></i></span>
-
-                              <input type="text" class="form-control " id="nuevoTotalVenta" name="nuevoTotalVenta" total="" placeholder="0" readonly disabled required>
-
-                              <input type="hidden" name="totalVenta" id="totalVenta">
-
-                            </div>
-
-                          </td>
-                    
-                        </tr>
-
-                      </tbody>
-                   
+                    <div class="resumen-venta-totales">
+                      <div class="resumen-fila">
+                        <span class="resumen-label">Total ítems</span>
+                        <span class="resumen-monto" id="vistaTotalItems">Bs 0.00</span>
+                      </div>
+                      <div class="resumen-fila resumen-fila-descuento" id="filaDescuentoResumen" data-toggle="tooltip" data-placement="left" title="Descuentos por oferta / volumen">
+                        <span class="resumen-label">Descuentos <i class="fa fa-info-circle"></i></span>
+                        <span class="resumen-monto" id="vistaTotalDescuento">- Bs 0.00</span>
+                      </div>
+                      <div class="resumen-fila resumen-fila-total">
+                        <span class="resumen-label">TOTAL</span>
+                        <span class="resumen-monto" id="vistaTotalVenta">Bs 0.00</span>
+                      </div>
                     </div>
-                    </table>
+
+                    <input type="hidden" id="nuevoTotalItems" name="nuevoTotalItems" value="0.00">
+                    <input type="hidden" name="totalItems" id="totalItems" value="0">
+                    <input type="hidden" id="nuevoTotalDescuento" name="nuevoTotalDescuento" value="0.00">
+                    <input type="hidden" name="totalDescuento" id="totalDescuento" value="0">
+                    <input type="hidden" id="nuevoTotalVenta" name="nuevoTotalVenta" total="" value="0" required>
+                    <input type="hidden" name="totalVenta" id="totalVenta" value="0">
 
                   </div>
 
@@ -1682,6 +1807,32 @@ function agregarLineaProductoEdicion(linea) {
   var formaAtencionLinea = linea.forma_atencion === "LL" ? "2" : "1";
   var formaAtencionGeneral = $("#formaAtencion").val();
   var stockLinea = parseInt(linea.stock_actual || 0) + parseInt(linea.cantidad || 0);
+  var precioOriginal = (linea.precio_original !== null && linea.precio_original !== undefined && linea.precio_original !== "")
+    ? linea.precio_original
+    : linea.precio_venta;
+  var cantLinea = Number(linea.cantidad) || 1;
+  var precioOrigNum = Number(precioOriginal) || 0;
+  var subtotalOriginal = Math.round((precioOrigNum * cantLinea + Number.EPSILON) * 100) / 100;
+  var descTotal = Number(linea.descuento_total) || 0;
+  var descUnit = Number(linea.descuento_unitario) || 0;
+  var precioFinal = Math.round((precioOrigNum - descUnit + Number.EPSILON) * 100) / 100;
+  if (precioFinal < 0) precioFinal = 0;
+  var subtotalFinal = Math.round((subtotalOriginal - descTotal + Number.EPSILON) * 100) / 100;
+  if (subtotalFinal < 0) subtotalFinal = 0;
+  var promoData = {
+    id_promocion: linea.id_promocion || null,
+    id_intervalo_promocion: linea.id_intervalo_promocion || null,
+    nombre_promocion: linea.nombre_promocion || null,
+    tipo_descuento: linea.tipo_descuento || null,
+    valor_descuento: linea.valor_descuento || null,
+    descuento_unitario: descUnit,
+    descuento_total: descTotal,
+    precio_original: precioOrigNum,
+    precio_unitario_final: precioFinal,
+    subtotal_original: subtotalOriginal,
+    subtotal_final: subtotalFinal
+  };
+  var promoAttr = JSON.stringify(promoData).replace(/'/g, "&#39;");
 
   $(".nuevoProducto").append(`
     <div class="row" style="padding:4px 15px">
@@ -1720,8 +1871,10 @@ function agregarLineaProductoEdicion(linea) {
         <div class="input-group">
           <span class="input-group-addon"><i><b>Bs</b></i></span>
           <input type="text" class="form-control input-sm nuevoPrecioProducto"
-                 precioReal="${linea.precio_venta}" name="nuevoPrecioProducto"
-                 value="${linea.subtotal}" readonly required>
+                 precioReal="${precioOrigNum}" precioOriginal="${precioOrigNum}"
+                 data-promo='${promoAttr}' data-subtotal-final="${subtotalFinal}" data-precio-final="${precioFinal}"
+                 name="nuevoPrecioProducto"
+                 value="${subtotalOriginal.toFixed(2)}" readonly required>
           <input type="hidden" precioRealCompra="${linea.precio_compra}"
                  name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto"
                  value="${linea.precio_compra}">
@@ -1745,6 +1898,9 @@ $(document).ready(function() {
     sumarTotalPrecios();
     listarProductos();
     $(".nuevoPrecioProducto").number(true, 2);
+    if (window.PromocionesVenta) {
+      PromocionesVenta.recalcular(function(){ listarProductos(); });
+    }
   }
 });
 <?php endif; ?>
@@ -1848,7 +2004,8 @@ function agregarProductoAVenta(producto) {
         <div class="input-group">
           <span class="input-group-addon"><i><b>Bs</b></i></span>
           <input type="text" class="form-control input-sm nuevoPrecioProducto" 
-                 precioReal="${producto.precio_venta}" name="nuevoPrecioProducto" 
+                 precioReal="${producto.precio_venta}" precioOriginal="${producto.precio_venta}"
+                 name="nuevoPrecioProducto" 
                  value="${producto.precio_venta}" readonly required>
           <input type="hidden" precioRealCompra="${producto.precio_compra}" 
                  name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto" 
@@ -1870,7 +2027,6 @@ function agregarProductoAVenta(producto) {
   if(formaAtencionGeneral !== "3") { // Si no es mixto
     nuevoSelector.prop("disabled", true); // Deshabilitar el selector del nuevo producto
   }
-
 
   // Inicializar Select2 para las notas con un timeout para asegurar que el DOM esté listo
   setTimeout(function() {
@@ -1902,6 +2058,13 @@ function agregarProductoAVenta(producto) {
   calcularPago();
   listarProductos();
   $(".nuevoPrecioProducto").number(true, 2);
+
+  if (window.PromocionesVenta) {
+    PromocionesVenta.recalcular(function() {
+      listarProductos();
+      if (typeof calcularPago === "function") calcularPago();
+    });
+  }
 }
 
 // Actualizar el código de inicialización de Select2

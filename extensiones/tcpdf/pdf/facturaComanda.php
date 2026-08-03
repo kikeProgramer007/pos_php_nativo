@@ -27,7 +27,7 @@ class imprimirFacturaComanda
     /**
      * Genera el HTML de la tabla de productos
      */
-    private function generarTablaProductos($productos, $total, $totalPagado, $cambio, $notaGeneral = '', $esComanda = false) {
+    private function generarTablaProductos($productos, $total, $totalPagado, $cambio, $notaGeneral = '', $esComanda = false, $totalBrutoVenta = null, $totalDescuentoVenta = null) {
         $html = '<table border="0" cellpadding="0" style="width:100%; font-size: 7px; ">
             <tbody>
             <tr>
@@ -38,9 +38,22 @@ class imprimirFacturaComanda
                 <th style="width:23%; border-top: 0.5px solid #000000; border-bottom: 0.5px solid #000000; text-align:right; font-weight: bold;">SUBTOTAL</th>
             </tr>';
 
+        $sumaDescuentos = 0;
+        $sumaBruto = 0;
+
         foreach ($productos as $item) {
-            $valorUnitario = number_format($item["precio_venta"], 2);
-            $precioTotal = number_format($item["subtotal"], 2);
+            $precioOrigTicket = floatval($item['precio_original'] ?? 0);
+            if ($precioOrigTicket <= 0) {
+                $precioOrigTicket = floatval($item['precio_venta']);
+            }
+            $cantItem = floatval($item["cantidad"]);
+            $subtotalOriginal = round($precioOrigTicket * $cantItem, 2);
+            $descTotal = floatval($item['descuento_total'] ?? 0);
+            $sumaBruto += $subtotalOriginal;
+            $sumaDescuentos += $descTotal;
+
+            $valorUnitario = number_format($precioOrigTicket, 2);
+            $precioTotal = number_format($subtotalOriginal, 2);
             $preferencias = $item['preferencias'] ?? '';
             $notaItem = $item['nota_adicional'] ?? '';
             
@@ -52,10 +65,17 @@ class imprimirFacturaComanda
             $preferenciasYNotaAdicional = $texto 
                 ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
                 : '';
+
+            $infoPromo = '';
+            if ($descTotal > 0) {
+                $infoPromo = '<br><span style="font-size: 8px; color: #666;">Promo: - Bs ' . number_format($descTotal, 2) .
+                    (!empty($item['nombre_promocion']) ? ' (' . htmlspecialchars($item['nombre_promocion']) . ')' : '') .
+                    '</span>';
+            }
           
             $html .= '
                 <tr>
-                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . '</td>
+                    <td style="font-size: 10px; padding: 3px 0;">' . $item["producto"] . $preferenciasYNotaAdicional . $infoPromo . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["forma_atencion"] . '</td>
                     <td style="text-align:center; font-size: 9px; padding: 3px 0;">' . $item["cantidad"] . '</td>
                     <td style="text-align:right; font-size: 9px; padding: 3px 0;">' . $valorUnitario . '</td>
@@ -63,8 +83,26 @@ class imprimirFacturaComanda
                 </tr>';
         }
 
+        if ($totalBrutoVenta !== null && floatval($totalBrutoVenta) > 0) {
+            $sumaBruto = floatval($totalBrutoVenta);
+        }
+        if ($totalDescuentoVenta !== null && floatval($totalDescuentoVenta) > 0) {
+            $sumaDescuentos = floatval($totalDescuentoVenta);
+        }
+
         // Solo añadir totales si no es comanda
         if (!$esComanda) {
+            if ($sumaDescuentos > 0) {
+                $html .= '
+            <tr>
+                <td colspan="3" style="border-top: 0.5px solid #000000; text-align:left; font-size: 9px;"><strong>TOTAL ÍTEMS:</strong></td>
+                <td colspan="2" style="border-top: 0.5px solid #000000; text-align:right; font-size: 9px;">Bs ' . number_format($sumaBruto, 2) . '</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:left; font-size: 9px;"><strong>TOTAL DESCUENTOS:</strong></td>
+                <td colspan="2" style="text-align:right; font-size: 9px;">Bs ' . number_format($sumaDescuentos, 2) . '</td>
+            </tr>';
+            }
             $html .= '
             <tr>
                 <td colspan="3" style="border-top: 0.5px solid #000000; text-align:left; font-size: 9px;"><strong>TOTAL:</strong></td>
@@ -145,11 +183,24 @@ class imprimirFacturaComanda
             <tr>
                 <td width="25%"><strong>VÍA PAGO</strong></td>
                 <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $tipoPago . '</td>
+                <td width="72%">' . ($tipoPago !== '' && $tipoPago !== null ? $tipoPago : 'Pendiente') . '</td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>ESTADO</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $this->etiquetaEstadoPagoTicket($respuestaVenta["estado_pago"] ?? '') . '</td>
             </tr>
             <tr><td colspan="2"></td></tr>
             </tbody>
         </table>';
+    }
+
+    private function etiquetaEstadoPagoTicket($estadoPago)
+    {
+        if (strtoupper(trim((string)$estadoPago)) === "PENDIENTE") {
+            return "Cuenta pendiente";
+        }
+        return "Cuenta pagada";
     }
 
     /**
@@ -226,6 +277,8 @@ class imprimirFacturaComanda
             $tipoPago = $respuestaVenta["tipo_pago"];
             $totalPagado = number_format($respuestaVenta["total_pagado"], 2);
             $notaGeneral = trim($respuestaVenta["nota"] ?? '');
+            $totalBrutoVenta = $respuestaVenta["total_bruto"] ?? null;
+            $totalDescuentoVenta = $respuestaVenta["total_descuento"] ?? null;
             
             // Obtener información del cliente
             $respuestaCliente = ControladorClientes::ctrMostrarClientesActivoInactivos("id", $respuestaVenta["id_cliente"]);
@@ -247,10 +300,10 @@ class imprimirFacturaComanda
 
             // Generar encabezados reutilizables
             $encabezadoFactura = $this->generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago);
-            $tablaProductos = $this->generarTablaProductos($productos, $total, $totalPagado, $cambio, '', false);
+            $tablaProductos = $this->generarTablaProductos($productos, $total, $totalPagado, $cambio, '', false, $totalBrutoVenta, $totalDescuentoVenta);
             
             $encabezadoComanda = $this->generarEncabezadoComanda($respuestaVenta, $respuestaCliente, $respuestaMesero, $fecha, $respuestaVenta["forma_atencion"]);
-            $tablaProductosComanda = $this->generarTablaProductos($productos, $total, $totalPagado, $cambio, $notaGeneral, true);
+            $tablaProductosComanda = $this->generarTablaProductos($productos, $total, $totalPagado, $cambio, $notaGeneral, true, $totalBrutoVenta, $totalDescuentoVenta);
 
             // ===== PDF FACTURA (individual) =====
             $pdfFactura = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);

@@ -79,6 +79,9 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "ver-productos-faltantes" ||
          $_GET["ruta"] == "ganancias-ventas" ||
          $_GET["ruta"] == "proveedor" ||
+         $_GET["ruta"] == "promociones" ||
+         $_GET["ruta"] == "agregar-promocion" ||
+         $_GET["ruta"] == "editar-promocion" ||
          $_GET["ruta"] == "salir"){
 
         include "modulos/".$_GET["ruta"].".php";

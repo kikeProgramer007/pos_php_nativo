@@ -298,6 +298,7 @@ class ArqueoCaja {
             'monto_ventas': datos.monto_ventas || '0.00',
             'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
             'monto_ventas_qr': datos.monto_ventas_qr || '0.00',
+            'total_descuentos_ventas': datos.total_descuentos_ventas || '0.00',
             'total_ingresos': datos.total_ingresos || '0.00',
             'gastos_operativos': datos.gastos_operativos || '0.00',
             'monto_compras': datos.monto_compras || '0.00',
