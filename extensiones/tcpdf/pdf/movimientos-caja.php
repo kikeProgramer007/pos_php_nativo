@@ -22,6 +22,20 @@ class imprimirFactura
 
     public $codigo;
 
+    private function formatearFechaHora($valor)
+    {
+        if (empty($valor)) {
+            return '';
+        }
+
+        $fecha = date_create($valor);
+        if ($fecha !== false) {
+            return $fecha->format('d-m-Y H:i a');
+        }
+
+        return $valor;
+    }
+
     public function traerMovimientoCaja()
     {
 
@@ -30,7 +44,7 @@ class imprimirFactura
         $arqueo = ControladorArqueo::ctrObtenerArqueoPorId($this->codigo);
         if($arqueo!=null){
         $fechaSolo = date('d-m-Y');
-        $horaSolo = date('H:i:s a');
+        $horaSolo = date('H:i a');
 
 
         // Obtener información del vendedor
@@ -136,12 +150,12 @@ class imprimirFactura
             <tr>
                 <td style="width:42%;"><strong>F. APERTURA</strong></td>
                 <td style="width:3%;"><strong>:</strong></td>
-                <td style="width:53%;">' . $arqueo["fecha_apertura"] . '</td>
+                <td style="width:53%;">' . $this->formatearFechaHora($arqueo["fecha_apertura"] ?? '') . '</td>
             </tr>
             <tr>
                 <td style="width:42%;"><strong>F. CIERRE</strong></td>
                 <td style="width:3%;"><strong>:</strong></td>
-                <td style="width:53%;">' . $arqueo["fecha_cierre"] . '</td>
+                <td style="width:53%;">' . $this->formatearFechaHora($arqueo["fecha_cierre"] ?? '') . '</td>
             </tr>
             <tr  border="1">
                 <td style="width:42%;"><strong>ULTIMO Nº TICKET</strong></td>
@@ -151,7 +165,7 @@ class imprimirFactura
             <tr> <td ></td> </tr> 
            
             <tr>
-                <td colspan="3" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">MOVIMIENTOS</td>
+                <td colspan="3" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">MOVIMIENTOS EN SISTEMA</td>
             </tr>
             <tr><td colspan="2"></td></tr>
             <tr>
@@ -320,7 +334,7 @@ class imprimirFactura
            </tr>
            <tr><td colspan="2"></td></tr>
             <tr>
-                <td style="text-align:left; ">DINERO EN EL SISTEMA:</td>
+                <td style="text-align:left; ">MOVIMIENTOS EN  SISTEMA: </td>
                 <td style="text-align:right; ">' . number_format($resultadoNeto, 2) . '</td>
             </tr>
             

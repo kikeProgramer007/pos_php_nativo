@@ -52,9 +52,9 @@ $fechaActual = date('Y-m-d');
                 <div class="form-group">
                   <label>Estado de Pago</label>
                   <select class="select2" class="form-control" id="estado_pago" name="estado_pago" required>
-                    <option value="0">Todos</option>
+                    <option value="0" selected>Todos</option>
                     <option value="1">Pendiente</option>
-                    <option value="2" selected>Pagado</option>
+                    <option value="2">Pagado</option>
                   </select>
                 </div>
               </div>
