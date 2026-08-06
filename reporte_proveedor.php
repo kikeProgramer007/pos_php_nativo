@@ -54,6 +54,89 @@ class PDF extends FPDF
         $this->Ln(5);
     }
 
+    // Calcula cuántas líneas ocupará un texto dentro de un ancho dado
+    function NbLines($w, $txt)
+    {
+        $cw = &$this->CurrentFont['cw'];
+        if ($w == 0)
+            $w = $this->w - $this->rMargin - $this->x;
+        $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+        $s = str_replace("\r", '', $txt);
+        $nb = strlen($s);
+        if ($nb > 0 and $s[$nb - 1] == "\n")
+            $nb--;
+        $sep = -1;
+        $i = 0;
+        $j = 0;
+        $l = 0;
+        $nl = 1;
+        while ($i < $nb) {
+            $c = $s[$i];
+            if ($c == "\n") {
+                $i++;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+                continue;
+            }
+            if ($c == ' ')
+                $sep = $i;
+            if (isset($cw[$c]))
+                $l += $cw[$c];
+            if ($l > $wmax) {
+                if ($sep == -1) {
+                    if ($i == $j)
+                        $i++;
+                } else
+                    $i = $sep + 1;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+            } else
+                $i++;
+        }
+        return $nl;
+    }
+
+    // Imprime una fila con celdas que pueden contener salto de línea automático
+    function Row($data, $widths, $aligns = array(), $fill = false)
+    {
+        $nb = 0;
+        for ($i = 0; $i < count($data); $i++) {
+            $nb = max($nb, $this->NbLines($widths[$i], $data[$i]));
+        }
+        $h = 5 * $nb; // altura por línea 5 mm
+
+        if ($this->GetY() + $h > $this->PageBreakTrigger) {
+            $this->AddPage($this->CurOrientation);
+            $this->TablaHeader();
+            $this->SetFont('Arial', '', 9);
+        }
+
+        for ($i = 0; $i < count($data); $i++) {
+            $w = $widths[$i];
+            $a = isset($aligns[$i]) ? $aligns[$i] : 'L';
+            $x = $this->GetX();
+            $y = $this->GetY();
+
+            if ($fill) {
+                $this->SetFillColor(250, 250, 250);
+                $this->Rect($x, $y, $w, $h, 'F');
+                $this->SetDrawColor(0, 0, 0);
+                $this->Rect($x, $y, $w, $h);
+            } else {
+                $this->Rect($x, $y, $w, $h);
+            }
+
+            $this->SetXY($x + 1, $y + 1);
+            $this->MultiCell($w - 2, 5, $data[$i], 0, $a);
+            $this->SetXY($x + $w, $y);
+        }
+        $this->Ln($h);
+    }
+
     function TablaHeader()
     {
         // Configuración de la tabla
@@ -136,10 +219,17 @@ while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $pdf->SetX($posX);
 
     // Imprimir datos con bordes y fondo alternado
-    $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre'])), 1, 0, 'L', true);
-    $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['empresa'])), 1, 0, 'L', true);
-    $pdf->Cell($anchoColumna[2], 8, strtoupper($fila['telefono']), 1, 0, 'C', true);
-    $pdf->Cell($anchoColumna[3], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['direccion'])), 1, 1, 'L', true);
+    $dataRow = array(
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre'])),
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['empresa'])),
+        strtoupper($fila['telefono']),
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['direccion']))
+    );
+
+    $aligns = array('L','L','C','L');
+
+    $pdf->SetX($posX);
+    $pdf->Row($dataRow, $anchoColumna, $aligns, $colorFila);
     
     $colorFila = !$colorFila;
 }

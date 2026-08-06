@@ -56,6 +56,89 @@ class PDF extends FPDF
         $this->Cell($anchoColumna[4], 10, iconv('UTF-8', 'ISO-8859-1', 'USUARIO'), 1, 1, 'C', true);
     }
 
+    // Calcula cuántas líneas ocupará un texto dentro de un ancho dado
+    function NbLines($w, $txt)
+    {
+        $cw = &$this->CurrentFont['cw'];
+        if ($w == 0)
+            $w = $this->w - $this->rMargin - $this->x;
+        $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+        $s = str_replace("\r", '', $txt);
+        $nb = strlen($s);
+        if ($nb > 0 and $s[$nb - 1] == "\n")
+            $nb--;
+        $sep = -1;
+        $i = 0;
+        $j = 0;
+        $l = 0;
+        $nl = 1;
+        while ($i < $nb) {
+            $c = $s[$i];
+            if ($c == "\n") {
+                $i++;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+                continue;
+            }
+            if ($c == ' ')
+                $sep = $i;
+            if (isset($cw[$c]))
+                $l += $cw[$c];
+            if ($l > $wmax) {
+                if ($sep == -1) {
+                    if ($i == $j)
+                        $i++;
+                } else
+                    $i = $sep + 1;
+                $sep = -1;
+                $j = $i;
+                $l = 0;
+                $nl++;
+            } else
+                $i++;
+        }
+        return $nl;
+    }
+
+    // Imprime una fila con celdas que pueden contener salto de línea automático
+    function Row($data, $widths, $aligns = array(), $fill = false)
+    {
+        $nb = 0;
+        for ($i = 0; $i < count($data); $i++) {
+            $nb = max($nb, $this->NbLines($widths[$i], $data[$i]));
+        }
+        $h = 5 * $nb; // altura por línea 5 mm
+
+        if ($this->GetY() + $h > $this->PageBreakTrigger) {
+            $this->AddPage($this->CurOrientation);
+            $this->TablaHeader();
+            $this->SetFont('Arial', '', 9);
+        }
+
+        for ($i = 0; $i < count($data); $i++) {
+            $w = $widths[$i];
+            $a = isset($aligns[$i]) ? $aligns[$i] : 'L';
+            $x = $this->GetX();
+            $y = $this->GetY();
+
+            if ($fill) {
+                $this->SetFillColor(250, 250, 250);
+                $this->Rect($x, $y, $w, $h, 'F');
+                $this->SetDrawColor(0, 0, 0);
+                $this->Rect($x, $y, $w, $h);
+            } else {
+                $this->Rect($x, $y, $w, $h);
+            }
+
+            $this->SetXY($x + 1, $y + 1);
+            $this->MultiCell($w - 2, 5, $data[$i], 0, $a);
+            $this->SetXY($x + $w, $y);
+        }
+        $this->Ln($h);
+    }
+
     function Footer()
     {
         $this->SetFillColor(245, 245, 245);
@@ -91,14 +174,19 @@ foreach ($resul as $fila) {
         $pdf->SetFont('Arial', '', 9);
     }
 
-    $pdf->SetFillColor($colorFila ? 250 : 255, 255, 255);
     $pdf->SetX((210 - $tablaAncho) / 2);
 
-    $pdf->Cell($anchoColumna[0], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['fecha'])), 1, 0, 'C', true);
-    $pdf->Cell($anchoColumna[1], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre_tipo_gasto'])), 1, 0, 'C', true);
-    $pdf->Cell($anchoColumna[2], 8, iconv('UTF-8', 'ISO-8859-1', $fila['monto']), 1, 0, 'R', true);
-    $pdf->Cell($anchoColumna[3], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['forma_pago_descripcion'])), 1, 0, 'C', true);
-    $pdf->Cell($anchoColumna[4], 8, iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre_usuario'])), 1, 1, 'C', true);
+    $dataRow = array(
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['fecha'])),
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre_tipo_gasto'])),
+        iconv('UTF-8', 'ISO-8859-1', $fila['monto']),
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['forma_pago_descripcion'])),
+        iconv('UTF-8', 'ISO-8859-1', strtoupper($fila['nombre_usuario']))
+    );
+
+    $aligns = array('C','L','R','C','C');
+
+    $pdf->Row($dataRow, $anchoColumna, $aligns, $colorFila);
 
     $colorFila = !$colorFila;
 }
