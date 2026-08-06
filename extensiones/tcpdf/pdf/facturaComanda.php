@@ -131,7 +131,7 @@ class imprimirFacturaComanda
         $html .= '</tbody></table>';
         
         if (!$esComanda) {
-            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>SISTEMAS AL 73982982</p>';
+            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 75620296</p>';
         }
 
         return $html;
@@ -142,7 +142,7 @@ class imprimirFacturaComanda
      */
     private function generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago) {
         $fechaSolo = date('d-m-Y', strtotime($respuestaVenta["fecha"]));
-        $horaSolo = date('H:i:s a', strtotime($respuestaVenta["fecha"]));
+        $horaSolo = date('H:i a ', strtotime($respuestaVenta["fecha"]));
 
         return '<table border="0">
             <tbody>
@@ -262,7 +262,7 @@ class imprimirFacturaComanda
 
         $respuestaVenta = ControladorVentas::ctrMostrarVentas($itemVenta, $valorVenta);
         if($respuestaVenta!=null){
-            $fecha = date('d-m-Y H:i:s a', strtotime($respuestaVenta["fecha"]));
+            $fecha = date('d-m-Y H:i a', strtotime($respuestaVenta["fecha"]));
             $productos = ControladorVentas::ctrMostrarDetalleVentas($respuestaVenta['id']);
 
             if (isset($_GET['idsDetalle']) && $_GET['idsDetalle'] !== '') {

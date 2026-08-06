@@ -81,7 +81,7 @@ $arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
 
             <div class="icon">
               
-            <img src="./vistas/img/plantilla/bs.webp" alt="">
+          <img src="./vistas/img/plantilla/qr.png" alt="">
 
             </div>
             <a href="arqueo-de-caja" role="button" class="small-box-footer">
@@ -98,7 +98,7 @@ $arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
               <p>Caja (Total)</p>
             </div>
             <div class="icon">
-              <img src="./vistas/img/plantilla/bs.webp" alt="">
+            
             </div>
             <a href="arqueo-de-caja" role="button" class="small-box-footer">
               <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>

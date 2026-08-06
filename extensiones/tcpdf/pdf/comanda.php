@@ -33,9 +33,9 @@ class imprimirComanda
 
         $respuestaVenta = ControladorVentas::ctrMostrarVentas($itemVenta, $valorVenta);
         if($respuestaVenta!=null){
-        $fecha = date('d-m-Y H:i:s a', strtotime($respuestaVenta["fecha"]));
+        $fecha = date('d-m-Y H:i a', strtotime($respuestaVenta["fecha"]));
         $fechaSolo = date('d-m-Y', strtotime($respuestaVenta["fecha"]));
-        $horaSolo = date('H:i:s a', strtotime($respuestaVenta["fecha"]));
+        $horaSolo = date('H:i a', strtotime($respuestaVenta["fecha"]));
         $productos = ControladorVentas::ctrMostrarDetalleVentas($respuestaVenta['id']);
 
         if (isset($_GET['idsDetalle']) && $_GET['idsDetalle'] !== '') {
