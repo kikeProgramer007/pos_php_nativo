@@ -49,10 +49,27 @@ $fechaActual = date('Y-m-d');
 
                             <div class="col-12 col-sm-4">
                                 <div class="form-group">
+                                    <label>Mesero</label>
+                                    <select class="form-control select2" id="id_mesero" name="id_mesero">
+                                        <option value="0">Todos los meseros</option>
+                                        <?php
+                                        $itemMesero = null;
+                                        $valorMesero = null;
+                                        $meseros = ControladorMeseros::ctrMostrarMeseros($itemMesero, $valorMesero);
+                                        foreach ($meseros as $key => $value) {
+                                            echo '<option value="' . $value["id"] . '">' . $value["nombre"] . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-4">
+                                <div class="form-group">
                                     <label><i class="text-danger"></label>
                                     <div class="text-right">
                                         <button type="button" class="btn btn-warning" onclick="generatePDF()">
-                                            <i class="fa fa-print"></i> Generate PDF
+                                            <i class="fa fa-print"></i> Generar PDF
                                         </button>
                                     </div>
                                    
@@ -134,11 +151,14 @@ $fechaActual = date('Y-m-d');
             popupWindow.close();
         }
 
+        const idMesero = document.getElementById('id_mesero').value;
+
         // Abre la URL en una nueva ventana (popup)
         popupWindow = window.open(
             "extensiones/tcpdf/pdf/top-ventas-meseros.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
             "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-            "&idUsuario=" + encodeURIComponent(idUsuario),
+            "&idUsuario=" + encodeURIComponent(idUsuario) +
+            "&idMesero=" + encodeURIComponent(idMesero),
             "_blank",
             windowFeatures
         );
