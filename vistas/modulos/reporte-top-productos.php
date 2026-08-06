@@ -30,19 +30,35 @@ $fechaActual = date('Y-m-d');
                         <form id="report-form">
                             <input type="hidden" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION['id']; ?>">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label><i class="text-danger">*</i> Fecha de inicio:</label>
                                         <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo date('Y-m-d'); ?>" class="form-control" required>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label><i class="text-danger">*</i> Fecha de fin:</label>
                                         <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo date('Y-m-d'); ?>" class="form-control" required>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select class="form-control select2" id="id_categoria" name="id_categoria">
+                                            <option value="0">Todas las categorías</option>
+                                            <?php
+                                            $item = null;
+                                            $valor = null;
+                                            $categorias = ControladorCategorias::ctrMostrarCategorias($item, $valor);
+                                            foreach ($categorias as $key => $value) {
+                                                echo '<option value="' . $value["id"] . '">' . $value["categoria"] . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-right">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <button type="button" class="btn btn-primary btn-block" onclick="generatePDF()">
@@ -114,10 +130,13 @@ fechaFin.setAttribute('max', fechaActual);
             popupWindow.close();
         }
 
+        const idCategoria = document.getElementById('id_categoria').value;
+
         popupWindow = window.open(
             "extensiones/tcpdf/pdf/top-productos-mas-vendidos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
             "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-            "&idUsuario=" + encodeURIComponent(idUsuario),
+            "&idUsuario=" + encodeURIComponent(idUsuario) +
+            "&idCategoria=" + encodeURIComponent(idCategoria),
             "_blank",
             windowFeatures
         );

@@ -481,7 +481,7 @@ class ModeloVentas
 	/*=============================================
 	TOP PRODUCTO MAS VENDIDOS SEGUNN RANGO FECHAS
 	=============================================*/
-	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal)
+	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0)
 	{
 		if ($fechaInicial <= $fechaFinal) {
 
@@ -496,14 +496,23 @@ class ModeloVentas
 						JOIN productos AS p ON p.id = dv.id_producto
 						WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 						AND ventas.estado=1
-						AND ventas.estado_pago = 'PAGADA'
-						GROUP BY dv.id_producto, p.descripcion
+						AND ventas.estado_pago = 'PAGADA'";
+
+			if ($idCategoria != 0) {
+				$query .= " AND p.id_categoria = :idCategoria";
+			}
+
+			$query .= " GROUP BY dv.id_producto, p.descripcion
 						ORDER BY SUM(dv.cantidad) DESC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
 			// Vincular los parámetros de las fechas
 			$stmt->bindParam(':fechaInicio', $fechaInicial);
 			$stmt->bindParam(':fechaFin', $fechaFinal);
+
+			if ($idCategoria != 0) {
+				$stmt->bindParam(':idCategoria', $idCategoria, PDO::PARAM_INT);
+			}
 
 			$stmt->execute();
 			// Obtener los resultados

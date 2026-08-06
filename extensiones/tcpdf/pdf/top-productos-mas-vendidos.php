@@ -7,6 +7,8 @@ require_once "../../../modelos/ventas.modelo.php";
 require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 
+require_once "../../../controladores/categorias.controlador.php";
+require_once "../../../modelos/categorias.modelo.php";
 
 class reporteTopProductosMasVendidos
 {
@@ -14,6 +16,7 @@ class reporteTopProductosMasVendidos
     public $fechaInicio;
     public $fechaFin;
     public $idUsuario;
+    public $idCategoria;
     private $nombreTienda = "Pollos Rosy";
     private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
 
@@ -24,10 +27,18 @@ class reporteTopProductosMasVendidos
         $fechaInicio = $this->fechaInicio;
         $fechaFin = $this->fechaFin;
         $idUsuario = $this->idUsuario;
+        $idCategoria = $this->idCategoria;
 
-        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin);
+        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria);
         $itemUsuario = "id";
         $respuestaUsuario = ControladorUsuarios::ctrMostrarUsuarios($itemUsuario, $idUsuario);
+
+        if ($idCategoria != 0) {
+            $respuestaCategoria = ControladorCategorias::ctrMostrarCategorias("id", $idCategoria);
+            $categoriaTexto = $respuestaCategoria["categoria"];
+        } else {
+            $categoriaTexto = "Todas las categorías";
+        }
 
         require_once('tcpdf_include.php');
 
@@ -70,6 +81,11 @@ class reporteTopProductosMasVendidos
 
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
+        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(23, 5, 'Categoria: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(50, 5, $categoriaTexto, 0, 1, 'L');
         $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
@@ -127,4 +143,5 @@ $factura = new reporteTopProductosMasVendidos();
 $factura->fechaInicio = $_GET["fechaInicio"];
 $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
+$factura->idCategoria = isset($_GET["idCategoria"]) ? intval($_GET["idCategoria"]) : 0;
 $factura->generarPdfVentasTopProducto();
