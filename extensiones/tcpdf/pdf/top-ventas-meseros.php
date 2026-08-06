@@ -17,6 +17,7 @@ class reporteTopVentasMeseros
     public $fechaInicio;
     public $fechaFin;
     public $idUsuario;
+    public $idMesero;
     private $nombreTienda = "El Gato Rico ";
     private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
 
@@ -27,10 +28,19 @@ class reporteTopVentasMeseros
         $fechaInicio = $this->fechaInicio;
         $fechaFin = $this->fechaFin;
         $idUsuario = $this->idUsuario;
+        $idMesero = $this->idMesero;
 
-        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasTopMeserosPdf($fechaInicio, $fechaFin);
+        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasTopMeserosPdf($fechaInicio, $fechaFin, $idMesero);
         $itemUsuario = "id";
         $respuestaUsuario = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($itemUsuario, $idUsuario);
+
+        if ($idMesero != 0) {
+            $itemMesero = "id";
+            $respuestaMesero = ControladorMeseros::ctrMostrarMeseros($itemMesero, $idMesero);
+            $meseroTexto = $respuestaMesero["nombre"];
+        } else {
+            $meseroTexto = "Todos los meseros";
+        }
 
         require_once('tcpdf_include.php');
 
@@ -70,6 +80,11 @@ class reporteTopVentasMeseros
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
         $pdf->SetY(35);  // Ajusta este valor según sea necesario altura
+        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(50, 5, $meseroTexto, 0, 1, 'L');
         $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
@@ -129,4 +144,5 @@ $factura = new reporteTopVentasMeseros();
 $factura->fechaInicio = $_GET["fechaInicio"];
 $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
+$factura->idMesero = isset($_GET["idMesero"]) ? intval($_GET["idMesero"]) : 0;
 $factura->generarPdfVentasTopMeseros();

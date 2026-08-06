@@ -457,7 +457,7 @@ class ModeloVentas
 	/*=============================================
 	RANGO DE VENTAS - TOP POR MESERO
 	=============================================*/
-	static public function mdlRangoFechasVentasTopMeseroPdf($tabla, $fechaInicial, $fechaFinal)
+	static public function mdlRangoFechasVentasTopMeseroPdf($tabla, $fechaInicial, $fechaFinal, $idMesero = 0)
 	{
 
 		if ($fechaInicial <= $fechaFinal) {
@@ -465,12 +465,23 @@ class ModeloVentas
 			$query = "SELECT meseros.nombre as mesero, COUNT(ventas.id) as cantidad, SUM(ventas.total) as total
 					FROM $tabla 
 					JOIN meseros ON ventas.id_mesero = meseros.id
-					WHERE DATE(ventas.fecha) BETWEEN DATE('$fechaInicial') AND DATE('$fechaFinal') 
+					WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 					AND ventas.estado=1
-					AND ventas.estado_pago = 'PAGADA'
-					GROUP BY meseros.nombre ORDER BY SUM(ventas.total) DESC;";
+					AND ventas.estado_pago = 'PAGADA'";
+
+			if ($idMesero != 0) {
+				$query .= " AND meseros.id = :idMesero";
+			}
+
+			$query .= " GROUP BY meseros.nombre ORDER BY SUM(ventas.total) DESC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
+			$stmt->bindParam(':fechaInicio', $fechaInicial);
+			$stmt->bindParam(':fechaFin', $fechaFinal);
+
+			if ($idMesero != 0) {
+				$stmt->bindParam(':idMesero', $idMesero, PDO::PARAM_INT);
+			}
 
 			$stmt->execute();
 
