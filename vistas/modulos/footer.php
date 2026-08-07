@@ -6,7 +6,12 @@
 			Presione aqui
 		</a>.
 	</strong>
+	
+	<strong>
 
-	Todos los derechos reservados.
+© 2026 Marcos Galarza. Todos los derechos reservados.
+	</strong>
+
+	
 
 </footer>
