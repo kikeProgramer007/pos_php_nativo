@@ -29,7 +29,7 @@ $fechaActual = date('Y-m-d');
                     <div class="card-body">
                         <input type="hidden" id="id_usuario" name="id_usuario" value="<?php echo $_SESSION["id"]; ?>">
                         <div class="row">
-                            <div class="col-12 col-sm-4">
+                            <div class="col-12 col-sm-2">
                                 <div class="form-group">
                                     <label><i class="text-danger">*</i> Fecha de inicio:</label>
                                     <div class="input-group date">
@@ -38,7 +38,7 @@ $fechaActual = date('Y-m-d');
                                 </div>
                             </div>
 
-                            <div class="col-12 col-sm-4">
+                            <div class="col-12 col-sm-2">
                                 <div class="form-group">
                                     <label><i class="text-danger">*</i> Fecha de fin:</label>
                                     <div class="input-group date">
@@ -47,7 +47,7 @@ $fechaActual = date('Y-m-d');
                                 </div>
                             </div>
 
-                            <div class="col-12 col-sm-4">
+                            <div class="col-12 col-sm-3">
                                 <div class="form-group">
                                     <label>Mesero</label>
                                     <select class="form-control select2" id="id_mesero" name="id_mesero">
@@ -64,21 +64,37 @@ $fechaActual = date('Y-m-d');
                                 </div>
                             </div>
 
-                            <div class="col-12 col-sm-4">
+                            <div class="col-12 col-sm-3">
                                 <div class="form-group">
-                                    <label><i class="text-danger"></label>
-                                    <div class="text-right">
-                                        <button type="button" class="btn btn-warning" onclick="generatePDF()">
-                                            <i class="fa fa-print"></i> Generar PDF
-                                        </button>
-                                    </div>
-                                   
+                                    <label>Categoría</label>
+                                    <select class="form-control select2" id="id_categoria" name="id_categoria">
+                                        <option value="0">Todas las categorías</option>
+                                        <?php
+                                        $itemCat = null;
+                                        $valorCat = null;
+                                        $categorias = ControladorCategorias::ctrMostrarCategorias($itemCat, $valorCat);
+                                        foreach ($categorias as $key => $value) {
+                                            echo '<option value="' . $value["id"] . '">' . $value["categoria"] . '</option>';
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
-                            
+                                
                             </div>
+                            <div class="col-12 col-sm-2 text-right">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="button" class="btn btn-warning btn-block" onclick="generatePDF()">
+                                        <i class="fa fa-print"></i> Generar PDF
+                                    </button>
+                                </div>
+                              
                         </div>
+                      
+                            
+                            
+                           
 
-                       
                         <img src="vistas/img/plantilla/mesero-1.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
                     </div><!--/body card-->
                 </div><!--/CARD FIN-->
@@ -152,13 +168,15 @@ $fechaActual = date('Y-m-d');
         }
 
         const idMesero = document.getElementById('id_mesero').value;
+        const idCategoria = document.getElementById('id_categoria').value;
 
         // Abre la URL en una nueva ventana (popup)
         popupWindow = window.open(
             "extensiones/tcpdf/pdf/top-ventas-meseros.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
             "&fechaFin=" + encodeURIComponent(fechaFin.value) +
             "&idUsuario=" + encodeURIComponent(idUsuario) +
-            "&idMesero=" + encodeURIComponent(idMesero),
+            "&idMesero=" + encodeURIComponent(idMesero) +
+            "&idCategoria=" + encodeURIComponent(idCategoria),
             "_blank",
             windowFeatures
         );

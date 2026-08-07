@@ -6,6 +6,9 @@ require_once "../../../modelos/ventas.modelo.php";
 require_once "../../../controladores/meseros.controlador.php";
 require_once "../../../modelos/meseros.modelo.php";
 
+require_once "../../../controladores/categorias.controlador.php";
+require_once "../../../modelos/categorias.modelo.php";
+
 require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 
@@ -18,6 +21,7 @@ class reporteTopVentasMeseros
     public $fechaFin;
     public $idUsuario;
     public $idMesero;
+    public $idCategoria;
     private $nombreTienda = "El Gato Rico ";
     private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
 
@@ -29,8 +33,9 @@ class reporteTopVentasMeseros
         $fechaFin = $this->fechaFin;
         $idUsuario = $this->idUsuario;
         $idMesero = $this->idMesero;
+        $idCategoria = $this->idCategoria;
 
-        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasTopMeserosPdf($fechaInicio, $fechaFin, $idMesero);
+        $respuestaVentas = ControladorVentas::ctrRangoFechasVentasTopMeserosPdf($fechaInicio, $fechaFin, $idMesero, $idCategoria);
         $itemUsuario = "id";
         $respuestaUsuario = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($itemUsuario, $idUsuario);
 
@@ -40,6 +45,14 @@ class reporteTopVentasMeseros
             $meseroTexto = $respuestaMesero["nombre"];
         } else {
             $meseroTexto = "Todos los meseros";
+        }
+
+        if ($idCategoria != 0) {
+            $itemCategoria = "id";
+            $respuestaCategoria = ControladorCategorias::ctrMostrarCategorias($itemCategoria, $idCategoria);
+            $categoriaTexto = $respuestaCategoria["categoria"];
+        } else {
+            $categoriaTexto = "Todas las categorías";
         }
 
         require_once('tcpdf_include.php');
@@ -85,6 +98,11 @@ class reporteTopVentasMeseros
         $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(50, 5, $meseroTexto, 0, 1, 'L');
+        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(23, 5, 'Categoría: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(50, 5, $categoriaTexto, 0, 1, 'L');
         $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
@@ -145,4 +163,5 @@ $factura->fechaInicio = $_GET["fechaInicio"];
 $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
 $factura->idMesero = isset($_GET["idMesero"]) ? intval($_GET["idMesero"]) : 0;
+$factura->idCategoria = isset($_GET["idCategoria"]) ? intval($_GET["idCategoria"]) : 0;
 $factura->generarPdfVentasTopMeseros();
