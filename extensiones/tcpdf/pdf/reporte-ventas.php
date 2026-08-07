@@ -148,10 +148,11 @@ class reporteVenta extends TCPDF
         $this->SetFont('helvetica', '', 9);
         $this->Cell(50, 5, $this->DateAndTime, 0, 1, 'L');
 
-        // Agregar espacio después del encabezado
         $this->Ln(10);
-        
-        // Encabezado de la tabla
+    }
+
+    private function dibujarCabeceraTabla()
+    {
         $this->SetFont('helvetica', 'B', 8);
         $this->SetFillColor(0, 0, 0);
         $this->SetTextColor(255, 255, 255);
@@ -168,6 +169,9 @@ class reporteVenta extends TCPDF
         $this->Cell(17, 5, 'Efectivo', 1, 0, 'C');
         $this->Cell(17, 5, 'Qr', 1, 0, 'C');
         $this->Cell(16, 5, 'Total', 1, 1, 'C');
+
+        // Restablecer el peso normal para el contenido de las filas en todas las páginas.
+        $this->SetFont('helvetica', '', 7);
     }
 
     public function generarPdfVentas()
@@ -202,7 +206,7 @@ class reporteVenta extends TCPDF
             $this->respuestaCliente["nombre"] = "Todos";
         }
 
-        $this->DateAndTime = date('d-m-Y h:i:s a', time());
+        $this->DateAndTime = date('d-m-Y H:i:s', time());
 
         // Configuración del PDF para UTF-8
         $this->setPrintHeader(true);
@@ -216,9 +220,8 @@ class reporteVenta extends TCPDF
         
         // Agregar primera página
         $this->AddPage();
-
-        // Establecer la posición Y después del encabezado (más líneas en header)
-        $this->SetY(68);
+        $this->SetY(62);
+        $this->dibujarCabeceraTabla();
 
         $this->SetFont('helvetica', '', 7);
 
@@ -239,7 +242,7 @@ class reporteVenta extends TCPDF
             $totalDescuento = floatval($item["total_descuento"] ?? 0);
 
             $fechaCompleta = $item["fecha"];
-            $fechaFormateada = date('Y-m-d h:i:s a', strtotime($fechaCompleta));
+            $fechaFormateada = date('Y-m-d H:i', strtotime($fechaCompleta));
 
             $fila = array(
                 $contador,
@@ -257,24 +260,22 @@ class reporteVenta extends TCPDF
 
             $anchos = array(8, 12, 17, 20, 22, 24, 18, 19, 17, 17, 16);
 
-            // Calcular altura automática según el texto más largo
             $altura = 0;
             foreach ($fila as $i => $texto) {
                 $numLineas = $this->getNumLines($texto, $anchos[$i]);
                 $altura = max($altura, $numLineas * 4);
             }
 
-            // Salto de página si no entra la fila
             $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
-            if (($this->GetY() + $altura) > $limiteInferior) {
+            if (($this->GetY() + $altura + 6) > $limiteInferior) {
                 $this->AddPage();
-                $this->SetY(68);
+                $this->SetY(62);
+                $this->dibujarCabeceraTabla();
             }
 
             $x = $this->GetX();
             $y = $this->GetY();
 
-            // Imprimir columnas con altura dinámica
             $this->MultiCell($anchos[0], $altura, $fila[0], 1, 'L', false, 0, $x, $y);
             $this->MultiCell($anchos[1], $altura, $fila[1], 1, 'C', false, 0);
             $this->MultiCell($anchos[2], $altura, $fila[2], 1, 'C', false, 0);
@@ -294,23 +295,19 @@ class reporteVenta extends TCPDF
             $sumTotalDescuento += $totalDescuento;
         }
 
-        // Altura aproximada necesaria para imprimir totales
-        $alturaTotales = 20;
+        $alturaTotales = 28;
+        $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
 
-        // Obtener límite inferior real de la página
-        $limiteInferior  = $this->getPageHeight() - $this->getBreakMargin();
-
-        // Si no entra, crear nueva página
         if (($this->GetY() + $alturaTotales) > $limiteInferior) {
             $this->AddPage();
             $this->SetY(62);
         }
-        // Total general
+
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(140, 5, 'Totales (Bs)', 0, 0, 'R');
         $this->Cell(17, 5, number_format($sumTotalEfectivo, 2, '.', ','), 1, 0, 'R');
         $this->Cell(17, 5, number_format($sumTotalQr, 2, '.', ','), 1, 0, 'R');
-        $this->Cell(16, 5, number_format($sumTotal, 2, '.', ',') , 1, 1, 'R');
+        $this->Cell(16, 5, number_format($sumTotal, 2, '.', ','), 1, 1, 'R');
 
         $this->Ln(2);
         $this->SetFont('helvetica', '', 8);
@@ -322,11 +319,9 @@ class reporteVenta extends TCPDF
         $this->Cell(140, 5, 'Total neto cobrado:', 0, 0, 'R');
         $this->Cell(50, 5, 'Bs ' . number_format($sumTotal, 2, '.', ','), 0, 1, 'R');
 
-        // Nro de compras
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(30, 5, 'Número de ventas:  ' . ($contador - 1), 0, 0, 'L');
 
-        // Salida del archivo PDF
         $this->Output('ReporteVentas.pdf', 'I');
     }
 }
