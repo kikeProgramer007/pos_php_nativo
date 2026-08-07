@@ -29,6 +29,9 @@ $fechaActual = date('Y-m-d');
   .filters-title{font-weight:700;color:#333;display:flex;align-items:center;gap:8px;margin-bottom:12px}
   .filters-title .fa{color:var(--orange)}
   .rv-action-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+  .rv-check-wrap{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid rgba(255,122,0,0.18);background:#fffaf3;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+  .rv-check-wrap .form-check-input{width:18px;height:18px;margin:0;border-color:#ff7a00;cursor:pointer;accent-color:#ff7a00}
+  .rv-check-wrap .form-check-label{font-size:13px;color:#444;font-weight:600;cursor:pointer}
   .rv-btn-orange{background:var(--orange);border:none;color:#fff;padding:10px 16px;border-radius:8px;box-shadow:none}
   .rv-btn-orange .fa{margin-right:8px}
   .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;text-align:center}
@@ -132,26 +135,19 @@ $fechaActual = date('Y-m-d');
 
       <div class="rv-action-row">
         <div>
-          <div class="form-check">
+          <div class="form-check rv-check-wrap">
             <input class="form-check-input" type="checkbox" value="" id="registros_eliminados">
-            <label class="form-check-label small text-muted" for="registros_eliminados">Registros eliminados</label>
+            <label class="form-check-label" for="registros_eliminados">Registros eliminados</label>
           </div>
         </div>
         <div>
           <button class="rv-btn-orange" type="button" onclick="generatePDF()"><i class="fa fa-file-pdf"></i> Generar PDF</button>
         </div>
       </div>
-
+<img src="vistas/img/plantilla/1.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
     </div>
 
-    <div class="rv-card">
-      <div class="empty-state">
-        <div class="empty-circle"><i class="fa fa-file-alt"></i></div>
-        <h4 style="font-weight:700;margin:8px 0">No hay datos para mostrar</h4>
-        <p class="text-muted">Seleccione los filtros de búsqueda y haga clic en 'Generar PDF' para visualizar el reporte.</p>
-      </div>
-    </div>
-
+    
   </div>
 </div>
 
