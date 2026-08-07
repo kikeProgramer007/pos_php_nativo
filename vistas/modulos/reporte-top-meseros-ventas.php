@@ -67,8 +67,8 @@ $fechaActual = date('Y-m-d');
                             <div class="col-12 col-sm-3">
                                 <div class="form-group">
                                     <label>Categoría</label>
-                                    <select class="form-control select2" id="id_categoria" name="id_categoria">
-                                        <option value="0">Todas las categorías</option>
+                                    <select class="form-control select2" id="id_categoria" name="id_categoria[]" multiple="multiple" data-placeholder="Seleccionar categorías">
+                                        <option value="0" selected>Todas las categorías</option>
                                         <?php
                                         $itemCat = null;
                                         $valorCat = null;
@@ -110,6 +110,22 @@ $fechaActual = date('Y-m-d');
 
 
 
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #218838 !important;
+        color: #fff !important;
+    }
+</style>
+
 <script>
 
     // Asignar la fecha actual a una variable global en JavaScript
@@ -121,6 +137,57 @@ $fechaActual = date('Y-m-d');
 
     // Variable global para mantener la referencia de la ventana emergente
     var popupWindow = null;
+
+    function actualizarCategoriasSeleccionadas(categoriaSelect) {
+        let selectedValues = Array.from(categoriaSelect.selectedOptions).map(option => option.value);
+        const zeroOption = categoriaSelect.querySelector('option[value="0"]');
+
+        if (selectedValues.includes('0') && selectedValues.length > 1) {
+            selectedValues = selectedValues.filter(value => value !== '0');
+            Array.from(categoriaSelect.options).forEach(option => {
+                option.selected = selectedValues.includes(option.value);
+            });
+            if (zeroOption) {
+                zeroOption.selected = false;
+            }
+        }
+
+        if (selectedValues.length === 0 && zeroOption) {
+            Array.from(categoriaSelect.options).forEach(option => {
+                option.selected = option.value === '0';
+            });
+            selectedValues = ['0'];
+        }
+
+        if (typeof $ !== 'undefined' && $(categoriaSelect).data('select2')) {
+            $(categoriaSelect).val(selectedValues).trigger('change.select2');
+        }
+    }
+
+    $(document).ready(function () {
+        var $categoriaSelect = $('#id_categoria');
+        if ($categoriaSelect.length) {
+            var actualizarZero = function () {
+                var selectedValues = $categoriaSelect.val() || [];
+                if (selectedValues.indexOf('0') !== -1 && selectedValues.length > 1) {
+                    selectedValues = selectedValues.filter(function (value) {
+                        return value !== '0';
+                    });
+                    $categoriaSelect.val(selectedValues);
+                    $categoriaSelect.find('option[value="0"]').prop('selected', false);
+                    $categoriaSelect.trigger('change.select2');
+                }
+                if (!selectedValues.length) {
+                    $categoriaSelect.val(['0']);
+                    $categoriaSelect.trigger('change.select2');
+                }
+            };
+
+            $categoriaSelect.on('change select2:select select2:unselect', function () {
+                setTimeout(actualizarZero, 0);
+            });
+        }
+    });
 
     function generatePDF() {
         // Capturar valores de los inputs
@@ -168,15 +235,28 @@ $fechaActual = date('Y-m-d');
         }
 
         const idMesero = document.getElementById('id_mesero').value;
-        const idCategoria = document.getElementById('id_categoria').value;
+        const categoriaSelect = document.getElementById('id_categoria');
+        let selectedCategorias = Array.from(categoriaSelect.selectedOptions).map(option => option.value);
+
+        const allCategoriesSelected = selectedCategorias.includes('0');
+        selectedCategorias = selectedCategorias.filter(categoriaId => categoriaId !== '0');
+
+        let queryString = "extensiones/tcpdf/pdf/top-ventas-meseros.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+            "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+            "&idUsuario=" + encodeURIComponent(idUsuario) +
+            "&idMesero=" + encodeURIComponent(idMesero);
+
+        if (allCategoriesSelected && selectedCategorias.length === 0) {
+            queryString += "&idCategoria[]=0";
+        } else {
+            selectedCategorias.forEach(categoriaId => {
+                queryString += "&idCategoria[]=" + encodeURIComponent(categoriaId);
+            });
+        }
 
         // Abre la URL en una nueva ventana (popup)
         popupWindow = window.open(
-            "extensiones/tcpdf/pdf/top-ventas-meseros.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-            "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-            "&idUsuario=" + encodeURIComponent(idUsuario) +
-            "&idMesero=" + encodeURIComponent(idMesero) +
-            "&idCategoria=" + encodeURIComponent(idCategoria),
+            queryString,
             "_blank",
             windowFeatures
         );

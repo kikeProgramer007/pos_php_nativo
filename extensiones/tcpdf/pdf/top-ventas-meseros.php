@@ -47,12 +47,26 @@ class reporteTopVentasMeseros
             $meseroTexto = "Todos los meseros";
         }
 
-        if ($idCategoria != 0) {
-            $itemCategoria = "id";
-            $respuestaCategoria = ControladorCategorias::ctrMostrarCategorias($itemCategoria, $idCategoria);
-            $categoriaTexto = $respuestaCategoria["categoria"];
-        } else {
-            $categoriaTexto = "Todas las categorías";
+        $categoriaTexto = "Todas las categorías";
+        if (!empty($idCategoria)) {
+            $categoriaIds = is_array($idCategoria) ? $idCategoria : array($idCategoria);
+            $categoriaIds = array_filter($categoriaIds, function ($id) {
+                return intval($id) !== 0;
+            });
+
+            if (count($categoriaIds) > 0) {
+                $nombres = array();
+                foreach ($categoriaIds as $categoriaId) {
+                    $itemCategoria = "id";
+                    $respuestaCategoria = ControladorCategorias::ctrMostrarCategorias($itemCategoria, intval($categoriaId));
+                    if (!empty($respuestaCategoria["categoria"])) {
+                        $nombres[] = $respuestaCategoria["categoria"];
+                    }
+                }
+                if (count($nombres) > 0) {
+                    $categoriaTexto = implode(', ', $nombres);
+                }
+            }
         }
 
         require_once('tcpdf_include.php');
@@ -72,52 +86,32 @@ class reporteTopVentasMeseros
 
         $pdf->SetFont('helvetica', 'B', 11);
         $pdf->Cell(0, 5, 'Reporte De Mesero Con Mas Ventas', 0, 1, 'C');
-        $pdf->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
-
-        $pdf->Ln(10); // Espacio después de la imagen
-
-        $pdf->SetY(30);  // Ajusta este valor según sea necesario altura
-            // Nombre y dirección del restaurante
-            $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(23, 5, 'Restaurante:', 0, 0, 'L');
-            $pdf->SetFont('helvetica', '', 9);
-            $pdf->Cell(50, 5, $this->nombreTienda, 0, 1, 'L');
-    
-            $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(23, 5, 'Dirección:', 0, 0, 'L');
-            $pdf->SetFont('helvetica', '', 9);
-            $pdf->Cell(50, 5, $this->direccionTienda, 0, 1, 'L');
-
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Usuario: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
-        $pdf->SetY(35);  // Ajusta este valor según sea necesario altura
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $meseroTexto, 0, 1, 'L');
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Categoría: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $categoriaTexto, 0, 1, 'L');
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(100, 5, date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 1, 'L');
+        $pdf->Ln(5);
 
         $DateAndTime = date('d-m-Y h:i:s a', time());
-        
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, utf8_decode('Fecha y hora:'), 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $DateAndTime, 0, 1, 'L');
 
-        $pdf->Ln(5);
+        $pdf->SetFont('helvetica', '', 9);
+        $htmlHeader = '<table cellpadding="4" cellspacing="0" border="0" width="100%" style="font-size:9px; font-family:helvetica;">'
+            . '<tr>'
+            . '<td width="35%" style="vertical-align:top; font-size:9px;">'
+            . '<strong>Restaurante:</strong> <span style="font-weight:normal;">' . htmlspecialchars($this->nombreTienda) . '</span><br/>'
+            . '<strong>Dirección:</strong> <span style="font-weight:normal;">' . htmlspecialchars($this->direccionTienda) . '</span><br/>'
+            . '<strong>Usuario:</strong> <span style="font-weight:normal;">' . htmlspecialchars($respuestaUsuario["nombre"]) . '</span><br/>'
+            . '</td>'
+            . '<td width="30%" align="center" style="vertical-align:middle;">'
+            . '<img src="images/logo-negro-bloque.jpg" width="80" />'
+            . '</td>'
+            . '<td width="35%" style="vertical-align:top; font-size:9px; white-space:normal; word-wrap:break-word;">'
+            . '<strong>Mesero:</strong> <span style="font-weight:normal;">' . htmlspecialchars($meseroTexto) . '</span><br/>'
+            . '<strong>Categoría:</strong> <span style="font-weight:normal;">' . htmlspecialchars($categoriaTexto) . '</span><br/>'
+            . '<strong>Periodo:</strong> <span style="font-weight:normal;">' . htmlspecialchars(date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin))) . '</span><br/>'
+            . '<strong>Fecha y hora:</strong> <span style="font-weight:normal;">' . htmlspecialchars($DateAndTime) . '</span><br/>'
+            . '</td>'
+            . '</tr>'
+            . '</table>';
+
+        $pdf->writeHTMLCell(0, 0, '', '', $htmlHeader, 0, 1, false, true, 'J', true);
+        $pdf->Ln(3);
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->SetFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
@@ -163,5 +157,5 @@ $factura->fechaInicio = $_GET["fechaInicio"];
 $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
 $factura->idMesero = isset($_GET["idMesero"]) ? intval($_GET["idMesero"]) : 0;
-$factura->idCategoria = isset($_GET["idCategoria"]) ? intval($_GET["idCategoria"]) : 0;
+$factura->idCategoria = isset($_GET["idCategoria"]) ? $_GET["idCategoria"] : array();
 $factura->generarPdfVentasTopMeseros();

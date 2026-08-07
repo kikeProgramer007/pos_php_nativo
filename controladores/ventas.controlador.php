@@ -973,7 +973,7 @@ class ControladorVentas{
 	/*=============================================
 	rango de ventas top meseros:
 	=============================================*/
-	static public function ctrRangoFechasVentasTopMeserosPdf($fechaInicial, $fechaFinal, $idMesero = 0, $idCategoria = 0){
+	static public function ctrRangoFechasVentasTopMeserosPdf($fechaInicial, $fechaFinal, $idMesero = 0, $idCategoria = array()){
 
 		$tabla = "ventas";
 	
