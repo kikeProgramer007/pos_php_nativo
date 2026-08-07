@@ -254,19 +254,24 @@
 							<span>R.De. Venta Por Fecha</span>
 						</a>
 					</li>
+
+
+						<li>
+						<a href="reporte-top-productos">
+						  <i class="fa fa-trophy"></i>
+							<span>Prod. más vendido</span>
+						</a>
+					</li>
+
 					<li>
 						<a href="reporte-top-meseros-ventas">
 						<i class="fa fa-star"></i>
 							<span>Meseros.Con mas Vtas</span>
 						</a>
 					</li>
-					<li>
-						<a href="reporte-categoria">
-							 <i class="fa fa-folder"></i>
-							<span>Rpt. Categorias</span>
-						</a>
-					</li>
-					<li>
+
+
+						<li>
 						<a href="ver-productos-faltantes">
 							 <i class="fa fa-exclamation-triangle"></i>
 							<span>Rpt. Product Faltante</span>
@@ -274,11 +279,18 @@
 					</li>
 
 					<li>
-						<a href="reporte-top-productos">
-						  <i class="fa fa-trophy"></i>
-							<span>Prod. más vendido</span>
+						<a href="reporte-categoria">
+							 <i class="fa fa-folder"></i>
+							<span>Rpt. Categorias</span>
 						</a>
 					</li>
+				
+
+
+
+				
+
+
 
 					<li>
 						<a href="ganancias-ventas">

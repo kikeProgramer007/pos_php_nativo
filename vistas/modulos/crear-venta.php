@@ -1932,18 +1932,50 @@ function agregarProductoAVenta(producto) {
                 <label for="nota">Preferencias</label>
                 <div class="form-group">
                   <select class="select2-nota form-control input-sm nota-producto" multiple="multiple" name="states[]">
-                      <option value="1">Sin fideo ❌</option>
-                      <option value="2">Sin arroz ❌</option>
-                      <option value="3">Sin papas ❌</option>
-                      <option value="4">Más arroz ✅</option>
-                      <option value="5">Más fideo ✅</option>
-                      <option value="6">Más papas ✅</option>
-                      <option value="7">Solo papas</option>
-                      <option value="8">Solo arroz</option>
-                      <option value="9">Solo fideo </option>
-                      <option value="10">Poco arroz</option>
-                      <option value="11">Poco fideo</option>
-                      <option value="12">Poca papas</option>
+                      <option value="1">Bien cocido </option>
+                      <option value="2">Tres cuartos </option>
+                      <option value="3">Término medio </option>
+                      <option value="4">Medio rojo 🥩</option>
+                      <option value="5">Rojo (Inglés) </option>
+
+                      <!-- Sin... -->
+                      <option value="6">Sin yuca ❌</option>
+                      <option value="7">Sin arroz ❌</option>
+                      <option value="8">Sin ensalada ❌</option>
+                      <option value="9">Sin chorizo ❌</option>
+                      <option value="10">Sin Cordon Blue ❌</option>
+                      <option value="11">Sin papas fritas ❌</option>
+                      <option value="12">Sin arroz con queso ❌</option>
+
+                      <!-- Más... -->
+                      <option value="13">Más yuca ✅</option>
+                      <option value="14">Más arroz ✅</option>
+                      <option value="15">Más ensalada ✅</option>
+                      <option value="16">Más chorizo ✅</option>
+                      <option value="17">Más Cordon Blue ✅</option>
+                      <option value="18">Más papas fritas ✅</option>
+                      <option value="19">Más arroz con queso ✅</option>
+
+                      <!-- Solo... -->
+                      <option value="20">Solo yuca</option>
+                      <option value="21">Solo arroz</option>
+                      <option value="22">Solo ensalada</option>
+                      <option value="23">Solo papas fritas</option>
+                      <option value="24">Solo chorizo</option>
+
+                      <!-- Poco... -->
+                      <option value="25">Poca yuca</option>
+                      <option value="26">Poco arroz</option>
+                      <option value="27">Poca ensalada</option>
+                      <option value="28">Pocas papas fritas</option>
+                      <option value="29">Poco chorizo</option>
+
+                      <!-- Otros -->
+                      <option value="30">Salsa aparte</option>
+                      <option value="31">Ají aparte 🌶️</option>
+                      <option value="32">Sin sal</option>
+                      <option value="33">Poca sal</option>
+                      <option value="34">Bien sazonado</option>
                   </select>
                 </div>
                 <div class="form-group">

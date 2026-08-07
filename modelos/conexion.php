@@ -6,13 +6,14 @@ class Conexion {
         try {
             // Crear conexión PDO
             $link = new PDO(
-                "mysql:host=localhost;dbname=pos_php_nativo-main;charset=utf8",
+                "mysql:host=localhost;dbname=pos_php_nativo-main;charset=utf8mb4",
                 "root",
                 "root"
             );
 
             // Modo de errores con excepciones
             $link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $link->exec("SET NAMES utf8mb4");
 
             // Establecer zona horaria PHP
             date_default_timezone_set('America/La_Paz');
