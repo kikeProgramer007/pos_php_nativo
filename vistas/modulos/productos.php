@@ -16,6 +16,74 @@ if ($_SESSION["perfil"] == "Vendedor") {
 
 
 
+<style>
+  .dataTables_wrapper .dataTables_filter {
+    float: right;
+    margin: 0 0 12px;
+  }
+
+  .dataTables_wrapper .dataTables_filter label {
+    display: flex;
+    align-items: center;
+    width: 360px;
+    height: 42px;
+    margin: 0;
+    background: #fff;
+    border: 2px solid #2ec76d;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  }
+
+  .dataTables_wrapper .dataTables_filter label:focus-within {
+    box-shadow: 0 0 0 3px rgba(46, 199, 109, .15);
+  }
+
+  .dataTables_wrapper .dataTables_filter label::before {
+    content: "\f002";
+    font-family: "FontAwesome";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 100%;
+    background: #2ec76d;
+    color: #fff;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .dataTables_wrapper .dataTables_filter input[type="search"] {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: #fff;
+    padding: 0 12px;
+    font-size: 15px;
+    color: #1f2937;
+    box-sizing: border-box;
+  }
+
+  .dataTables_wrapper .dataTables_filter input[type="search"]::placeholder {
+    color: #6b7280;
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .dataTables_wrapper .dataTables_filter {
+      float: none;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .dataTables_wrapper .dataTables_filter label {
+      width: 100%;
+    }
+  }
+</style>
+
 <div class="content-wrapper text-uppercase ">
 
   <section class="content-header">
@@ -317,6 +385,10 @@ $restaurarProducto->ctrRestaurarProducto();
 ?>
 
 <script>
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').attr('placeholder', 'Buscar producto');
+    });
+
     // Obtener los elementos del DOM
     const inventariableSelect = document.getElementById('editarInventariable');
     const stockInput = document.getElementById('editarStock');
