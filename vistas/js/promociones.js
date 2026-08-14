@@ -19,6 +19,13 @@ function cargarTablaPromociones() {
     deferRender: true,
     retrieve: true,
     processing: true,
+    initComplete: function () {
+      var $input = $(this).closest('.dataTables_wrapper').find('.dataTables_filter input[type="search"]');
+      if ($input.length) {
+        $input.attr('placeholder', 'Buscar promoción');
+        $input.css('font-size', '15px');
+      }
+    },
     language: {
       sProcessing: "Procesando...",
       sLengthMenu: "Mostrar _MENU_ registros",
@@ -27,7 +34,7 @@ function cargarTablaPromociones() {
       sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
       sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0",
       sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
-      sSearch: "Buscar:",
+      sSearch: "",
       oPaginate: {
         sFirst: "Primero",
         sLast: "Último",
