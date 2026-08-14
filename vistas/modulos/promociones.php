@@ -60,6 +60,7 @@ if ($_SESSION["perfil"] == "Vendedor") {
     opacity: 1;
   }
 
+
   @media (max-width: 768px) {
     .dataTables_wrapper .dataTables_filter {
       float: none;
@@ -152,8 +153,16 @@ if ($_SESSION["perfil"] == "Vendedor") {
 
     applyPromoSearchPlaceholder();
 
-    $(document).on('draw.dt', '.dataTables_wrapper', function () {
+    // ocultar buscador del DataTable de promociones (porque ya hay otro buscador arriba)
+    $('.tablasPromociones').each(function () {
+      var $w = $(this).closest('.dataTables_wrapper');
+      if ($w.length) $w.find('.dataTables_filter').hide();
+    });
+
+    $(document).on('draw.dt', '.tablasPromociones', function () {
       applyPromoSearchPlaceholder();
+      var $w = $(this).closest('.dataTables_wrapper');
+      if ($w.length) $w.find('.dataTables_filter').hide();
     });
   });
 </script>
