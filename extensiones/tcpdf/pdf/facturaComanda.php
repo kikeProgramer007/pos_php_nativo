@@ -292,11 +292,12 @@ class imprimirFacturaComanda
             // Configuración del PDF para impresora térmica
             require_once('tcpdf_include.php');
 
-            // Calcular altura dinámica
+            // Calcular altura dinámica con margen extra para descuentos y pie de factura/comanda
             $alturaBase = 80;
             $alturaPorFila = 10;
             $cantidadFilas = count($productos);
-            $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas);
+            $filasExtra = 10;
+            $alturaTotal = $alturaBase + ($alturaPorFila * ($cantidadFilas + $filasExtra));
 
             // Generar encabezados reutilizables
             $encabezadoFactura = $this->generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago);

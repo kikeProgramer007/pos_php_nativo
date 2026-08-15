@@ -1231,8 +1231,8 @@ if ($modoEdicionCuenta) {
                       <div class="input-group">
                         <span class="input-group-addon text-bold">IMPRIMIR EN</span>
                         <select class="form-control input-sm text-uppercase text-bold" id="idTipoImpresion" name="idTipoImpresion">
-                          <option value="1">CAJA Y COCINA</option>
-                          <option value="2" selected>CAJA</option>
+                          <option value="1"selected>CAJA Y COCINA</option>
+                          <option value="2">CAJA</option>
                           <option value="3">COCINA</option>
                           <option value="4">NO IMPRIMIR</option>
                         </select>

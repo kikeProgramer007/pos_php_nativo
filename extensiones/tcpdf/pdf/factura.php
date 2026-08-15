@@ -76,9 +76,10 @@ class imprimirFactura
         // Definir altura por fila (puedes ajustarlo según el contenido).
         $alturaPorFila = 10;
 
-        // Calcular la altura dinámica en base al número de filas
-        $cantidadFilas = count($productos); // Obtener la cantidad de productos
-        $alturaTotal = $alturaBase + ($alturaPorFila * $cantidadFilas); // Altura total
+        // Calcular la altura dinámica con margen extra para descuentos y pie de ticket
+        $cantidadFilas = count($productos);
+        $filasExtra = 10; // encabezado + totales + espacio para pie de ticket
+        $alturaTotal = $alturaBase + ($alturaPorFila * ($cantidadFilas + $filasExtra));
 
         // Crear el documento con la altura calculada
         $pdfFactura = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
