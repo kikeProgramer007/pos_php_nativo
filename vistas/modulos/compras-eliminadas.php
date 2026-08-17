@@ -1,13 +1,7 @@
 <?php
 
-if ($_SESSION["perfil"] == "Supervisor") {
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("compras.eliminados")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 

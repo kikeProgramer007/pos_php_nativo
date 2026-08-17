@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/proveedor.controlador.php";
 require_once "../../modelos/proveedor.modelo.php";
 
@@ -24,18 +25,12 @@ class TablaProveedor
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"])  && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  ""; 
-              
-			}else
-            
-            {
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-primary  btnEditarProveedor' idProveedor='".$proveedor[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProveedor'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarProveedor' idProveedor='".$proveedor[$i]["id"]."'><i class='fa fa-times'></i></button></div>"; 
-               
-
-            }
+			$botones = Permisos::botonesCrud(
+				"proveedores.editar",
+				"<button class='btn btn-primary  btnEditarProveedor' idProveedor='".$proveedor[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProveedor'><i class='fa fa-pencil'></i></button>",
+				"proveedores.eliminar",
+				"<button class='btn btn-danger btnEliminarProveedor' idProveedor='".$proveedor[$i]["id"]."'><i class='fa fa-times'></i></button>"
+			);
 
 
             

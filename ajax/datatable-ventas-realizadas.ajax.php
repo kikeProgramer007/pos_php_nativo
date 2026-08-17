@@ -1,5 +1,6 @@
 <?php
 
+require_once "../includes/sesion-permisos.php";
 require_once "../controladores/ventas.controlador.php";
 require_once "../modelos/ventas.modelo.php";
 
@@ -49,16 +50,18 @@ class TablaProductosVentas{
 			  TRAEMOS LAS ACCIONES
 			  =============================================*/
 			  $menuAcciones .= "<li><a href='javascript:void(0)' class='btnVerFactura action-view' codigoVenta='".$ventas[$i]["id"]."'><i class='fa fa-eye'></i> Ver</a></li>";
-			  $menuAcciones .= "<li><a href='javascript:void(0)' class='btnImprimirFactura action-print' codigoVenta='".$ventas[$i]["id"]."'><i class='fa fa-print'></i> Imprimir</a></li>";
+			  if (Permisos::tiene("ventas.imprimir")) {
+			  	$menuAcciones .= "<li><a href='javascript:void(0)' class='btnImprimirFactura action-print' codigoVenta='".$ventas[$i]["id"]."'><i class='fa fa-print'></i> Imprimir</a></li>";
+			  }
 
 			  if (isset($ventas[$i]["estado_pago"]) && $ventas[$i]["estado_pago"] === "PENDIENTE") {
 				$cajaAbierta = isset($ventas[$i]["estado_arqueo"]) && $ventas[$i]["estado_arqueo"] === "abierta";
-				if ($cajaAbierta) {
+				if ($cajaAbierta && Permisos::tiene("ventas.editar")) {
 					$menuAcciones .= "<li><a class='btnEditarCuenta action-edit' href='index.php?ruta=crear-venta&editarCuenta=".$ventas[$i]["id"]."'><i class='fa fa-pencil'></i> Editar cuenta</a></li>";
 				}
 			  }
 
-			  if ((isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Administrador") || (isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor")) {
+			  if (Permisos::tiene("ventas.eliminar")) {
 				$menuAcciones .= "<li><a href='javascript:void(0)' class='btnEliminarVenta action-delete' idVenta='".$ventas[$i]["id"]."'><i class='fa fa-times'></i> Eliminar</a></li>";
 			  }
 
@@ -72,10 +75,12 @@ class TablaProductosVentas{
 				if ($cajaAbierta) {
 					$estadoPagoLabel = "PENDIENTE";
 					$estadoPagoClass = "label-danger";
+					if (Permisos::tiene("ventas.cobrar")) {
 					$botones .= "
 					<button type='button' class='btn btn-success btn-sm btnCobrarCuenta action-charge-button' idVenta='".$ventas[$i]["id"]."' totalVenta='".$ventas[$i]["total"]."' codigoVenta='".$ventas[$i]["codigo"]."'>
 					  <i class='fa fa-money'></i> Cobrar
 					</button>";
+					}
 				} else {
 					$estadoPagoLabel = "PENDIENTE";
 					$estadoPagoClass = "label-warning";

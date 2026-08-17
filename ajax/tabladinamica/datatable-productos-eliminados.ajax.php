@@ -1,5 +1,6 @@
 <?php
 
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/productos.controlador.php";
 require_once "../../modelos/productos.modelo.php";
 
@@ -65,15 +66,9 @@ class TablaProductosEliminados{
  	 		TRAEMOS LAS ACCIONES
   			=============================================*/ 
 
-  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  ""; 
-
-			}else{
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-success btnRestaurarProducto' idProducto='".$productos[$i]["id"]."' codigo='".$productos[$i]["codigo"]."' imagen='".$productos[$i]["imagen"]."'><i class='fa fa-undo'></i> Restaurar</button></div>"; 
-
-			}
+  			$botones = Permisos::tiene("productos.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestaurarProducto' idProducto='".$productos[$i]["id"]."' codigo='".$productos[$i]["codigo"]."' imagen='".$productos[$i]["imagen"]."'><i class='fa fa-undo'></i> Restaurar</button></div>"
+				: "";
 
 		  	$datosJson .='[
 			      "'.($i+1).'",

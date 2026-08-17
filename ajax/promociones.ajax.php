@@ -1,5 +1,6 @@
 <?php
 
+require_once "../includes/sesion-permisos.php";
 require_once "../controladores/promociones.controlador.php";
 require_once "../modelos/promociones.modelo.php";
 require_once "../controladores/productos.controlador.php";

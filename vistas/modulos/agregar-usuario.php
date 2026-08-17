@@ -1,15 +1,8 @@
 <?php
 
-if($_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("usuarios.crear")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
-
 }
 
 ?>
@@ -82,9 +75,9 @@ if($_SESSION["perfil"] == "Vendedor"){
                                             </label>
                                             <select class="form-control" id="nuevoPerfil" name="nuevoPerfil" required>
                                                 <option value="">Seleccione un perfil</option>
-                                                <option value="Administrador">Administrador</option>
-                                                <option value="Supervisor">Supervisor</option>
-                                                <option value="Vendedor">Vendedor</option>
+                                                <?php foreach (Permisos::perfilesSelect() as $opcionPerfil) { ?>
+                                                <option value="<?php echo intval($opcionPerfil["id"]); ?>"><?php echo htmlspecialchars($opcionPerfil["nombre"]); ?></option>
+                                                <?php } ?>
                                             </select>
                                         </div>
                                     </div>

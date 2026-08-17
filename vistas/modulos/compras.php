@@ -1,13 +1,7 @@
 <?php
 
-if ($_SESSION["perfil"] == "Vendedor") {
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("compras.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 
@@ -39,17 +33,21 @@ if ($_SESSION["perfil"] == "Vendedor") {
 
       <div class="box-header with-border">
 
+        <?php if (Permisos::tiene("compras.crear")) { ?>
         <a href="crear-compra">
           <button class="btn btn-primary">
             <i class="fa fa-plus"></i>
             Agregar compra
           </button>
         </a>
+        <?php } ?>
         &nbsp;
+        <?php if (Permisos::tiene("compras.eliminados")) { ?>
         <a class="btn btn-danger" href="compras-eliminadas">
           <i class="fa fa-trash"></i>
           <span> compras Eliminadas </span>
         </a>
+        <?php } ?>
 
       </div>
 

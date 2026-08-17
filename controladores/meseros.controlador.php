@@ -10,6 +10,11 @@ class ControladorMeseros{
 
 		if(isset($_POST["nuevoMesero"])){
 
+			if (!Permisos::tiene("meseros.crear")) {
+				Permisos::requiere("meseros.crear");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevoMesero"]) ||
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevoDocumentoId"])&&
 			   preg_match('/^[()\-0-9 ]+$/', $_POST["nuevoTelefono"]) && 
@@ -118,6 +123,11 @@ class ControladorMeseros{
 
 		if(isset($_POST["editarMesero"])){
 
+			if (!Permisos::tiene("meseros.editar")) {
+				Permisos::requiere("meseros.editar");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["editarMesero"]) ||
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevoDocumentoId"])&&
 			   preg_match('/^[()\-0-9 ]+$/', $_POST["editarTelefono"]) && 
@@ -192,6 +202,11 @@ class ControladorMeseros{
 
 		if(isset($_GET["idMesero"])){
 
+			if (!Permisos::tiene("meseros.eliminar")) {
+				Permisos::requiere("meseros.eliminar");
+				return;
+			}
+
 			$tabla ="meseros";
 			$datos = $_GET["idMesero"];
 
@@ -238,6 +253,11 @@ class ControladorMeseros{
 	static public function ctrRestaurarMesero(){
 
 		if(isset($_GET["idMeseroRestaurar"])){
+
+			if (!Permisos::tiene("meseros.eliminados")) {
+				Permisos::requiere("meseros.eliminados");
+				return;
+			}
 
 			$tabla ="meseros";
 			$datos = $_GET["idMeseroRestaurar"];

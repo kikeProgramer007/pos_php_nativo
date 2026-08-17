@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/proveedor.controlador.php";
 require_once "../../modelos/proveedor.modelo.php";
 
@@ -25,18 +26,9 @@ class TablaProveedorEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"])  && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  ""; 
-              
-			}else
-            
-            {
-
-				 $botones =  "<div class='btn-group'></button><button class='btn btn-success btnRestaurarProveedor' idProveedor='".$proveedor[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"; 
-               
-
-            }
+			$botones = Permisos::tiene("proveedores.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestaurarProveedor' idProveedor='".$proveedor[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"
+				: "";
 
 
             

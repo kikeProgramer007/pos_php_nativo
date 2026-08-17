@@ -1,13 +1,12 @@
 <?php
 
-if ($_SESSION["perfil"] == "") {
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (isset($_GET["editarCuenta"])) {
+  if (!Permisos::tiene("ventas.editar")) {
+    echo '<script>window.location = "no-autorizado";</script>';
+    return;
+  }
+} elseif (!Permisos::tiene("ventas.crear")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 
@@ -60,6 +59,8 @@ if ($modoEdicionCuenta) {
       break;
   }
 }
+
+$cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_SESSION["idArqueoCaja"]);
 
 ?>
 <style>
@@ -656,6 +657,97 @@ if ($modoEdicionCuenta) {
       width: 100%;
   }
 
+  /* Cabecera de venta: datos a la izquierda, acciones de caja a la derecha */
+  .caja-cabecera-venta {
+    margin-bottom: 0;
+  }
+
+  .caja-cabecera-venta .form-group {
+    margin-bottom: 8px;
+  }
+
+  .caja-cabecera-venta .col-sm-8 .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .caja-acciones-botones {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .caja-acciones-botones .btn {
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .forma-atencion-venta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 10px;
+  }
+
+  .forma-atencion-venta label {
+    margin: 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  .forma-atencion-venta select {
+    flex: 0 1 260px;
+    width: 260px;
+    max-width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .caja-cabecera-venta {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .caja-cabecera-venta > [class*="col-"] {
+      float: none;
+    }
+
+    .caja-acciones-botones {
+      height: 100%;
+    }
+
+    .caja-acciones-botones .btn {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .caja-acciones-botones {
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .forma-atencion-venta {
+      flex-wrap: nowrap;
+    }
+
+    .forma-atencion-venta select {
+      width: 220px;
+      flex-basis: 220px;
+    }
+  }
+
+  #modalAgregarOtroIngreso .form-control,
+  #modalAgregarOtroIngreso .input-group-addon {
+    font-size: 16px;
+  }
+
+  #modalAgregarOtroIngreso textarea[name="descripcion_otro_ingreso"] {
+    min-height: 90px;
+    resize: vertical;
+  }
+
   /* Estilos para hacer más grandes los selects del modal de gastos */
   #modalAgregarMesero .form-control,
   #modalAgregarMesero .input-group-addon {
@@ -936,19 +1028,21 @@ if ($modoEdicionCuenta) {
 
         <div class="box">
 
-          <div class="box-header "></div>
-
           <form role="form" method="post" class="formularioVenta" id="ventaForm">
 
             <div class="box-body">
 
               <div class="">
 
+                <div class="row caja-cabecera-venta">
+
+                  <div class="col-sm-8">
+
                 <!--=====================================
                 ENTRADA DEL VENDEDOR
                 ======================================-->
 
-                <div class="row">
+                <div class="row" style="margin-bottom: 10px;">
 
                   <!-- ENTRADA DEL VENDEDOR -->
                   <div class="col-sm-6">
@@ -1024,24 +1118,6 @@ if ($modoEdicionCuenta) {
                       ?>
 
                     </select>
-                    <?php
-                      if(($_SESSION["perfil"] ==  'Administrador') || ($_SESSION["perfil"] ==  'Supervisor') ) {
-                          echo '<span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Gastos</button></span>';
-                      }
-                    ?>
-                    
-                    <span class="input-group-addon hidden-xs">
-                      <a href="arqueo-de-caja">
-                        <button type="button" class="btn btn-default btn-xs text-uppercase">Cerrar Caja</button>
-                      </a>
-                    </span>
-
-                    <!-- Botón Cerrar Caja solo visible en móviles -->
-                    <div class="visible-xs" style="margin-top:10px; margin-bottom:10px;">
-                      <a href="arqueo-de-caja">
-                        <button type="button" class="btn btn-block btn-default btn-xs text-uppercase">Cerrar Caja</button>
-                      </a>
-                    </div>
 
                   </div>
 
@@ -1059,29 +1135,43 @@ if ($modoEdicionCuenta) {
                   </div>
                 </div>
 
-                <div class="row ">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label for="tipo_pago text-right">FORMA DE ATENCIÓN:</label>
+                  </div>
+
+                  <div class="col-sm-4">
+                    <div class="caja-acciones-botones">
+                      <?php
+                      if (Permisos::tiene("caja.otros_ingresos")) {
+                        if ($cajaArqueoAbierta) {
+                          echo '<button type="button" class="btn btn-default btn-sm text-uppercase" data-toggle="modal" data-target="#modalAgregarOtroIngreso">Agregar otro ingreso</button>';
+                        } else {
+                          echo '<button type="button" class="btn btn-default btn-sm text-uppercase btnCajaCerradaIngreso" disabled>Agregar otro ingreso</button>';
+                        }
+                      }
+
+                      if (Permisos::tiene("meseros.crear")) {
+                        echo '<button type="button" class="btn btn-default btn-sm text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero">Agregar gastos</button>';
+                      }
+                      ?>
+                      <a href="arqueo-de-caja" class="btn btn-default btn-sm text-uppercase">Cerrar caja</a>
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                    <select class="form-control input-sm" id="formaAtencion" name="formaAtencion">
-                        <option value="1" <?php echo $formaAtencionEditar == 1 ? 'selected' : ''; ?>>🍽️ En Mesa</option>
-                        <option value="2" <?php echo $formaAtencionEditar == 2 ? 'selected' : ''; ?>>🚚 Para Llevar</option>
-                        <option value="3" <?php echo $formaAtencionEditar == 3 ? 'selected' : ''; ?>>🔀 Mixto</option>
-                      </select>
-                    </div>
-                  </div>
+
                 </div>
-               
+
+                <div class="form-group forma-atencion-venta">
+                  <label for="formaAtencion">FORMA DE ATENCIÓN:</label>
+                  <select class="form-control input-sm" id="formaAtencion" name="formaAtencion">
+                    <option value="1" <?php echo $formaAtencionEditar == 1 ? 'selected' : ''; ?>>🍽️ En Mesa</option>
+                    <option value="2" <?php echo $formaAtencionEditar == 2 ? 'selected' : ''; ?>>🚚 Para Llevar</option>
+                    <option value="3" <?php echo $formaAtencionEditar == 3 ? 'selected' : ''; ?>>🔀 Mixto</option>
+                  </select>
+                </div>
 
                 <!--=====================================
                 ENTRADA PARA AGREGAR PRODUCTO
                 ======================================-->
               
-                <hr style="border-top: 2px solid rgba(69, 69, 69, 0.82); margin:4px">
+                <hr style="border-top: 2px solid rgba(69, 69, 69, 0.82); margin:8px 0 6px">
 
                 <div class="form-group row nuevoProducto  ">
 
@@ -1415,6 +1505,8 @@ MODAL AGREGAR MESERO
   </div>
 
 </div>
+
+<?php include "componentes/modal-otro-ingreso.php"; ?>
 
 <script>
   const idUsuario = <?php echo $_SESSION["id"]; ?>;

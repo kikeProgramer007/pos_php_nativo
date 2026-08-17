@@ -1,15 +1,8 @@
 <?php
 
-if($_SESSION["perfil"] == "vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("proveedores.eliminados")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
-
 }
 
 ?>

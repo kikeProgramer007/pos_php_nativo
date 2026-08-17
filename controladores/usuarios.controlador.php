@@ -39,6 +39,7 @@ class ControladorUsuarios{
 							$_SESSION["usuario"] = $respuesta["usuario"];
 							$_SESSION["foto"] = $respuesta["foto"];
 							$_SESSION["perfil"] = $respuesta["perfil"];
+							$_SESSION["id_perfil"] = isset($respuesta["id_perfil"]) ? intval($respuesta["id_perfil"]) : null;
 							$arqueoActual =ModeloArqueo::mdlObtnerArqueoPorIDUsuario(1);
 							if($arqueoActual){
 								$_SESSION["idArqueoCaja"] = $arqueoActual["id"];
@@ -152,6 +153,11 @@ class ControladorUsuarios{
 
 		if(isset($_POST["nuevoUsuario"])){
 
+			if (!Permisos::tiene("usuarios.crear")) {
+				Permisos::requiere("usuarios.crear");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevoNombre"]) &&
 			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["nuevoUsuario"]) &&
 			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["nuevoPassword"])){
@@ -245,12 +251,28 @@ class ControladorUsuarios{
 
 				$tabla = "usuarios";
 
+				$perfilBD = Permisos::datosPerfilPorId($_POST["nuevoPerfil"] ?? 0);
+				if (!$perfilBD) {
+					echo '<script>
+					swal({
+						type: "error",
+						title: "¡Debe seleccionar un perfil válido!",
+						showConfirmButton: true,
+						confirmButtonText: "Cerrar"
+					}).then(function(result){
+						if(result.value){ window.location = "agregar-usuario"; }
+					});
+					</script>';
+					return;
+				}
+
 				$encriptar = crypt($_POST["nuevoPassword"], '$2a$07$asxx54ahjppf45sd87a5a4dDDGsystemdev$');
 
 				$datos = array("nombre" => $_POST["nuevoNombre"],
 					           "usuario" => $_POST["nuevoUsuario"],
 					           "password" => $encriptar,
-					           "perfil" => $_POST["nuevoPerfil"],
+					           "perfil" => $perfilBD["nombre"],
+					           "id_perfil" => $perfilBD["id"],
 					           "foto"=>$ruta);
 
 				$respuesta = ModeloUsuarios::mdlIngresarUsuario($tabla, $datos);
@@ -351,6 +373,11 @@ class ControladorUsuarios{
 	static public function ctrEditarUsuario(){
 
 		if(isset($_POST["editarUsuario"])){
+
+			if (!Permisos::tiene("usuarios.editar")) {
+				Permisos::requiere("usuarios.editar");
+				return;
+			}
 
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["editarNombre"])){
 
@@ -491,10 +518,26 @@ class ControladorUsuarios{
 
 				}
 
+				$perfilBD = Permisos::datosPerfilPorId($_POST["editarPerfil"] ?? 0);
+				if (!$perfilBD) {
+					echo'<script>
+					swal({
+						type: "error",
+						title: "¡Debe seleccionar un perfil válido!",
+						showConfirmButton: true,
+						confirmButtonText: "Cerrar"
+					}).then(function(result){
+						if (result.value) { window.location = "usuarios"; }
+					})
+					</script>';
+					return;
+				}
+
 				$datos = array("nombre" => $_POST["editarNombre"],
 							   "usuario" => $_POST["editarUsuario"],
 							   "password" => $encriptar,
-							   "perfil" => $_POST["editarPerfil"],
+							   "perfil" => $perfilBD["nombre"],
+							   "id_perfil" => $perfilBD["id"],
 							   "foto" => $ruta);
 
 				$respuesta = ModeloUsuarios::mdlEditarUsuario($tabla, $datos);
@@ -554,6 +597,11 @@ class ControladorUsuarios{
 
 		if(isset($_GET["idUsuario"])){
 
+			if (!Permisos::tiene("usuarios.eliminar")) {
+				Permisos::requiere("usuarios.eliminar");
+				return;
+			}
+
 			$tabla ="usuarios";
 			$datos = $_GET["idUsuario"];
 
@@ -601,6 +649,11 @@ class ControladorUsuarios{
 	static public function ctrRestaurarUsuario(){
 
 		if(isset($_GET["idUsuarioRestaurar"])){
+
+			if (!Permisos::tiene("usuarios.eliminados")) {
+				Permisos::requiere("usuarios.eliminados");
+				return;
+			}
 
 			$tabla ="usuarios";
 			$datos = $_GET["idUsuarioRestaurar"];

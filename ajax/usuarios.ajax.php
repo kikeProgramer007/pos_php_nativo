@@ -1,5 +1,6 @@
 <?php
 
+require_once "../includes/sesion-permisos.php";
 require_once "../controladores/usuarios.controlador.php";
 require_once "../modelos/usuarios.modelo.php";
 
@@ -67,6 +68,8 @@ EDITAR USUARIO
 =============================================*/
 if(isset($_POST["idUsuario"])){
 
+	Permisos::ajaxRequiere("usuarios.editar");
+
 	$editar = new AjaxUsuarios();
 	$editar -> idUsuario = $_POST["idUsuario"];
 	$editar -> ajaxEditarUsuario();
@@ -78,6 +81,8 @@ ACTIVAR USUARIO
 =============================================*/	
 
 if(isset($_POST["activarUsuario"])){
+
+	Permisos::ajaxRequiere("usuarios.editar");
 
 	$activarUsuario = new AjaxUsuarios();
 	$activarUsuario -> activarUsuario = $_POST["activarUsuario"];

@@ -10,6 +10,11 @@ class ControladorCategorias{
 
 		if(isset($_POST["nuevaCategoria"])){
 
+			if (!Permisos::tiene("categorias.crear")) {
+				Permisos::requiere("categorias.crear");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevaCategoria"])){
 
 				$tabla = "categorias";
@@ -98,6 +103,11 @@ class ControladorCategorias{
 
 		if(isset($_POST["editarCategoria"])){
 
+			if (!Permisos::tiene("categorias.editar")) {
+				Permisos::requiere("categorias.editar");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["editarCategoria"])){
 
 				$tabla = "categorias";
@@ -162,6 +172,11 @@ class ControladorCategorias{
 
 		if(isset($_GET["idCategoria"])){
 
+			if (!Permisos::tiene("categorias.eliminar")) {
+				Permisos::requiere("categorias.eliminar");
+				return;
+			}
+
 
 				$tabla ="categorias";
 				$datos = $_GET["idCategoria"];
@@ -204,6 +219,11 @@ class ControladorCategorias{
 	static public function ctrRestaurarCategoria(){
 
 		if(isset($_GET["idCategoriaRestaurar"])){
+
+			if (!Permisos::tiene("categorias.eliminados")) {
+				Permisos::requiere("categorias.eliminados");
+				return;
+			}
 
 	/* 	$respuesta = ModeloProductos::mdlMostrarProductos("productos", "id_categoria", $_GET["idCategoriaRestaurar"], "ASC"); */
 			

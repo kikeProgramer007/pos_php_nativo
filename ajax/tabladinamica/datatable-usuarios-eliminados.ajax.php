@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/usuarios.controlador.php";
 require_once "../../modelos/usuarios.modelo.php";
 
@@ -46,17 +47,9 @@ class TablaUsuariosEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  "<div class='btn-group'></div>"; 
-
-			}else{
-
-               
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-success btnRestauraUsuario' idUsuario='".$usuario[$i]["id"]."' fotoUsuario='".$usuario[$i]["foto"]."' usuario='".$usuario[$i]["usuario"]."'><i class='fa fa-undo'></i> Restaurar </button></div>";  
-
-			}
+			$botones = Permisos::tiene("usuarios.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestauraUsuario' idUsuario='".$usuario[$i]["id"]."' fotoUsuario='".$usuario[$i]["foto"]."' usuario='".$usuario[$i]["usuario"]."'><i class='fa fa-undo'></i> Restaurar </button></div>"
+				: "";
         
             
 

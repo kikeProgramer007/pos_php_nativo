@@ -27,8 +27,14 @@ class ControladorArqueo {
 
         try {
             if($_POST["accion"] == "AperturarCaja") {
+                if (!Permisos::tiene("caja.abrir")) {
+                    return json_encode(["status" => "error", "mensaje" => "No tiene permiso para abrir caja"]);
+                }
                 return self::registrarAperturaCaja();
             } else if($_POST["accion"] == "CerrarCaja") {
+                if (!Permisos::tiene("caja.cerrar")) {
+                    return json_encode(["status" => "error", "mensaje" => "No tiene permiso para cerrar caja"]);
+                }
                 return self::registrarCierreCaja();
             } else {
                 return json_encode(["status" => "error", "mensaje" => "Acción no válida"]);
@@ -117,6 +123,19 @@ class ControladorArqueo {
             "estado" => self::sanitizarInput($_POST["estado"]),
             "id_caja" => intval($_POST["idCaja"])
         );
+
+        $sincronizado = ModeloArqueo::mdlSincronizarMontosArqueo($datos["id_arqueo"]);
+        if ($sincronizado) {
+            $datos["total_ingresos"] = floatval($sincronizado["total_ingresos"]);
+            $datos["monto_ventas"] = floatval($sincronizado["monto_ventas"]);
+            $datos["monto_ventas_efectivo"] = floatval($sincronizado["monto_ventas_efectivo"]);
+            $datos["monto_ventas_qr"] = floatval($sincronizado["monto_ventas_qr"]);
+            $datos["total_egresos"] = floatval($sincronizado["total_egresos"]);
+            $datos["gastos_operativos"] = floatval($sincronizado["gastos_operativos"]);
+            $datos["monto_compras"] = floatval($sincronizado["monto_compras"]);
+            $datos["resultado_neto"] = floatval($sincronizado["resultado_neto"]);
+            $datos["diferencia"] = floatval($datos["total_efectivo_qr_en_caja"]) - floatval($datos["resultado_neto"]);
+        }
 
         $respuesta = ModeloArqueo::mdlRegistrarCierreCaja($datos);
 

@@ -1,15 +1,8 @@
 <?php
 
-if($_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("meseros.eliminados")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
-
 }
 
 ?>

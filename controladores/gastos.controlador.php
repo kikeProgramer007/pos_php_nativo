@@ -9,6 +9,10 @@ class ControladorGastos{
     static public function ctrCrearGasto(){
 
         if(isset($_POST["monto_gasto"]) && isset($_POST["id_arqueo_caja_gasto"])){
+            if (!Permisos::tiene("gastos.crear")) {
+                Permisos::requiere("gastos.crear");
+                return;
+            }
             if(ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_POST["id_arqueo_caja_gasto"])){
             // Validar los campos del formulario
             if(preg_match('/^[0-9]+$/', $_POST["id_tipo_gasto"]) &&
@@ -122,6 +126,11 @@ class ControladorGastos{
     static public function ctrEditarGasto() {
 
         if (!isset($_POST["editarMonto"])) return;
+
+        if (!Permisos::tiene("gastos.editar")) {
+            Permisos::requiere("gastos.editar");
+            return;
+        }
     
         // Validaciones
         $validaciones = [
@@ -220,7 +229,11 @@ class ControladorGastos{
     static public function ctrEliminarGasto(){
         
         if(isset($_GET["idGasto"])){
-          
+
+            if (!Permisos::tiene("gastos.eliminar")) {
+                Permisos::requiere("gastos.eliminar");
+                return;
+            }          
             $tabla = "gastos";
             $datos = $_GET["idGasto"];
             $gastoOld = ControladorGastos::ctrMostrarGastos("id",$datos);

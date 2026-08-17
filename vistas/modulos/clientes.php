@@ -1,16 +1,9 @@
 
 <?php
 
-if($_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("clientes.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
-
 }
 
 ?>
@@ -120,10 +113,12 @@ if($_SESSION["perfil"] == "Vendedor"){
 
 
           &nbsp;
+      <?php if (Permisos::tiene("clientes.eliminados")) { ?>
       <a class="btn btn-danger" href="clientes-eliminados">
        <i class="fa fa-trash"></i>
        <span> Eliminados </span>
         </a>
+      <?php } ?>
 
 
       </div>

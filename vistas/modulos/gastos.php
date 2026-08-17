@@ -1,13 +1,7 @@
 <?php
 
-if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("gastos.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 
 }
@@ -106,7 +100,7 @@ if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
           Agregar Gastos
         </button> -->
        <?php
-        if(($_SESSION["perfil"] ==  'Administrador') || ($_SESSION["perfil"] ==  'Supervisor') ) {
+        if (Permisos::tiene("gastos.crear")) {
             echo '<a href="agregar-gasto" class="btn btn-primary">
                 <i class="fa fa-plus"></i>
                 Agregar Gastos

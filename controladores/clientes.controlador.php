@@ -10,6 +10,11 @@ class ControladorClientes{
 
 		if(isset($_POST["nuevoCliente"])){
 
+			if (!Permisos::tiene("clientes.crear")) {
+				Permisos::requiere("clientes.crear");
+				return;
+			}
+
 			if (preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["nuevoCliente"])) {
 			   
 
@@ -105,6 +110,11 @@ class ControladorClientes{
 
 		if(isset($_POST["editarCliente"])){
 
+			if (!Permisos::tiene("clientes.editar")) {
+				Permisos::requiere("clientes.editar");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["editarCliente"])){ 
 	
 
@@ -173,6 +183,11 @@ class ControladorClientes{
 
 		if(isset($_GET["idCliente"])){
 
+			if (!Permisos::tiene("clientes.eliminar")) {
+				Permisos::requiere("clientes.eliminar");
+				return;
+			}
+
 			$tabla ="clientes";
 			$datos = $_GET["idCliente"];
 
@@ -210,6 +225,11 @@ class ControladorClientes{
 	static public function ctrRestaurarCliente(){
 
 		if(isset($_GET["idClienteRestaurar"])){
+
+			if (!Permisos::tiene("clientes.eliminados")) {
+				Permisos::requiere("clientes.eliminados");
+				return;
+			}
 
 			$tabla ="clientes";
 			$datos = $_GET["idClienteRestaurar"];

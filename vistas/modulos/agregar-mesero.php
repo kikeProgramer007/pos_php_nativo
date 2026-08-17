@@ -1,3 +1,9 @@
+<?php
+if (!Permisos::tiene("meseros.crear")) {
+  echo '<script>window.location = "no-autorizado";</script>';
+  return;
+}
+?>
 <div class="content-wrapper">
     <section class="container-fluid">
         <div class="row">

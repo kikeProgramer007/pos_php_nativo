@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/meseros.controlador.php";
 require_once "../../modelos/meseros.modelo.php";
 
@@ -23,14 +24,12 @@ class TablaMeseros
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && ($_GET["perfilOculto"] == "Vendedor" || $_GET["perfilOculto"] == "Supervisor")){
-
-				$botones =  ""; 
-              
-			}else
-            {
-				 $botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarMesero' idMesero='".$meseros[$i]["id"]."' data-toggle='modal' data-target='#modalEditarMesero'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarMesero' idMesero='".$meseros[$i]["id"]."'><i class='fa fa-times'></i></button></div>"; 
-            }
+			$botones = Permisos::botonesCrud(
+				"meseros.editar",
+				"<button class='btn btn-primary btnEditarMesero' idMesero='".$meseros[$i]["id"]."' data-toggle='modal' data-target='#modalEditarMesero'><i class='fa fa-pencil'></i></button>",
+				"meseros.eliminar",
+				"<button class='btn btn-danger btnEliminarMesero' idMesero='".$meseros[$i]["id"]."'><i class='fa fa-times'></i></button>"
+			);
 			
 
 

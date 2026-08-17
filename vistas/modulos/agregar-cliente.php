@@ -1,3 +1,9 @@
+<?php
+if (!Permisos::tiene("clientes.crear")) {
+  echo '<script>window.location = "no-autorizado";</script>';
+  return;
+}
+?>
 <div class="content-wrapper text-uppercase">
     <!-- Header -->
     <section class="content-header">

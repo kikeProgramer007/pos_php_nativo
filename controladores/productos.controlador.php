@@ -35,6 +35,11 @@ class ControladorProductos{
 
 		if(isset($_POST["nuevaDescripcion"])){
 
+			if (!Permisos::tiene("productos.crear")) {
+				Permisos::requiere("productos.crear");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["nuevaDescripcion"]) ||
 			   preg_match('/^[0-9]+$/', $_POST["nuevoStock"]) &&	
 			   preg_match('/^[0-9.]+$/', $_POST["nuevoPrecioVenta"]) &&	
@@ -199,6 +204,11 @@ class ControladorProductos{
 	static public function ctrEditarProducto(){
 
 		if(isset($_POST["editarDescripcion"])){
+
+			if (!Permisos::tiene("productos.editar")) {
+				Permisos::requiere("productos.editar");
+				return;
+			}
 
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$/', $_POST["editarDescripcion"]) ||
 			   preg_match('/^[0-9]+$/', $_POST["editarStock"]) &&	
@@ -371,6 +381,11 @@ class ControladorProductos{
 
 		if(isset($_GET["idProducto"])){
 
+			if (!Permisos::tiene("productos.eliminar")) {
+				Permisos::requiere("productos.eliminar");
+				return;
+			}
+
 			$tabla ="productos";
 			$datos = $_GET["idProducto"];
 
@@ -414,6 +429,11 @@ class ControladorProductos{
 	static public function ctrRestaurarProducto(){
 
 		if(isset($_GET["idProductoRestaurar"])){
+
+			if (!Permisos::tiene("productos.eliminados")) {
+				Permisos::requiere("productos.eliminados");
+				return;
+			}
 
 			$tabla ="productos";
 			$datos = $_GET["idProductoRestaurar"];

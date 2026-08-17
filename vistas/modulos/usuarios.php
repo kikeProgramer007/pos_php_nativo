@@ -1,15 +1,8 @@
 <?php
 
-if($_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("usuarios.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
-
 }
 
 ?>
@@ -113,10 +106,12 @@ if($_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor"){
       
           Agregar Usuario
         </button>  -->
+        <?php if (Permisos::tiene("usuarios.crear")) { ?>
         <a href="agregar-usuario" class="btn btn-primary">
         <i class="fa fa-plus"></i>
        Agregar Usuarios
        </a>
+        <?php } ?>
       &nbsp;
   
         <a class="btn btn-primary" target="_blank" href="reporte_usuario.php">
@@ -125,10 +120,12 @@ if($_SESSION["perfil"] == "Supervisor" || $_SESSION["perfil"] == "Vendedor"){
             <span class="icon-name"> Imprimir </span>
               </a>
               &nbsp;
+              <?php if (Permisos::tiene("usuarios.eliminados")) { ?>
               <a class="btn btn-danger" href="usuarios-eliminados">
     <i class="fa fa-trash"></i>
     <span> Eliminados </span>
 </a>
+              <?php } ?>
 
 
       </div>
@@ -251,16 +248,11 @@ MODAL EDITAR USUARIO
               <div class="input-group">
               <span class="input-group-addon">ROL</span> 
 
-                <select class="form-control input-lg" name="editarPerfil">
-                  
-                  <option value="" id="editarPerfil"></option>
-
-                  <option value="Administrador">Administrador</option>
-
-                  <option value="Supervisor">Supervisor</option>
-
-                  <option value="Vendedor">Vendedor</option>
-
+                <select class="form-control input-lg" name="editarPerfil" id="editarPerfil">
+                  <option value="">Seleccione un perfil</option>
+                  <?php foreach (Permisos::perfilesSelect() as $opcionPerfil) { ?>
+                  <option value="<?php echo intval($opcionPerfil["id"]); ?>"><?php echo htmlspecialchars($opcionPerfil["nombre"]); ?></option>
+                  <?php } ?>
                 </select>
 
               </div>

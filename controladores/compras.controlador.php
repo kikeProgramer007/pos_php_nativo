@@ -30,6 +30,11 @@ class ControladorCompras{
 
 		if(isset($_POST["nuevaCompra"])){
 
+			if (!Permisos::tiene("compras.crear")) {
+				Permisos::requiere("compras.crear");
+				return;
+			}
+
 			if($_POST["listaProductos"] == ""){
 
 					 echo'<script>
@@ -156,6 +161,10 @@ class ControladorCompras{
 
 		if(isset($_GET["idCompra"])){
 
+			if (!Permisos::tiene("compras.eliminar")) {
+				Permisos::requiere("compras.eliminar");
+				return;
+			}
 			$tabla = "compras";
 
 			$item = "id";

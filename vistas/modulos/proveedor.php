@@ -1,13 +1,7 @@
 <?php
 
-if($_SESSION["perfil"] == "vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("proveedores.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 
 }
@@ -117,10 +111,12 @@ if($_SESSION["perfil"] == "vendedor"){
 
         </button> -->
 
+        <?php if (Permisos::tiene("proveedores.crear")) { ?>
         <a href="agregar-proveedor" class="btn btn-primary">
         <i class="fa fa-plus"></i>
        Agregar Proveedor
        </a>
+        <?php } ?>
       &nbsp;
         <a class="btn btn-primary" target="_blank" href="reporte_proveedor.php">
                                        <i class="material-icons"></i>
@@ -130,10 +126,12 @@ if($_SESSION["perfil"] == "vendedor"){
 
        &nbsp;
 
+      <?php if (Permisos::tiene("proveedores.eliminados")) { ?>
       <a class="btn btn-danger" href="proveedor-eliminados">
       <i class="fa fa-trash"></i>
       <span> Eliminados </span>
       </a>
+      <?php } ?>
 
       </div>
 

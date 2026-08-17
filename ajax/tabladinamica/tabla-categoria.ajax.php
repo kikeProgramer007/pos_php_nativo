@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/categorias.controlador.php";
 require_once "../../modelos/categorias.modelo.php";
 
@@ -25,17 +26,12 @@ class TablaCategorias
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  ""; 
-
-			}else{
-
-                $botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarCategoria' idCategoria='".$categorias[$i]["id"]."' data-toggle='modal' data-target='#modalEditarCategoria'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarCategoria' idCategoria='".$categorias[$i]["id"]."'><i class='fa fa-times'></i></button></div>"; 
-
-				/*  $botones =  "<div class='btn-group'><a href='editar-categoria?id=" . $categorias[$i]['id'] . "' class='btn btn-primary btnEditarCategoria' idCategoria='".$categorias[$i]["id"]."' ><i class='fa fa-pencil'></i></a><button class='btn btn-danger btnEliminarCategoria' idCategoria='".$categorias[$i]["id"]."'><i class='fa fa-times'></i></button></div>";  */
-                
-			}
+			$botones = Permisos::botonesCrud(
+				"categorias.editar",
+				"<button class='btn btn-primary btnEditarCategoria' idCategoria='".$categorias[$i]["id"]."' data-toggle='modal' data-target='#modalEditarCategoria'><i class='fa fa-pencil'></i></button>",
+				"categorias.eliminar",
+				"<button class='btn btn-danger btnEliminarCategoria' idCategoria='".$categorias[$i]["id"]."'><i class='fa fa-times'></i></button>"
+			);
 
 
             $datosJson .= '[

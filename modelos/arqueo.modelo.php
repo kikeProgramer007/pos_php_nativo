@@ -380,6 +380,28 @@ class ModeloArqueo {
     }
 
     /**
+     * Suma otros ingresos (no ventas) asociados a un arqueo
+     */
+    static public function mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo = null) {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(monto), 0) AS total
+                 FROM otros_ingresos
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarOtrosIngresosPorArqueo: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
      * Suma ventas pagadas en efectivo de un arqueo
      */
     static public function mdlSumarVentasEfectivoPorArqueo($idArqueo, $pdo = null) {
@@ -462,15 +484,17 @@ class ModeloArqueo {
 
         $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
         $ventasEfectivo = self::mdlSumarVentasEfectivoPorArqueo($idArqueo, $conexion);
+        $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $conexion);
         $compras = self::mdlSumarComprasPorArqueo($idArqueo, $conexion);
         $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $conexion);
-        $disponible = $montoApertura + $ventasEfectivo - $gastos - $compras;
+        $disponible = $montoApertura + $ventasEfectivo + $otrosIngresos - $gastos - $compras;
 
         return [
             "ok" => true,
             "disponible" => round($disponible, 2),
             "monto_apertura" => $montoApertura,
             "ventas_efectivo" => $ventasEfectivo,
+            "otros_ingresos" => $otrosIngresos,
             "compras" => $compras,
             "gastos" => $gastos,
             "arqueo" => $arqueo
@@ -494,8 +518,9 @@ class ModeloArqueo {
             $ventas = self::mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo);
             $compras = self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
             $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
+            $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
             $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
-            $totalIngresos = $montoApertura + $ventas["total"];
+            $totalIngresos = $montoApertura + $ventas["total"] + $otrosIngresos;
             $totalEgresos = $compras + $gastos;
             $resultadoNeto = $totalIngresos - $totalEgresos;
 
@@ -530,6 +555,7 @@ class ModeloArqueo {
             $arqueo["total_ingresos"] = $totalIngresos;
             $arqueo["total_egresos"] = $totalEgresos;
             $arqueo["resultado_neto"] = $resultadoNeto;
+            $arqueo["otros_ingresos"] = $otrosIngresos;
             // Informativo comercial: no afecta ingresos/egresos de caja
             $arqueo["total_bruto_ventas"] = $ventas["total_bruto"];
             $arqueo["total_descuentos_ventas"] = $ventas["total_descuento"];

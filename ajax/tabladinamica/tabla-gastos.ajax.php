@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/gastos.controlador.php";
 require_once "../../modelos/gastos.modelo.php";
 
@@ -23,14 +24,12 @@ class TablaGastos
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && ($_GET["perfilOculto"] == "Vendedor" || $_GET["perfilOculto"] == "Supervisor")){
-
-				$botones =  ""; 
-              
-			}else
-            {
-				 $botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarGasto' idGasto='".$gastos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarGasto'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarGasto' idGasto='".$gastos[$i]["id"]."'><i class='fa fa-times'></i></button></div>"; 
-            }
+			$botones = Permisos::botonesCrud(
+				"gastos.editar",
+				"<button class='btn btn-primary btnEditarGasto' idGasto='".$gastos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarGasto'><i class='fa fa-pencil'></i></button>",
+				"gastos.eliminar",
+				"<button class='btn btn-danger btnEliminarGasto' idGasto='".$gastos[$i]["id"]."'><i class='fa fa-times'></i></button>"
+			);
 			
 
 

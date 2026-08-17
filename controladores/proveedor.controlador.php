@@ -10,6 +10,11 @@ class ControladorProveedors{
 
 		if(isset($_POST["nuevoProveedor"])){
 
+			if (!Permisos::tiene("proveedores.crear")) {
+				Permisos::requiere("proveedores.crear");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["nuevoProveedor"]) ||
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["nuevaEmpresa"]) ||
 			   preg_match('/^[()\-0-9 ]+$/', $_POST["nuevoTelefono"]) ||
@@ -101,6 +106,11 @@ class ControladorProveedors{
 
 		if(isset($_POST["editarProveedor"])){
 
+			if (!Permisos::tiene("proveedores.editar")) {
+				Permisos::requiere("proveedores.editar");
+				return;
+			}
+
 			if(preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["editarProveedor"]) &&
 			   preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ \/]+$/', $_POST["editarEmpresa"]) &&
 			   preg_match('/^[()\-0-9 ]+$/', $_POST["editarTelefono"]) && 
@@ -172,6 +182,11 @@ class ControladorProveedors{
 
 		if(isset($_GET["idProveedor"])){
 
+			if (!Permisos::tiene("proveedores.eliminar")) {
+				Permisos::requiere("proveedores.eliminar");
+				return;
+			}
+
 			$tabla ="proveedor";
 			$datos = $_GET["idProveedor"];
 
@@ -212,6 +227,11 @@ class ControladorProveedors{
 	static public function ctrRestaurarProveedor(){
 
 		if(isset($_GET["idProveedorRestaurar"])){
+
+			if (!Permisos::tiene("proveedores.eliminados")) {
+				Permisos::requiere("proveedores.eliminados");
+				return;
+			}
 
 			$tabla ="proveedor";
 			$datos = $_GET["idProveedorRestaurar"];

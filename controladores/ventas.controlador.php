@@ -31,7 +31,12 @@ class ControladorVentas{
 
 		if(isset($_POST["nuevaVenta"])){
 
-			// Evitar crear venta nueva si se está editando una cuenta pendiente
+			if (!Permisos::tiene("ventas.crear")) {
+				echo json_encode(["status" => "error", "mensaje" => "No tiene permiso para crear ventas"]);
+				return;
+			}
+
+				// Evitar crear venta nueva si se está editando una cuenta pendiente
 			if (isset($_POST["idVentaEditar"]) && intval($_POST["idVentaEditar"]) > 0) {
 				echo json_encode([
 					"status" => "error",
@@ -291,6 +296,11 @@ class ControladorVentas{
 	static public function ctrEliminarVenta(){
 
 		if(isset($_GET["idVenta"]) ){
+
+			if (!Permisos::tiene("ventas.eliminar")) {
+				Permisos::requiere("ventas.eliminar");
+				return;
+			}
 		
 			$tabla = "ventas";
 
@@ -492,6 +502,11 @@ class ControladorVentas{
 			return;
 		}
 
+		if (!Permisos::tiene("ventas.editar")) {
+			echo json_encode(["status" => "error", "mensaje" => "No tiene permiso para editar cuentas"]);
+			return;
+		}
+
 		if(ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_POST["idArqueoCaja"]) == false){
 			echo json_encode([
 				"status" => "error",
@@ -588,6 +603,11 @@ class ControladorVentas{
 	static public function ctrCobrarCuentaPendiente(){
 
 		if(!isset($_POST["cobrarCuentaPendiente"])){
+			return;
+		}
+
+		if (!Permisos::tiene("ventas.cobrar")) {
+			echo json_encode(["status" => "error", "mensaje" => "No tiene permiso para cobrar cuentas"]);
 			return;
 		}
 

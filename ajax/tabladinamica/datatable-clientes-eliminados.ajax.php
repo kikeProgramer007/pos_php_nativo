@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/clientes.controlador.php";
 require_once "../../modelos/clientes.modelo.php";
 
@@ -25,21 +26,9 @@ class TablaClientesEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Vendedor"){
-
-				$botones =  ""; 
-              
-			}else
-            
-            {
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-success btnRestaurarCliente' idCliente='".$clientes[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"; 
-
-
-                 
-            }
-			
-
+			$botones = Permisos::tiene("clientes.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestaurarCliente' idCliente='".$clientes[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"
+				: ""; 
 
             $datosJson .= '[
                 "' . ($i + 1) . '",

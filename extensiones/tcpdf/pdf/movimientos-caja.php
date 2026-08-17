@@ -16,6 +16,7 @@ require_once "../../../modelos/usuarios.modelo.php";
 
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
+require_once "../../../modelos/otros_ingresos.modelo.php";
 
 class imprimirFactura
 {
@@ -77,6 +78,14 @@ class imprimirFactura
         $montoCompras = abs(floatval($arqueo["monto_compras"] ?? 0));
         $totalEgresos = abs(floatval($arqueo["total_egresos"] ?? ($gastosOperativos + $montoCompras)));
         $resultadoNeto = floatval($arqueo["resultado_neto"] ?? 0);
+        $totalOtrosIngresos = floatval($arqueo["otros_ingresos"] ?? 0);
+        $detalleOtrosIngresos = [];
+        try {
+            $detalleOtrosIngresos = ModeloOtrosIngresos::mdlMostrarPorArqueo($arqueo["id"]);
+            $totalOtrosIngresos = ModeloOtrosIngresos::mdlSumarPorArqueo($arqueo["id"]);
+        } catch (Exception $e) {
+            $detalleOtrosIngresos = [];
+        }
 
        $ResultadoMessage = "TODO CUADRA";
         $dineroEnCaja = floatval($arqueo["total_efectivo_qr_en_caja"] ?? 0);
@@ -189,6 +198,30 @@ class imprimirFactura
                 <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
                 <td style="text-align:right; ">' . $arqueo["monto_ventas_efectivo"] . '</td>
             </tr>
+            <tr>
+                <td style="text-align:left; "> OTROS INGRESOS:</td>
+                <td style="text-align:right; ">' . number_format($totalOtrosIngresos, 2) . '</td>
+            </tr>';
+
+        if (is_array($detalleOtrosIngresos) && count($detalleOtrosIngresos) > 1 && count($detalleOtrosIngresos) <= 6) {
+            foreach ($detalleOtrosIngresos as $otroIngresoItem) {
+                $descTicket = $otroIngresoItem["descripcion"] ?? "";
+                if (function_exists("mb_substr") && function_exists("mb_strlen")) {
+                    if (mb_strlen($descTicket) > 22) {
+                        $descTicket = mb_substr($descTicket, 0, 22) . "...";
+                    }
+                } elseif (strlen($descTicket) > 22) {
+                    $descTicket = substr($descTicket, 0, 22) . "...";
+                }
+                $html .= '
+            <tr>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; ' . htmlspecialchars($descTicket) . '</td>
+                <td style="text-align:right; ">' . number_format(floatval($otroIngresoItem["monto"] ?? 0), 2) . '</td>
+            </tr>';
+            }
+        }
+
+        $html .= '
             <tr>
                 <td style="text-align:left; "> DESCUENTOS (INFO):</td>
                 <td style="text-align:right; ">' . number_format(floatval($arqueo["total_descuentos_ventas"] ?? 0), 2) . '</td>

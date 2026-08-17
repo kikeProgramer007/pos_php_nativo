@@ -1,5 +1,6 @@
 <?php
 
+require_once "../includes/sesion-permisos.php";
 require_once "../controladores/arqueo.controlador.php";
 require_once "../modelos/arqueo.modelo.php";
 require_once "../controladores/cajas.controlador.php";

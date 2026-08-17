@@ -1,13 +1,7 @@
 <?php
 
-if ($_SESSION["perfil"] == "Vendedor") {
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("productos.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 
@@ -116,10 +110,12 @@ if ($_SESSION["perfil"] == "Vendedor") {
 
         </button> -->
 
+        <?php if (Permisos::tiene("productos.crear")) { ?>
         <a href="agregar-producto" class="btn btn-primary">
           <i class="fa fa-plus"></i>
           Agregar Producto
         </a>
+        <?php } ?>
         &nbsp;
 
         <a class="btn btn-primary" target="_blank" href="reporte_producto.php">
@@ -128,10 +124,12 @@ if ($_SESSION["perfil"] == "Vendedor") {
         </a>
         &nbsp;
 
+        <?php if (Permisos::tiene("productos.eliminados")) { ?>
         <a class="btn btn-danger" href="productos-eliminados">
           <i class="fa fa-trash"></i>
           <span> Eliminados </span>
         </a>
+        <?php } ?>
 
         <div class="box-body">
 

@@ -29,6 +29,11 @@ class ControladorPromociones
 			return;
 		}
 
+		if (!Permisos::tiene("promociones.crear")) {
+			Permisos::requiere("promociones.crear");
+			return;
+		}
+
 		$validacion = self::validarDatosCabecera($_POST);
 		if ($validacion !== true) {
 			self::alerta("error", $validacion, "agregar-promocion");
@@ -67,6 +72,11 @@ class ControladorPromociones
 			return;
 		}
 
+		if (!Permisos::tiene("promociones.editar")) {
+			Permisos::requiere("promociones.editar");
+			return;
+		}
+
 		$id = intval($_POST["idPromocion"]);
 		$validacion = self::validarDatosCabecera($_POST);
 		if ($validacion !== true) {
@@ -101,6 +111,10 @@ class ControladorPromociones
 
 	static public function ctrCambiarEstado($id, $estado)
 	{
+		if (!Permisos::tiene("promociones.editar")) {
+			return ["status" => "error", "mensaje" => "Acceso no autorizado"];
+		}
+
 		$id = intval($id);
 		$estado = intval($estado) === 1 ? 1 : 0;
 
@@ -120,6 +134,10 @@ class ControladorPromociones
 
 	static public function ctrEliminarPromocion($id)
 	{
+		if (!Permisos::tiene("promociones.eliminar")) {
+			return ["status" => "error", "mensaje" => "Acceso no autorizado"];
+		}
+
 		$ok = ModeloPromociones::mdlEliminarPromocion(intval($id));
 		return $ok === "ok"
 			? ["status" => "ok", "mensaje" => "Promoción deshabilitada"]

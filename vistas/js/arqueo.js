@@ -28,7 +28,8 @@ class ArqueoCaja {
             totalEgresos: 0,
             resultadoNeto: 0,
             diferencia: 0,
-            totalQrEnCuenta: 0
+            totalQrEnCuenta: 0,
+            otrosIngresos: 0
         };
      
         this.inicializarEventos();
@@ -150,13 +151,15 @@ class ArqueoCaja {
         this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent) || 0;
         this.totales.gastosOperativos = Math.abs(parseFloat(document.getElementById('gastos_operativos').textContent) || 0);
         this.totales.montoCompras = Math.abs(parseFloat(document.getElementById('monto_compras').textContent) || 0);
-        this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas;
+        this.totales.otrosIngresos = Math.abs(parseFloat(document.getElementById('otros_ingresos').textContent) || 0);
+        this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas + this.totales.otrosIngresos;
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
 
-        // efectivo_esperado = apertura + ventas efectivo - compras - gastos
+        // efectivo_esperado = apertura + ventas efectivo + otros ingresos - compras - gastos
         const efectivoEsperado = this.totales.montoApertura
             + this.totales.montoVentasEfectivo
+            + this.totales.otrosIngresos
             - this.totales.montoCompras
             - this.totales.gastosOperativos;
         const totalContado = this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta;
@@ -287,6 +290,10 @@ class ArqueoCaja {
         elementos.idCaja.disabled = false;
         elementos.nroTicket.disabled = false;
         elementos.btnImprimirMovimientos.disabled = true;
+        const otrosIngresosEl = document.getElementById('otros_ingresos');
+        if (otrosIngresosEl) {
+            otrosIngresosEl.textContent = '0.00';
+        }
         this.cargarCuentasPendientes();
     }
 
@@ -298,6 +305,7 @@ class ArqueoCaja {
             'monto_ventas': datos.monto_ventas || '0.00',
             'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
             'monto_ventas_qr': datos.monto_ventas_qr || '0.00',
+            'otros_ingresos': datos.otros_ingresos || '0.00',
             'total_descuentos_ventas': datos.total_descuentos_ventas || '0.00',
             'total_ingresos': datos.total_ingresos || '0.00',
             'gastos_operativos': datos.gastos_operativos || '0.00',

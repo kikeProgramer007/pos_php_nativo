@@ -1,13 +1,7 @@
 <?php
 
-if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("meseros.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 
 }
@@ -106,7 +100,7 @@ if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
           Agregar Meseros
         </button> -->
                 <?php
-       if($_SESSION["perfil"] ==  'Administrador') {
+       if (Permisos::tiene("meseros.crear")) {
             echo '<a href="agregar-mesero" class="btn btn-primary">
                 <i class="fa fa-plus"></i>
                 Agregar Meseros
@@ -127,10 +121,12 @@ if($_SESSION["perfil"] == "" || $_SESSION["perfil"] == "Vendedor"){
 
 
               &nbsp;
+              <?php if (Permisos::tiene("meseros.eliminados")) { ?>
               <a class="btn btn-danger" href="meseros-eliminados">
             <i class="fa fa-trash"></i>
             <span> Eliminados </span>
         </a>
+              <?php } ?>
 
       </div>
 

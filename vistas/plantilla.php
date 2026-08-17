@@ -21,6 +21,8 @@ $fechaActual = date("Y-m-d");
    include "vistas/plantilla_header.php";
    echo '<div class="wrapper">';
 
+    Permisos::cargarSesion();
+
     /*=============================================
     CABEZOTE
     =============================================*/
@@ -68,6 +70,7 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "editar-venta" ||
          $_GET["ruta"] == "compras" ||
          $_GET["ruta"] == "gastos" ||
+         $_GET["ruta"] == "otros-ingresos" ||
          $_GET["ruta"] == "compras-eliminadas" ||
          $_GET["ruta"] == "crear-compra" ||
          $_GET["ruta"] == "reportes" ||
@@ -82,9 +85,23 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "promociones" ||
          $_GET["ruta"] == "agregar-promocion" ||
          $_GET["ruta"] == "editar-promocion" ||
+         $_GET["ruta"] == "perfiles" ||
+         $_GET["ruta"] == "agregar-perfil" ||
+         $_GET["ruta"] == "editar-perfil" ||
+         $_GET["ruta"] == "asignar-permisos" ||
+         $_GET["ruta"] == "perfiles-eliminados" ||
+         $_GET["ruta"] == "no-autorizado" ||
          $_GET["ruta"] == "salir"){
 
-        include "modulos/".$_GET["ruta"].".php";
+        $permisoRuta = Permisos::permisoDeRuta($_GET["ruta"]);
+        if ($_GET["ruta"] === "crear-venta" && !empty($_GET["editarCuenta"])) {
+          $permisoRuta = "ventas.editar";
+        }
+        if ($permisoRuta && !Permisos::tiene($permisoRuta) && $_GET["ruta"] !== "no-autorizado") {
+          include "modulos/no-autorizado.php";
+        } else {
+          include "modulos/".$_GET["ruta"].".php";
+        }
 
       }else{
 

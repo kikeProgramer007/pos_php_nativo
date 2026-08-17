@@ -1,5 +1,6 @@
 <?php
 
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/promociones.controlador.php";
 require_once "../../modelos/promociones.modelo.php";
 
@@ -38,29 +39,19 @@ class TablaPromociones
 				}, $tipos));
 			}
 
-			$botones = "
-			<div class='btn-group'>
-				<a class='btn btn-default btn-xs' href='index.php?ruta=editar-promocion&idPromocion=".$p["id"]."' title='Ver / Editar'>
-					<i class='fa fa-pencil'></i>
-				</a>";
-
-			if (intval($p["estado"]) === 1) {
-				$botones .= "
-				<button class='btn btn-warning btn-xs btnTogglePromo' idPromocion='".$p["id"]."' estado='0' title='Deshabilitar'>
-					<i class='fa fa-ban'></i>
-				</button>";
-			} else {
-				$botones .= "
-				<button class='btn btn-success btn-xs btnTogglePromo' idPromocion='".$p["id"]."' estado='1' title='Habilitar'>
-					<i class='fa fa-check'></i>
-				</button>";
+			$botones = "<div class='btn-group'>";
+			if (Permisos::tiene("promociones.editar")) {
+				$botones .= "<a class='btn btn-default btn-xs' href='index.php?ruta=editar-promocion&idPromocion=".$p["id"]."' title='Ver / Editar'><i class='fa fa-pencil'></i></a>";
+				if (intval($p["estado"]) === 1) {
+					$botones .= "<button class='btn btn-warning btn-xs btnTogglePromo' idPromocion='".$p["id"]."' estado='0' title='Deshabilitar'><i class='fa fa-ban'></i></button>";
+				} else {
+					$botones .= "<button class='btn btn-success btn-xs btnTogglePromo' idPromocion='".$p["id"]."' estado='1' title='Habilitar'><i class='fa fa-check'></i></button>";
+				}
 			}
-
-			$botones .= "
-				<button class='btn btn-danger btn-xs btnEliminarPromo' idPromocion='".$p["id"]."' title='Deshabilitar'>
-					<i class='fa fa-times'></i>
-				</button>
-			</div>";
+			if (Permisos::tiene("promociones.eliminar")) {
+				$botones .= "<button class='btn btn-danger btn-xs btnEliminarPromo' idPromocion='".$p["id"]."' title='Deshabilitar'><i class='fa fa-times'></i></button>";
+			}
+			$botones .= "</div>";
 
 			$datos[] = [
 				$i + 1,

@@ -10,26 +10,34 @@ class ModeloUsuarios{
 
 	static public function mdlMostrarUsuarios($tabla, $item,$valor,$activo=1){
 
-		if($item != null){
+		$select = "SELECT u.*, COALESCE(p.nombre, u.perfil) AS perfil FROM $tabla u LEFT JOIN perfiles p ON p.id = u.id_perfil";
 
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item AND activo=:activo ORDER BY id DESC ");
-
-			$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
-			$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
-
-			$stmt -> execute();
-
-			return $stmt -> fetch();
-
-		}else{
-
-			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE   activo=:activo ORDER BY id DESC ");
-			$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
-
-			$stmt -> execute();
-
-			return $stmt -> fetchAll();
-
+		try {
+			if($item != null){
+				$stmt = Conexion::conectar()->prepare("$select WHERE u.$item = :$item AND u.activo=:activo ORDER BY u.id DESC ");
+				$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+				$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
+				$stmt -> execute();
+				return $stmt -> fetch();
+			}else{
+				$stmt = Conexion::conectar()->prepare("$select WHERE u.activo=:activo ORDER BY u.id DESC ");
+				$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
+				$stmt -> execute();
+				return $stmt -> fetchAll();
+			}
+		} catch (Exception $e) {
+			if($item != null){
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item AND activo=:activo ORDER BY id DESC ");
+				$stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
+				$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
+				$stmt -> execute();
+				return $stmt -> fetch();
+			}else{
+				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE   activo=:activo ORDER BY id DESC ");
+				$stmt -> bindParam(":activo", $activo, PDO::PARAM_STR);
+				$stmt -> execute();
+				return $stmt -> fetchAll();
+			}
 		}
 		
 
@@ -78,12 +86,13 @@ class ModeloUsuarios{
 
 	static public function mdlIngresarUsuario($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(nombre, usuario, password, perfil, foto) VALUES (:nombre, :usuario, :password, :perfil, :foto)");
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(nombre, usuario, password, perfil, id_perfil, foto) VALUES (:nombre, :usuario, :password, :perfil, :id_perfil, :foto)");
 
 		$stmt->bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
 		$stmt->bindParam(":usuario", $datos["usuario"], PDO::PARAM_STR);
 		$stmt->bindParam(":password", $datos["password"], PDO::PARAM_STR);
 		$stmt->bindParam(":perfil", $datos["perfil"], PDO::PARAM_STR);
+		$stmt->bindParam(":id_perfil", $datos["id_perfil"], PDO::PARAM_INT);
 		$stmt->bindParam(":foto", $datos["foto"], PDO::PARAM_STR);
 
 		if($stmt->execute()){
@@ -108,11 +117,12 @@ class ModeloUsuarios{
 
 	static public function mdlEditarUsuario($tabla, $datos){
 	
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, password = :password, perfil = :perfil, foto = :foto WHERE usuario = :usuario");
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombre = :nombre, password = :password, perfil = :perfil, id_perfil = :id_perfil, foto = :foto WHERE usuario = :usuario");
 
 		$stmt -> bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
 		$stmt -> bindParam(":password", $datos["password"], PDO::PARAM_STR);
 		$stmt -> bindParam(":perfil", $datos["perfil"], PDO::PARAM_STR);
+		$stmt -> bindParam(":id_perfil", $datos["id_perfil"], PDO::PARAM_INT);
 		$stmt -> bindParam(":foto", $datos["foto"], PDO::PARAM_STR);
 		$stmt -> bindParam(":usuario", $datos["usuario"], PDO::PARAM_STR);
 

@@ -1,6 +1,6 @@
 <?php
-if ($_SESSION["perfil"] == "Vendedor") {
-  echo '<script>window.location = "inicio";</script>';
+if (!Permisos::tiene("promociones.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 ?>
@@ -86,9 +86,11 @@ if ($_SESSION["perfil"] == "Vendedor") {
   <section class="content">
     <div class="box">
       <div class="box-header with-border">
+        <?php if (Permisos::tiene("promociones.crear")) { ?>
         <a href="agregar-promocion" class="btn btn-primary">
           <i class="fa fa-plus"></i> Registrar promoción
         </a>
+        <?php } ?>
       </div>
 
       <div class="box-body">

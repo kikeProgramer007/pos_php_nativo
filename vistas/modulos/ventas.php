@@ -1,13 +1,7 @@
 <?php
 
-if ($_SESSION["perfil"] == "") {
-
-  echo '<script>
-
-    window.location = "inicio";
-
-  </script>';
-
+if (!Permisos::tiene("ventas.ver")) {
+  echo '<script>window.location = "no-autorizado";</script>';
   return;
 }
 

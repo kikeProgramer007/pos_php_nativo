@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/meseros.controlador.php";
 require_once "../../modelos/meseros.modelo.php";
 
@@ -25,16 +26,9 @@ class TablaMeserosEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && ($_GET["perfilOculto"] == "Vendedor" || $_GET["perfilOculto"] == "Supervisor")){
-
-				$botones =  ""; 
-              
-			}else
-            {
-				 $botones =  "<div class='btn-group'><button class='btn btn-success btnRestaurarMesero' idMesero='".$meseros[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"; 
-
-
-            }
+			$botones = Permisos::tiene("meseros.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestaurarMesero' idMesero='".$meseros[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"
+				: "";
 			
 
 

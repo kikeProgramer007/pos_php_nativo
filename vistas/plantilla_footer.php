@@ -10,7 +10,9 @@
 <script src="vistas/js/proveedor.js"></script>
 <script src="vistas/js/ventas.js"></script> 
 <script src="vistas/js/promociones.js"></script>
-<script src="vistas/js/gastos.js"></script> 
+<script src="vistas/js/gastos.js"></script>
+<script src="vistas/js/otros-ingresos.js"></script>
+<script src="vistas/js/perfiles.js"></script> 
 <!-- ------------------------- -->
 <!-- vinculamos  LAS CARPETAS de la tablas dinamicas -->
 
@@ -22,5 +24,6 @@
 <script src="vistas/js/tabladinamica/comprastabla.js"></script>
 <script src="vistas/js/tabladinamica/ventastabla.js"></script>
 <script src="vistas/js/tabladinamica/gastostabla.js"></script>
+<script src="vistas/js/tabladinamica/otrosingresostabla.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@
 
 			<?php
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("inicio.ver")) {
 
 				echo '<li class="active">
 
@@ -28,9 +28,12 @@
 	
 				</li>
 
-			</li>
+			</li>';
+			}
 
-			<li>
+			if (Permisos::tiene("usuarios.ver")) {
+
+				echo '<li>
 
 				<a href="usuarios">
 
@@ -41,9 +44,22 @@
 
 			</li>';
 			}
-			
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("perfiles.ver")) {
+
+				echo '<li>
+
+				<a href="perfiles">
+
+					<i class="fa fa-unlock-alt"></i>
+					<span>Perfiles</span>
+
+				</a>
+
+			</li>';
+			}
+
+			if (Permisos::tiene("categorias.ver")) {
 
 				echo '<li>
 
@@ -54,18 +70,24 @@
 
 				</a>
 
-			</li>
+			</li>';
+			}
 
-			<li>
+			if (Permisos::tiene("productos.ver")) {
+
+				echo '<li>
 
 				<a href="productos">
-					<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAADw0lEQVR4nK2US28bVRTHLwIknqsKiQ/ABiEeEkskvgFixaYgNiyQQCoLFixDglQ1NSEpzaNuqEOgDamhJWlo3rEdJ04745m58/B43g/PjD1+JY3bIBpS+6A7lVFUIhaBIx3d0cz//O7/nqM7CP1PcYtVXxuIX34VaYbfy0takqL4U/8F6JT8e7HziVFU1Er9ml7KUazce1yY6fqnms0mfDMyeQGppndaVp0Mi5VjAz2/7DbqdTg3fiWObC8ctd0yhQva0GERwzBPaobSZ1mGq+nyXkEW9gSRdTiO6Umn008c1laq4R/NZgPOxa/EUb3RFOuNZtP1KnxXwHHcu7qh7IsFBrBAARZo4EUaBCkPgsQAz7P7LEu/8zewErYbjQYMDifGkGqU/ixoNtC8sk8+0iz9gShxESjP5mBp+SYsryxCKrUK2Y00FIo8aHoRVE0BQeBOkho3KLfDShXOjkycR6sZik/OLnV+vZmSstnsC7zAtAlsY3MNlpYWYGtrExiGBow5kCQMNE2BqioQBD7outqmKOqErttt03YgNpy4jgDgsdX12w/eSyYfZ5jbywRG0ZuwtrYSFXMcA5IkgKLIBAC2bYIsy1AquRAEAYiiuKRo9oFVCiA++bOIbjDMM0XNftDTM/wch+n7pFdrqVVgGAp4ngNZlkDTFDBNHVzXBs9zI5hhKFAul0HXtX0Ky34QNmDq+ryF0lThRdP2On2D4y9jIQ+8mIfN3MY/XJVKTgTrpmWZEIYVsG0byNSXU7nW6KWrqyiVzb+lWx6cGRo/SYBkiqRnj7p6NInLarUSrYqiPL+9c7c6+t3UDJpfWX9fs1zoi8U/xzzTKSoCCAI+0tXhLJd9CMOQOOyQSe+09nZHLv20jmaWM5+phgN9A2MDGLOhbhRB14tg29a/wmq1MDqyqqo1MtjtO637Y4lpjGYWM6cj4NmxaY7Lf2hZOnheCQyDrM6RsEajGsHIsyRLHxWD1ontO3fbo4mrJrqxkLlIgF99fSFDrIsS1nzfiyYYBGT1oVIJoFIpQ71ejbJa7bormqRmnaLe3tm9B2MT01U081tqjgB7+0ek6KJ7W0/LcsH3vIdQUlivhxGoVnvojKSuFwPHcZ4iNQuprY8jYGK6haZm59M5GsOXZ4aj3UiQnvAiP6Tr6gE5fhdMbodpmQcFWRwkmq7+2nzqC8crw/jktV009ct84sfp2U7/txO5o35Nosi+KQj4U0HiPsEYv3GUZm5x4/WVzK3fLyfnvOjF8Pezr6BDOx4nkotbL8ViPzz7F3BGt3JrU19iAAAAAElFTkSuQmCC">
+					<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAADw0lEQVR4nK2US28bVRTHLwIknqsKiQ/ABiEeEkskvgFixaYgNiyQQCoLFixDglQ1NSEpzaNuqEOgDamhJWlo3rEdJ04745m58/B43g/PjD1+JY3bIBpS+6A7lVFUIhaBIx3d0cz//O7/nqM7CP1PcYtVXxuIX34VaYbfy0takqL4U/8F6JT8e7HziVFU1Er9ml7KUazce1yY6fqnms0mfDMyeQGppndaVp0Mi5VjAz2/7DbqdTg3fiWObC8ctd0yhQva0GERwzBPaobSZ1mGq+nyXkEW9gSRdTiO6Umn008c1laq4R/NZgPOxa/EUb3RFOuNZtP1KnxXwHHcu7qh7IsFBrBAARZo4EUaBCkPgsQAz7P7LEu/8zewErYbjQYMDifGkGqU/ixoNtC8sk8+0iz9gShxESjP5mBp+SYsryxCKrUK2Y00FIo8aHoRVE0BQeBOkho3KLfDShXOjkycR6sZik/OLnV+vZmSstnsC7zAtAlsY3MNlpYWYGtrExiGBow5kCQMNE2BqioQBD7ootqmKOqErttt03YgNpy4jgDgsdX12w/eSyYfZ5jbywRG0ZuwtrYSFXMcA5IkgKLIBAC2bYIsy1AquRAEAYiiuKRo9oFVCiA++bOIbjDMM0XNftDTM/wch+n7pFdrqVVgGAp4ngNZlkDTFDBNHVzXBs9zI5hhKFAul0HTtX0Ky34QNmDq+ryF0lThRdP2On2D4y9jIQ+8mIfN3MY/XJVKTgTrpmWZEIYVsG0byNSXU7nW6KWrqyiVzb+lWx6cGRo/SYBkiqRnj7q6NInLarUSrYqiPL+9c7c6+jU0/NofXk9c8zyo8ciwYfX39/s7d6Cjex4nkotbL8ViPzz7F3BGt3JrU19iAAAAAElFTkSuQmCC">
 					<span>Productos</span>
 				</a>
 
-			</li>
+			</li>';
+			}
 
-			<li>
+			if (Permisos::tiene("promociones.ver")) {
+
+				echo '<li>
 				<a href="promociones">
 					<i class="fa fa-tags"></i>
 					<span>Ofertas y Promociones</span>
@@ -73,7 +95,7 @@
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("clientes.ver")) {
 
 				echo '<li>
 
@@ -88,7 +110,7 @@
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("meseros.ver")) {
 
 			echo '
 				<li>
@@ -98,9 +120,9 @@
 					</a>
 				</li>';
 			}
-			if($_SESSION["perfil"] == "Vendedor"){
-				$moduloGasto = "";
-			}else if($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor"){
+
+			$moduloGasto = "";
+			if (Permisos::tiene("gastos.ver")) {
 				$moduloGasto = '<li>
 							<a href="gastos">
 								<i class="fa fa-inbox" aria-hidden="true"></i>
@@ -109,7 +131,7 @@
 						</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("caja.ver") || Permisos::tiene("gastos.ver") || Permisos::tiene("caja.otros_ingresos")) {
 				echo '
 					<li class="treeview">
 
@@ -122,31 +144,48 @@
 					</a>
 
 					<ul class="treeview-menu">
-					
+					';
+
+				if (Permisos::tiene("caja.ver")) {
+					echo '
 						<li>
 							<a href="arqueo-de-caja">
 								<i class="fa fa-inbox" aria-hidden="true"></i>
 								<span>Arqueo de Caja</span>
 							</a>
 						</li>
-						'.$moduloGasto.'
+						';
+				}
+
+				echo $moduloGasto;
+				if (Permisos::tiene("caja.otros_ingresos")) {
+					echo '
+						<li>
+							<a href="otros-ingresos">
+								<i class="fa fa-inbox" aria-hidden="true"></i>
+								<span>Otros Ingresos</span>
+							</a>
+						</li>
+						';
+				}
+				echo '
 					</ul>	
 					</li>
 				';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("ventas.crear")) {
 
 				echo '<li>
 
 				<a href="crear-venta">
-					    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAACVElEQVR4nKWU3UtTcRzGD3TXVXQXXVR/QUQ33kXt1N53nOecba2t2ZKEDNqhF4TooqBASIzIDBZEXbTh1I2aEIjRtpzaTciSMc3QltLL3nUWOffE79RZW7O55gMPz3m+h/Ph9+XAj6LqEK3QNzUbbXMMf/KrZNLJnGpEzaZW1/DzESwvr5RMOplT9YrvxzYhjJ3kWcdbH9y55ywEQmFIJl3HW52bgi6EcFAIY7cQgEcIIiGE0CSX63fpWEsvaz7lotXcD5Kkkzm1mRxBPHQEsCoEgd/uK38vU7GLda8pActgIvAQw+yglVybTM2fOaLkz5P8ZdZ2WNWyh/qXAFx9HK04HdwxfP/0+Uumz/no29++dbs3r+EsuWNq/f4qmN5k6w6NTRSfxCpOB88skEym4PZ4q0zmgz5/Ucdb71cB+ROnJ95OR7ER8NX4JGg1V2Uyj0xHwZrtk1VALW9JZHO5/wZmMlloOUuiAqbRaLbrOOsKALzPAqPxP17IAal0Bu4BX+XKAz6k0xnyCTSsZZUwSkCZgj3Qfu5iEjUU/7i0YRK1nRVSFT+GVvLmru67WdSQZ+gp1tYKcPV7xSRd0o2uniytYg0loIIx3hz0+ddrAaci0ygWi3gzFRGTdEkuj3ddqTddKwHt7Y6e2My7Wjy8eBlCoVDAyGhATNIljY2/Bnfc/kyEHdXy+4Z8/kszs3No1IFQGIzBtiCXG/dSOs463yF05i9fuY6tuEPozBMWxRhsS8lUuua69YgwCEsEfogvVlyejZgwRKDeaBsuv9q34hZjq/8nOt6Ev57j+40AAAAASUVORK5CYII=">
+					    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAACVElEQVR4nKWU3UtTcRzGD3TXVXQXXVR/QUQ33kXt1N53nOecba2t2ZKEDNqhF4TooqBASIzIDBZEXbTh1I2aEIjRtpzaTciSMc3QltLL3nUWOffE79RZW7O55gMPz3m+h/Ph9+XAj6LqEK3QNzUbbXMMf/KrZNLJnGpEzaZW1/DzESwvr5RMOplT9YrvxzYhjJ3kWcdbH9y55ywEQmFIJl3HW52bgi6EcFAIY7cQgEcIIiGE0CSX63fpWEsvaz7lotXcD5Kkkzm1mRxBPHQEsCoEgd/uK38vU7GLda8pActgIvAQw+yglVybTM2fOKLkz5P8ZdZ2WNWyh/qXAFx9HK04HdwxfP/0+Uumz/no29++dbs3r+EsuWNq/f4qmN5k6w6NTRSfxCpOB88skEym4PZ4q0zmgz5/Ucdb71cB+ROnJ95OR7ER8NX4JGg1V2Uyj0xHwZrtk1VALW9JZHO5/wZmMlloOUuiAqbRaLbrOOsKALzPAqPxP17IAal0Bu4BX+XKAz6k0xnyCTSsZZUwSkCZgj3Qfu5iEjUU/7i0YRK1nRVSFT+GVvLmru67WdSQZ+gp1tYKcPV7xSTd0o2uniytYg0loIIx3hz0+ddrAaci0ygWi3gzFRGTdEluj3ddqTddKwHt7Y6e2My7Wjy8eBlCoVDAyGhATNIljY2/Bnfc/kyEHdXy+4Z8/kszs3No1IFQGIzBtiCXG/dSOs463yF05i9fuY6tuEPozBMWxRhsS8lUuua69YgwCEsEfogvVlyejZgwRKDeaBsuv9q34hZjq/8nOt6Ev57j+40AAAAASUVORK5CYII=">
 					<span>Vender</span>
 				</a>	
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("ventas.ver")) {
 				echo '<li>
 					<a href="ventas">
 						<i class="fa fa-money" aria-hidden="true"></i>
@@ -155,7 +194,7 @@
 				</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("compras.ver") || Permisos::tiene("compras.crear")) {
 
 				echo '<li class="treeview">
 
@@ -174,8 +213,10 @@
 				</a>
 
 				<ul class="treeview-menu">
-					
-					<li>
+					';
+
+				if (Permisos::tiene("compras.ver")) {
+					echo '<li>
 
 						<a href="compras">
 							
@@ -184,14 +225,11 @@
 
 						</a>
 
-					</li>
+					</li>';
+				}
 
-
-                           
-
-
-
-					<li>
+				if (Permisos::tiene("compras.crear")) {
+					echo '<li>
 
 						<a href="crear-compra">
 							
@@ -201,18 +239,14 @@
 						</a>
 
 					</li>';
-
-				
-
-
+				}
 
 				echo '</ul>
 
 			</li>';
 			}
 
-
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Supervisor") {
+			if (Permisos::tiene("proveedores.ver")) {
 
 				echo '<li>
 
@@ -226,10 +260,16 @@
 			</li>';
 			}
 
-			if ($_SESSION["perfil"] == "Administrador" || $_SESSION["perfil"] == "Vendedor" || $_SESSION["perfil"] == "Supervisor") {
-				
-
-				
+			if (Permisos::tieneAlguno([
+				"reportes.ventas",
+				"reportes.venta_fecha",
+				"reportes.top_productos",
+				"reportes.top_meseros",
+				"reportes.faltantes",
+				"reportes.categorias",
+				"reportes.ganancias",
+				"reportes.compras"
+			])) {
 
 				echo '<li class="treeview">
 
@@ -247,71 +287,79 @@
 
 				</a>
 
-				<ul class="treeview-menu">
-					<li>
+				<ul class="treeview-menu">';
+
+				if (Permisos::tiene("reportes.venta_fecha")) {
+					echo '<li>
 						<a href="reporte-venta">
 							 <i class="fa fa-calendar"></i>
 							<span>R.De. Venta Por Fecha</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-
-						<li>
+				if (Permisos::tiene("reportes.top_productos")) {
+					echo '<li>
 						<a href="reporte-top-productos">
 						  <i class="fa fa-trophy"></i>
 							<span>Prod. más vendido</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-					<li>
+				if (Permisos::tiene("reportes.top_meseros")) {
+					echo '<li>
 						<a href="reporte-top-meseros-ventas">
 						<i class="fa fa-star"></i>
 							<span>Meseros.Con mas Vtas</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-
-						<li>
+				if (Permisos::tiene("reportes.faltantes")) {
+					echo '<li>
 						<a href="ver-productos-faltantes">
 							 <i class="fa fa-exclamation-triangle"></i>
 							<span>Rpt. Product Faltante</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-					<li>
+				if (Permisos::tiene("reportes.categorias")) {
+					echo '<li>
 						<a href="reporte-categoria">
 							 <i class="fa fa-folder"></i>
 							<span>Rpt. Categorias</span>
 						</a>
-					</li>
-				
+					</li>';
+				}
 
-
-
-				
-
-
-
-					<li>
+				if (Permisos::tiene("reportes.ganancias")) {
+					echo '<li>
 						<a href="ganancias-ventas">
 							  <i class="fa fa-line-chart"></i>
 							<span>Rpt. de Ganancias</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-					<li>
+				if (Permisos::tiene("reportes.compras")) {
+					echo '<li>
 						<a href="reporte-compra">
 							 <i class="fa fa-circle-o"></i>
 							<span>Reporte de compras</span>
 						</a>
-					</li>
+					</li>';
+				}
 
-					<li>
+				if (Permisos::tiene("reportes.ventas")) {
+					echo '<li>
 						<a href="reportes">
 							<i class="fa fa-circle-o"></i>
 							<span>Reporte de ventas</span>
 						</a>
 					</li>';
+				}
 
 				echo '</ul>
 

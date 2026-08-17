@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/categorias.controlador.php";
 require_once "../../modelos/categorias.modelo.php";
 
@@ -28,17 +29,9 @@ class TablaCategoriasEliminados
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
-
-				$botones =  ""; 
-
-			}else{
-
-                
-
-                $botones =  "<div class='btn-group'><button class='btn btn-success btnRestaurarCategoria' idCategoria='".$categorias[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"; 
-
-			}
+			$botones = Permisos::tiene("categorias.eliminados")
+				? "<div class='btn-group'><button class='btn btn-success btnRestaurarCategoria' idCategoria='".$categorias[$i]["id"]."'><i class='fa fa-undo'></i>Restaurar</button></div>"
+				: ""; 
 
 
             $datosJson .= '[

@@ -1,5 +1,6 @@
 <?php
 
+require_once "../includes/sesion-permisos.php";
 require_once "../controladores/productos.controlador.php";
 require_once "../modelos/productos.modelo.php";
 
@@ -63,15 +64,12 @@ class TablaProductos{
  	 		TRAEMOS LAS ACCIONES
   			=============================================*/ 
 
-  			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
-
-			$botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarProducto' idProducto='".$productos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProducto'><i class='fa fa-pencil'></i></button>";
-
-			}else{
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarProducto' idProducto='".$productos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProducto'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarProducto' idProducto='".$productos[$i]["id"]."' codigo='".$productos[$i]["codigo"]."' imagen='".$productos[$i]["imagen"]."'><i class='fa fa-times'></i></button></div>"; 
-
-			}
+  			$botones = Permisos::botonesCrud(
+				"productos.editar",
+				"<button class='btn btn-primary btnEditarProducto' idProducto='".$productos[$i]["id"]."' data-toggle='modal' data-target='#modalEditarProducto'><i class='fa fa-pencil'></i></button>",
+				"productos.eliminar",
+				"<button class='btn btn-danger btnEliminarProducto' idProducto='".$productos[$i]["id"]."' codigo='".$productos[$i]["codigo"]."' imagen='".$productos[$i]["imagen"]."'><i class='fa fa-times'></i></button>"
+			);
 
 		  	$datosJson .='[
 			      "'.($i+1).'",

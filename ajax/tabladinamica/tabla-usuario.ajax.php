@@ -1,4 +1,5 @@
 <?php
+require_once "../../includes/sesion-permisos.php";
 require_once "../../controladores/usuarios.controlador.php";
 require_once "../../modelos/usuarios.modelo.php";
 
@@ -40,21 +41,21 @@ class TablaUsuarios
             /*=============================================
 			TRAEMOS LAS ACCIONES
 			=============================================*/
-			if(isset($_GET["perfilOculto"]) && $_GET["perfilOculto"] == "Supervisor"){
+			$botones = Permisos::botonesCrud(
+				"usuarios.editar",
+				"<button class='btn btn-primary btnEditarUsuario' idUsuario='".$usuario[$i]["id"]."' data-toggle='modal' data-target='#modalEditarUsuario'><i class='fa fa-pencil'></i></button>",
+				"usuarios.eliminar",
+				"<button class='btn btn-danger btnEliminarUsuario' idUsuario='".$usuario[$i]["id"]."' fotoUsuario='".$usuario[$i]["foto"]."' usuario='".$usuario[$i]["usuario"]."'><i class='fa fa-times'></i></button>"
+			);
 
-				$botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarUsuario' idUsuario='".$usuario[$i]["id"]."' data-toggle='modal' data-target='#modalEditarUsuario'><i class='fa fa-pencil'></i></button></div>"; 
-
-			}else{
-
-				 $botones =  "<div class='btn-group'><button class='btn btn-primary btnEditarUsuario' idUsuario='".$usuario[$i]["id"]."' data-toggle='modal' data-target='#modalEditarUsuario'><i class='fa fa-pencil'></i></button><button class='btn btn-danger btnEliminarUsuario' idUsuario='".$usuario[$i]["id"]."' fotoUsuario='".$usuario[$i]["foto"]."' usuario='".$usuario[$i]["usuario"]."'><i class='fa fa-times'></i></button></div>"; 
-
-			}
-
-            if ($usuario[$i]["estado"] != 0) {
-                $activar = "<button class='btn btn-success btn-xs btnActivar' idUsuario='" . $usuario[$i]["id"] . "' estadoUsuario='1'>Activado</button>";
+			if ($usuario[$i]["estado"] != 0) {
+                $activar = Permisos::tiene("usuarios.editar")
+					? "<button class='btn btn-success btn-xs btnActivar' idUsuario='" . $usuario[$i]["id"] . "' estadoUsuario='1'>Activado</button>"
+					: "<span class='label label-success'>Activado</span>";
             } else {
-
-                $activar = "<button class='btn btn-danger btn-xs btnActivar' idUsuario='" . $usuario[$i]["id"] . "' estadoUsuario='0'>Desactivado</button>";
+                $activar = Permisos::tiene("usuarios.editar")
+					? "<button class='btn btn-danger btn-xs btnActivar' idUsuario='" . $usuario[$i]["id"] . "' estadoUsuario='0'>Desactivado</button>"
+					: "<span class='label label-danger'>Desactivado</span>";
             }
 
             $datosJson .= '[
