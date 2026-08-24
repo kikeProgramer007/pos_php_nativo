@@ -138,11 +138,16 @@ class ControladorProductos{
 
 				$tabla = "productos";
 
+				$inventariable = intval($_POST["inventariable"]);
+				$stock = ($inventariable === 0)
+					? ModeloProductos::mdlStockDisponibleNoInventariable()
+					: $_POST["nuevoStock"];
+
 				$datos = array("id_categoria" => $_POST["nuevaCategoria"],
 							   "codigo" => $_POST["nuevoCodigo"],
 							   "descripcion" => $_POST["nuevaDescripcion"],
-							   "stock" => $_POST["nuevoStock"],
-							   "inventariable" => $_POST["inventariable"],
+							   "stock" => $stock,
+							   "inventariable" => $inventariable,
 							   "precio_venta" => $_POST["nuevoPrecioVenta"],
 							   "precio_compra" => $_POST["nuevoPrecioCompra"],
 							   "imagen" => $ruta);
@@ -317,12 +322,25 @@ class ControladorProductos{
 
 				$tabla = "productos";
 
+				$inventariable = intval($_POST["editarInventariable"]);
+				if ($inventariable === 0) {
+					// Select Disponible/Agotado en UI envía 1 o 0 en editarDisponibleNoInv
+					$disponible = isset($_POST["editarDisponibleNoInv"])
+						? (intval($_POST["editarDisponibleNoInv"]) === 1)
+						: (intval($_POST["editarStock"]) > 0);
+					$stock = $disponible
+						? ModeloProductos::mdlStockDisponibleNoInventariable()
+						: 0;
+				} else {
+					$stock = $_POST["editarStock"];
+				}
+
 				$datos = array("id_categoria" => $_POST["editarCategoria"],
 							   "id" => $_POST["idProductoEditar"],
 							   "codigo" => $_POST["editarCodigo"],
 							   "descripcion" => $_POST["editarDescripcion"],
-							   "stock" => $_POST["editarStock"],
-							   "inventariable" => $_POST["editarInventariable"],
+							   "stock" => $stock,
+							   "inventariable" => $inventariable,
 							   "precio_venta" => $_POST["editarPrecioVenta"],
 							   "precio_compra" => $_POST["editarPrecioCompra"],
 							   "imagen" => $ruta);
@@ -503,6 +521,44 @@ class ControladorProductos{
 
 		return $respuesta;
 
+	}
+
+	/*=============================================
+	MARCAR DISPONIBLE / AGOTADO (no inventariable)
+	=============================================*/
+	static public function ctrMarcarDisponibilidadNoInventariable($idProducto, $disponible){
+
+		if (!Permisos::tiene("ventas.crear") && !Permisos::tiene("productos.editar")) {
+			return ["status" => "error", "mensaje" => "No tiene permiso para cambiar la disponibilidad."];
+		}
+
+		$idProducto = intval($idProducto);
+		$disponible = (bool) $disponible;
+
+		$producto = ModeloProductos::mdlMostrarProductos("productos", "id", $idProducto, "id");
+		if (!$producto) {
+			return ["status" => "error", "mensaje" => "Producto no encontrado."];
+		}
+
+		if (intval($producto["inventariable"]) === 1) {
+			return ["status" => "error", "mensaje" => "Este producto es inventariable; use compras/stock para gestionarlo."];
+		}
+
+		$ok = ModeloProductos::mdlMarcarDisponibilidadNoInventariable($idProducto, $disponible);
+		if (!$ok) {
+			return ["status" => "error", "mensaje" => "No se pudo actualizar la disponibilidad."];
+		}
+
+		$stock = $disponible ? ModeloProductos::mdlStockDisponibleNoInventariable() : 0;
+
+		return [
+			"status" => "ok",
+			"mensaje" => $disponible ? "Producto marcado como disponible." : "Producto marcado como agotado.",
+			"id" => $idProducto,
+			"disponible" => $disponible,
+			"stock" => $stock,
+			"etiqueta" => $disponible ? "Disponible" : "Agotado"
+		];
 	}
 
 }

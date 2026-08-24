@@ -58,22 +58,22 @@ class CatalogoProductos {
         tempDiv.innerHTML = producto[1];
         const imagenSrc = tempDiv.querySelector('img').src;
         
-        // Extraer stock
-        tempDiv.innerHTML = producto[4];
-        const stock = parseInt(tempDiv.querySelector('button').textContent);
-        
         // Extraer ID del producto
         tempDiv.innerHTML = producto[5];
         const idProducto = tempDiv.querySelector('button').getAttribute('idProducto');
+
+        const inventariable = Number(producto[8] !== undefined ? producto[8] : 1);
+        const stockRaw = Number(producto[9] !== undefined ? producto[9] : 0);
 
         return {
           id: idProducto,
           imagen: imagenSrc,
           codigo: producto[2],
           descripcion: producto[3],
-          stock: stock,
+          stock: stockRaw,
           precio_venta: producto[6],
-          categoria_id: String(producto[7]) // Convertir a string para comparación consistente
+          categoria_id: String(producto[7]),
+          inventariable: inventariable
         };
       });
 
@@ -158,7 +158,73 @@ class CatalogoProductos {
         processData: false,
         dataType: "json",
         success: function(respuesta) {
+          if (Number(respuesta.stock) <= 0) {
+            boton.removeClass('disabled').prop('disabled', false);
+            catalogoProductos.productosAgregados.delete(idProducto);
+            swal({
+              title: "Producto agotado",
+              type: "error",
+              confirmButtonText: "¡Cerrar!"
+            });
+            return;
+          }
           agregarProductoAVenta(respuesta);
+        }
+      });
+    });
+
+    $(document).on('click', '.menu-disponibilidad-item', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const $item = $(e.currentTarget);
+      const $menu = $item.closest('.dropdown-disponibilidad');
+      if ($menu.data('busy')) {
+        return;
+      }
+      const idProducto = String($item.data('id'));
+      const nuevoDisponible = Number($item.data('disponible')) === 1 ? 1 : 0;
+      const producto = this.productos.find(p => String(p.id) === idProducto);
+      if (!producto || Number(producto.inventariable) === 1) {
+        return;
+      }
+
+      const stockActual = parseInt(producto.stock, 10) || 0;
+      const yaDisponible = stockActual > 0;
+      if ((nuevoDisponible === 1 && yaDisponible) || (nuevoDisponible === 0 && !yaDisponible)) {
+        return;
+      }
+
+      $menu.data('busy', true);
+      $.ajax({
+        url: "ajax/productos.ajax.php",
+        method: "POST",
+        dataType: "json",
+        data: {
+          accion: "marcarDisponibilidad",
+          idProductoDisponibilidad: idProducto,
+          disponible: nuevoDisponible
+        },
+        success: (resp) => {
+          if (!resp || resp.status !== "ok") {
+            swal({
+              type: "error",
+              title: (resp && resp.mensaje) ? resp.mensaje : "No se pudo actualizar",
+              confirmButtonText: "Cerrar"
+            });
+            return;
+          }
+          producto.stock = Number(resp.stock);
+          this.renderizarCatalogo();
+        },
+        error: () => {
+          swal({
+            type: "error",
+            title: "Error de comunicación",
+            confirmButtonText: "Cerrar"
+          });
+        },
+        complete: () => {
+          $menu.data('busy', false);
         }
       });
     });
@@ -210,26 +276,49 @@ class CatalogoProductos {
 
     productosActuales.forEach(producto => {
       const stock = parseInt(producto.stock, 10) || 0;
-      // Verificar si el producto está en la lista de agregados
+      const inventariable = Number(producto.inventariable) === 1;
+      const estaDisponible = stock > 0;
       const estaAgregado = this.productosAgregados.has(producto.id);
+      const puedeAgregar = !estaAgregado && estaDisponible;
       
-      const btnClass = estaAgregado ? 'btn-agregar disabled' : 
-                      (stock > 0 ? 'btn-agregar' : 'btn-agregar disabled');
-      
-      let stockClass;
-      if (stock <= 10) {
-          stockClass = 'pull-right badge bg-red';
-      } else if (stock >= 11 && stock <= 15) {
-          stockClass = 'pull-right badge bg-yellow';
+      const btnClass = puedeAgregar ? 'btn-agregar' : 'btn-agregar disabled';
+
+      let stockClass = estaDisponible ? 'badge bg-green' : 'badge bg-red';
+      let etiquetaStock;
+      if (inventariable) {
+        etiquetaStock = estaDisponible ? `Disponible: ${stock}` : 'Agotado';
       } else {
-          stockClass = 'pull-right badge bg-green';
+        etiquetaStock = estaDisponible ? 'Disponible' : 'Agotado';
       }
+
+      const menuHtml = !inventariable
+        ? `<div class="dropdown dropdown-disponibilidad pull-right">
+              <button type="button" class="btn btn-box-tool dropdown-toggle btn-menu-disponibilidad"
+                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                      title="Opciones">
+                <i class="icon ion-android-more-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li class="${estaDisponible ? 'disabled' : ''}">
+                  <a href="#" class="menu-disponibilidad-item" data-id="${producto.id}" data-disponible="1">
+                    <i class="fa fa-check-circle text-green"></i> Marcar como disponible
+                  </a>
+                </li>
+                <li class="${!estaDisponible ? 'disabled' : ''}">
+                  <a href="#" class="menu-disponibilidad-item" data-id="${producto.id}" data-disponible="0">
+                    <i class="fa fa-times-circle text-red"></i> Marcar como agotado
+                  </a>
+                </li>
+              </ul>
+           </div>`
+        : '';
 
       contenedor.append(`<div class="col-sm-3 col-md-3 col-lg-3" style="padding-left:0px">
         <div class="thumbnail" style="height: 100%;">
           <div class="first">
-            <div class="d-flex justify-content-between"> 
-              <span class="${stockClass}">CANTIDAD: ${producto.stock}</span> 
+            <div class="card-producto-header">
+              <span class="${stockClass}">${etiquetaStock}</span>
+              ${menuHtml}
             </div>
           </div> 
           <div style="overflow: hidden;">
@@ -252,7 +341,7 @@ class CatalogoProductos {
               <button class="btn btn-success btn-sm w-100 ${btnClass}"  
                  href="javascript:void(0)" 
                  role="button" 
-                 ${(stock > 0 && !estaAgregado) ? '' : 'disabled'} 
+                 ${puedeAgregar ? '' : 'disabled'} 
                  idProducto="${producto.id}">
                  <i class="fa fa-plus"></i> Agregar
               </button>

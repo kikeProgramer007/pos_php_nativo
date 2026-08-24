@@ -18,7 +18,7 @@ if (!Permisos::tiene("gastos.crear")) {
 
                                 </div>
                                 
-                                <form role="form" method="post" class="auth-form" id="formularioMesero">
+                                <form role="form" method="post" class="auth-form form-gasto-pago" id="formularioMesero">
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="nuevoMesero">
@@ -51,20 +51,6 @@ if (!Permisos::tiene("gastos.crear")) {
 
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
-                                            <label for="monto_gasto">
-                                            <span style="font-weight: bold; font-size: 15px; margin-left: 8px;">Bs.</span> MONTO:
-
-                                            </label>
-                                            <input type="number" 
-                                                   class="form-control" 
-                                                   name="monto_gasto" 
-                                                   step="0.01" min="0"
-                                                   placeholder="Ingrese el monto" 
-                                                   
-                                                   required>
-                                        </div>
-
-                                        <div class="form-group col-md-6">
                                             <label for="fecha_gasto">
                                                 FECHA
                                             </label>
@@ -74,25 +60,65 @@ if (!Permisos::tiene("gastos.crear")) {
                                                    value="<?php echo date('Y-m-d'); ?>"
                                                    required>
                                         </div>
-                                    </div>
-                                    <div class="form-row">
-
                                         <div class="form-group col-md-6">
-                                        <label for="monto_gasto">
-                                                FORMA DE PAGO
+                                            <label>FORMA DE PAGO</label>
+                                            <div class="gasto-pago-opciones">
+                                                <label class="gasto-pago-opcion" data-tipo="2">
+                                                    <input type="radio" name="tipo_pago_gasto" value="2">
+                                                    <span class="gasto-pago-icono"><i class="fa fa-qrcode"></i></span>
+                                                    <span class="gasto-pago-texto">QR</span>
+                                                </label>
+                                                <label class="gasto-pago-opcion active" data-tipo="1">
+                                                    <input type="radio" name="tipo_pago_gasto" value="1" checked>
+                                                    <span class="gasto-pago-icono"><i class="fa fa-money"></i></span>
+                                                    <span class="gasto-pago-texto">EFECTIVO</span>
+                                                </label>
+                                                <label class="gasto-pago-opcion" data-tipo="4">
+                                                    <input type="radio" name="tipo_pago_gasto" value="4">
+                                                    <span class="gasto-pago-icono"><i class="fa fa-exchange"></i></span>
+                                                    <span class="gasto-pago-texto">MIXTO</span>
+                                                </label>
+                                                <label class="gasto-pago-opcion" data-tipo="3">
+                                                    <input type="radio" name="tipo_pago_gasto" value="3">
+                                                    <span class="gasto-pago-icono"><i class="fa fa-university"></i></span>
+                                                    <span class="gasto-pago-texto">TRANSF.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row grupo-monto-gasto-simple">
+                                        <div class="form-group col-md-6">
+                                            <label for="monto_gasto">
+                                            <span style="font-weight: bold; font-size: 15px; margin-left: 8px;">Bs.</span> MONTO:
                                             </label>
-                                            <select class="form-control input-lg" id="tipo_pago_gasto" name="tipo_pago_gasto">
-                                                <option value="1">Efectivo</option>
-                                                <option value="2">QR</option>
-                                                <option value="3">Transferencia</option>
-                                                <option value="4">Qr y Efectivo(Mixto)</option>
-                                            </select>
+                                            <input type="number" 
+                                                   class="form-control" 
+                                                   name="monto_gasto" 
+                                                   id="monto_gasto"
+                                                   step="0.01" min="0.01"
+                                                   placeholder="Ingrese el monto" 
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="grupo-monto-gasto-mixto" style="display:none;">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="monto_efectivo_gasto">EFECTIVO BS.</label>
+                                                <input type="number" class="form-control" name="monto_efectivo_gasto" id="monto_efectivo_gasto" placeholder="0.00" min="0" step="0.01">
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="monto_qr_gasto">QR BS.</label>
+                                                <input type="number" class="form-control" name="monto_qr_gasto" id="monto_qr_gasto" placeholder="0.00" min="0" step="0.01">
+                                            </div>
                                         </div>
                                     </div>
 
                                     <!-- ENTRADA PARA LA DIRECCIÓN -->
                                     <input type="hidden" name="id_usuario_gasto" value="<?php echo $_SESSION["id"]; ?>">
                                     <input type="hidden" name="id_arqueo_caja_gasto" value="<?php echo $_SESSION["idArqueoCaja"]; ?>">
+                                    <input type="hidden" name="redirigir_gasto" value="gastos">
                                     
                                     <div class="auth-actions">
                                         <button type="submit" class="btn btn-primary">
@@ -304,6 +330,68 @@ if (!Permisos::tiene("gastos.crear")) {
     font-size: 28px;
     margin-right: 10px;
     color: var(--azul-color);
+}
+
+.gasto-pago-opciones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gasto-pago-opcion {
+    flex: 1;
+    min-width: 90px;
+    margin: 0;
+    border: 1px solid #d2d6de;
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+    font-weight: normal;
+}
+
+.gasto-pago-opcion:hover {
+    border-color: #28a745;
+    background: #f8fff9;
+}
+
+.gasto-pago-opcion.active {
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, .18);
+    background: #f3fff6;
+}
+
+.gasto-pago-opcion input[type="radio"] {
+    float: left;
+    margin: 2px 0 0 2px;
+}
+
+.gasto-pago-opcion .gasto-pago-icono {
+    display: block;
+    font-size: 24px;
+    line-height: 1.2;
+    margin: 4px 0 6px;
+    color: #28a745;
+}
+
+.gasto-pago-opcion[data-tipo="4"] .gasto-pago-icono,
+.gasto-pago-opcion[data-tipo="4"] .gasto-pago-texto {
+    color: #17a2b8;
+}
+
+.gasto-pago-opcion[data-tipo="3"] .gasto-pago-icono,
+.gasto-pago-opcion[data-tipo="3"] .gasto-pago-texto {
+    color: #6c757d;
+}
+
+.gasto-pago-opcion .gasto-pago-texto {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #28a745;
+    letter-spacing: .3px;
 }
 
 @media (max-width: 768px) {

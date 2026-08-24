@@ -213,9 +213,10 @@ class imprimirFactura
                 } elseif (strlen($descTicket) > 22) {
                     $descTicket = substr($descTicket, 0, 22) . "...";
                 }
+                $tipoEntrada = strtoupper($otroIngresoItem["tipo_entrada"] ?? "EFECTIVO");
                 $html .= '
             <tr>
-                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; ' . htmlspecialchars($descTicket) . '</td>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; [' . htmlspecialchars($tipoEntrada) . '] ' . htmlspecialchars($descTicket) . '</td>
                 <td style="text-align:right; ">' . number_format(floatval($otroIngresoItem["monto"] ?? 0), 2) . '</td>
             </tr>';
             }

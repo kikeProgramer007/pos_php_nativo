@@ -231,6 +231,7 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
       	    
       	    $(nuevaDescripcionProducto).attr("idProducto", respuesta["id"]);
       	    $(nuevaCantidadProducto).attr("stock", respuesta["stock"]);
+      	    $(nuevaCantidadProducto).attr("data-inventariable", Number(respuesta["inventariable"]) === 1 ? 1 : 0);
       	    $(nuevoPrecioProducto).val(respuesta["precio_venta"]);
       	    $(nuevoPrecioProducto).attr("precioReal", respuesta["precio_venta"]);
       	    $(nuevoPrecioProducto).attr("precioOriginal", respuesta["precio_venta"]);
@@ -281,7 +282,8 @@ function actualizarCantidadProducto($input) {
 	}
 
 	/*SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES*/
-	if(Number(cantidad) > Number($input.attr("stock"))){
+	var esInventariable = Number($input.attr("data-inventariable"));
+	if(esInventariable !== 0 && Number(cantidad) > Number($input.attr("stock"))){
 
 		$input.val(cantidadMinima);
 		subtotalOriginal = Number($input.val()) * precioOriginal;
@@ -548,14 +550,19 @@ function calcularPago(formatear = true) {
             $("#nuevoValorEfectivo").prop("readonly", false);
             $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val("0.00");
+            // No dejar un "0" real en el campo: el placeholder ya muestra la guía
+            var efectivoActual = String($("#nuevoValorEfectivo").val() || "").trim();
+            if (efectivoActual === "0" || efectivoActual === "0.00") {
+                $("#nuevoValorEfectivo").val("");
+            }
         }
     } else if (tipoPago == "2") {
         // QR
         efectivo = 0;
         qr = totalVenta;
 
-        $("#nuevoValorEfectivo").val("0");
         if (formatear) {
+            $("#nuevoValorEfectivo").val("");
             $("#nuevoValorEfectivo").prop("readonly", true);
             $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val(qr.toFixed(2));
@@ -573,6 +580,10 @@ function calcularPago(formatear = true) {
             $("#nuevoValorEfectivo").prop("readonly", false);
             $("#nuevoValorQR").prop("readonly", true);
             $("#nuevoValorQR").val(qr.toFixed(2));
+            var efectivoMixto = String($("#nuevoValorEfectivo").val() || "").trim();
+            if (efectivoMixto === "0" || efectivoMixto === "0.00") {
+                $("#nuevoValorEfectivo").val("");
+            }
         }
 
         cambio = (efectivo + qr) - totalVenta;
@@ -599,11 +610,41 @@ function calcularPago(formatear = true) {
 EVENTOS
 =============================================*/
 $(".formularioVenta").on("input", "#nuevoValorEfectivo, #nuevoValorQR", function() {
-    calcularPago(false); // false = no formatear mientras escribe
+    var limpio = String(this.value || "").replace(/[^0-9.]/g, "");
+    var partes = limpio.split(".");
+    if (partes.length > 2) {
+        limpio = partes[0] + "." + partes.slice(1).join("");
+    }
+    // Evitar ceros a la izquierda tipo "0200" (mantener "0" y "0.xx")
+    if (/^0\d+/.test(limpio)) {
+        limpio = limpio.replace(/^0+/, "");
+        if (limpio === "" || limpio.charAt(0) === ".") {
+            limpio = "0" + limpio;
+        }
+    }
+    if (this.value !== limpio) {
+        this.value = limpio;
+    }
+
+    // En mixto, actualizar QR restante mientras escribe efectivo
+    if (this.id === "nuevoValorEfectivo" && $("#tipoPago").val() === "4") {
+        var total = Number($("#nuevoTotalVenta").val()) || 0;
+        var efectivo = Number($(this).val()) || 0;
+        var restante = total - efectivo;
+        if (restante < 0) restante = 0;
+        $("#nuevoValorQR").val(restante.toFixed(2));
+    }
+
+    calcularPago(false); // no reformatear campos mientras escribe
 });
 
-$(".formularioVenta").on("input", "#nuevoValorEfectivo", function() {
-    calcularPago(true); // false = no formatear mientras escribe
+$(".formularioVenta").on("focus", "#nuevoValorEfectivo", function() {
+    var valor = String(this.value || "").trim();
+    if (valor === "0" || valor === "0.00") {
+        this.value = "";
+    } else {
+        this.select();
+    }
 });
 
 $(".formularioVenta").on("change", "#tipoPago", function() {
@@ -1234,6 +1275,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     var $productoRow = $(this).closest('.row');
     var idProducto = $productoRow.find('.nuevaDescripcionProducto').attr('idProducto');
     var stockOriginal = parseInt($productoRow.find('.nuevaCantidadProducto').attr('stock'));
+    var esInventariable = Number($productoRow.find('.nuevaCantidadProducto').attr('data-inventariable'));
     var cantidadTotal = 0;
     
     // Calcular la cantidad total actual del producto en la venta
@@ -1244,7 +1286,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     });
     
     // Verificar si hay suficiente stock
-    if(cantidadTotal >= stockOriginal) {
+    if(esInventariable !== 0 && cantidadTotal >= stockOriginal) {
         swal({
             title: "No hay suficiente stock",
             text: "Solo quedan " + stockOriginal + " unidades disponibles",
@@ -1306,15 +1348,15 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
 		listarProductos();
 	  });
 	
-    // Actualizar los totales
-    sumarTotalPrecios();
-    calcularPago();
     listarProductos();
 	if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
 		PromocionesVenta.recalcular(function() {
 			listarProductos();
 			calcularPago();
 		});
+	} else {
+		sumarTotalPrecios();
+		calcularPago();
 	}
 });
 
@@ -1413,7 +1455,7 @@ function calcularCambioCobro() {
     } else if (tipo === "2") {
         efectivo = 0;
         qr = total;
-        $("#nuevoValorEfectivoCobro").val("0");
+        $("#nuevoValorEfectivoCobro").val("");
         $("#nuevoValorQRCobro").val(qr.toFixed(2));
         cambio = 0;
     } else if (tipo === "4") {
@@ -1457,25 +1499,74 @@ $("#tipoPagoCobro").on("change", function() {
     calcularCambioCobro();
 });
 
-$("#nuevoValorEfectivoCobro").on("input", calcularCambioCobro);
+$("#nuevoValorEfectivoCobro").on("input", function() {
+    var limpio = String(this.value || "").replace(/[^0-9.]/g, "");
+    var partes = limpio.split(".");
+    if (partes.length > 2) {
+        limpio = partes[0] + "." + partes.slice(1).join("");
+    }
+    if (this.value !== limpio) {
+        this.value = limpio;
+    }
+    calcularCambioCobro();
+});
+
+$("#nuevoValorQRCobro").on("input", function() {
+    var limpio = String(this.value || "").replace(/[^0-9.]/g, "");
+    var partes = limpio.split(".");
+    if (partes.length > 2) {
+        limpio = partes[0] + "." + partes.slice(1).join("");
+    }
+    if (this.value !== limpio) {
+        this.value = limpio;
+    }
+    calcularCambioCobro();
+});
 
 $("#btnConfirmarCobro").on("click", function() {
     var total = Number($("#totalVentaCobro").val()) || 0;
-    var efectivo = Number($("#nuevoValorEfectivoCobro").val()) || 0;
-    var qr = Number($("#nuevoValorQRCobro").val()) || 0;
+    var efectivoRaw = String($("#nuevoValorEfectivoCobro").val() || "").trim();
+    var qrRaw = String($("#nuevoValorQRCobro").val() || "").trim();
+    var efectivo = Number(efectivoRaw.replace(",", "."));
+    var qr = Number(qrRaw.replace(",", "."));
     var tipo = $("#tipoPagoCobro").val();
 
-    if (tipo === "1" && efectivo < total) {
-        swal({ type: "warning", title: "El pago en efectivo debe ser igual o mayor al total" });
-        return;
+    function esMontoValido(raw, num) {
+        if (raw === "" || !/^\d+(\.\d+)?$/.test(raw.replace(",", "."))) {
+            return false;
+        }
+        return Number.isFinite(num) && num >= 0;
     }
-    if (tipo === "2" && qr < total) {
-        swal({ type: "warning", title: "El pago en QR debe ser igual o mayor al total" });
-        return;
+
+    if (tipo === "1") {
+        if (!esMontoValido(efectivoRaw, efectivo)) {
+            swal({ type: "warning", title: "Pago inválido", text: "Ingrese un monto numérico válido en efectivo." });
+            return;
+        }
+        if (efectivo < total) {
+            swal({ type: "warning", title: "El pago en efectivo debe ser igual o mayor al total" });
+            return;
+        }
     }
-    if (tipo === "4" && (efectivo + qr) < total) {
-        swal({ type: "warning", title: "La suma del efectivo y el QR debe ser igual o mayor al total" });
-        return;
+    if (tipo === "2") {
+        if (!esMontoValido(qrRaw, qr)) {
+            swal({ type: "warning", title: "Pago inválido", text: "Ingrese un monto numérico válido en QR." });
+            return;
+        }
+        if (qr < total) {
+            swal({ type: "warning", title: "El pago en QR debe ser igual o mayor al total" });
+            return;
+        }
+    }
+    if (tipo === "4") {
+        if (!esMontoValido(efectivoRaw, efectivo) || !esMontoValido(qrRaw, qr)) {
+            swal({ type: "warning", title: "Pago inválido", text: "Ingrese montos numéricos válidos en efectivo y QR." });
+            return;
+        }
+        if ((efectivo + qr) < total) {
+            swal({ type: "warning", title: "La suma del efectivo y el QR debe ser igual o mayor al total" });
+            return;
+        }
     }
 
   var formData = new FormData();

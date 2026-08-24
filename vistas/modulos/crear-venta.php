@@ -598,7 +598,52 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .first {
       position: absolute;
       width: 100%;
-      padding: 9px
+      padding: 9px;
+      z-index: 2;
+  }
+
+  .card-producto-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+  }
+
+  .btn-menu-disponibilidad {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 3px;
+      padding: 2px 8px;
+      margin: 0;
+      color: #444;
+      font-size: 16px;
+      line-height: 1;
+  }
+
+  .btn-menu-disponibilidad .icon {
+      margin: 0;
+      vertical-align: middle;
+  }
+
+  .btn-menu-disponibilidad:hover,
+  .btn-menu-disponibilidad:focus,
+  .btn-menu-disponibilidad:active {
+      background: #fff;
+      color: #111;
+  }
+
+  .dropdown-disponibilidad .dropdown-menu {
+      min-width: 220px;
+      z-index: 20;
+  }
+
+  .dropdown-disponibilidad .dropdown-menu > li > a > .fa {
+      margin-right: 6px;
+      width: 14px;
+      text-align: center;
+  }
+
+  .dropdown-disponibilidad .dropdown-menu > .disabled > a {
+      pointer-events: none;
+      opacity: 0.55;
   }
 
   .dress-name {
@@ -1148,8 +1193,12 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                         }
                       }
 
-                      if (Permisos::tiene("meseros.crear")) {
-                        echo '<button type="button" class="btn btn-default btn-sm text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero">Agregar gastos</button>';
+                      if (Permisos::tiene("gastos.crear")) {
+                        if ($cajaArqueoAbierta) {
+                          echo '<button type="button" class="btn btn-default btn-sm text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero">Agregar gastos</button>';
+                        } else {
+                          echo '<button type="button" class="btn btn-default btn-sm text-uppercase" disabled title="Abra la caja para registrar gastos">Agregar gastos</button>';
+                        }
                       }
                       ?>
                       <a href="arqueo-de-caja" class="btn btn-default btn-sm text-uppercase">Cerrar caja</a>
@@ -1275,7 +1324,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                           <label for="nuevoValorEfectivo">Pago en Efectivo:</label>
                           <div class="input-group">
                             <span class="input-group-addon"><i><b><i class="fa fa-money" aria-hidden="true"></i></b></i></span>
-                            <input type="text" class="form-control" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="0" min="0" step="0.01"  inputmode="decimal"  required>
+                            <input type="text" class="form-control" id="nuevoValorEfectivo" name="nuevoValorEfectivo" placeholder="0.00" min="0" step="0.01" inputmode="decimal" required>
                           </div>
                         </div>
                       </div>
@@ -1384,13 +1433,69 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 MODAL AGREGAR MESERO
 ======================================-->
 
+<style>
+  #modalAgregarMesero .gasto-pago-opciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #modalAgregarMesero .gasto-pago-opcion {
+    flex: 1;
+    min-width: 110px;
+    margin: 0;
+    border: 1px solid #d2d6de;
+    border-radius: 4px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+    font-weight: normal;
+  }
+  #modalAgregarMesero .gasto-pago-opcion:hover {
+    border-color: #28a745;
+    background: #f8fff9;
+  }
+  #modalAgregarMesero .gasto-pago-opcion.active {
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, .18);
+    background: #f3fff6;
+  }
+  #modalAgregarMesero .gasto-pago-opcion input[type="radio"] {
+    float: left;
+    margin: 2px 0 0 2px;
+  }
+  #modalAgregarMesero .gasto-pago-opcion .gasto-pago-icono {
+    display: block;
+    font-size: 28px;
+    line-height: 1.2;
+    margin: 4px 0 6px;
+    color: #28a745;
+  }
+  #modalAgregarMesero .gasto-pago-opcion[data-tipo="4"] .gasto-pago-icono,
+  #modalAgregarMesero .gasto-pago-opcion[data-tipo="4"] .gasto-pago-texto {
+    color: #17a2b8;
+  }
+  #modalAgregarMesero .gasto-pago-opcion .gasto-pago-texto {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #28a745;
+    letter-spacing: .3px;
+  }
+  #modalAgregarMesero .gasto-pago-ayuda {
+    margin-top: 8px;
+    color: #888;
+    font-size: 12px;
+  }
+</style>
 <div id="modalAgregarMesero" class="modal fade" role="dialog">
 
   <div class="modal-dialog">
 
     <div class="modal-content">
 
-      <form role="form" method="post">
+      <form role="form" method="post" id="formAgregarGastoVenta" class="form-gasto-pago">
 
         <!--=====================================
         CABEZA DEL MODAL
@@ -1441,36 +1546,60 @@ MODAL AGREGAR MESERO
               </div>
             </div>
             <!-- ENTRADA PARA LA FECHA DE GASTO Y MONTO -->
-            <div class="gastos-flex-container">
-              <div class="form-group fecha-gasto-container">
-                <div class="input-group">
-                  <span class="input-group-addon">FECHA DE GASTO</span>
-                  <input type="date" id="fecha_gasto" name="fecha_gasto" value="<?php echo date('Y-m-d'); ?>" class="form-control" required />
-                </div>
-              </div>
-
-              <div class="form-group monto-gasto-container">
-                <div class="input-group">
-                  <span class="input-group-addon">MONTO </span>
-                  <input type="number" class="form-control" name="monto_gasto" placeholder="Ingresa el monto" min="1" step="0.01">
-                </div>
-              </div>
-            </div>
-        
-
-            <!-- ENTRADA PARA EL TIPO DE PAGO -->
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon">FORMAS DE PAGO</span>
-                <select class="form-control" id="tipo_pago_gasto" name="tipo_pago_gasto">
-                        <option value="1">Efectivo</option>
-                        <option value="2">QR</option>
-                        <option value="4">Qr y Efectivo(Mixto)</option>
-                      </select>
+                <span class="input-group-addon">FECHA DE GASTO</span>
+                <input type="date" id="fecha_gasto" name="fecha_gasto" value="<?php echo date('Y-m-d'); ?>" class="form-control" required />
               </div>
             </div>
 
-            <!-- ENTRADA PARA LA DIRECCIÓN -->
+            <div class="form-group">
+              <label style="display:block; margin-bottom:8px;">FORMA DE PAGO:</label>
+              <div class="gasto-pago-opciones">
+                <label class="gasto-pago-opcion" data-tipo="2">
+                  <input type="radio" name="tipo_pago_gasto" value="2">
+                  <span class="gasto-pago-icono"><i class="fa fa-qrcode"></i></span>
+                  <span class="gasto-pago-texto">QR</span>
+                </label>
+                <label class="gasto-pago-opcion active" data-tipo="1">
+                  <input type="radio" name="tipo_pago_gasto" value="1" checked>
+                  <span class="gasto-pago-icono"><i class="fa fa-money"></i></span>
+                  <span class="gasto-pago-texto">EFECTIVO</span>
+                </label>
+                <label class="gasto-pago-opcion" data-tipo="4">
+                  <input type="radio" name="tipo_pago_gasto" value="4">
+                  <span class="gasto-pago-icono"><i class="fa fa-exchange"></i></span>
+                  <span class="gasto-pago-texto">MIXTO</span>
+                </label>
+              </div>
+              <div class="gasto-pago-ayuda">
+                <i class="fa fa-info-circle"></i> Seleccione cómo se pagó el gasto. En mixto indique efectivo y QR.
+              </div>
+            </div>
+
+            <div class="form-group grupo-monto-gasto-simple">
+              <div class="input-group">
+                <span class="input-group-addon">MONTO BS.</span>
+                <input type="number" class="form-control" name="monto_gasto" id="monto_gasto" placeholder="0.00" min="0.01" step="0.01" required>
+              </div>
+            </div>
+
+            <div class="grupo-monto-gasto-mixto" style="display:none;">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">EFECTIVO BS.</span>
+                  <input type="number" class="form-control" name="monto_efectivo_gasto" id="monto_efectivo_gasto" placeholder="0.00" min="0" step="0.01">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">QR BS.</span>
+                  <input type="number" class="form-control" name="monto_qr_gasto" id="monto_qr_gasto" placeholder="0.00" min="0" step="0.01">
+                </div>
+              </div>
+            </div>
+
+            <input type="hidden" name="redirigir_gasto" value="crear-venta">
             <input type="hidden" name="id_usuario_gasto" value="<?php echo $_SESSION["id"]; ?>">
             <input type="hidden" name="id_arqueo_caja_gasto" value="<?php echo $_SESSION["idArqueoCaja"]; ?>">
           </div>
@@ -1630,15 +1759,36 @@ $(document).ready(function() {
     });
 });
 
+var ventaAjaxEnCurso = false;
+
 document.getElementById("guardarVentaBtn") && document.getElementById("guardarVentaBtn").addEventListener("click", function(e) {
   e.preventDefault(); // Evita el submit tradicional
+  if (ventaAjaxEnCurso) return;
 
   var totalVenta = Number($('#nuevoTotalVenta').val());
-  var efectivo = Number($('#nuevoValorEfectivo').val());
+  var efectivoRaw = String($('#nuevoValorEfectivo').val() || "").trim();
   var tipopagovalue = $('#tipoPago').val();
+  var efectivo = Number(efectivoRaw.replace(",", "."));
   
+  function esMontoValido(raw, num) {
+    if (raw === "" || !/^\d+(\.\d+)?$/.test(raw.replace(",", "."))) {
+      return false;
+    }
+    return Number.isFinite(num) && num >= 0;
+  }
+
   switch(tipopagovalue) {
     case "1": // Efectivo
+      if (!esMontoValido(efectivoRaw, efectivo)) {
+        swal({
+          type: "warning",
+          title: "Pago inválido",
+          text: "Ingrese un monto numérico válido en efectivo.",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
       if(efectivo < totalVenta) {
         swal({
           type: "warning",
@@ -1650,7 +1800,18 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
       }
       break;
     case "2": // QR
-      var valorQR = Number($('#nuevoValorQR').val());
+      var qrRaw = String($('#nuevoValorQR').val() || "").trim();
+      var valorQR = Number(qrRaw.replace(",", "."));
+      if (!esMontoValido(qrRaw, valorQR)) {
+        swal({
+          type: "warning",
+          title: "Pago inválido",
+          text: "Ingrese un monto numérico válido en QR.",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
       if(valorQR < totalVenta) {
         swal({
           type: "warning",
@@ -1662,7 +1823,18 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
       }
       break;
     case "4": // Mixto
-      var valorQR = Number($('#nuevoValorQR').val());
+      var qrRawMixto = String($('#nuevoValorQR').val() || "").trim();
+      var valorQR = Number(qrRawMixto.replace(",", "."));
+      if (!esMontoValido(efectivoRaw, efectivo) || !esMontoValido(qrRawMixto, valorQR)) {
+        swal({
+          type: "warning",
+          title: "Pago inválido",
+          text: "Ingrese montos numéricos válidos en efectivo y QR.",
+          showConfirmButton: true,
+          confirmButtonText: "Cerrar"
+        });
+        return;
+      }
       if((efectivo + valorQR) < totalVenta) {
         swal({
           type: "warning",
@@ -1689,7 +1861,9 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
     // Recoge los datos del formulario
     var form = document.getElementById("ventaForm");
     var formData = new FormData(form);
+  ventaAjaxEnCurso = true;
   $("#guardarVentaBtn").prop("disabled", true);
+  $("#cuentaPendienteBtn").prop("disabled", true);
     $.ajax({
       url: "ajax/ventas.ajax.php", // Cambia aquí
       type: "POST",
@@ -1699,8 +1873,14 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
       dataType: "json",
       success:  function(respuesta) {
         if(respuesta.status == "ok") {
-            imprimirVentaSegunTipo(respuesta.idVenta);
+            notificarExitoVenta(respuesta.mensaje || "La venta ha sido registrada correctamente");
+            setTimeout(function() {
+              imprimirVentaSegunTipo(respuesta.idVenta);
+            }, 600);
         }else if(respuesta.status == "recargar"){
+          ventaAjaxEnCurso = false;
+          $("#guardarVentaBtn").prop("disabled", false);
+          $("#cuentaPendienteBtn").prop("disabled", false);
           swal({
                   title:"Actualice de la caja",
                   text: "es necesario recargar la pagina para continuar",
@@ -1716,7 +1896,9 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
               }); 
         }
         else {
+          ventaAjaxEnCurso = false;
           $("#guardarVentaBtn").prop("disabled", false);
+          $("#cuentaPendienteBtn").prop("disabled", false);
           swal({
             type: "error",
             title: "Error al guardar la venta",
@@ -1727,7 +1909,9 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
         }
       },
       error: function(xhr, status, error) {
+        ventaAjaxEnCurso = false;
         $("#guardarVentaBtn").prop("disabled", false);
+        $("#cuentaPendienteBtn").prop("disabled", false);
         
         swal({
           type: "error",
@@ -1755,7 +1939,75 @@ function validarProductosEnVenta() {
   return true;
 }
 
-function enviarVentaAjax(extraData, onSuccess) {
+function notificarExitoVenta(mensaje) {
+  // SweetAlert2 v7.1.2: usar "top-right" (no "top-end", eso es v8+)
+  swal({
+    toast: true,
+    position: "top-right",
+    type: "success",
+    title: mensaje || "Operación realizada correctamente",
+    showConfirmButton: false,
+    timer: 3000,
+    animation: true,
+    backdrop: false,
+    allowOutsideClick: true,
+    allowEscapeKey: true
+  });
+}
+
+function continuarTrasCuentaPendiente(respuesta) {
+  var idImpresion = $("#idTipoImpresion").val();
+  if (idImpresion == "2") {
+    imprimirSoloCaja(respuesta.idVenta).finally(function() {
+      window.location.href = "crear-venta";
+    });
+  } else if (idImpresion == "1") {
+    imprimirCajaCocina(respuesta.idVenta).finally(function() {
+      window.location.href = "crear-venta";
+    });
+  } else if (idImpresion == "3") {
+    imprimirSoloCocina(respuesta.idVenta).finally(function() {
+      window.location.href = "crear-venta";
+    });
+  } else if (idImpresion == "4") {
+    imprimirSoloCaja(respuesta.idVenta, null, false).finally(function() {
+      window.location.href = "crear-venta";
+    });
+  } else {
+    window.location.href = "crear-venta";
+  }
+}
+
+function continuarTrasActualizarCuenta(respuesta) {
+  var idsNuevos = respuesta.idsDetalleNuevos || [];
+  if (idsNuevos.length > 0) {
+    var idsDetalle = idsNuevos.join(",");
+    var idImpresion = $("#idTipoImpresion").val();
+    if (idImpresion == "2") {
+      imprimirSoloCaja(respuesta.idVenta, idsDetalle).finally(function() {
+        window.location.href = "ventas";
+      });
+    } else if (idImpresion == "1") {
+      imprimirCajaCocina(respuesta.idVenta, idsDetalle).finally(function() {
+        window.location.href = "ventas";
+      });
+    } else if (idImpresion == "3") {
+      imprimirSoloCocina(respuesta.idVenta, idsDetalle).finally(function() {
+        window.location.href = "ventas";
+      });
+    } else if (idImpresion == "4") {
+      imprimirSoloCaja(respuesta.idVenta, idsDetalle, false).finally(function() {
+        window.location.href = "ventas";
+      });
+    } else {
+      window.location.href = "ventas";
+    }
+  } else {
+    window.location.href = "ventas";
+  }
+}
+
+function enviarVentaAjax(extraData, onSuccess, onFail) {
   var form = document.getElementById("ventaForm");
   var formData = new FormData(form);
   if (extraData) {
@@ -1775,6 +2027,7 @@ function enviarVentaAjax(extraData, onSuccess) {
       if (respuesta.status == "ok") {
         onSuccess(respuesta);
       } else if (respuesta.status == "recargar") {
+        if (typeof onFail === "function") onFail();
         swal({
           title: "Actualice de la caja",
           text: "Es necesario recargar la página para continuar",
@@ -1788,6 +2041,7 @@ function enviarVentaAjax(extraData, onSuccess) {
           }
         });
       } else {
+        if (typeof onFail === "function") onFail();
         swal({
           type: "error",
           title: "Error",
@@ -1798,6 +2052,7 @@ function enviarVentaAjax(extraData, onSuccess) {
       }
     },
     error: function() {
+      if (typeof onFail === "function") onFail();
       swal({
         type: "error",
         title: "Error de comunicación",
@@ -1813,39 +2068,28 @@ var cuentaPendienteBtn = document.getElementById("cuentaPendienteBtn");
 if (cuentaPendienteBtn) {
   cuentaPendienteBtn.addEventListener("click", function(e) {
     e.preventDefault();
+    if (ventaAjaxEnCurso) return;
     if (!validarProductosEnVenta()) return;
     listarProductos();
+
+    ventaAjaxEnCurso = true;
     $("#cuentaPendienteBtn").prop("disabled", true);
-    enviarVentaAjax({ estadoPago: "PENDIENTE" }, function(respuesta) {
-      swal({
-        type: "success",
-        title: respuesta.mensaje,
-        showConfirmButton: true,
-        confirmButtonText: "Cerrar"
-      }).then(function() {
-        var idImpresion = $("#idTipoImpresion").val();
-        if (idImpresion == "2" ) {
-          imprimirSoloCaja(respuesta.idVenta).finally(function() {
-            window.location.href = "crear-venta";
-          });
-        } else if (idImpresion == "1") {
-          imprimirCajaCocina(respuesta.idVenta).finally(function() {
-            window.location.href = "crear-venta";
-          });
-        } else if (idImpresion == "3") {
-          imprimirSoloCocina(respuesta.idVenta).finally(function() {
-            window.location.href = "crear-venta";
-          });
-        } else if (idImpresion == "4") {
-          imprimirSoloCaja(respuesta.idVenta, null, false).finally(function() {
-            window.location.href = "crear-venta";
-          });
-        } else {
-          window.location.href = "crear-venta";
-        }
-      });
-    });
-    $("#cuentaPendienteBtn").prop("disabled", false);
+    $("#guardarVentaBtn").prop("disabled", true);
+
+    enviarVentaAjax(
+      { estadoPago: "PENDIENTE" },
+      function(respuesta) {
+        notificarExitoVenta(respuesta.mensaje);
+        setTimeout(function() {
+          continuarTrasCuentaPendiente(respuesta);
+        }, 600);
+      },
+      function() {
+        ventaAjaxEnCurso = false;
+        $("#cuentaPendienteBtn").prop("disabled", false);
+        $("#guardarVentaBtn").prop("disabled", false);
+      }
+    );
   });
 }
 
@@ -1853,52 +2097,36 @@ var actualizarCuentaBtn = document.getElementById("actualizarCuentaBtn");
 if (actualizarCuentaBtn) {
   actualizarCuentaBtn.addEventListener("click", function(e) {
     e.preventDefault();
+    if (ventaAjaxEnCurso) return;
     if (!validarProductosEnVenta()) return;
     listarProductos();
+
+    ventaAjaxEnCurso = true;
     $("#actualizarCuentaBtn").prop("disabled", true);
-    enviarVentaAjax({ actualizarCuentaPendiente: "1" }, function(respuesta) {
-      var idsNuevos = respuesta.idsDetalleNuevos || [];
-      swal({
-        type: "success",
-        title: respuesta.mensaje,
-        showConfirmButton: true,
-        confirmButtonText: "Cerrar"
-      }).then(function() {
-        if (idsNuevos.length > 0) {
-          var idsDetalle = idsNuevos.join(",");
-          var idImpresion = $("#idTipoImpresion").val();
-          if (idImpresion == "2") {
-            imprimirSoloCaja(respuesta.idVenta, idsDetalle).finally(function() {
-              window.location.href = "ventas";
-            });
-          } else if (idImpresion == "1") {
-            imprimirCajaCocina(respuesta.idVenta, idsDetalle).finally(function() {
-              window.location.href = "ventas";
-            });
-          } else if (idImpresion == "3") {
-            imprimirSoloCocina(respuesta.idVenta, idsDetalle).finally(function() {
-              window.location.href = "ventas";
-            });
-          } else if (idImpresion == "4") {
-            imprimirSoloCaja(respuesta.idVenta, idsDetalle, false).finally(function() {
-              window.location.href = "ventas";
-            });
-          } else {
-            window.location.href = "ventas";
-          }
-        } else {
-          window.location.href = "ventas";
-        }
-      });
-    });
-    $("#actualizarCuentaBtn").prop("disabled", false);
+
+    enviarVentaAjax(
+      { actualizarCuentaPendiente: "1" },
+      function(respuesta) {
+        notificarExitoVenta(respuesta.mensaje);
+        setTimeout(function() {
+          continuarTrasActualizarCuenta(respuesta);
+        }, 600);
+      },
+      function() {
+        ventaAjaxEnCurso = false;
+        $("#actualizarCuentaBtn").prop("disabled", false);
+      }
+    );
   });
 }
 
 function agregarLineaProductoEdicion(linea) {
   var formaAtencionLinea = linea.forma_atencion === "LL" ? "2" : "1";
   var formaAtencionGeneral = $("#formaAtencion").val();
-  var stockLinea = parseInt(linea.stock_actual || 0) + parseInt(linea.cantidad || 0);
+  var esInventariableLinea = Number(linea.inventariable) === 1;
+  var stockLinea = esInventariableLinea
+    ? (parseInt(linea.stock_actual || 0) + parseInt(linea.cantidad || 0))
+    : 1;
   var precioOriginal = (linea.precio_original !== null && linea.precio_original !== undefined && linea.precio_original !== "")
     ? linea.precio_original
     : linea.precio_venta;
@@ -1953,7 +2181,7 @@ function agregarLineaProductoEdicion(linea) {
           </button>
           <input type="number" class="form-control input-sm nuevaCantidadProducto"
                  name="nuevaCantidadProducto" min="1" value="${linea.cantidad}"
-                 stock="${stockLinea}" data-idProducto="${linea.id_producto}" required>
+                 stock="${stockLinea}" data-idProducto="${linea.id_producto}" data-inventariable="${esInventariableLinea ? 1 : 0}" required>
           <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
             <i class="fa fa-plus"></i>
           </button>
@@ -1998,9 +2226,11 @@ $(document).ready(function() {
 <?php endif; ?>
 
 function agregarProductoAVenta(producto) {
-  if(producto.stock == 0) {
+  var esInventariable = Number(producto.inventariable) === 1;
+
+  if(Number(producto.stock) <= 0) {
     swal({
-      title: "No hay stock disponible",
+      title: esInventariable ? "No hay stock disponible" : "Producto agotado",
       type: "error",
       confirmButtonText: "¡Cerrar!"
     });
@@ -2010,7 +2240,7 @@ function agregarProductoAVenta(producto) {
    // Bloque condicional para agregar el dropdown si producto.inventariable es 0
    let extra = '';
    
-  if (producto.inventariable === 0) {
+  if (!esInventariable) {
     extra = `
       <span class="input-group-addon" style="padding: 0px 4px">
         <div class="dropdown">
@@ -2116,7 +2346,7 @@ function agregarProductoAVenta(producto) {
           </button>
           <input type="number" class="form-control input-sm nuevaCantidadProducto" 
                  name="nuevaCantidadProducto" min="1" value="1" 
-                 stock="${producto.stock}" data-idProducto="${producto.id}" required>
+                 stock="${esInventariable ? producto.stock : 1}" data-idProducto="${producto.id}" data-inventariable="${esInventariable ? 1 : 0}" required>
           <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
             <i class="fa fa-plus"></i>
           </button>

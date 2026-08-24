@@ -90,55 +90,10 @@ class ControladorVentas{
 			
 			$listaProductos = json_decode($_POST["listaProductos"], true);
 
-			$totalProductosComprados = array();
-
-			foreach ($listaProductos as $key => $value) {
-
-			   array_push($totalProductosComprados, $value["cantidad"]);
-				
-			   $tablaProductos = "productos";
-
-			    $id = "id";
-			    $valorIdProducto = $value["id"];
-			    $orden = "id";
-
-			    $traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $id, $valorIdProducto, $orden);
-
-				$ventas = "ventas";
-				$cantidadVentas = $value["cantidad"] + $traerProducto["ventas"];
-
-			    $nuevasVentas = ModeloProductos::mdlActualizarProducto($tablaProductos, $ventas, $cantidadVentas, $valorIdProducto);
-
-				$stock = "stock";
-				$valorStock = $traerProducto["stock"] - $value["cantidad"];
-
-				$nuevoStock = ModeloProductos::mdlActualizarProducto($tablaProductos, $stock, $valorStock, $valorIdProducto);
-
-			}
-
-			$tablaMeseros = "meseros";
-
-			$item = "id";
-			$valor = $_POST["seleccionarMesero"];
-
-			//cambiar
-			$estado=1;
-			$traerMesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, $item, $valor,$estado);
-
-			$item1a = "compras";
-			$valor1a = array_sum($totalProductosComprados) + $traerMesero["compras"];
-
-			$comprasMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1a, $valor1a, $valor);
-
-			$item1b = "ultima_compra";
-
 			date_default_timezone_set('America/La_Paz');
 
 			$fecha = date('Y-m-d');
 			$hora = date('H:i:s');
-			$valor1b = $fecha.' '.$hora;
-
-			$fechaMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1b, $valor1b, $valor);
 
 			/*=============================================
 			RECALCULAR PROMOCIONES EN BACKEND (antes de pagos)
@@ -160,20 +115,45 @@ class ControladorVentas{
 			$esPendiente = ($estadoPago === "PENDIENTE");
 
 			if (!$esPendiente) {
+				$validacionPago = self::validarMontosPagoVenta(
+					$_POST["tipoPago"] ?? "",
+					$totalNeto,
+					$_POST["nuevoValorEfectivo"] ?? "",
+					$_POST["nuevoValorQR"] ?? ""
+				);
+				if ($validacionPago !== true) {
+					echo json_encode([
+						"status" => "error",
+						"mensaje" => $validacionPago
+					]);
+					return;
+				}
+			}
+
+			$validacionStock = self::validarStockInventariableLista($listaProductos);
+			if ($validacionStock !== true) {
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => $validacionStock
+				]);
+				return;
+			}
+
+			if (!$esPendiente) {
 			switch ($_POST["tipoPago"]) {
 				case 1:
 					$tipoPago = "Efectivo";
 					$totalVenta = floatval($totalNeto);
 					$totalEfectivo =  floatval($_POST["nuevoValorEfectivo"] ?? 0);
-					$totalPagado = number_format($totalEfectivo, 2, '.', ',');
-					$totalEfectivo = number_format($totalVenta, 2, '.', ',');
+					$totalPagado = number_format($totalEfectivo, 2, '.', '');
+					$totalEfectivo = number_format($totalVenta, 2, '.', '');
 					break;
 				case 2:
 					$tipoPago = "QR";
 					$totalVenta = floatval($totalNeto);
 					$totalQR = floatval($_POST["nuevoValorQR"] ?? 0);
-					$totalPagado = number_format($totalQR, 2, '.', ',');
-					$totalQR = number_format($totalVenta, 2, '.', ',');
+					$totalPagado = number_format($totalQR, 2, '.', '');
+					$totalQR = number_format($totalVenta, 2, '.', '');
 					break;
 				case 3:
 					$tipoPago = "Transferencia";
@@ -188,7 +168,7 @@ class ControladorVentas{
 						
 						//Cambio es mayor a 0, entonces el total pagado es igual al total de la venta
 						if ($totalCambio > 0){
-							$totalEfectivo = number_format($totalEfectivo - $totalCambio, 2, '.', ',');
+							$totalEfectivo = number_format($totalEfectivo - $totalCambio, 2, '.', '');
 						}		
 					
 						break;
@@ -243,20 +223,30 @@ class ControladorVentas{
 						   "cambio"=>$esPendiente ? 0 : $_POST["nuevoCambioEfectivo"],
 						   "forma_atencion"=>$formaAtencion,
 						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
-							"total_pagado"=>number_format($totalPagado, 2, '.', ','),
-							"total_efectivo"=>number_format($totalEfectivo, 2, '.', ','),
-							"total_qr"=>number_format($totalQR, 2, '.', ','),
+							"total_pagado"=>number_format($totalPagado, 2, '.', ''),
+							"total_efectivo"=>number_format($totalEfectivo, 2, '.', ''),
+							"total_qr"=>number_format($totalQR, 2, '.', ''),
 							"cliente"=>$_POST["cliente"],
 							"estado_pago"=>$estadoPago,
 							"fecha_pago"=>$esPendiente ? null : ($fecha.' '.$hora)
 						);
-						
+
+			$reservaStock = self::aplicarMovimientoStockVenta($listaProductos, true);
+			if ($reservaStock !== true) {
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => $reservaStock
+				]);
+				return;
+			}
 						
 			// $respuesta = ModeloVentas::mdlIngresarVenta($tabla, $datos);
 			$respuesta = ModeloVentas::mdlRegistrarVenta($tabla, $datos);
 
 			
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
+				self::actualizarMeseroPorVenta($_POST["seleccionarMesero"], $listaProductos, $fecha.' '.$hora);
+
 				if (!$esPendiente) {
 					$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
 					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, number_format($totalNeto, 2, '.', ''),$totalEfectivo, $totalQR);
@@ -276,6 +266,7 @@ class ControladorVentas{
 				return ;
 				
 			} else {
+				self::aplicarMovimientoStockVenta($listaProductos, false);
 				echo json_encode([
 					"status" => "error",
 					"mensaje" => is_string($respuesta) ? $respuesta : "Error desconocido"
@@ -409,16 +400,17 @@ class ControladorVentas{
 
 				$traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
 
+				if (!$traerProducto) {
+					continue;
+				}
 
-				$item1a = "ventas";
-				$valor1a = $traerProducto["ventas"] - $value["cantidad"];
-
-				$nuevasVentas = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
-
-				$item1b = "stock";
-				$valor1b = $value["cantidad"] + $traerProducto["stock"];
-
-				$nuevoStock = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1b, $valor1b, $valor);
+				if (intval($traerProducto["inventariable"]) === 1) {
+					ModeloProductos::mdlDevolverStockVenta($valor, intval($value["cantidad"]));
+				} else {
+					$item1a = "ventas";
+					$valor1a = max(0, intval($traerProducto["ventas"]) - intval($value["cantidad"]));
+					ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
+				}
 
 			}
 
@@ -552,7 +544,14 @@ class ControladorVentas{
 		}
 
 		$detalleAnterior = ModeloVentas::mdlMostrarDetalleVentas($idVenta);
-		self::ajustarInventarioPorDiferencia($detalleAnterior, $listaProductos);
+		$ajusteInventario = self::ajustarInventarioPorDiferencia($detalleAnterior, $listaProductos);
+		if ($ajusteInventario !== true) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => $ajusteInventario
+			]);
+			return;
+		}
 		self::ajustarMeseroPorDiferencia(
 			$ventaActual["id_mesero"],
 			intval($_POST["seleccionarMesero"]),
@@ -662,16 +661,30 @@ class ControladorVentas{
 		$totalPagado = 0;
 		$totalVenta = floatval($_POST["totalVentaCobro"] ?? $venta["total"]);
 
+		$validacionPago = self::validarMontosPagoVenta(
+			$_POST["tipoPagoCobro"] ?? "",
+			$totalVenta,
+			$_POST["nuevoValorEfectivoCobro"] ?? "",
+			$_POST["nuevoValorQRCobro"] ?? ""
+		);
+		if ($validacionPago !== true) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => $validacionPago
+			]);
+			return;
+		}
+
 		switch ($_POST["tipoPagoCobro"]) {
 			case 1:
 				$tipoPago = "Efectivo";
-				$totalEfectivo = number_format($totalVenta, 2, '.', ',');
-				$totalPagado = number_format(floatval($_POST["nuevoValorEfectivoCobro"] ?? 0), 2, '.', ',');
+				$totalEfectivo = number_format($totalVenta, 2, '.', '');
+				$totalPagado = number_format(floatval($_POST["nuevoValorEfectivoCobro"] ?? 0), 2, '.', '');
 				break;
 			case 2:
 				$tipoPago = "QR";
-				$totalQR = number_format($totalVenta, 2, '.', ',');
-				$totalPagado = number_format(floatval($_POST["nuevoValorQRCobro"] ?? 0), 2, '.', ',');
+				$totalQR = number_format($totalVenta, 2, '.', '');
+				$totalPagado = number_format(floatval($_POST["nuevoValorQRCobro"] ?? 0), 2, '.', '');
 				break;
 			case 4:
 				$tipoPago = "Qr y Efectivo(Mixto)";
@@ -680,11 +693,11 @@ class ControladorVentas{
 				$totalCambio = floatval($_POST["nuevoCambioEfectivoCobro"] ?? 0);
 				$totalPagado = $efectivo + $qr;
 				if ($totalCambio > 0) {
-					$totalEfectivo = number_format($efectivo - $totalCambio, 2, '.', ',');
+					$totalEfectivo = number_format($efectivo - $totalCambio, 2, '.', '');
 				} else {
-					$totalEfectivo = number_format($efectivo, 2, '.', ',');
+					$totalEfectivo = number_format($efectivo, 2, '.', '');
 				}
-				$totalQR = number_format($qr, 2, '.', ',');
+				$totalQR = number_format($qr, 2, '.', '');
 				break;
 			default:
 				echo json_encode([
@@ -703,7 +716,7 @@ class ControladorVentas{
 			"tipo_pago" => $tipoPago,
 			"total_efectivo" => $totalEfectivo,
 			"total_qr" => $totalQR,
-			"total_pagado" => number_format($totalPagado, 2, '.', ','),
+			"total_pagado" => number_format($totalPagado, 2, '.', ''),
 			"cambio" => $_POST["nuevoCambioEfectivoCobro"] ?? 0,
 			"total" => $totalVenta,
 			"id_arqueo_caja" => $idArqueoVenta
@@ -802,12 +815,135 @@ class ControladorVentas{
 				continue;
 			}
 
-			$nuevoStock = $traerProducto["stock"] - $diff;
-			$nuevasVentas = $traerProducto["ventas"] + $diff;
+			if (intval($traerProducto["inventariable"]) !== 1) {
+				$nuevasVentas = max(0, intval($traerProducto["ventas"]) + $diff);
+				ModeloProductos::mdlActualizarProducto($tablaProductos, "ventas", $nuevasVentas, $idProducto);
+				continue;
+			}
 
-			ModeloProductos::mdlActualizarProducto($tablaProductos, "stock", $nuevoStock, $idProducto);
-			ModeloProductos::mdlActualizarProducto($tablaProductos, "ventas", $nuevasVentas, $idProducto);
+			if ($diff > 0) {
+				if (!ModeloProductos::mdlDescontarStockVenta($idProducto, $diff)) {
+					return "Stock insuficiente para \"" . $traerProducto["descripcion"] . "\". Disponible: " . intval($traerProducto["stock"]) . ", adicional: " . $diff;
+				}
+			} else {
+				ModeloProductos::mdlDevolverStockVenta($idProducto, abs($diff));
+			}
 		}
+
+		return true;
+	}
+
+	private static function validarStockInventariableLista($listaProductos){
+		$cantidades = self::sumarCantidadesDesdeJson($listaProductos);
+
+		foreach ($cantidades as $idProducto => $cantidad) {
+			$traerProducto = ModeloProductos::mdlMostrarProductos("productos", "id", $idProducto, "id");
+			if (!$traerProducto) {
+				return "Producto no encontrado (ID: " . $idProducto . ").";
+			}
+
+			if (intval($traerProducto["inventariable"]) !== 1) {
+				if (intval($traerProducto["stock"]) <= 0) {
+					return "El producto \"" . $traerProducto["descripcion"] . "\" está agotado.";
+				}
+				continue;
+			}
+
+			$stock = intval($traerProducto["stock"]);
+			$cantidad = intval($cantidad);
+
+			if ($stock < $cantidad) {
+				return "Stock insuficiente para \"" . $traerProducto["descripcion"] . "\". Disponible: " . $stock . ", solicitado: " . $cantidad;
+			}
+		}
+
+		return true;
+	}
+
+	private static function aplicarMovimientoStockVenta($listaProductos, $descontar){
+		$cantidades = self::sumarCantidadesDesdeJson($listaProductos);
+		$aplicados = [];
+
+		foreach ($cantidades as $idProducto => $cantidad) {
+			$cantidad = intval($cantidad);
+			if ($cantidad <= 0) {
+				continue;
+			}
+
+			$traerProducto = ModeloProductos::mdlMostrarProductos("productos", "id", $idProducto, "id");
+			if (!$traerProducto) {
+				continue;
+			}
+
+			if (intval($traerProducto["inventariable"]) === 1) {
+				$ok = $descontar
+					? ModeloProductos::mdlDescontarStockVenta($idProducto, $cantidad)
+					: ModeloProductos::mdlDevolverStockVenta($idProducto, $cantidad);
+
+				if (!$ok && $descontar) {
+					foreach ($aplicados as $aplicado) {
+						if ($aplicado["inventariable"]) {
+							ModeloProductos::mdlDevolverStockVenta($aplicado["id"], $aplicado["cantidad"]);
+						} else {
+							$prodPrev = ModeloProductos::mdlMostrarProductos("productos", "id", $aplicado["id"], "id");
+							if ($prodPrev) {
+								$ventasPrev = max(0, intval($prodPrev["ventas"]) - intval($aplicado["cantidad"]));
+								ModeloProductos::mdlActualizarProducto("productos", "ventas", $ventasPrev, $aplicado["id"]);
+							}
+						}
+					}
+					$nombre = $traerProducto["descripcion"] ?? ("ID " . $idProducto);
+					return "Stock insuficiente para \"" . $nombre . "\". No se pudo completar la venta.";
+				}
+
+				$aplicados[] = ["id" => $idProducto, "cantidad" => $cantidad, "inventariable" => true];
+			} else {
+				if (intval($traerProducto["stock"]) <= 0) {
+					foreach ($aplicados as $aplicado) {
+						if ($aplicado["inventariable"]) {
+							ModeloProductos::mdlDevolverStockVenta($aplicado["id"], $aplicado["cantidad"]);
+						} else {
+							$prodPrev = ModeloProductos::mdlMostrarProductos("productos", "id", $aplicado["id"], "id");
+							if ($prodPrev) {
+								$ventasPrev = max(0, intval($prodPrev["ventas"]) - intval($aplicado["cantidad"]));
+								ModeloProductos::mdlActualizarProducto("productos", "ventas", $ventasPrev, $aplicado["id"]);
+							}
+						}
+					}
+					return "El producto \"" . $traerProducto["descripcion"] . "\" está agotado.";
+				}
+				if ($descontar) {
+					ModeloProductos::mdlIncrementarContadorVentas($idProducto, $cantidad);
+				} else {
+					$ventasActuales = max(0, intval($traerProducto["ventas"]) - $cantidad);
+					ModeloProductos::mdlActualizarProducto("productos", "ventas", $ventasActuales, $idProducto);
+				}
+				$aplicados[] = ["id" => $idProducto, "cantidad" => $cantidad, "inventariable" => false];
+			}
+		}
+
+		return true;
+	}
+
+	private static function actualizarMeseroPorVenta($idMesero, $listaProductos, $fechaHora){
+		$totalProductos = 0;
+		foreach ($listaProductos as $producto) {
+			$totalProductos += intval($producto["cantidad"]);
+		}
+
+		$tablaMeseros = "meseros";
+		$traerMesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMesero, 1);
+		if (!$traerMesero) {
+			return;
+		}
+
+		ModeloMeseros::mdlActualizarMesero(
+			$tablaMeseros,
+			"compras",
+			intval($traerMesero["compras"]) + $totalProductos,
+			$idMesero
+		);
+		ModeloMeseros::mdlActualizarMesero($tablaMeseros, "ultima_compra", $fechaHora, $idMesero);
 	}
 
 	private static function ajustarMeseroPorDiferencia($idMeseroAnterior, $idMeseroNuevo, $detalleAnterior, $productosNuevos){
@@ -1035,7 +1171,7 @@ class ControladorVentas{
 			}
 			$listaProductos[$i]["precioOriginal"] = $precioOriginal;
 			$totalBruto += round($precioOriginal * $cant, 2);
-			$itemsCalc[] = array("id" => $id, "cantidad" => $cant, "precio" => $precioOriginal);
+			$itemsCalc[] = array("linea" => $i, "id" => $id, "cantidad" => $cant, "precio" => $precioOriginal);
 		}
 
 		$mapa = array();
@@ -1047,7 +1183,7 @@ class ControladorVentas{
 			$id = intval($producto["id"]);
 			$cant = intval($producto["cantidad"]);
 			$precioOriginal = floatval($producto["precioOriginal"]);
-			$info = isset($mapa[$id]) ? $mapa[$id] : null;
+			$info = isset($mapa[$i]) ? $mapa[$i] : (isset($mapa[(string)$i]) ? $mapa[(string)$i] : null);
 			$descUnit = 0;
 			$descTotal = 0;
 			$precioFinal = $precioOriginal;
@@ -1115,5 +1251,66 @@ class ControladorVentas{
 			"total_descuento" => $totalDescuento,
 			"total_neto" => $totalNeto
 		);
+	}
+
+	/*=============================================
+	Validar que un valor sea monto numérico válido (>= 0)
+	=============================================*/
+	static private function esMontoNumericoValido($valor)
+	{
+		if ($valor === null || is_array($valor)) {
+			return false;
+		}
+		$valor = trim(str_replace(",", ".", (string) $valor));
+		if ($valor === "") {
+			return false;
+		}
+		return preg_match('/^\d+(\.\d{1,4})?$/', $valor) === 1;
+	}
+
+	/*=============================================
+	Validar montos de pago vs total de la venta
+	Retorna true o mensaje de error
+	=============================================*/
+	static private function validarMontosPagoVenta($tipoPago, $totalVenta, $efectivoRaw, $qrRaw)
+	{
+		$totalVenta = round(floatval($totalVenta), 2);
+		$tipoPago = strval($tipoPago);
+
+		if ($tipoPago === "1") {
+			if (!self::esMontoNumericoValido($efectivoRaw)) {
+				return "El pago en efectivo debe ser un número válido.";
+			}
+			$efectivo = round(floatval(str_replace(",", ".", trim((string) $efectivoRaw))), 2);
+			if ($efectivo < $totalVenta) {
+				return "El pago en efectivo debe ser igual o mayor al total de la venta.";
+			}
+			return true;
+		}
+
+		if ($tipoPago === "2") {
+			if (!self::esMontoNumericoValido($qrRaw)) {
+				return "El pago en QR debe ser un número válido.";
+			}
+			$qr = round(floatval(str_replace(",", ".", trim((string) $qrRaw))), 2);
+			if ($qr < $totalVenta) {
+				return "El pago en QR debe ser igual o mayor al total de la venta.";
+			}
+			return true;
+		}
+
+		if ($tipoPago === "4") {
+			if (!self::esMontoNumericoValido($efectivoRaw) || !self::esMontoNumericoValido($qrRaw)) {
+				return "Los pagos en efectivo y QR deben ser números válidos.";
+			}
+			$efectivo = round(floatval(str_replace(",", ".", trim((string) $efectivoRaw))), 2);
+			$qr = round(floatval(str_replace(",", ".", trim((string) $qrRaw))), 2);
+			if (($efectivo + $qr) < $totalVenta) {
+				return "La suma del efectivo y el QR debe ser igual o mayor al total de la venta.";
+			}
+			return true;
+		}
+
+		return "Tipo de pago no válido.";
 	}
 }

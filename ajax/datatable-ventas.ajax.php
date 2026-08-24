@@ -41,19 +41,9 @@ class TablaProductosVentas{
  	 		STOCK
   			=============================================*/ 
 
-  			if($productos[$i]["stock"] <= 10){
-
-  				$stock = "<button class='btn btn-danger'>".$productos[$i]["stock"]."</button>";
-
-  			}else if($productos[$i]["stock"] > 11 && $productos[$i]["stock"] <= 15){
-
-  				$stock = "<button class='btn btn-warning'>".$productos[$i]["stock"]."</button>";
-
-  			}else{
-
-  				$stock = "<button class='btn btn-success'>".$productos[$i]["stock"]."</button>";
-
-  			}
+  			$stock = ModeloProductos::mdlEtiquetaStockUi($productos[$i], true);
+		  	$inventariable = isset($productos[$i]["inventariable"]) ? intval($productos[$i]["inventariable"]) : 1;
+		  	$stockNum = intval($productos[$i]["stock"]);
 
 		  	/*=============================================
  	 		TRAEMOS LAS ACCIONES
@@ -69,7 +59,9 @@ class TablaProductosVentas{
 			      "'.$stock.'",
 			      "'.$botones.'",
 			      "'.$productos[$i]["precio_venta"].'",
-			      "'.$productos[$i]["id_categoria"].'"
+			      "'.$productos[$i]["id_categoria"].'",
+			      "'.$inventariable.'",
+			      "'.$stockNum.'"
 			    ],';
 
 		  }

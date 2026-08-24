@@ -147,7 +147,7 @@ MODAL EDITAR Mesero
 <div id="modalEditarGasto" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form role="form" method="post">
+      <form role="form" method="post" class="form-gasto-pago" id="formEditarGasto">
         <!--=====================================
         CABEZA DEL MODAL
         ======================================-->
@@ -190,43 +190,57 @@ MODAL EDITAR Mesero
        
             <div class="form-group">
               <div class="input-group">
-
-                <!-- ENTRADA PARA LA FECHA DE GASTO-->
-                <span class="input-group-addon">
-                FECHA
-                </span>
-                <div class="input-group date">
-                  <input type="date" id="editarFecha" name="editarFecha" class="form-control input-lg" required />
-                </div>
-
-                <!-- ENTRADA PARA EL MONTO-->
-                <span class="input-group-addon">
-                MONTO
-                </span>
-                <input type="number" step="0.01" min="0" class="form-control input-lg" id="editarMonto" name="editarMonto" placeholder="INGRESAR EL MONTO" required>
-           
+                <span class="input-group-addon">FECHA</span>
+                <input type="date" id="editarFecha" name="editarFecha" class="form-control input-lg" required />
               </div>
             </div>
-        
 
-            <!-- ENTRADA PARA LA DIRECCIÓN -->
-            
             <div class="form-group">
-              
-              <div class="input-group">
-              
-                <span class="input-group-addon">
-              TIPO DE PAGO
-                </span> 
-
-                <select class="form-control input-lg" id="editarTipoPago" name="editarTipoPago">
-                        <option value="1">Efectivo</option>
-                        <option value="2">QR</option>
-                        <option value="3">Transferencia</option>
-                        <option value="4">Qr y Efectivo(Mixto)</option>
-                      </select>
+              <label style="display:block; margin-bottom:8px;">FORMA DE PAGO:</label>
+              <div class="gasto-pago-opciones">
+                <label class="gasto-pago-opcion" data-tipo="2">
+                  <input type="radio" name="editarTipoPago" value="2">
+                  <span class="gasto-pago-icono"><i class="fa fa-qrcode"></i></span>
+                  <span class="gasto-pago-texto">QR</span>
+                </label>
+                <label class="gasto-pago-opcion active" data-tipo="1">
+                  <input type="radio" name="editarTipoPago" value="1" checked>
+                  <span class="gasto-pago-icono"><i class="fa fa-money"></i></span>
+                  <span class="gasto-pago-texto">EFECTIVO</span>
+                </label>
+                <label class="gasto-pago-opcion" data-tipo="4">
+                  <input type="radio" name="editarTipoPago" value="4">
+                  <span class="gasto-pago-icono"><i class="fa fa-exchange"></i></span>
+                  <span class="gasto-pago-texto">MIXTO</span>
+                </label>
+                <label class="gasto-pago-opcion" data-tipo="3">
+                  <input type="radio" name="editarTipoPago" value="3">
+                  <span class="gasto-pago-icono"><i class="fa fa-university"></i></span>
+                  <span class="gasto-pago-texto">TRANSF.</span>
+                </label>
               </div>
+            </div>
 
+            <div class="form-group grupo-monto-gasto-simple">
+              <div class="input-group">
+                <span class="input-group-addon">MONTO BS.</span>
+                <input type="number" step="0.01" min="0.01" class="form-control input-lg" id="editarMonto" name="editarMonto" placeholder="0.00" required>
+              </div>
+            </div>
+
+            <div class="grupo-monto-gasto-mixto" style="display:none;">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">EFECTIVO BS.</span>
+                  <input type="number" step="0.01" min="0" class="form-control input-lg" id="editarMontoEfectivo" name="editarMontoEfectivo" placeholder="0.00">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon">QR BS.</span>
+                  <input type="number" step="0.01" min="0" class="form-control input-lg" id="editarMontoQr" name="editarMontoQr" placeholder="0.00">
+                </div>
+              </div>
             </div>
 
 
@@ -247,6 +261,59 @@ MODAL EDITAR Mesero
     </div>
   </div>
 </div>
+
+<style>
+  #modalEditarGasto .gasto-pago-opciones,
+  .modal .gasto-pago-opciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #modalEditarGasto .gasto-pago-opcion,
+  .modal .gasto-pago-opcion {
+    flex: 1;
+    min-width: 90px;
+    margin: 0;
+    border: 1px solid #d2d6de;
+    border-radius: 4px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    background: #fff;
+    font-weight: normal;
+  }
+  #modalEditarGasto .gasto-pago-opcion.active,
+  .modal .gasto-pago-opcion.active {
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, .18);
+    background: #f3fff6;
+  }
+  #modalEditarGasto .gasto-pago-opcion input[type="radio"],
+  .modal .gasto-pago-opcion input[type="radio"] {
+    float: left;
+    margin: 2px 0 0 2px;
+  }
+  #modalEditarGasto .gasto-pago-icono,
+  .modal .gasto-pago-icono {
+    display: block;
+    font-size: 26px;
+    margin: 4px 0 6px;
+    color: #28a745;
+  }
+  #modalEditarGasto .gasto-pago-opcion[data-tipo="4"] .gasto-pago-icono,
+  #modalEditarGasto .gasto-pago-opcion[data-tipo="4"] .gasto-pago-texto,
+  .modal .gasto-pago-opcion[data-tipo="4"] .gasto-pago-icono,
+  .modal .gasto-pago-opcion[data-tipo="4"] .gasto-pago-texto {
+    color: #17a2b8;
+  }
+  #modalEditarGasto .gasto-pago-texto,
+  .modal .gasto-pago-texto {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #28a745;
+  }
+</style>
 
 <?php
   $eliminarGasto = new ControladorGastos();

@@ -6,6 +6,9 @@ if ($.fn.DataTable && $(".tabla-otros-ingresos").length) {
     deferRender: true,
     retrieve: true,
     processing: true,
+    columnDefs: [
+      { orderable: false, targets: 7 }
+    ],
     language: {
       sProcessing: "Procesando...",
       sLengthMenu: "Mostrar _MENU_ registros",

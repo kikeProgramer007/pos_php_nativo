@@ -299,11 +299,13 @@ $(".tablaProductos tbody").on("click", "button.btnEditarProducto", function () {
 				$(".previsualizar").attr("src", respuesta["imagen"]);
 
 			}
-			// Habilitar o deshabilitar el campo de stock según el inventariable
-			if (respuesta["inventariable"] === 0) { // Si selecciona "NO"
-				$("#editarStock").prop("readonly", false); // Activar el campo
-			} else { // Si selecciona "SI"
-				$("#editarStock").prop("readonly", true); // Deshabilitar el campo
+			// Disponibilidad para no inventariables (sin mostrar 99999)
+			if (Number(respuesta["inventariable"]) === 0) {
+				$("#editarDisponibleNoInv").val(Number(respuesta["stock"]) > 0 ? "1" : "0");
+				$("#editarStock").val(Number(respuesta["stock"]) > 0 ? "1" : "0");
+			}
+			if (typeof actualizarCamposInventariableEditar === "function") {
+				actualizarCamposInventariableEditar();
 			}
 		}
 

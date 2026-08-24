@@ -75,6 +75,7 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "crear-compra" ||
          $_GET["ruta"] == "reportes" ||
          $_GET["ruta"] == "reporte-compra" ||
+         $_GET["ruta"] == "reporte-gastos" ||
          $_GET["ruta"] == "reporte-venta" ||
          $_GET["ruta"] == "reporte-top-meseros-ventas" ||
          $_GET["ruta"] == "reporte-top-productos" ||

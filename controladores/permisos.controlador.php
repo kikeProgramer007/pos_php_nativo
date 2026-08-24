@@ -173,7 +173,8 @@ class Permisos
 			"ver-productos-faltantes" => "reportes.faltantes",
 			"reporte-categoria" => "reportes.categorias",
 			"ganancias-ventas" => "reportes.ganancias",
-			"reporte-compra" => "reportes.compras"
+			"reporte-compra" => "reportes.compras",
+			"reporte-gastos" => "reportes.gastos"
 		];
 
 		return $mapa[$ruta] ?? null;
@@ -212,7 +213,7 @@ class Permisos
 			"compras.ver", "compras.crear", "compras.eliminar", "compras.eliminados",
 			"proveedores.ver", "proveedores.crear", "proveedores.editar", "proveedores.eliminar", "proveedores.eliminados",
 			"reportes.ventas", "reportes.venta_fecha", "reportes.top_productos", "reportes.top_meseros",
-			"reportes.faltantes", "reportes.categorias", "reportes.ganancias", "reportes.compras"
+			"reportes.faltantes", "reportes.categorias", "reportes.ganancias", "reportes.compras", "reportes.gastos"
 		];
 
 		$vendedor = [
@@ -220,7 +221,7 @@ class Permisos
 			"caja.ver", "caja.abrir", "caja.cerrar", "caja.otros_ingresos",
 			"ventas.crear", "ventas.ver", "ventas.editar", "ventas.cobrar", "ventas.imprimir",
 			"reportes.ventas", "reportes.venta_fecha", "reportes.top_productos", "reportes.top_meseros",
-			"reportes.faltantes", "reportes.categorias", "reportes.ganancias", "reportes.compras"
+			"reportes.faltantes", "reportes.categorias", "reportes.ganancias", "reportes.compras", "reportes.gastos"
 		];
 
 		if ($perfil === "Supervisor") {

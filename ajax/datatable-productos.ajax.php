@@ -42,23 +42,11 @@ class TablaProductos{
 
 		  	$categorias = ControladorCategorias::ctrMostrarCategoriasActivasInactivas($item, $valor);
 
-		  	/*=============================================
+  			/*=============================================
  	 		STOCK
   			=============================================*/ 
 
-  			if($productos[$i]["stock"] <= 10){
-
-  				$stock = "<button class='btn btn-danger'>".$productos[$i]["stock"]."</button>";
-
-  			}else if($productos[$i]["stock"] > 11 && $productos[$i]["stock"] <= 15){
-
-  				$stock = "<button class='btn btn-warning'>".$productos[$i]["stock"]."</button>";
-
-  			}else{
-
-  				$stock = "<button class='btn btn-success'>".$productos[$i]["stock"]."</button>";
-
-  			}
+  			$stock = ModeloProductos::mdlEtiquetaStockUi($productos[$i], true);
 
 		  /*=============================================
  	 		TRAEMOS LAS ACCIONES

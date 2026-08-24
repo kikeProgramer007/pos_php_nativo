@@ -109,16 +109,7 @@ class ControladorCompras{
 			if(is_array($respuesta) && $respuesta["status"] === "ok"){
 
 				foreach ($listaProductos as $key => $value) {
-					$tablaProductos = "productos";
-					$item = "id";
-					$valor = $value["id"];
-					$orden = "id";
-					$traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
-					if ($traerProducto) {
-						$item1a = "stock";
-						$valor1a = $value["cantidad"] + $traerProducto["stock"];
-						ModeloProductos::mdlActualizarProducto($tablaProductos, $item1a, $valor1a, $valor);
-					}
+					ModeloProductos::mdlIncrementarStockCompra($value["id"], intval($value["cantidad"]));
 				}
 
 			    $codigoCompra = $_POST["nuevaCompra"];
@@ -185,17 +176,7 @@ class ControladorCompras{
 
 				array_push($totalProductosComprados, $value["cantidad"]);
 				
-				$tablaProductos = "productos";
-
-				$item = "id";
-				$valor = $value["id_producto"];
-				$orden = "id";
-
-				$traerProducto = ModeloProductos::mdlMostrarProductosActivosInactivos($tablaProductos, $item, $valor, $orden);
-		
-				$item1b = "stock";
-				$valor1b = $traerProducto["stock"] - $value["cantidad"];
-				$nuevoStock = ModeloProductos::mdlActualizarProducto($tablaProductos, $item1b, $valor1b, $valor);
+				ModeloProductos::mdlRevertirStockCompra($value["id_producto"], intval($value["cantidad"]));
 
 			}
 

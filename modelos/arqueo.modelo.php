@@ -380,6 +380,49 @@ class ModeloArqueo {
     }
 
     /**
+     * Suma solo la parte en efectivo de gastos (para disponibilidad de caja)
+     * forma_pago: 1=Efectivo, 2=QR, 3=Transferencia, 4=Mixto
+     */
+    static public function mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo = null) {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(
+                    CASE
+                        WHEN forma_pago IN (1, '1') THEN COALESCE(NULLIF(monto_efectivo, 0), monto)
+                        WHEN forma_pago IN (4, '4') THEN COALESCE(monto_efectivo, 0)
+                        ELSE 0
+                    END
+                 ), 0) AS total
+                 FROM gastos
+                 WHERE id_arqueo = :id_arqueo"
+            );
+            $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarGastosEfectivoPorArqueo: " . $e->getMessage());
+            // Fallback si aún no existen columnas monto_efectivo/monto_qr
+            try {
+                $conexion = $pdo ?: Conexion::conectar();
+                $stmt = $conexion->prepare(
+                    "SELECT COALESCE(SUM(monto), 0) AS total
+                     FROM gastos
+                     WHERE id_arqueo = :id_arqueo
+                       AND forma_pago IN (1, '1')"
+                );
+                $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                return floatval($row["total"] ?? 0);
+            } catch (PDOException $e2) {
+                return self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
+            }
+        }
+    }
+
+    /**
      * Suma otros ingresos (no ventas) asociados a un arqueo
      */
     static public function mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo = null) {
@@ -398,6 +441,28 @@ class ModeloArqueo {
         } catch (PDOException $e) {
             error_log("Error en mdlSumarOtrosIngresosPorArqueo: " . $e->getMessage());
             return 0;
+        }
+    }
+
+    /**
+     * Suma solo la parte en efectivo de otros ingresos (para disponibilidad de caja)
+     */
+    static public function mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo = null) {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(COALESCE(monto_efectivo, monto)), 0) AS total
+                 FROM otros_ingresos
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarOtrosIngresosEfectivoPorArqueo: " . $e->getMessage());
+            return self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
         }
     }
 
@@ -484,17 +549,17 @@ class ModeloArqueo {
 
         $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
         $ventasEfectivo = self::mdlSumarVentasEfectivoPorArqueo($idArqueo, $conexion);
-        $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $conexion);
+        $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $conexion);
         $compras = self::mdlSumarComprasPorArqueo($idArqueo, $conexion);
-        $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $conexion);
-        $disponible = $montoApertura + $ventasEfectivo + $otrosIngresos - $gastos - $compras;
+        $gastos = self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $conexion);
+        $disponible = $montoApertura + $ventasEfectivo + $otrosIngresosEfectivo - $gastos - $compras;
 
         return [
             "ok" => true,
             "disponible" => round($disponible, 2),
             "monto_apertura" => $montoApertura,
             "ventas_efectivo" => $ventasEfectivo,
-            "otros_ingresos" => $otrosIngresos,
+            "otros_ingresos" => $otrosIngresosEfectivo,
             "compras" => $compras,
             "gastos" => $gastos,
             "arqueo" => $arqueo

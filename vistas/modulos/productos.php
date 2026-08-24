@@ -248,15 +248,30 @@ MODAL EDITAR PRODUCTO
             </div>
 
 
-            <!-- ENTRADA PARA La STOCK -->
+            <!-- ENTRADA PARA STOCK / DISPONIBILIDAD -->
 
-            <div class="form-group">
+            <div class="form-group" id="grupoEditarStock">
 
               <div class="input-group">
 
                 <span class="input-group-addon">CANTIDAD</span>
 
                 <input class="form-control input-lg" id="editarStock" name="editarStock" min="0" required>
+
+              </div>
+
+            </div>
+
+            <div class="form-group" id="grupoEditarDisponibleNoInv" style="display:none;">
+
+              <div class="input-group">
+
+                <span class="input-group-addon">DISPONIBILIDAD</span>
+
+                <select class="form-control input-lg" id="editarDisponibleNoInv" name="editarDisponibleNoInv">
+                  <option value="1">Disponible</option>
+                  <option value="0">Agotado</option>
+                </select>
 
               </div>
 
@@ -387,17 +402,32 @@ $restaurarProducto->ctrRestaurarProducto();
         $('.dataTables_filter input[type="search"]').attr('placeholder', 'Buscar producto');
     });
 
-    // Obtener los elementos del DOM
     const inventariableSelect = document.getElementById('editarInventariable');
     const stockInput = document.getElementById('editarStock');
+    const grupoStock = document.getElementById('grupoEditarStock');
+    const grupoDisponible = document.getElementById('grupoEditarDisponibleNoInv');
+    const selectDisponible = document.getElementById('editarDisponibleNoInv');
 
-    // Escuchar el evento 'change' del select
-    inventariableSelect.addEventListener('change', function () {
-        if (this.value === "0") { // Si selecciona "NO"
-            stockInput.removeAttribute('readonly'); // Activar el campo
-        } else { // Si selecciona "SI"
-            stockInput.setAttribute('readonly', true); // Deshabilitar el campo
+    function actualizarCamposInventariableEditar() {
+        if (!inventariableSelect) {
+            return;
         }
+        if (inventariableSelect.value === "0") {
+            grupoStock.style.display = "none";
+            grupoDisponible.style.display = "block";
+            stockInput.removeAttribute("required");
+            stockInput.value = selectDisponible.value === "1" ? "1" : "0";
+        } else {
+            grupoStock.style.display = "block";
+            grupoDisponible.style.display = "none";
+            stockInput.setAttribute("required", "required");
+            stockInput.removeAttribute("readonly");
+        }
+    }
+
+    inventariableSelect.addEventListener('change', actualizarCamposInventariableEditar);
+    selectDisponible.addEventListener('change', function () {
+        stockInput.value = this.value === "1" ? "1" : "0";
     });
 </script>
 <script>

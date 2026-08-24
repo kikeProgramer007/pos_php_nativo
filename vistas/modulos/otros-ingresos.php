@@ -82,6 +82,10 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                 </button>';
         }
         ?>
+        &nbsp;
+        <a class="btn btn-primary" target="_blank" href="reporte_otros_ingresos.php">
+          <i class="fa fa-print"></i> Imprimir
+        </a>
       </div>
       <div class="box-body">
         <table class="table table-bordered table-striped dt-responsive text-uppercase tabla-otros-ingresos" width="100%">
@@ -90,9 +94,11 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
               <th style="width:10px">#</th>
               <th>FECHA</th>
               <th>OBSERVACIÓN</th>
+              <th>ENTRADA</th>
               <th>MONTO</th>
               <th>USUARIO</th>
               <th>ARQUEO</th>
+              <th>ACCIONES</th>
             </tr>
           </thead>
         </table>
@@ -104,3 +110,4 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 </div>
 
 <?php include "componentes/modal-otro-ingreso.php"; ?>
+<?php include "componentes/modal-editar-otro-ingreso.php"; ?>

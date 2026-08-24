@@ -249,8 +249,8 @@ class ControladorPromociones
 
 	/*=============================================
 	CÁLCULO CENTRAL PARA VENTAS
-	items: [ {id, cantidad, precio}, ... ]
-	Retorna mapa por id_producto con descuento aplicado
+	items: [ {linea, id, cantidad, precio}, ... ]
+	Retorna mapa por índice de línea (cada fila del ticket se evalúa aparte)
 	=============================================*/
 	static public function ctrCalcularPromocionesParaVenta($items)
 	{
@@ -259,24 +259,21 @@ class ControladorPromociones
 			return $resultado;
 		}
 
-		// Acumular cantidad por producto (individual)
-		$cantidades = [];
-		$precios = [];
-		foreach ($items as $item) {
+		$idsProducto = [];
+		foreach ($items as $idx => $item) {
 			$id = intval($item["id"] ?? 0);
-			if ($id <= 0) continue;
-			$cant = intval($item["cantidad"] ?? 0);
-			$precio = floatval($item["precio"] ?? ($item["precioReal"] ?? 0));
-			$cantidades[$id] = ($cantidades[$id] ?? 0) + $cant;
-			if (!isset($precios[$id]) || $precio > 0) {
-				$precios[$id] = $precio;
+			if ($id > 0) {
+				$idsProducto[$id] = true;
 			}
 		}
 
-		$ids = array_keys($cantidades);
+		if (empty($idsProducto)) {
+			return $resultado;
+		}
+
+		$ids = array_keys($idsProducto);
 		$filas = ModeloPromociones::mdlObtenerPromocionesVigentesPorProductos($ids);
 
-		// Agrupar por producto -> promociones -> intervalos
 		$porProducto = [];
 		foreach ($filas as $fila) {
 			$idProd = intval($fila["id_producto"]);
@@ -299,84 +296,99 @@ class ControladorPromociones
 			];
 		}
 
-		foreach ($cantidades as $idProducto => $cantidad) {
-			$precioOriginal = round(floatval($precios[$idProducto] ?? 0), 2);
-			$resultado[$idProducto] = [
-				"id_producto" => $idProducto,
-				"cantidad" => $cantidad,
-				"precio_original" => $precioOriginal,
-				"precio_final" => $precioOriginal,
-				"descuento_unitario" => 0,
-				"descuento_total" => 0,
-				"tipo_descuento" => null,
-				"valor_descuento" => null,
-				"id_promocion" => null,
-				"id_intervalo_promocion" => null,
-				"nombre_promocion" => null,
-				"mensaje" => null
-			];
+		foreach ($items as $idx => $item) {
+			$linea = isset($item["linea"]) ? (string)$item["linea"] : (string)$idx;
+			$idProducto = intval($item["id"] ?? 0);
+			$cantidad = intval($item["cantidad"] ?? 0);
+			$precioOriginal = round(floatval($item["precio"] ?? ($item["precioReal"] ?? 0)), 2);
 
-			if ($precioOriginal <= 0 || empty($porProducto[$idProducto])) {
-				continue;
-			}
-
-			$candidatos = [];
-			foreach ($porProducto[$idProducto] as $promo) {
-				$intervalo = self::seleccionarIntervalo($promo["intervalos"], $cantidad);
-				if (!$intervalo) {
-					continue;
-				}
-				$calc = self::calcularDescuentoUnitario($precioOriginal, $intervalo["tipo_descuento"], $intervalo["valor_descuento"]);
-				if ($calc["descuento_unitario"] <= 0) {
-					continue;
-				}
-				$candidatos[] = [
-					"prioridad" => $promo["prioridad"],
-					"descuento_unitario" => $calc["descuento_unitario"],
-					"precio_final" => $calc["precio_final"],
-					"tipo_descuento" => $intervalo["tipo_descuento"],
-					"valor_descuento" => $intervalo["valor_descuento"],
-					"id_promocion" => $promo["id_promocion"],
-					"id_intervalo_promocion" => $intervalo["id_intervalo"],
-					"nombre_promocion" => $promo["nombre_promocion"],
-					"fecha_creacion" => $promo["fecha_creacion"],
-					"cantidad_minima" => $intervalo["cantidad_minima"]
-				];
-			}
-
-			if (empty($candidatos)) {
-				continue;
-			}
-
-			usort($candidatos, function ($a, $b) {
-				if ($a["prioridad"] !== $b["prioridad"]) {
-					return $b["prioridad"] <=> $a["prioridad"];
-				}
-				if ($a["descuento_unitario"] !== $b["descuento_unitario"]) {
-					return $b["descuento_unitario"] <=> $a["descuento_unitario"];
-				}
-				return strcmp($b["fecha_creacion"], $a["fecha_creacion"]);
-			});
-
-			$mejor = $candidatos[0];
-			$descuentoTotal = round($mejor["descuento_unitario"] * $cantidad, 2);
-			$resultado[$idProducto] = [
-				"id_producto" => $idProducto,
-				"cantidad" => $cantidad,
-				"precio_original" => $precioOriginal,
-				"precio_final" => $mejor["precio_final"],
-				"descuento_unitario" => $mejor["descuento_unitario"],
-				"descuento_total" => $descuentoTotal,
-				"tipo_descuento" => $mejor["tipo_descuento"],
-				"valor_descuento" => $mejor["valor_descuento"],
-				"id_promocion" => $mejor["id_promocion"],
-				"id_intervalo_promocion" => $mejor["id_intervalo_promocion"],
-				"nombre_promocion" => $mejor["nombre_promocion"],
-				"mensaje" => "Promoción por volumen: Bs " . number_format($mejor["precio_final"], 2) . " por unidad desde " . $mejor["cantidad_minima"] . " unidades (" . $mejor["nombre_promocion"] . ")"
-			];
+			$resultado[$linea] = self::calcularPromocionLineaVenta(
+				$idProducto,
+				$cantidad,
+				$precioOriginal,
+				$porProducto
+			);
 		}
 
 		return $resultado;
+	}
+
+	static private function calcularPromocionLineaVenta($idProducto, $cantidad, $precioOriginal, $porProducto)
+	{
+		$sinPromo = [
+			"id_producto" => $idProducto,
+			"cantidad" => $cantidad,
+			"precio_original" => $precioOriginal,
+			"precio_final" => $precioOriginal,
+			"descuento_unitario" => 0,
+			"descuento_total" => 0,
+			"tipo_descuento" => null,
+			"valor_descuento" => null,
+			"id_promocion" => null,
+			"id_intervalo_promocion" => null,
+			"nombre_promocion" => null,
+			"mensaje" => null
+		];
+
+		if ($idProducto <= 0 || $cantidad <= 0 || $precioOriginal <= 0 || empty($porProducto[$idProducto])) {
+			return $sinPromo;
+		}
+
+		$candidatos = [];
+		foreach ($porProducto[$idProducto] as $promo) {
+			$intervalo = self::seleccionarIntervalo($promo["intervalos"], $cantidad);
+			if (!$intervalo) {
+				continue;
+			}
+			$calc = self::calcularDescuentoUnitario($precioOriginal, $intervalo["tipo_descuento"], $intervalo["valor_descuento"]);
+			if ($calc["descuento_unitario"] <= 0) {
+				continue;
+			}
+			$candidatos[] = [
+				"prioridad" => $promo["prioridad"],
+				"descuento_unitario" => $calc["descuento_unitario"],
+				"precio_final" => $calc["precio_final"],
+				"tipo_descuento" => $intervalo["tipo_descuento"],
+				"valor_descuento" => $intervalo["valor_descuento"],
+				"id_promocion" => $promo["id_promocion"],
+				"id_intervalo_promocion" => $intervalo["id_intervalo"],
+				"nombre_promocion" => $promo["nombre_promocion"],
+				"fecha_creacion" => $promo["fecha_creacion"],
+				"cantidad_minima" => $intervalo["cantidad_minima"]
+			];
+		}
+
+		if (empty($candidatos)) {
+			return $sinPromo;
+		}
+
+		usort($candidatos, function ($a, $b) {
+			if ($a["prioridad"] !== $b["prioridad"]) {
+				return $b["prioridad"] <=> $a["prioridad"];
+			}
+			if ($a["descuento_unitario"] !== $b["descuento_unitario"]) {
+				return $b["descuento_unitario"] <=> $a["descuento_unitario"];
+			}
+			return strcmp($b["fecha_creacion"], $a["fecha_creacion"]);
+		});
+
+		$mejor = $candidatos[0];
+		$descuentoTotal = round($mejor["descuento_unitario"] * $cantidad, 2);
+
+		return [
+			"id_producto" => $idProducto,
+			"cantidad" => $cantidad,
+			"precio_original" => $precioOriginal,
+			"precio_final" => $mejor["precio_final"],
+			"descuento_unitario" => $mejor["descuento_unitario"],
+			"descuento_total" => $descuentoTotal,
+			"tipo_descuento" => $mejor["tipo_descuento"],
+			"valor_descuento" => $mejor["valor_descuento"],
+			"id_promocion" => $mejor["id_promocion"],
+			"id_intervalo_promocion" => $mejor["id_intervalo_promocion"],
+			"nombre_promocion" => $mejor["nombre_promocion"],
+			"mensaje" => "Promoción por volumen: Bs " . number_format($mejor["precio_final"], 2) . " por unidad desde " . $mejor["cantidad_minima"] . " unidades (" . $mejor["nombre_promocion"] . ")"
+		];
 	}
 
 	static public function seleccionarIntervalo($intervalos, $cantidad)

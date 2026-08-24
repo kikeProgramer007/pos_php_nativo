@@ -368,7 +368,7 @@ function actualizarVistaPreviaGeneral() {
   var tip = $("#tablaProductosPromo tbody tr").length
     ? "La promoción tiene productos vinculados. Al crear/editar un intervalo puede ver el precio estimado por producto."
     : "Vincule productos para estimar precios finales.";
-  $("#vistaPreviaPromo").html("<p>" + tip + "</p><p class='text-muted'>Modo de cantidad: individual por producto (no se suman productos distintos).</p>");
+  $("#vistaPreviaPromo").html("<p>" + tip + "</p><p class='text-muted'>Cada línea del ticket evalúa su cantidad de forma independiente (útil al duplicar productos).</p>");
 }
 
 /*=============================================
@@ -388,13 +388,14 @@ window.PromocionesVenta = {
 
   recalcular: function(callback) {
     var items = [];
-    $(".nuevaDescripcionProducto").each(function() {
+    $(".nuevaDescripcionProducto").each(function(linea) {
       var $producto = $(this);
       var $fila = $producto.closest(".row");
       var $cantidad = $fila.find(".nuevaCantidadProducto");
       var $precio = $fila.find(".nuevoPrecioProducto");
       var precioOriginal = PromocionesVenta.obtenerPrecioOriginal($precio);
       items.push({
+        linea: linea,
         id: $producto.attr("idProducto") || $producto.attr("data-idProducto"),
         cantidad: $cantidad.val(),
         precio: precioOriginal
@@ -421,7 +422,7 @@ window.PromocionesVenta = {
   },
 
   aplicarEnUI: function(mapa) {
-    $(".nuevaDescripcionProducto").each(function() {
+    $(".nuevaDescripcionProducto").each(function(linea) {
       var $producto = $(this);
       var $fila = $producto.closest(".row");
       var id = String($producto.attr("idProducto") || $producto.attr("data-idProducto") || "");
@@ -431,7 +432,7 @@ window.PromocionesVenta = {
       var precioBase = PromocionesVenta.obtenerPrecioOriginal($precio);
       var subtotalOriginal = round2(precioBase * cantLinea);
 
-      var info = mapa[id] || mapa[parseInt(id, 10)] || null;
+      var info = mapa[linea] || mapa[String(linea)] || mapa[id] || mapa[parseInt(id, 10)] || null;
       var descUnit = 0;
       var descTotal = 0;
       var precioUnitFinal = precioBase;

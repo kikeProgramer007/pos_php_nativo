@@ -44,8 +44,6 @@ class AjaxProductos{
 
       $respuesta = ControladorProductos::ctrMostrarProductos($item, $valor,$orden);
 
-     
-
       echo json_encode($respuesta);
 
 
@@ -74,6 +72,24 @@ class AjaxProductos{
 
 }
 
+/*=============================================
+MARCAR DISPONIBLE / AGOTADO (no inventariable)
+=============================================*/
+if (isset($_POST["accion"]) && $_POST["accion"] === "marcarDisponibilidad") {
+
+  require_once "../includes/sesion-permisos.php";
+
+  if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] !== "ok") {
+    echo json_encode(["status" => "error", "mensaje" => "No autenticado"]);
+    exit;
+  }
+
+  $idProducto = isset($_POST["idProductoDisponibilidad"]) ? intval($_POST["idProductoDisponibilidad"]) : 0;
+  $disponible = isset($_POST["disponible"]) ? (intval($_POST["disponible"]) === 1) : false;
+
+  echo json_encode(ControladorProductos::ctrMarcarDisponibilidadNoInventariable($idProducto, $disponible));
+  exit;
+}
 
 /*=============================================
 GENERAR CÓDIGO A PARTIR DE ID CATEGORIA
@@ -121,9 +137,3 @@ if(isset($_POST["nombreProducto"])){
   $traerProductos -> ajaxEditarProducto();
 
 }
-
-
-
-
-
-

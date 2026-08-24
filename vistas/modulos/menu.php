@@ -268,7 +268,8 @@
 				"reportes.faltantes",
 				"reportes.categorias",
 				"reportes.ganancias",
-				"reportes.compras"
+				"reportes.compras",
+				"reportes.gastos"
 			])) {
 
 				echo '<li class="treeview">
@@ -348,6 +349,15 @@
 						<a href="reporte-compra">
 							 <i class="fa fa-circle-o"></i>
 							<span>Reporte de compras</span>
+						</a>
+					</li>';
+				}
+
+				if (Permisos::tiene("reportes.gastos")) {
+					echo '<li>
+						<a href="reporte-gastos">
+							 <i class="fa fa-circle-o"></i>
+							<span>Reporte de gastos</span>
 						</a>
 					</li>';
 				}

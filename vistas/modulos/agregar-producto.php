@@ -522,8 +522,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const stockInput = document.getElementById('nuevoStock');
 
     inventariableSelect.addEventListener('change', function() {
-        if (this.value === "0") {
+        if (this.value === "1") {
             stockInput.removeAttribute('readonly');
+            if (Number(stockInput.value) <= 0 || Number(stockInput.value) >= 99999) {
+                stockInput.value = "0";
+            }
         } else {
             stockInput.setAttribute('readonly', true);
             stockInput.value = "0";
