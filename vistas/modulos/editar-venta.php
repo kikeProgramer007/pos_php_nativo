@@ -164,9 +164,17 @@
 
                         </div>
 
-                        <div class="col-xs-3">
+                        <div class="col-xs-3 ingresoCantidad">
               
-                          <input type="number" class="form-control nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="'.$value["cantidad"].'" stock="'.$stockAntiguo.'" nuevoStock="'.$value["stock"].'" required>
+                          <div class="cantidad-stepper">
+                            <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad">
+                              <i class="fa fa-minus"></i>
+                            </button>
+                            <input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="'.$value["cantidad"].'" stock="'.$stockAntiguo.'" nuevoStock="'.$value["stock"].'" required>
+                            <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
+                              <i class="fa fa-plus"></i>
+                            </button>
+                          </div>
 
                         </div>
 

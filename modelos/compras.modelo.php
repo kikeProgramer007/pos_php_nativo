@@ -105,35 +105,68 @@ static public function mdlRegistrarCompra($tabla, $datos){
 			throw new Exception("El monto de la compra debe ser mayor a cero.");
 		}
 
-		$disponibilidad = ModeloArqueo::mdlCalcularEfectivoDisponible($idArqueo, $conexion);
-		if (!$disponibilidad["ok"]) {
-			throw new Exception($disponibilidad["mensaje"]);
+		$descontarCaja = intval($datos["descontar_caja"] ?? 0) === 1 ? 1 : 0;
+		$disponible = null;
+
+		if ($descontarCaja === 1) {
+			$disponibilidad = ModeloArqueo::mdlCalcularEfectivoDisponible($idArqueo, $conexion);
+			if (!$disponibilidad["ok"]) {
+				throw new Exception($disponibilidad["mensaje"]);
+			}
+
+			$disponible = floatval($disponibilidad["disponible"]);
+			if ($totalCompra > $disponible + 0.0001) {
+				$faltante = round($totalCompra - $disponible, 2);
+				throw new Exception(
+					"No hay suficiente efectivo disponible en caja.\n\n" .
+					"Disponible: Bs " . number_format($disponible, 2, '.', '') . "\n" .
+					"Monto de la compra: Bs " . number_format($totalCompra, 2, '.', '') . "\n" .
+					"Faltante: Bs " . number_format($faltante, 2, '.', '')
+				);
+			}
 		}
 
-		$disponible = floatval($disponibilidad["disponible"]);
-		if ($totalCompra > $disponible + 0.0001) {
-			$faltante = round($totalCompra - $disponible, 2);
-			throw new Exception(
-				"No hay suficiente efectivo disponible en caja.\n\n" .
-				"Disponible: Bs " . number_format($disponible, 2, '.', '') . "\n" .
-				"Monto de la compra: Bs " . number_format($totalCompra, 2, '.', '') . "\n" .
-				"Faltante: Bs " . number_format($faltante, 2, '.', '')
+		try {
+			$stmt = $conexion->prepare(
+				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja, descontar_caja)
+				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja, :descontar_caja)"
+			);
+		} catch (PDOException $e) {
+			$stmt = $conexion->prepare(
+				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
+				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
 			);
 		}
-
-		$stmt = $conexion->prepare(
-			"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
-			 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
-		);
 
 		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
 		$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
 		$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
 		$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
 		$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
+		if (strpos($stmt->queryString, "descontar_caja") !== false) {
+			$stmt->bindValue(":descontar_caja", $descontarCaja, PDO::PARAM_INT);
+		}
 
-		if (!$stmt->execute()) {
-			throw new Exception("Error al registrar la compra");
+		try {
+			if (!$stmt->execute()) {
+				throw new Exception("Error al registrar la compra");
+			}
+		} catch (PDOException $e) {
+			if ($descontarCaja === 1) {
+				throw new Exception("Ejecute sql/compras_descontar_caja.sql para usar la opción Descontar de caja.");
+			}
+			$stmt = $conexion->prepare(
+				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
+				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
+			);
+			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
+			$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
+			$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
+			$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
+			$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Exception("Error al registrar la compra");
+			}
 		}
 
 		$idCompra = $conexion->lastInsertId();
@@ -161,34 +194,19 @@ static public function mdlRegistrarCompra($tabla, $datos){
 			}
 		}
 
-		$comprasActualizadas = ModeloArqueo::mdlSumarComprasPorArqueo($idArqueo, $conexion);
-		$gastosActualizados = ModeloArqueo::mdlSumarGastosPorArqueo($idArqueo, $conexion);
-		$totalEgresos = $comprasActualizadas + $gastosActualizados;
-
-		$stmtArqueo = $conexion->prepare(
-			"UPDATE arqueo_caja
-			 SET monto_compras = :monto_compras,
-			     total_egresos = :total_egresos,
-			     resultado_neto = (total_ingresos - :total_egresos2)
-			 WHERE id = :id_arqueo
-			   AND estado = 'abierta'"
-		);
-		$stmtArqueo->bindValue(":monto_compras", $comprasActualizadas, PDO::PARAM_STR);
-		$stmtArqueo->bindValue(":total_egresos", $totalEgresos, PDO::PARAM_STR);
-		$stmtArqueo->bindValue(":total_egresos2", $totalEgresos, PDO::PARAM_STR);
-		$stmtArqueo->bindValue(":id_arqueo", $idArqueo, PDO::PARAM_INT);
-
-		if (!$stmtArqueo->execute() || $stmtArqueo->rowCount() === 0) {
-			throw new Exception("No se pudo actualizar el arqueo de caja. Verifique que la caja siga abierta.");
-		}
-
 		$conexion->commit();
 
-		return [
+		ModeloArqueo::mdlSincronizarMontosArqueo($idArqueo);
+
+		$respuesta = [
 			"status" => "ok",
 			"idCompra" => $idCompra,
-			"disponible_restante" => round($disponible - $totalCompra, 2)
 		];
+		if ($descontarCaja === 1 && $disponible !== null) {
+			$respuesta["disponible_restante"] = round($disponible - $totalCompra, 2);
+		}
+
+		return $respuesta;
 
 	} catch (Exception $e) {
 		if ($conexion->inTransaction()) {

@@ -41,19 +41,28 @@
                     
                     echo "<tr>
                         <td>{$etiqueta}</td>
-                        <td>
-                            <input type='number' 
-                                   class='form-control input-sm cantidad-input' 
-                                   id='cantidad_{$id}' 
-                                   name='cantidad_{$id}' 
-                                   data-valor='{$valor}'
-                                   pattern='\\d*'        
-                                   min='0'
-                                   inputmode='numeric'
-                                   step='1'>
+                        <td class=\"text-center\">
+                            <div class=\"cantidad-stepper\">
+                                <button type=\"button\" class=\"btn btn-default btn-sm btn-cantidad-ajuste btn-minus\" data-action=\"decrementar\" title=\"Disminuir\">
+                                    <i class=\"fa fa-minus\"></i>
+                                </button>
+                                <input type=\"number\"
+                                       class=\"form-control input-sm cantidad-input\"
+                                       id=\"cantidad_{$id}\"
+                                       name=\"cantidad_{$id}\"
+                                       data-valor=\"{$valor}\"
+                                       pattern=\"\\d*\"
+                                       min=\"0\"
+                                       inputmode=\"numeric\"
+                                       step=\"1\"
+                                       value=\"0\">
+                                <button type=\"button\" class=\"btn btn-success btn-sm btn-cantidad-ajuste btn-plus\" data-action=\"incrementar\" title=\"Aumentar\">
+                                    <i class=\"fa fa-plus\"></i>
+                                </button>
+                            </div>
                         </td>
-                        <td class='text-right'>
-                            <span id='Total_{$id}bs'>0.00</span>
+                        <td class=\"text-right\">
+                            <span id=\"Total_{$id}bs\">0.00</span>
                         </td>
                     </tr>";
                 }
@@ -83,4 +92,4 @@
         </table>
         <input type="hidden" id="total_efectivo_en_caja" name="total_efectivo_en_caja" value="0">
     </div>
-</div> 
+</div>

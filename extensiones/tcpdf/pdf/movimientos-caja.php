@@ -76,6 +76,7 @@ class imprimirFactura
         // Egresos se muestran como valores positivos; la resta solo aplica al saldo neto
         $gastosOperativos = abs(floatval($arqueo["gastos_operativos"] ?? 0));
         $montoCompras = abs(floatval($arqueo["monto_compras"] ?? 0));
+        $comprasInformativo = floatval($arqueo["monto_compras_informativo"] ?? ModeloArqueo::mdlSumarComprasInformativasPorArqueo($arqueo["id"]));
         $totalEgresos = abs(floatval($arqueo["total_egresos"] ?? ($gastosOperativos + $montoCompras)));
         $resultadoNeto = floatval($arqueo["resultado_neto"] ?? 0);
         $totalOtrosIngresos = floatval($arqueo["otros_ingresos"] ?? 0);
@@ -95,15 +96,22 @@ class imprimirFactura
             $ResultadoMessage = "TE SOBRA DINERO";
         }
 
+        // Altura del ticket según filas (evita corte al agregar secciones)
+        $filasFijas = 86;
+        $filasDetalleOtros = 0;
+        if (is_array($detalleOtrosIngresos) && count($detalleOtrosIngresos) > 1 && count($detalleOtrosIngresos) <= 6) {
+            $filasDetalleOtros = count($detalleOtrosIngresos);
+        }
+        $alturaPorFila = 4.2;
+        $alturaMargenExtra = 55;
+        $alturaTotal = $alturaMargenExtra + (($filasFijas + $filasDetalleOtros) * $alturaPorFila);
+        $alturaTotal = max(400, ceil($alturaTotal));
+
         // Configuración del PDF para impresora térmica
         require_once('tcpdf_include.php');
 
-        // Definir altura base (en mm) para encabezado y márgenes.
-        $alturaBase = 260;
-  
-
         // Crear el documento con la altura calculada
-        $pdf = new TCPDF('P', 'mm', array(72, $alturaBase), true, 'UTF-8', false);
+        $pdf = new TCPDF('P', 'mm', array(72, $alturaTotal), true, 'UTF-8', false);
 
         $pdf->SetMargins(1, 1, 0);
       
@@ -224,7 +232,7 @@ class imprimirFactura
 
         $html .= '
             <tr>
-                <td style="text-align:left; "> DESCUENTOS (INFO):</td>
+                <td style="text-align:left; "> DESCUENTOS (REF.):</td>
                 <td style="text-align:right; ">' . number_format(floatval($arqueo["total_descuentos_ventas"] ?? 0), 2) . '</td>
             </tr>
             <tr>
@@ -241,7 +249,7 @@ class imprimirFactura
                 <td style="text-align:right; ">' . number_format($gastosOperativos,2) . '</td>
             </tr>
               <tr>
-                <td style="text-align:left;"> COMPRAS:</td>
+                <td style="text-align:left;"> COMPRAS PAGADAS CON CAJA:</td>
                 <td style="text-align:right; ">' . number_format($montoCompras,2) . '</td>
             </tr>
             <tr>
@@ -250,10 +258,12 @@ class imprimirFactura
             </tr>
             <tr><td colspan="2"></td></tr>
             <tr>
-                <td style="text-align:left; "><strong>DINERO EN EL SISTEMA:</strong></td>
+                <td style="text-align:left; "><strong>SALDO NETO:</strong></td>
                 <td style="text-align:right; "><strong>' . number_format($resultadoNeto, 2) . '</strong></td>
             </tr>
              <tr> <td colspan="2" ></td> </tr>';
+
+        $comprasSoloInventario = max(0, round($comprasInformativo - $montoCompras, 2));
 
         if (($arqueo["estado"] ?? "") === "abierta") {
             $resumenPendientes = ControladorVentas::ctrResumenCuentasPendientes($arqueo["id"]);
@@ -268,20 +278,6 @@ class imprimirFactura
         }
 
         $html .= '
-            <tr>
-                <td colspan="2" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">CUENTAS PENDIENTES</td>
-            </tr>
-            <tr><td colspan="2"></td></tr>
-            <tr>
-                <td style="text-align:left;">CANTIDAD:</td>
-                <td style="text-align:right;">' . $cantidadPendientes . '</td>
-            </tr>
-            <tr>
-                <td style="text-align:left;">TOTAL POR COBRAR:</td>
-                <td style="text-align:right;">' . $totalPendientes . '</td>
-            </tr>
-             <tr> <td colspan="2" ></td> </tr> 
-          
                 <tr>
                 <td colspan="2" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid  #000000;  text-align:center;font-weight: bold; ">DESGLOSE DEL CIERRE DE CAJA</td>
             </tr>
@@ -382,10 +378,69 @@ class imprimirFactura
                 <td style="text-align:left;"><strong>'.$ResultadoMessage.':</strong></td>
                 <td style="border-top: 0.5px solid #000000; text-align:right;"><strong>' . number_format($arqueo["diferencia"],2) . '</strong></td>
             </tr>
+            <tr> <td colspan="2" ></td> </tr>
+            <tr>
+                <td colspan="2" style="border-top: 0.5px solid #000000; border-bottom: 0.5px solid #000000; text-align:center;font-weight: bold;">REFERENCIA</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;font-size:7px;">Solo informativo — no afecta el cuadre</td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>COMPRAS</strong></td>
+                <td style="width:28%; text-align:right;"></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Total registrado:</td>
+                <td style="text-align:right;">' . number_format($comprasInformativo, 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Pagadas con caja:</td>
+                <td style="text-align:right;">' . number_format($montoCompras, 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (ya en egresos)</td>
+                <td style="text-align:right;"></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Otro medio:</td>
+                <td style="text-align:right;">' . number_format($comprasSoloInventario, 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (bolsillo, transferencia)</td>
+                <td style="text-align:right;"></td>
+            </tr>
+            <tr><td colspan="2"></td></tr>
+            <tr>
+                <td style="width:70%; text-align:left;"><strong>CUENTAS POR COBRAR</strong></td>
+                <td style="width:28%; text-align:right;"></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; Ventas aun no cobradas</td>
+                <td style="text-align:right;"></td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Cantidad:</td>
+                <td style="text-align:right;">' . $cantidadPendientes . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Total por cobrar:</td>
+                <td style="text-align:right;"><strong>' . $totalPendientes . '</strong></td>
+            </tr>
             </tbody>
         </table>
-        <br><br>
-        <p style="text-align: center;">¡FIRMA Y SELLO!</p>
+        <table border="0" cellpadding="0" style="width:100%; font-size: 9px;">
+            <tbody>
+            <tr>
+                <td style="height:22mm;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="text-align:center;">
+                    <strong>FIRMA Y SELLO</strong>
+                </td>
+            </tr>
+            </tbody>
+        </table>
         ';
 
         $pdf->writeHTML($html, false, false, false, false, '');

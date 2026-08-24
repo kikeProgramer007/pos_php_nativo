@@ -310,24 +310,6 @@ function actualizarCantidadProducto($input) {
 	}
 }
 
-$(".formularioVenta").on("click", ".btn-cantidad-ajuste", function(){
-	var $input = $(this).siblings("input.nuevaCantidadProducto");
-	if(!$input.length){
-		return;
-	}
-
-	var cantidadActual = Number($input.val()) || 0;
-	var cantidadMinima = Number($input.attr("min")) || 1;
-	var incremento = $(this).data("action") === "incrementar" ? 1 : -1;
-	var nuevaCantidad = cantidadActual + incremento;
-
-	if(nuevaCantidad < cantidadMinima){
-		nuevaCantidad = cantidadMinima;
-	}
-
-	$input.val(nuevaCantidad).trigger("input").focus();
-});
-
 $(".formularioVenta").on("input", "input.nuevaCantidadProducto", function(){
 	actualizarCantidadProducto($(this));
 })

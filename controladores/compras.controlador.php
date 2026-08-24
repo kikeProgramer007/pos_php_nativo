@@ -101,7 +101,8 @@ class ControladorCompras{
 						   "codigo"=>$_POST["nuevaCompra"],
 						   "productos"=>$_POST["listaProductos"],
 						   "id_arqueo_caja" => $idArqueoCaja,
-						   "total"=>$_POST["totalCompra"]
+						   "total"=>$_POST["totalCompra"],
+						   "descontar_caja" => isset($_POST["descontarCaja"]) ? 1 : 0
 						);
 
 			$respuesta = ModeloCompras::mdlRegistrarCompra($tabla, $datos);

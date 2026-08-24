@@ -5,28 +5,23 @@ if (!Permisos::tiene("compras.crear")) {
   return;
 }
 
+$cajaAbierta = !empty($_SESSION["idArqueoCaja"])
+  && ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_SESSION["idArqueoCaja"]);
+
 ?>
 
 
-<div class="content-wrapper text-uppercase ">
+<div class="content-wrapper">
 
   <section class="content-header">
- 
-  <h1 style="font-weight: bold; font-family: Arial, sans-serif;">
-     REGISTRAR INGRESOS/COMPRA
-</h1>
-
-
-
-    
+    <h1>
+      Registrar ingresos / compra
+      <small>Inventario y proveedores</small>
+    </h1>
     <ol class="breadcrumb">
-      
-      <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
-      
-      <li class="active">Crear Compra</li>
-    
+      <li><a href="inicio"><i class="fa fa-dashboard"></i> Inicio</a></li>
+      <li class="active">Crear compra</li>
     </ol>
-
   </section>
 
   <section class="content">
@@ -41,7 +36,9 @@ if (!Permisos::tiene("compras.crear")) {
         
         <div class="box box-success">
           
-          <div class="box-header with-border"></div>
+          <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-shopping-basket"></i> Nueva compra</h3>
+          </div>
 
           <form role="form" method="post" class="formularioCompra">
 
@@ -66,9 +63,9 @@ if (!Permisos::tiene("compras.crear")) {
                 
                   <div class="input-group">
                     
-                    <span class="input-group-addon">USUARIO</span> 
+                    <span class="input-group-addon">Usuario</span> 
 
-                    <input type="text" class="form-control text-uppercase " id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
+                    <input type="text" class="form-control" id="nuevoVendedor" value="<?php echo $_SESSION["nombre"]; ?>" readonly>
 
                     <input type="hidden" name="idUsuario" id="idUsuario" value="<?php echo $_SESSION["id"]; ?>">
 
@@ -129,9 +126,9 @@ if (!Permisos::tiene("compras.crear")) {
                   
                   <div class="input-group">
                     
-                    <span class="input-group-addon">PROVEEDOR</span>
+                    <span class="input-group-addon">Proveedor</span>
                     
-                    <select class="form-control text-uppercase select2" id="seleccionarProveedor" name="seleccionarProveedor" required>
+                    <select class="form-control select2" id="seleccionarProveedor" name="seleccionarProveedor" required>
 
                     <option value="0" disabled>Seleccionar Proveedor</option>
 
@@ -148,7 +145,7 @@ if (!Permisos::tiene("compras.crear")) {
 
                     </select>
                     
-                    <span class="input-group-addon"><button type="button" class="btn btn-default btn-xs text-uppercase" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal">Agregar Proveedores</button></span>
+                    <span class="input-group-addon"><button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modalAgregarMesero" data-dismiss="modal"><i class="fa fa-plus"></i> Nuevo</button></span>
                   
                   </div>
                 
@@ -170,55 +167,33 @@ if (!Permisos::tiene("compras.crear")) {
                 BOTÓN PARA AGREGAR PRODUCTO
                 ======================================-->
 
-                <button type="button" class="btn btn-default hidden-lg btnAgregarProductoCompra">  Agregar producto</button>
+                <button type="button" class="btn btn-default hidden-lg btnAgregarProductoCompra"><i class="fa fa-plus"></i> Agregar producto</button>
 
                 <hr>
 
                 <div class="row">
 
-                  <!--=====================================
-                  ENTRADA IMPUESTOS Y TOTAL
-                  ======================================-->
-                  
                   <div class="col-xs-8 pull-right">
                     
                     <table class="table">
 
                       <thead>
-
                         <tr>
                           <th class="text-uppercase">Total</th>      
                         </tr>
-
                       </thead>
 
                       <tbody>
-                      
                         <tr>
-                          
-                               <input type="hidden" id="nuevoImpuestoVenta" name="nuevoImpuestoVenta" value="0">
-
-                               <!-- <input type="hidden" name="nuevoPrecioImpuesto" id="nuevoPrecioImpuesto" required> -->
-
-                               <!-- <input type="hidden" name="nuevoPrecioNeto" id="nuevoPrecioNeto" required> -->
-
-                           <td>
-                            
+                          <input type="hidden" id="nuevoImpuestoVenta" name="nuevoImpuestoVenta" value="0">
+                          <td>
                             <div class="input-group">
-                           
                               <span class="input-group-addon"><i><b>Bs</b></i></span>
-
                               <input type="text" class="form-control input-lg" id="nuevoTotalCompra" name="nuevoTotalCompra" total="" placeholder="00000" readonly required>
-
                               <input type="hidden" name="totalCompra" id="totalCompra">
-                              
-                        
                             </div>
-
                           </td>
-
                         </tr>
-
                       </tbody>
 
                     </table>
@@ -230,11 +205,33 @@ if (!Permisos::tiene("compras.crear")) {
 
               </div>
 
+                <div class="well well-sm" style="margin-top:10px;margin-bottom:0;">
+                  <div class="checkbox" style="margin-top:0;margin-bottom:0;">
+                    <label>
+                      <input type="checkbox" class="minimal-orange" name="descontarCaja" id="checkDescontarCaja" value="1" <?php echo $cajaAbierta ? "" : "disabled"; ?>>
+                      Descontar de caja
+                      <i class="fa fa-info-circle text-muted"
+                         data-toggle="tooltip"
+                         data-placement="left"
+                         data-html="true"
+                         title="<strong>Sin marcar:</strong> solo inventario. No resta de la caja.<br><br><strong>Marcado:</strong> pagó con efectivo de la caja. Valida saldo y resta del arqueo."></i>
+                    </label>
+                  </div>
+                  <p class="help-block" style="margin-top:8px;margin-bottom:0;">
+                    Sin marcar si pagó por otro medio (bolsillo, transferencia, etc.).
+                    <?php if ($cajaAbierta) { ?>
+                      <span class="text-muted"> · Caja abierta.</span>
+                    <?php } else { ?>
+                      <span class="text-muted"> · Caja cerrada.</span>
+                    <?php } ?>
+                  </p>
+                </div>
+
           </div>
 
           <div class="box-footer">
 
-            <button type="submit" class="btn btn-primary pull-right">Guardar compra</button>
+            <button type="submit" class="btn btn-success pull-right"><i class="fa fa-check"></i> Guardar compra</button>
 
           </div>
 
@@ -255,11 +252,13 @@ if (!Permisos::tiene("compras.crear")) {
       LA TABLA DE PRODUCTOS
       ======================================-->
 
-      <div class="col-lg-7 hidden-md hidden-sm hidden-xs  ">
+      <div class="col-lg-7 hidden-md hidden-sm hidden-xs">
         
         <div class="box box-warning">
 
-          <div class="box-header with-border"></div>
+          <div class="box-header with-border">
+            <h3 class="box-title"><i class="fa fa-th-large"></i> Catálogo de productos</h3>
+          </div>
 
           <div class="box-body">
             

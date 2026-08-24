@@ -76,41 +76,129 @@ $(document).on("click", ".btnRestaurarPerfil", function () {
   });
 });
 
+function setCheckState($input, checked, indeterminate) {
+  if ($.fn.iCheck && $input.data("iCheck")) {
+    if (indeterminate) {
+      $input.iCheck("indeterminate");
+    } else if (checked) {
+      $input.iCheck("check");
+    } else {
+      $input.iCheck("uncheck");
+      $input.iCheck("determinate");
+    }
+    return;
+  }
+  $input.prop("indeterminate", !!indeterminate);
+  $input.prop("checked", !!checked && !indeterminate);
+}
+
 function actualizarChecksModulo() {
+  if (window._syncPermisos) {
+    return;
+  }
+  window._syncPermisos = true;
+
   $(".check-modulo").each(function () {
     var modulo = $(this).data("modulo");
     var $items = $('.check-permiso[data-modulo="' + modulo + '"]');
     var total = $items.length;
     var marcados = $items.filter(":checked").length;
-    this.indeterminate = marcados > 0 && marcados < total;
-    this.checked = total > 0 && marcados === total;
+    var $modulo = $(this);
+    var all = total > 0 && marcados === total;
+    var none = marcados === 0;
+
+    setCheckState($modulo, all, !all && !none);
+
+    var $badge = $('.permiso-modulo-count[data-modulo="' + modulo + '"]');
+    if ($badge.length) {
+      $badge
+        .text(marcados + "/" + total)
+        .removeClass("label-default label-warning label-success")
+        .addClass(all ? "label-success" : (none ? "label-default" : "label-warning"));
+    }
+
+    var $box = $modulo.closest(".box");
+    $box.removeClass("box-success box-warning box-default");
+    $box.addClass(all ? "box-success" : (none ? "box-default" : "box-warning"));
   });
 
   var $todos = $(".check-permiso");
   var t = $todos.length;
   var m = $todos.filter(":checked").length;
-  var master = document.getElementById("seleccionarTodoPermisos");
-  if (master) {
-    master.indeterminate = m > 0 && m < t;
-    master.checked = t > 0 && m === t;
+  var $master = $("#seleccionarTodoPermisos");
+  if ($master.length) {
+    setCheckState($master, t > 0 && m === t, m > 0 && m < t);
   }
+
+  $("#permisosMarcados").text(m);
+  window._syncPermisos = false;
 }
 
-$(document).on("change", "#seleccionarTodoPermisos", function () {
-  $(".check-permiso, .check-modulo").prop("checked", this.checked).prop("indeterminate", false);
+function filtrarPermisos(termino) {
+  var q = (termino || "").toLowerCase().trim();
+  $(".permisos-modulo").each(function () {
+    var $card = $(this);
+    var modulo = ($card.data("modulo") || "").toString().toLowerCase();
+    var visibleRows = 0;
+
+    $card.find(".permiso-item").each(function () {
+      var texto = $(this).data("text") || "";
+      var match = !q || modulo.indexOf(q) !== -1 || texto.indexOf(q) !== -1;
+      $(this).toggleClass("hidden", !match);
+      if (match) visibleRows++;
+    });
+
+    var showCard = !q || modulo.indexOf(q) !== -1 || visibleRows > 0;
+    $card.toggleClass("hidden", !showCard);
+  });
+}
+
+$(document).on("input", "#buscarPermisos", function () {
+  filtrarPermisos(this.value);
 });
 
-$(document).on("change", ".check-modulo", function () {
-  var modulo = $(this).data("modulo");
-  $('.check-permiso[data-modulo="' + modulo + '"]').prop("checked", this.checked);
+$(document).on("ifChanged change", "#seleccionarTodoPermisos", function () {
+  if (window._syncPermisos) {
+    return;
+  }
+  var checked = $(this).is(":checked");
+  if ($.fn.iCheck) {
+    $(".check-permiso, .check-modulo").iCheck(checked ? "check" : "uncheck");
+  } else {
+    $(".check-permiso, .check-modulo").prop("checked", checked).prop("indeterminate", false);
+  }
   actualizarChecksModulo();
 });
 
-$(document).on("change", ".check-permiso", function () {
+$(document).on("ifChanged change", ".check-modulo", function () {
+  if (window._syncPermisos) {
+    return;
+  }
+  var modulo = $(this).data("modulo");
+  var checked = $(this).is(":checked");
+  if ($.fn.iCheck) {
+    $('.check-permiso[data-modulo="' + modulo + '"]').iCheck(checked ? "check" : "uncheck");
+  } else {
+    $('.check-permiso[data-modulo="' + modulo + '"]').prop("checked", checked);
+  }
+  actualizarChecksModulo();
+});
+
+$(document).on("ifChanged change", ".check-permiso", function () {
+  if (window._syncPermisos) {
+    return;
+  }
   actualizarChecksModulo();
 });
 
 $(document).ready(function () {
+  if ($.fn.iCheck) {
+    $("input.minimal, input.minimal-red, input.minimal-orange").iCheck({
+      checkboxClass: "icheckbox_square-orange",
+      radioClass: "iradio_square-orange",
+      increaseArea: "20%"
+    });
+  }
   if ($(".check-permiso").length) {
     actualizarChecksModulo();
   }

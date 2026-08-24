@@ -347,9 +347,36 @@ class ModeloArqueo {
     }
 
 /**
-     * Suma compras activas asociadas a un arqueo
+     * Suma compras activas que descuentan de caja (egresos / efectivo disponible)
      */
     static public function mdlSumarComprasPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        try {
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(total), 0) AS total
+                 FROM compras
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1
+                   AND descontar_caja = 1"
+            );
+        } catch (PDOException $e) {
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(total), 0) AS total
+                 FROM compras
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+        }
+        $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return floatval($row["total"] ?? 0);
+    }
+
+    /**
+     * Suma todas las compras activas del arqueo (bloque informativo, no afecta cuadre)
+     */
+    static public function mdlSumarComprasInformativasPorArqueo($idArqueo, $pdo = null) {
         $conexion = $pdo ?: Conexion::conectar();
         $stmt = $conexion->prepare(
             "SELECT COALESCE(SUM(total), 0) AS total
@@ -624,6 +651,7 @@ class ModeloArqueo {
             // Informativo comercial: no afecta ingresos/egresos de caja
             $arqueo["total_bruto_ventas"] = $ventas["total_bruto"];
             $arqueo["total_descuentos_ventas"] = $ventas["total_descuento"];
+            $arqueo["monto_compras_informativo"] = self::mdlSumarComprasInformativasPorArqueo($idArqueo, $pdo);
 
             return $arqueo;
         } catch (PDOException $e) {

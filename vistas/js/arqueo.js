@@ -63,33 +63,13 @@ class ArqueoCaja {
     }
 
     inicializarInputsCantidad() {
-        const inputs = document.querySelectorAll('.cantidad-input');
-        inputs.forEach(input => {
+        document.querySelectorAll('.cantidad-input').forEach(input => {
             input.addEventListener('input', () => {
                 this.calcularSubtotal(input);
                 this.calcularTotal();
             });
 
             input.addEventListener('keypress', this.validarSoloNumeros);
-        });
-
-        document.querySelectorAll('.btn-cantidad-ajuste[data-target]').forEach(button => {
-            button.addEventListener('click', () => {
-                const input = document.getElementById(button.dataset.target);
-                if (!input) {
-                    return;
-                }
-
-                const minimo = Number(input.min || 0);
-                const valorActual = Number(input.value) || 0;
-                const incremento = button.dataset.action === 'incrementar' ? 1 : -1;
-                const nuevoValor = Math.max(minimo, valorActual + incremento);
-
-                input.value = nuevoValor;
-                this.calcularSubtotal(input);
-                this.calcularTotal();
-                input.focus();
-            });
         });
     }
     inicializarInpuntTotalQrEnCuenta() {
@@ -294,6 +274,10 @@ class ArqueoCaja {
         if (otrosIngresosEl) {
             otrosIngresosEl.textContent = '0.00';
         }
+        const bloqueComprasInfo = document.getElementById('bloque_compras_informativo');
+        if (bloqueComprasInfo) {
+            bloqueComprasInfo.style.display = 'none';
+        }
         this.cargarCuentasPendientes();
     }
 
@@ -328,6 +312,31 @@ class ArqueoCaja {
                 }
             }
         });
+
+        const comprasInfoEl = document.getElementById('monto_compras_informativo');
+        const comprasPagadasEl = document.getElementById('monto_compras_pagadas_caja');
+        const comprasInventarioEl = document.getElementById('monto_compras_solo_inventario');
+        const totalInfo = parseFloat(datos.monto_compras_informativo ?? 0);
+        const pagadasCaja = parseFloat(datos.monto_compras ?? 0);
+        const soloInventario = Math.max(0, totalInfo - pagadasCaja);
+
+        if (comprasInfoEl) {
+            comprasInfoEl.textContent = 'Bs ' + totalInfo.toFixed(CONFIG.DECIMALES);
+        }
+        if (comprasPagadasEl) {
+            comprasPagadasEl.textContent = 'Bs ' + pagadasCaja.toFixed(CONFIG.DECIMALES);
+        }
+        if (comprasInventarioEl) {
+            comprasInventarioEl.textContent = 'Bs ' + soloInventario.toFixed(CONFIG.DECIMALES);
+        }
+        const bloqueComprasInfo = document.getElementById('bloque_compras_informativo');
+        if (bloqueComprasInfo) {
+            bloqueComprasInfo.style.display = this.estado === ESTADO.ABIERTA ? '' : 'none';
+        }
+
+        if ($.fn.tooltip) {
+            $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+        }
     }
 
     inicializarSelectorCaja() {

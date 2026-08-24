@@ -104,9 +104,13 @@ $(".tablaCompras tbody").on("click", "button.agregarProducto", function(){
 
 	          '<!-- Cantidad del producto -->'+
 
-	          '<div class="col-xs-3">'+
+	          '<div class="col-xs-3 ingresoCantidad">'+
 	            
-	             '<input type="number" class="form-control nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock="'+stock+'" nuevoStock="'+Number(stock-1)+'" required>'+
+	             '<div class="cantidad-stepper">'+
+	               '<button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad"><i class="fa fa-minus"></i></button>'+
+	               '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock="'+stock+'" nuevoStock="'+Number(stock-1)+'" required>'+
+	               '<button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad"><i class="fa fa-plus"></i></button>'+
+	             '</div>'+
 
 	          '</div>' +
 
@@ -285,7 +289,11 @@ $(".btnAgregarProductoCompra").click(function(){
 
 	          '<div class="col-xs-3 ingresoCantidad">'+
 	            
-	             '<input type="number" class="form-control nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock nuevoStock required>'+
+	             '<div class="cantidad-stepper">'+
+	               '<button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad"><i class="fa fa-minus"></i></button>'+
+	               '<input type="number" class="form-control input-sm nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock nuevoStock required>'+
+	               '<button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad"><i class="fa fa-plus"></i></button>'+
+	             '</div>'+
 
 	          '</div>' +
 
@@ -350,11 +358,11 @@ $(".formularioCompra").on("change", "select.nuevaDescripcionProducto", function(
 
 	var nombreProducto = $(this).val();
 
-	var nuevaDescripcionProducto = $(this).parent().parent().parent().children().children().children(".nuevaDescripcionProducto");
+	var nuevaDescripcionProducto = $(this).closest(".row").find(".nuevaDescripcionProducto");
 
-	var nuevoPrecioProducto = $(this).parent().parent().parent().children(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var nuevoPrecioProducto = $(this).closest(".row").find(".nuevoPrecioProducto");
 
-	var nuevaCantidadProducto = $(this).parent().parent().parent().children(".ingresoCantidad").children(".nuevaCantidadProducto");
+	var nuevaCantidadProducto = $(this).closest(".row").find(".nuevaCantidadProducto");
 
 	var datos = new FormData();
     datos.append("nombreProducto", nombreProducto);
@@ -392,7 +400,7 @@ MODIFICAR LA CANTIDAD
 
 $(".formularioCompra").on("input", "input.nuevaCantidadProducto", function(){
 
-	var precio = $(this).parent().parent().children(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var precio = $(this).closest(".row").find(".nuevoPrecioProducto");
 
 	var precioFinal = $(this).val() * precio.attr("precioReal");
 	
@@ -790,4 +798,9 @@ CAPTURAR HOY
 
 // })
 
+$(document).ready(function () {
+  if ($("#checkDescontarCaja").length && $.fn.tooltip) {
+    $('[data-toggle="tooltip"]').tooltip({ container: "body" });
+  }
+});
 
