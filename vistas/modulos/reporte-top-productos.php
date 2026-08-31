@@ -71,6 +71,18 @@ $fechaActual = date('Y-m-d');
             </select>
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+            <label class="small">Mesero</label>
+            <select class="form-control select2" id="id_mesero" name="id_mesero">
+              <option value="">Todos los meseros</option>
+              <?php
+              $meseros = ControladorMeseros::ctrMostrarMeseros(null, null, 1);
+              foreach ($meseros as $key => $value) {
+                echo '<option value="' . $value["id"] . '">' . $value["nombre"] . '</option>';
+              }
+              ?>
+            </select>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
             <label class="small">&nbsp;</label>
             <button type="button" class="btn btn-block rv-btn-orange" onclick="generatePDF()">
               <i class="fa fa-file-pdf"></i> Generar PDF
@@ -101,6 +113,7 @@ $fechaActual = date('Y-m-d');
   function generatePDF() {
     const idUsuario = document.getElementById('id_usuario').value;
     const idCategoria = document.getElementById('id_categoria').value;
+    const idMesero = document.getElementById('id_mesero').value;
 
     if (!fechaInicio || !fechaFin || !fechaInicio.value || !fechaFin.value) {
       swal({
@@ -143,7 +156,8 @@ $fechaActual = date('Y-m-d');
       "extensiones/tcpdf/pdf/top-productos-mas-vendidos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
       "&fechaFin=" + encodeURIComponent(fechaFin.value) +
       "&idUsuario=" + encodeURIComponent(idUsuario) +
-      "&idCategoria=" + encodeURIComponent(idCategoria),
+      "&idCategoria=" + encodeURIComponent(idCategoria) +
+      "&idMesero=" + encodeURIComponent(idMesero),
       "_blank",
       windowFeatures
     );

@@ -7,6 +7,9 @@ require_once "../../../modelos/ventas.modelo.php";
 require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 
+require_once "../../../controladores/meseros.controlador.php";
+require_once "../../../modelos/meseros.modelo.php";
+
 require_once "../../../controladores/categorias.controlador.php";
 require_once "../../../modelos/categorias.modelo.php";
 
@@ -17,6 +20,7 @@ class reporteTopProductosMasVendidos
     public $fechaFin;
     public $idUsuario;
     public $idCategoria;
+    public $idMesero;
     private $nombreTienda = "Pollos Rosy";
     private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
 
@@ -28,8 +32,9 @@ class reporteTopProductosMasVendidos
         $fechaFin = $this->fechaFin;
         $idUsuario = $this->idUsuario;
         $idCategoria = $this->idCategoria;
+        $idMesero = isset($this->idMesero) ? $this->idMesero : null;
 
-        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria);
+        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria, $idMesero);
         $itemUsuario = "id";
         $respuestaUsuario = ControladorUsuarios::ctrMostrarUsuarios($itemUsuario, $idUsuario);
 
@@ -38,6 +43,13 @@ class reporteTopProductosMasVendidos
             $categoriaTexto = $respuestaCategoria["categoria"];
         } else {
             $categoriaTexto = "Todas las categorías";
+        }
+
+        if (!empty($idMesero) && $idMesero !== "0") {
+            $respuestaMesero = ControladorMeseros::ctrMostrarMeseros("id", $idMesero, 1);
+            $meseroTexto = is_array($respuestaMesero) && isset($respuestaMesero["nombre"]) ? $respuestaMesero["nombre"] : ($respuestaMesero ? $respuestaMesero[0]["nombre"] : "Todos los meseros");
+        } else {
+            $meseroTexto = "Todos los meseros";
         }
 
         require_once('tcpdf_include.php');
@@ -88,6 +100,11 @@ class reporteTopProductosMasVendidos
         $pdf->Cell(50, 5, $categoriaTexto, 0, 1, 'L');
         $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
         $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->Cell(50, 5, $meseroTexto, 0, 1, 'L');
+        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
+        $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 9);
         $pdf->Cell(100, 5, date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 1, 'L');
@@ -105,11 +122,10 @@ class reporteTopProductosMasVendidos
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 5, 'Detalle de Top', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(18, 5, '#', 1, 0, 'L');
-        
-        $pdf->Cell(140, 5, 'Producto', 1, 0, 'L');
-        $pdf->Cell(38, 5, 'Cantidad Vendida', 1, 1, 'C');
-        // $pdf->Cell(60, 5, 'Monto Ventas', 1, 1, 'L');
+        $pdf->Cell(12, 5, '#', 1, 0, 'L');
+        $pdf->Cell(58, 5, 'Mesero', 1, 0, 'L');
+        $pdf->Cell(98, 5, 'Producto', 1, 0, 'L');
+        $pdf->Cell(28, 5, 'Cantidad', 1, 1, 'C');
         $pdf->SetFont('helvetica', '', 8);
 
         //Imprimir los detalles de los productos
@@ -118,9 +134,10 @@ class reporteTopProductosMasVendidos
 
         foreach ($respuestaDatos as $item) {
             $total =  $item['cantidad'];
-            $pdf->Cell(18, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(140, 5,  $item['descripcion'], 1, 0, 'L');
-            $pdf->Cell(38, 5, $total, 1, 1, 'C');
+            $pdf->Cell(12, 5,  $contador, 1, 0, 'L');
+            $pdf->Cell(58, 5,  isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
+            $pdf->Cell(98, 5,  $item['descripcion'], 1, 0, 'L');
+            $pdf->Cell(28, 5, $total, 1, 1, 'C');
     
             $contador++;
             $sumTotal += $total;
@@ -128,8 +145,8 @@ class reporteTopProductosMasVendidos
 
         // Total de la compra
         $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(158, 5, 'Total ', 0, 0, 'R');
-        $pdf->Cell(38, 5, $sumTotal, 1, 1, 'R');
+        $pdf->Cell(168, 5, 'Total ', 0, 0, 'R');
+        $pdf->Cell(28, 5, $sumTotal, 1, 1, 'R');
 
 
 
@@ -144,4 +161,5 @@ $factura->fechaInicio = $_GET["fechaInicio"];
 $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
 $factura->idCategoria = isset($_GET["idCategoria"]) ? intval($_GET["idCategoria"]) : 0;
+$factura->idMesero = isset($_GET["idMesero"]) && $_GET["idMesero"] !== "" ? intval($_GET["idMesero"]) : null;
 $factura->generarPdfVentasTopProducto();

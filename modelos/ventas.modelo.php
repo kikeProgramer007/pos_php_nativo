@@ -467,9 +467,14 @@ class ModeloVentas
 				return intval($id) !== 0;
 			});
 
-			$query = "SELECT meseros.nombre as mesero, COUNT(ventas.id) as cantidad, SUM(ventas.total) as total
+			$query = "SELECT meseros.nombre as mesero,
+					COUNT(ventas.id) as cantidad,
+					SUM(ventas.total) as total,
+					GROUP_CONCAT(DISTINCT productos.descripcion ORDER BY productos.descripcion SEPARATOR ', ') as productos
 					FROM $tabla 
 					JOIN meseros ON ventas.id_mesero = meseros.id
+					LEFT JOIN detalle_venta ON detalle_venta.id_venta = ventas.id
+					LEFT JOIN productos ON productos.id = detalle_venta.id_producto
 					WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 					AND ventas.estado=1
 					AND ventas.estado_pago = 'PAGADA'";
@@ -483,12 +488,7 @@ class ModeloVentas
 				foreach ($idCategoria as $index => $categoriaId) {
 					$placeholders[] = ":idCategoria{$index}";
 				}
-				$query .= " AND EXISTS (
-						SELECT 1 FROM detalle_venta dv
-						JOIN productos p ON dv.id_producto = p.id
-						WHERE dv.id_venta = ventas.id
-						AND p.id_categoria IN (" . implode(', ', $placeholders) . ")
-					)";
+				$query .= " AND productos.id_categoria IN (" . implode(', ', $placeholders) . ")";
 			}
 
 			$query .= " GROUP BY meseros.nombre ORDER BY SUM(ventas.total) DESC;";
@@ -516,7 +516,7 @@ class ModeloVentas
 	/*=============================================
 	TOP PRODUCTO MAS VENDIDOS SEGUNN RANGO FECHAS
 	=============================================*/
-	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0)
+	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null)
 	{
 		if ($fechaInicial <= $fechaFinal) {
 
@@ -525,10 +525,12 @@ class ModeloVentas
 							COUNT(dv.id_producto) AS cant_ventas, 
 							dv.id_producto, 
 							SUM(dv.cantidad) AS cantidad, 
-							p.descripcion
+							p.descripcion,
+							m.nombre AS mesero
 						FROM $tabla
 						JOIN detalle_venta AS dv ON ventas.id = dv.id_venta
 						JOIN productos AS p ON p.id = dv.id_producto
+						JOIN meseros AS m ON m.id = ventas.id_mesero
 						WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 						AND ventas.estado=1
 						AND ventas.estado_pago = 'PAGADA'";
@@ -537,8 +539,12 @@ class ModeloVentas
 				$query .= " AND p.id_categoria = :idCategoria";
 			}
 
-			$query .= " GROUP BY dv.id_producto, p.descripcion
-						ORDER BY SUM(dv.cantidad) DESC;";
+			if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0" && $idMesero != 0) {
+				$query .= " AND ventas.id_mesero = :idMesero";
+			}
+
+			$query .= " GROUP BY dv.id_producto, p.descripcion, m.nombre
+						ORDER BY m.nombre ASC, SUM(dv.cantidad) DESC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
 			// Vincular los parámetros de las fechas
@@ -547,6 +553,10 @@ class ModeloVentas
 
 			if ($idCategoria != 0) {
 				$stmt->bindParam(':idCategoria', $idCategoria, PDO::PARAM_INT);
+			}
+
+			if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0" && $idMesero != 0) {
+				$stmt->bindParam(':idMesero', $idMesero, PDO::PARAM_INT);
 			}
 
 			$stmt->execute();
