@@ -1040,9 +1040,9 @@ function construirUrlImpresion(baseUrl, codigoVenta, idsDetalle = null) {
 }
 
 async function imprimirSoloCaja(codigoVenta, idsDetalle = null, imprimir = true) {
-    // 1 Pedir los PDFs al servidor PHP
+    // 1 Pedir solo el PDF del ticket/factura de caja
     const response = await fetch(
-        construirUrlImpresion('extensiones/tcpdf/pdf/facturaComanda.php', codigoVenta, idsDetalle),{
+        construirUrlImpresion('extensiones/tcpdf/pdf/factura.php', codigoVenta, idsDetalle),{
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
         }
@@ -1053,22 +1053,21 @@ async function imprimirSoloCaja(codigoVenta, idsDetalle = null, imprimir = true)
     const data = await response.json();
     console.log('📋 Respuesta del servidor:', data);
     if (!data.success) {
-        alert('Error al generar los PDFs');
+        alert('Error al generar el PDF de caja');
         return;
     }
-    await mostrarVenta(data.facturaComandaBase64);
-
+    await mostrarVenta(data.facturaBase64);
 
     if (!imprimir) {
         return;
     }
     try {
-        // Imprimir FACTURA (CAJA)
+        // Imprimir SOLO FACTURA (CAJA)
         const printResponse = await fetch('http://localhost:3000/print-pdf', {
              method: 'POST',    
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    pdfBase64: data.facturaComandaBase64,
+                    pdfBase64: data.facturaBase64,
                     printerName: 'IMPRESORA-CAJA'
                 })
          });
