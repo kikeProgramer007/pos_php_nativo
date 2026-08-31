@@ -140,11 +140,6 @@ class imprimirFactura
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . (($tipoPago !== '' && $tipoPago !== null) ? $tipoPago : 'Pendiente') . '</td>
             </tr>
-            <tr>
-                <td width="25%"><strong>ESTADO</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . ((strtoupper(trim((string)($respuestaVenta["estado_pago"] ?? ''))) === "PENDIENTE") ? "Cuenta pendiente" : "Cuenta pagada") . '</td>
-            </tr>
             <tr><td colspan="2"></td></tr>
           </tbody>
         </table>';
