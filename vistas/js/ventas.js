@@ -264,7 +264,8 @@ $(".formularioVenta").on("change", "select.nuevaDescripcionProducto", function()
 MODIFICAR LA CANTIDAD
 =============================================*/
 
-function actualizarCantidadProducto($input) {
+function actualizarCantidadProducto($input, opciones) {
+	opciones = opciones || {};
 	var row = $input.closest(".linea-venta");
 	if (!row.length) row = $input.closest(".row");
 	var idProducto = row.find(".nuevaDescripcionProducto").attr("idProducto");
@@ -283,19 +284,31 @@ function actualizarCantidadProducto($input) {
 		$input.val(qtyPresentaciones);
 	}
 
-	var unidadesLinea = qtyPresentaciones * factor;
-	var precioOriginal = Number(precio.attr("precioOriginal") || precio.attr("precioReal") || 0);
-	precio.attr("precioOriginal", precioOriginal);
-	precio.attr("precioReal", precioOriginal);
-	var subtotalOriginal = unidadesLinea * precioOriginal;
-	precio.val(parseFloat(subtotalOriginal).toFixed(2));
-	row.find(".lv-precio-unit").text("Bs " + precioOriginal.toFixed(2));
-	row.find(".lv-desc").addClass("es-vacio").text("—");
-	row.find(".lv-total-linea").text("Bs " + subtotalOriginal.toFixed(2));
+	var refrescarLineaSinPromo = function() {
+		factor = window.PresentacionesVenta
+			? PresentacionesVenta.factorDeFila(row)
+			: (parseInt($input.attr("data-factor"), 10) || 1);
+		qtyPresentaciones = Number($input.val()) || cantidadMinima;
+		if (qtyPresentaciones < cantidadMinima) {
+			qtyPresentaciones = cantidadMinima;
+			$input.val(qtyPresentaciones);
+		}
+		var und = qtyPresentaciones * factor;
+		var precioOriginalLocal = Number(precio.attr("precioOriginal") || precio.attr("precioReal") || 0);
+		precio.attr("precioOriginal", precioOriginalLocal);
+		precio.attr("precioReal", precioOriginalLocal);
+		var sub = und * precioOriginalLocal;
+		precio.val(parseFloat(sub).toFixed(2));
+		row.find(".lv-precio-unit").text("Bs " + precioOriginalLocal.toFixed(2));
+		row.find(".lv-desc").addClass("es-vacio").text("—");
+		row.find(".lv-total-linea").text("Bs " + sub.toFixed(2));
+		if (window.PresentacionesVenta) {
+			PresentacionesVenta.actualizarEtiqueta(row);
+		}
+		return und;
+	};
 
-	if (window.PresentacionesVenta) {
-		PresentacionesVenta.actualizarEtiqueta(row);
-	}
+	var unidadesLinea = refrescarLineaSinPromo();
 
     var unidadesTotalesProducto = unidadesLinea;
     var apariciones = contarProductoEnVenta(idProducto);
@@ -307,25 +320,42 @@ function actualizarCantidadProducto($input) {
 	var esInventariable = Number($input.attr("data-inventariable"));
 	if(esInventariable !== 0 && Number(unidadesTotalesProducto) > Number($input.attr("stock"))){
 
-		$input.val(cantidadMinima);
-		unidadesLinea = cantidadMinima * factor;
-		subtotalOriginal = unidadesLinea * precioOriginal;
-		precio.val(parseFloat(subtotalOriginal).toFixed(2));
-		row.find(".lv-precio-unit").text("Bs " + precioOriginal.toFixed(2));
-		row.find(".lv-desc").addClass("es-vacio").text("—");
-		row.find(".lv-total-linea").text("Bs " + subtotalOriginal.toFixed(2));
-		if (window.PresentacionesVenta) {
-			PresentacionesVenta.actualizarEtiqueta(row);
+		// Cambio de presentación: volver al selector anterior (ej. Unidad)
+		if (typeof opciones.revertirPresentacion === "function") {
+			opciones.revertirPresentacion();
+			refrescarLineaSinPromo();
+		} else {
+			$input.val(cantidadMinima);
+			refrescarLineaSinPromo();
+			// Si con qty mínima y la presentación actual aún supera stock → forzar Unidad
+			if (window.PresentacionesVenta && sumarCantidadProductos(idProducto) > Number($input.attr("stock"))) {
+				PresentacionesVenta.forzarUnidadEnFila(row);
+				$input.val(cantidadMinima);
+				refrescarLineaSinPromo();
+			}
 		}
-		sumarTotalPrecios();
-		calcularPago();
-		swal({
-	      title: "La cantidad supera el Stock",
-	      text: "¡Sólo hay "+$input.attr("stock")+" unidades!",
-	      type: "error",
-	      confirmButtonText: "¡Cerrar!"
-	    });
-	    return;
+
+		listarProductos();
+		var avisarStock = function() {
+			swal({
+				title: "La cantidad supera el Stock",
+				text: "¡Sólo hay "+$input.attr("stock")+" unidades!",
+				type: "error",
+				confirmButtonText: "¡Cerrar!"
+			});
+		};
+		if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
+			PromocionesVenta.recalcular(function() {
+				listarProductos();
+				calcularPago();
+				avisarStock();
+			});
+		} else {
+			sumarTotalPrecios();
+			calcularPago();
+			avisarStock();
+		}
+		return;
 	}
 
 	sumarTotalPrecios();

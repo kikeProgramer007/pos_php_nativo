@@ -1295,20 +1295,26 @@ class ControladorVentas{
 				"subtotal_final" => $subtotalOriginal
 			);
 
-			if ($info && !empty($info["id_promocion"]) && floatval($info["descuento_unitario"]) > 0) {
+			if ($info && !empty($info["id_promocion"]) && (floatval($info["descuento_total"]) > 0 || floatval($info["descuento_unitario"]) > 0)) {
+				$descTotal = isset($info["descuento_total"])
+					? round(floatval($info["descuento_total"]), 2)
+					: 0;
 				$descUnit = round(floatval($info["descuento_unitario"]), 2);
-				if ($descUnit > $precioOriginal) {
-					$descUnit = $precioOriginal;
+				if ($descTotal <= 0 && $descUnit > 0) {
+					$descTotal = round($descUnit * $cant, 2);
+				}
+				if ($descTotal > $subtotalOriginal) {
+					$descTotal = $subtotalOriginal;
+				}
+				// Unitario efectivo = promedio sobre toda la línea (modo múltiplo deja sobrantes sin desc.)
+				if ($cant > 0) {
+					$descUnit = round($descTotal / $cant, 2);
 				}
 				$precioFinal = round($precioOriginal - $descUnit, 2);
 				if ($precioFinal < 0) {
 					$precioFinal = 0;
 					$descUnit = $precioOriginal;
-				}
-				$descTotal = round($descUnit * $cant, 2);
-				if ($descTotal > $subtotalOriginal) {
 					$descTotal = $subtotalOriginal;
-					$precioFinal = 0;
 				}
 				$promo = array(
 					"id_promocion" => $info["id_promocion"],
@@ -1321,7 +1327,9 @@ class ControladorVentas{
 					"precio_original" => $precioOriginal,
 					"precio_unitario_final" => $precioFinal,
 					"subtotal_original" => $subtotalOriginal,
-					"subtotal_final" => round($subtotalOriginal - $descTotal, 2)
+					"subtotal_final" => round($subtotalOriginal - $descTotal, 2),
+					"modo_cantidad" => $info["modo_cantidad"] ?? "individual",
+					"unidades_con_descuento" => $info["unidades_con_descuento"] ?? $cant
 				);
 			}
 

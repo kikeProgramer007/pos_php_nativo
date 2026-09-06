@@ -58,6 +58,41 @@ window.PresentacionesVenta = {
     this.actualizarEtiqueta($fila);
   },
 
+  /** Aplica la opción actualmente seleccionada del <select> a la fila. */
+  sincronizarSelectConFila: function ($sel) {
+    var $fila = this.filaDe($sel);
+    var $opt = $sel.find("option:selected");
+    this.aplicarPresentacionEnFila(
+      $fila,
+      $sel.val(),
+      $opt.data("nombre") || $opt.attr("data-nombre"),
+      $opt.data("factor") || $opt.attr("data-factor")
+    );
+  },
+
+  /** Restaura el select a un valor previo (o Unidad) y sincroniza data-factor. */
+  restaurarSelectPresentacion: function ($sel, valorAnterior) {
+    var destino = valorAnterior != null && valorAnterior !== "" ? String(valorAnterior) : "0";
+    var existe = $sel.find("option").filter(function () {
+      return String($(this).val()) === destino;
+    }).length > 0;
+    if (!existe) {
+      destino = "0";
+    }
+    $sel.val(destino);
+    this.sincronizarSelectConFila($sel);
+    $sel.data("valorAnterior", $sel.val());
+  },
+
+  forzarUnidadEnFila: function ($fila) {
+    var $sel = $fila.find(".select-presentacion-venta");
+    if ($sel.length) {
+      this.restaurarSelectPresentacion($sel, "0");
+    } else {
+      this.aplicarPresentacionEnFila($fila, 0, "Unidad", 1);
+    }
+  },
+
   opcionesHtml: function (presentaciones, selectedId) {
     var html = '<option value="0" data-factor="1" data-nombre="Unidad">Unidad (1 und.)</option>';
     (presentaciones || []).forEach(function (p) {
@@ -90,20 +125,26 @@ window.PresentacionesVenta = {
   }
 };
 
+$(document).on("focus", ".select-presentacion-venta", function () {
+  $(this).data("valorAnterior", $(this).val());
+});
+
 $(document).on("change", ".select-presentacion-venta", function () {
   var $sel = $(this);
-  var $opt = $sel.find("option:selected");
-  var $fila = PresentacionesVenta.filaDe($sel);
-  PresentacionesVenta.aplicarPresentacionEnFila(
-    $fila,
-    $sel.val(),
-    $opt.data("nombre") || $opt.attr("data-nombre"),
-    $opt.data("factor") || $opt.attr("data-factor")
-  );
-  var $input = $fila.find(".nuevaCantidadProducto");
+  var valorAnterior = $sel.data("valorAnterior");
+  if (valorAnterior === undefined || valorAnterior === null) {
+    valorAnterior = "0";
+  }
+  PresentacionesVenta.sincronizarSelectConFila($sel);
+  var $input = PresentacionesVenta.filaDe($sel).find(".nuevaCantidadProducto");
   if (typeof actualizarCantidadProducto === "function") {
-    actualizarCantidadProducto($input);
+    actualizarCantidadProducto($input, {
+      revertirPresentacion: function () {
+        PresentacionesVenta.restaurarSelectPresentacion($sel, valorAnterior);
+      }
+    });
   } else {
     $input.trigger("input");
   }
+  $sel.data("valorAnterior", $sel.val());
 });

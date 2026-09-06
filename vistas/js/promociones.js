@@ -56,8 +56,14 @@ $(document).ready(function() {
   });
 
   if ($("#idPromocionActual").length) {
+    actualizarUiModoCantidad();
     cargarIntervalosPromo();
     cargarProductosPromo();
+  }
+  if ($("#modoCantidadPromocionAlta").length) {
+    var multiploAlta = $("#modoCantidadPromocionAlta").val() === "multiplo";
+    $("#ayudaModoRangoAlta").toggle(!multiploAlta);
+    $("#ayudaModoMultiploAlta").toggle(multiploAlta);
   }
 });
 
@@ -110,19 +116,69 @@ function idPromocionActual() {
   return $("#idPromocionActual").val();
 }
 
+function esModoMultiplo() {
+  return $("#editarModoCantidadPromocion").val() === "multiplo";
+}
+
+/** Ajusta textos, columnas y modal según Por rango / Por múltiplo (sin tocar BD). */
+function actualizarUiModoCantidad() {
+  if (!$("#editarModoCantidadPromocion").length) return;
+
+  var multiplo = esModoMultiplo();
+
+  $("#ayudaModoRango").toggle(!multiplo);
+  $("#ayudaModoMultiplo").toggle(multiplo);
+  $("#ayudaIntervalosRango").toggle(!multiplo);
+  $("#ayudaIntervalosMultiplo").toggle(multiplo);
+
+  $("#tituloSeccionCantidad").text(
+    multiplo ? "2. Múltiplo y descuento" : "2. Intervalos de cantidad"
+  );
+  $("#textoBtnIntervalo").text(multiplo ? "Configurar múltiplo" : "Agregar intervalo");
+
+  $("#thCantMin").text(multiplo ? "Múltiplo (cada N und.)" : "Cantidad mínima");
+  $("#thCantMax").text(multiplo ? "Máximo (no aplica)" : "Cantidad máxima");
+  if (multiplo) {
+    $("#thCantMax").addClass("text-muted");
+  } else {
+    $("#thCantMax").removeClass("text-muted");
+  }
+
+  $("#tituloModalIntervalo").text(multiplo ? "Configurar múltiplo" : "Intervalo de cantidad");
+  $("#avisoModalMultiplo").toggle(multiplo);
+  $("#labelIntCantMin").text(multiplo ? "Múltiplo (cada N unidades) *" : "Cantidad mínima *");
+  $("#ayudaIntCantMin").text(
+    multiplo
+      ? "Ejemplos: 5 = de 5 en 5; 10 = de 10 en 10; 50 = de 50 en 50."
+      : "Cantidad desde la cual aplica este descuento."
+  );
+  $("#intCantMin").attr("placeholder", multiplo ? "Ej: 5, 10 o 50" : "");
+  $("#grupoIntCantMax").toggle(!multiplo);
+  $("#btnGuardarIntervalo").text(multiplo ? "Guardar múltiplo" : "Guardar intervalo");
+}
+
 function cargarIntervalosPromo() {
   $.getJSON("ajax/promociones.ajax.php", {
     accion: "listarIntervalos",
     idPromocion: idPromocionActual()
   }, function(resp) {
     var tbody = $("#tablaIntervalosPromo tbody");
+    var multiplo = esModoMultiplo();
     tbody.empty();
     (resp.data || []).forEach(function(it) {
-      var maxTxt = it.cantidad_maxima === null || it.cantidad_maxima === "" ? "Sin límite" : it.cantidad_maxima;
+      var maxTxt;
+      if (multiplo) {
+        maxTxt = "<span class='text-muted'>—</span>";
+      } else {
+        maxTxt = it.cantidad_maxima === null || it.cantidad_maxima === "" ? "Sin límite" : it.cantidad_maxima;
+      }
+      var minTxt = multiplo
+        ? ("Cada <strong>" + it.cantidad_minima + "</strong> und.")
+        : it.cantidad_minima;
       var tipoTxt = it.tipo_descuento === "porcentaje" ? it.valor_descuento + " %" : "Bs " + parseFloat(it.valor_descuento).toFixed(2);
       tbody.append(
         "<tr>" +
-        "<td>" + it.cantidad_minima + "</td>" +
+        "<td>" + minTxt + "</td>" +
         "<td>" + maxTxt + "</td>" +
         "<td>" + (it.tipo_descuento === "porcentaje" ? "Porcentaje" : "Monto fijo") + "</td>" +
         "<td>" + tipoTxt + "</td>" +
@@ -139,6 +195,7 @@ function cargarIntervalosPromo() {
 }
 
 $("#btnNuevoIntervalo").on("click", function() {
+  actualizarUiModoCantidad();
   $("#idIntervaloEdit").val("");
   $("#intCantMin").val("");
   $("#intCantMax").val("");
@@ -150,6 +207,7 @@ $("#btnNuevoIntervalo").on("click", function() {
 });
 
 $(document).on("click", ".btnEditarIntervalo", function() {
+  actualizarUiModoCantidad();
   var it = $(this).data("item");
   if (typeof it === "string") it = JSON.parse(it);
   $("#idIntervaloEdit").val(it.id);
@@ -184,15 +242,16 @@ $(document).on("click", ".btnEliminarIntervalo", function() {
 });
 
 $("#btnGuardarIntervalo").on("click", function() {
-  $.post("ajax/promociones.ajax.php", {
+  var payload = {
     accion: "guardarIntervalo",
     id: $("#idIntervaloEdit").val(),
     id_promocion: idPromocionActual(),
     cantidad_minima: $("#intCantMin").val(),
-    cantidad_maxima: $("#intCantMax").val(),
+    cantidad_maxima: esModoMultiplo() ? "" : $("#intCantMax").val(),
     tipo_descuento: $("#intTipoDescuento").val(),
     valor_descuento: $("#intValorDescuento").val()
-  }, function(resp) {
+  };
+  $.post("ajax/promociones.ajax.php", payload, function(resp) {
     var data = typeof resp === "string" ? JSON.parse(resp) : resp;
     if (data.status === "ok") {
       $("#modalIntervaloPromo").modal("hide");
@@ -204,6 +263,20 @@ $("#btnGuardarIntervalo").on("click", function() {
 });
 
 $("#intCantMin, #intCantMax, #intTipoDescuento, #intValorDescuento, #intProductoPreview").on("input change", calcularPreviewIntervalo);
+
+$("#editarModoCantidadPromocion").on("change", function() {
+  actualizarUiModoCantidad();
+  cargarIntervalosPromo();
+  if ($("#modalIntervaloPromo").is(":visible")) {
+    calcularPreviewIntervalo();
+  }
+});
+
+$("#modoCantidadPromocionAlta").on("change", function() {
+  var multiplo = $(this).val() === "multiplo";
+  $("#ayudaModoRangoAlta").toggle(!multiplo);
+  $("#ayudaModoMultiploAlta").toggle(multiplo);
+});
 
 function llenarSelectPreviewProductos() {
   var sel = $("#intProductoPreview");
@@ -238,15 +311,35 @@ function calcularPreviewIntervalo() {
   if (desc > precio) desc = precio;
   var final = round2(precio - desc);
   if (final < 0) final = 0;
-  var totalMin = round2(final * min);
+  var modoMultiplo = esModoMultiplo();
+  var html = "";
 
-  $("#previewIntervaloTexto").html(
-    "<div>Precio original: <strong>Bs " + precio.toFixed(2) + "</strong></div>" +
-    "<div>Descuento por unidad: <strong>Bs " + desc.toFixed(2) + "</strong></div>" +
-    "<div>Precio promocional: <strong>Bs " + final.toFixed(2) + "</strong></div>" +
-    "<div>Total por " + min + " unidades: <strong>Bs " + totalMin.toFixed(2) + "</strong></div>" +
-    (max ? "<div>Hasta " + max + " unidades</div>" : "<div>Desde " + min + " unidades en adelante</div>")
-  );
+  if (modoMultiplo) {
+    var ejemploSobra = min + 2;
+    var descBloque = round2(desc * min);
+    var descDoble = round2(desc * min * 2);
+    html =
+      "<div>Precio unitario: <strong>Bs " + precio.toFixed(2) + "</strong> → con desc. <strong>Bs " + final.toFixed(2) + "</strong></div>" +
+      "<div>Descuento por unidad del bloque: <strong>Bs " + desc.toFixed(2) + "</strong></div>" +
+      "<div><strong>Ejemplos con múltiplo " + min + ":</strong></div>" +
+      "<ul style='margin:6px 0 0 18px; padding:0;'>" +
+      "<li>" + min + " und. → descuento Bs " + descBloque.toFixed(2) + "</li>" +
+      "<li>" + ejemploSobra + " und. → descuento Bs " + descBloque.toFixed(2) + " (solo " + min + "; sobran 2 sin desc.)</li>" +
+      "<li>" + (min * 2) + " und. → descuento Bs " + descDoble.toFixed(2) + "</li>" +
+      "</ul>";
+  } else {
+    var totalMin = round2(final * min);
+    html =
+      "<div>Precio original: <strong>Bs " + precio.toFixed(2) + "</strong></div>" +
+      "<div>Descuento por unidad: <strong>Bs " + desc.toFixed(2) + "</strong></div>" +
+      "<div>Precio promocional: <strong>Bs " + final.toFixed(2) + "</strong></div>" +
+      "<div>Total por " + min + " unidades: <strong>Bs " + totalMin.toFixed(2) + "</strong></div>" +
+      (max
+        ? "<div>Hasta " + max + " unidades</div>"
+        : "<div>Desde " + min + " unidades en adelante</div>");
+  }
+
+  $("#previewIntervaloTexto").html(html);
 }
 
 function round2(n) {
@@ -365,10 +458,16 @@ $("#btnConfirmarProductosPromo").on("click", function() {
 });
 
 function actualizarVistaPreviaGeneral() {
+  var multiplo = esModoMultiplo();
   var tip = $("#tablaProductosPromo tbody tr").length
-    ? "La promoción tiene productos vinculados. Al crear/editar un intervalo puede ver el precio estimado por producto."
+    ? (multiplo
+      ? "Al editar el múltiplo puede ver ejemplos de descuento según la cantidad (5, 7, 10…)."
+      : "La promoción tiene productos vinculados. Al crear/editar un intervalo puede ver el precio estimado por producto.")
     : "Vincule productos para estimar precios finales.";
-  $("#vistaPreviaPromo").html("<p>" + tip + "</p><p class='text-muted'>Cada línea del ticket evalúa su cantidad de forma independiente (útil al duplicar productos).</p>");
+  var extra = multiplo
+    ? "En modo múltiplo el descuento se aplica por bloques completos; el sobrante queda a precio normal."
+    : "Cada línea del ticket evalúa su cantidad de forma independiente (útil al duplicar productos).";
+  $("#vistaPreviaPromo").html("<p>" + tip + "</p><p class='text-muted'>" + extra + "</p>");
 }
 
 /*=============================================
@@ -457,20 +556,23 @@ window.PromocionesVenta = {
         subtotal_final: subtotalOriginal
       };
 
-      if (info && info.id_promocion && parseFloat(info.descuento_unitario) > 0) {
-        descUnit = round2(parseFloat(info.descuento_unitario));
-        if (descUnit > precioBase) {
-          descUnit = precioBase;
+      if (info && info.id_promocion && (parseFloat(info.descuento_total) > 0 || parseFloat(info.descuento_unitario) > 0)) {
+        descTotal = round2(parseFloat(info.descuento_total || 0));
+        descUnit = round2(parseFloat(info.descuento_unitario || 0));
+        if (descTotal <= 0 && descUnit > 0) {
+          descTotal = round2(descUnit * cantLinea);
+        }
+        if (descTotal > subtotalOriginal) {
+          descTotal = subtotalOriginal;
+        }
+        if (cantLinea > 0) {
+          descUnit = round2(descTotal / cantLinea);
         }
         precioUnitFinal = round2(precioBase - descUnit);
         if (precioUnitFinal < 0) {
           precioUnitFinal = 0;
           descUnit = precioBase;
-        }
-        descTotal = round2(descUnit * cantLinea);
-        if (descTotal > subtotalOriginal) {
           descTotal = subtotalOriginal;
-          precioUnitFinal = 0;
         }
         subtotalFinal = round2(subtotalOriginal - descTotal);
         if (subtotalFinal < 0) subtotalFinal = 0;
@@ -486,7 +588,9 @@ window.PromocionesVenta = {
           precio_original: precioBase,
           precio_unitario_final: precioUnitFinal,
           subtotal_original: subtotalOriginal,
-          subtotal_final: subtotalFinal
+          subtotal_final: subtotalFinal,
+          modo_cantidad: info.modo_cantidad || "individual",
+          unidades_con_descuento: info.unidades_con_descuento || cantLinea
         };
       }
 

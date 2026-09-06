@@ -206,7 +206,7 @@ class ControladorPromociones
 		$idIntervalo = !empty($datos["id"]) ? intval($datos["id"]) : null;
 
 		if ($min <= 0) {
-			return ["status" => "error", "mensaje" => "La cantidad mínima debe ser mayor que cero"];
+			return ["status" => "error", "mensaje" => "La cantidad mínima / múltiplo debe ser mayor que cero"];
 		}
 		if ($max !== null && $max < $min) {
 			return ["status" => "error", "mensaje" => "La cantidad máxima no puede ser menor que la mínima"];
@@ -284,6 +284,7 @@ class ControladorPromociones
 					"nombre_promocion" => $fila["nombre_promocion"],
 					"prioridad" => intval($fila["prioridad"]),
 					"fecha_creacion" => $fila["fecha_creacion"],
+					"modo_cantidad" => ($fila["modo_cantidad"] ?? "individual") === "multiplo" ? "multiplo" : "individual",
 					"intervalos" => []
 				];
 			}
@@ -336,7 +337,8 @@ class ControladorPromociones
 
 		$candidatos = [];
 		foreach ($porProducto[$idProducto] as $promo) {
-			$intervalo = self::seleccionarIntervalo($promo["intervalos"], $cantidad);
+			$modo = ($promo["modo_cantidad"] ?? "individual") === "multiplo" ? "multiplo" : "individual";
+			$intervalo = self::seleccionarIntervalo($promo["intervalos"], $cantidad, $modo);
 			if (!$intervalo) {
 				continue;
 			}
@@ -344,10 +346,38 @@ class ControladorPromociones
 			if ($calc["descuento_unitario"] <= 0) {
 				continue;
 			}
+
+			$unidadesConDesc = $cantidad;
+			if ($modo === "multiplo") {
+				$paso = intval($intervalo["cantidad_minima"]);
+				if ($paso <= 0) {
+					continue;
+				}
+				$grupos = intdiv($cantidad, $paso);
+				$unidadesConDesc = $grupos * $paso;
+				if ($unidadesConDesc <= 0) {
+					continue;
+				}
+			}
+
+			$descuentoTotalCand = round($calc["descuento_unitario"] * $unidadesConDesc, 2);
+			if ($descuentoTotalCand <= 0) {
+				continue;
+			}
+			// Promedio sobre toda la línea (los sobrantes no tienen desc.)
+			$descuentoUnitarioPromedio = round($descuentoTotalCand / $cantidad, 2);
+			$precioFinalPromedio = round($precioOriginal - $descuentoUnitarioPromedio, 2);
+			if ($precioFinalPromedio < 0) {
+				$precioFinalPromedio = 0;
+			}
+
 			$candidatos[] = [
 				"prioridad" => $promo["prioridad"],
-				"descuento_unitario" => $calc["descuento_unitario"],
-				"precio_final" => $calc["precio_final"],
+				"descuento_unitario" => $descuentoUnitarioPromedio,
+				"descuento_total" => $descuentoTotalCand,
+				"unidades_con_descuento" => $unidadesConDesc,
+				"modo_cantidad" => $modo,
+				"precio_final" => $precioFinalPromedio,
 				"tipo_descuento" => $intervalo["tipo_descuento"],
 				"valor_descuento" => $intervalo["valor_descuento"],
 				"id_promocion" => $promo["id_promocion"],
@@ -366,14 +396,17 @@ class ControladorPromociones
 			if ($a["prioridad"] !== $b["prioridad"]) {
 				return $b["prioridad"] <=> $a["prioridad"];
 			}
-			if ($a["descuento_unitario"] !== $b["descuento_unitario"]) {
-				return $b["descuento_unitario"] <=> $a["descuento_unitario"];
+			if ($a["descuento_total"] !== $b["descuento_total"]) {
+				return $b["descuento_total"] <=> $a["descuento_total"];
 			}
 			return strcmp($b["fecha_creacion"], $a["fecha_creacion"]);
 		});
 
 		$mejor = $candidatos[0];
-		$descuentoTotal = round($mejor["descuento_unitario"] * $cantidad, 2);
+		$descuentoTotal = round(floatval($mejor["descuento_total"]), 2);
+		$msgModo = ($mejor["modo_cantidad"] ?? "") === "multiplo"
+			? ("por múltiplo de " . $mejor["cantidad_minima"] . " (aplica a " . $mejor["unidades_con_descuento"] . " und.)")
+			: ("desde " . $mejor["cantidad_minima"] . " unidades");
 
 		return [
 			"id_producto" => $idProducto,
@@ -382,18 +415,38 @@ class ControladorPromociones
 			"precio_final" => $mejor["precio_final"],
 			"descuento_unitario" => $mejor["descuento_unitario"],
 			"descuento_total" => $descuentoTotal,
+			"unidades_con_descuento" => $mejor["unidades_con_descuento"] ?? $cantidad,
+			"modo_cantidad" => $mejor["modo_cantidad"] ?? "individual",
 			"tipo_descuento" => $mejor["tipo_descuento"],
 			"valor_descuento" => $mejor["valor_descuento"],
 			"id_promocion" => $mejor["id_promocion"],
 			"id_intervalo_promocion" => $mejor["id_intervalo_promocion"],
 			"nombre_promocion" => $mejor["nombre_promocion"],
-			"mensaje" => "Promoción por volumen: Bs " . number_format($mejor["precio_final"], 2) . " por unidad desde " . $mejor["cantidad_minima"] . " unidades (" . $mejor["nombre_promocion"] . ")"
+			"mensaje" => "Promoción " . $msgModo . ": desc. Bs " . number_format($descuentoTotal, 2) . " (" . $mejor["nombre_promocion"] . ")"
 		];
 	}
 
-	static public function seleccionarIntervalo($intervalos, $cantidad)
+	static public function seleccionarIntervalo($intervalos, $cantidad, $modo = "individual")
 	{
 		$cantidad = intval($cantidad);
+		$modo = $modo === "multiplo" ? "multiplo" : "individual";
+
+		if ($modo === "multiplo") {
+			$mejor = null;
+			foreach ($intervalos as $intervalo) {
+				$min = intval($intervalo["cantidad_minima"]);
+				if ($min <= 0) {
+					continue;
+				}
+				if ($cantidad >= $min) {
+					if ($mejor === null || $min > intval($mejor["cantidad_minima"])) {
+						$mejor = $intervalo;
+					}
+				}
+			}
+			return $mejor;
+		}
+
 		foreach ($intervalos as $intervalo) {
 			$min = intval($intervalo["cantidad_minima"]);
 			$max = $intervalo["cantidad_maxima"];
@@ -473,7 +526,9 @@ class ControladorPromociones
 			"fecha_fin" => date('Y-m-d H:i:s', strtotime($esEdicion ? $post["editarFechaFinPromocion"] : $post["fechaFinPromocion"])),
 			"prioridad" => intval($esEdicion ? $post["editarPrioridadPromocion"] : $post["prioridadPromocion"]),
 			"estado" => intval($esEdicion ? ($post["editarEstadoPromocion"] ?? 0) : ($post["estadoPromocion"] ?? 0)),
-			"modo_cantidad" => "individual",
+			"modo_cantidad" => (($esEdicion ? ($post["editarModoCantidadPromocion"] ?? "") : ($post["modoCantidadPromocion"] ?? "")) === "multiplo")
+				? "multiplo"
+				: "individual",
 			"observacion" => trim($esEdicion ? ($post["editarObservacionPromocion"] ?? "") : ($post["observacionPromocion"] ?? ""))
 		];
 	}

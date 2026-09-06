@@ -19,6 +19,7 @@ if (!$promo) {
 $categorias = ControladorCategorias::ctrMostrarCategorias(null, null);
 $fechaInicioLocal = date('Y-m-d\TH:i', strtotime($promo["fecha_inicio"]));
 $fechaFinLocal = date('Y-m-d\TH:i', strtotime($promo["fecha_fin"]));
+$modoMultiplo = ($promo["modo_cantidad"] ?? "") === "multiplo";
 $estadoCalc = $promo["estado_calculado"] ?? "";
 ?>
 
@@ -51,13 +52,13 @@ $estadoCalc = $promo["estado_calculado"] ?? "";
                 <input type="text" class="form-control" name="editarNombrePromocion" value="<?php echo htmlspecialchars($promo["nombre"]); ?>" required>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-group">
                 <label>Prioridad *</label>
                 <input type="number" class="form-control" name="editarPrioridadPromocion" value="<?php echo intval($promo["prioridad"]); ?>" min="1" required>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-group">
                 <label>Estado</label>
                 <select class="form-control" name="editarEstadoPromocion">
@@ -66,6 +67,24 @@ $estadoCalc = $promo["estado_calculado"] ?? "";
                 </select>
               </div>
             </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Modo cantidad</label>
+                <select class="form-control" name="editarModoCantidadPromocion" id="editarModoCantidadPromocion">
+                  <option value="individual" <?php echo ($promo["modo_cantidad"] ?? "individual") !== "multiplo" ? "selected" : ""; ?>>Por rango</option>
+                  <option value="multiplo" <?php echo ($promo["modo_cantidad"] ?? "") === "multiplo" ? "selected" : ""; ?>>Por múltiplo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="ayudaModoRango" class="alert alert-info" style="margin-bottom:15px; padding:10px 12px; <?php echo $modoMultiplo ? "display:none;" : ""; ?>">
+            <strong>Por rango:</strong> el descuento aplica si la cantidad de la línea está entre un mínimo y un máximo (ej. de 3 a 6 unidades).
+            Guarde con el botón <em>Guardar información</em> para que el modo quede activo en ventas.
+          </div>
+          <div id="ayudaModoMultiplo" class="alert alert-warning" style="margin-bottom:15px; padding:10px 12px; <?php echo $modoMultiplo ? "" : "display:none;"; ?>">
+            <strong>Por múltiplo:</strong> el descuento se aplica de N en N (ej. cada 5, cada 10 o cada 50).
+            El valor de N se configura abajo en la sección 2, en el campo <strong>Múltiplo</strong>.
+            Las unidades que sobran van a precio normal. Guarde con <em>Guardar información</em> para activarlo en ventas.
           </div>
           <div class="form-group">
             <label>Descripción</label>
@@ -98,21 +117,29 @@ $estadoCalc = $promo["estado_calculado"] ?? "";
       </form>
     </div>
 
-    <!-- 2. Intervalos -->
+    <!-- 2. Intervalos / múltiplo -->
     <div class="box box-warning">
       <div class="box-header with-border">
-        <h3 class="box-title">2. Intervalos de cantidad</h3>
+        <h3 class="box-title" id="tituloSeccionCantidad"><?php echo $modoMultiplo ? "2. Múltiplo y descuento" : "2. Intervalos de cantidad"; ?></h3>
         <button type="button" class="btn btn-warning btn-sm pull-right" id="btnNuevoIntervalo">
-          <i class="fa fa-plus"></i> Agregar intervalo
+          <i class="fa fa-plus"></i> <span id="textoBtnIntervalo"><?php echo $modoMultiplo ? "Configurar múltiplo" : "Agregar intervalo"; ?></span>
         </button>
       </div>
       <div class="box-body">
-        <p class="help-block">Cuando el cliente alcance esta cantidad, se aplicará automáticamente el descuento configurado. Los intervalos no deben superponerse.</p>
+        <p class="help-block" id="ayudaIntervalosRango"<?php echo $modoMultiplo ? ' style="display:none;"' : ''; ?>>
+          Defina uno o más rangos (mínimo–máximo). Cuando la cantidad de la venta caiga en un rango, se aplica ese descuento.
+          Los rangos no deben superponerse.
+        </p>
+        <p class="help-block" id="ayudaIntervalosMultiplo"<?php echo $modoMultiplo ? '' : ' style="display:none;"'; ?>>
+          Defina el <strong>múltiplo</strong> (N): el descuento se aplica cada N unidades.
+          Ejemplo con N = 5 y descuento Bs 1 por unidad: 5 und. → −Bs 5; 7 und. → −Bs 5 (sobran 2 sin desc.); 10 und. → −Bs 10.
+          Suele bastar una sola fila.
+        </p>
         <table class="table table-bordered table-striped" id="tablaIntervalosPromo">
           <thead>
             <tr>
-              <th>Cantidad mínima</th>
-              <th>Cantidad máxima</th>
+              <th id="thCantMin"><?php echo $modoMultiplo ? "Múltiplo (cada N und.)" : "Cantidad mínima"; ?></th>
+              <th id="thCantMax"><?php echo $modoMultiplo ? "Máximo (no aplica)" : "Cantidad máxima"; ?></th>
               <th>Tipo de descuento</th>
               <th>Valor</th>
               <th>Estado</th>
@@ -167,15 +194,19 @@ $estadoCalc = $promo["estado_calculado"] ?? "";
     <div class="modal-content">
       <div class="modal-header bg-warning">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Intervalo de cantidad</h4>
+        <h4 class="modal-title" id="tituloModalIntervalo">Intervalo de cantidad</h4>
       </div>
       <div class="modal-body">
         <input type="hidden" id="idIntervaloEdit">
-        <div class="form-group">
-          <label>Cantidad mínima *</label>
-          <input type="number" class="form-control" id="intCantMin" min="1">
+        <div class="alert alert-warning" id="avisoModalMultiplo" style="display:none; padding:8px 12px;">
+          Indique cada cuántas unidades aplica el descuento (5, 10, 50…). Ese número es el <strong>múltiplo</strong>.
         </div>
         <div class="form-group">
+          <label id="labelIntCantMin">Cantidad mínima *</label>
+          <input type="number" class="form-control" id="intCantMin" min="1" placeholder="">
+          <small class="help-block" id="ayudaIntCantMin"></small>
+        </div>
+        <div class="form-group" id="grupoIntCantMax">
           <label>Cantidad máxima (opcional)</label>
           <input type="number" class="form-control" id="intCantMax" min="1" placeholder="Vacío = sin límite (solo último intervalo)">
           <small class="help-block">Deje vacío solo si es el último intervalo (“desde esta cantidad en adelante”).</small>
@@ -205,7 +236,7 @@ $estadoCalc = $promo["estado_calculado"] ?? "";
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-warning" id="btnGuardarIntervalo">Guardar intervalo</button>
+        <button type="button" class="btn btn-warning" id="btnGuardarIntervalo">Guardar</button>
       </div>
     </div>
   </div>

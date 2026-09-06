@@ -29,23 +29,37 @@ if (!Permisos::tiene("promociones.crear")) {
                 <input type="text" class="form-control" name="nombrePromocion" required maxlength="150">
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-group">
                 <label>Prioridad *</label>
                 <input type="number" class="form-control" name="prioridadPromocion" value="1" min="1" required>
-                <small class="help-block">Mayor número = mayor prioridad</small>
+                <small class="help-block">Mayor = más prioridad</small>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-group">
                 <label>Estado</label>
                 <select class="form-control" name="estadoPromocion">
                   <option value="0">Deshabilitada</option>
                   <option value="1">Habilitada</option>
                 </select>
-                <small class="help-block">Para habilitar necesitará intervalos y productos</small>
               </div>
             </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label>Modo cantidad</label>
+                <select class="form-control" name="modoCantidadPromocion" id="modoCantidadPromocionAlta">
+                  <option value="individual">Por rango</option>
+                  <option value="multiplo">Por múltiplo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="ayudaModoRangoAlta" class="alert alert-info" style="margin-bottom:15px; padding:10px 12px;">
+            <strong>Por rango:</strong> luego configurará mínimos y máximos (ej. de 3 a 6 und.).
+          </div>
+          <div id="ayudaModoMultiploAlta" class="alert alert-warning" style="margin-bottom:15px; padding:10px 12px; display:none;">
+            <strong>Por múltiplo:</strong> luego configurará el múltiplo N (cada 5, 10, 50…). El sobrante no tiene descuento.
           </div>
 
           <div class="form-group">
