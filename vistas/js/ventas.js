@@ -1374,6 +1374,21 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     // Al duplicar, asegurarse de que el botón del catálogo permanezca deshabilitado
     $("button.recuperarBoton[idProducto='"+idProducto+"']").addClass('disabled');
     $("button.recuperarBoton[idProducto='"+idProducto+"']").attr('disabled', true);
+
+    // Presentación ACTUAL de la fila origen (.val()), no el atributo HTML selected
+    var $selOrigen = $productoRow.find(".select-presentacion-venta");
+    var idPresOrigen = $selOrigen.length ? String($selOrigen.val() || "0") : "0";
+    var $optOrigen = $selOrigen.find("option").filter(function () {
+        return String($(this).val()) === idPresOrigen;
+    }).first();
+    var factorOrigen = parseInt(
+        $optOrigen.attr("data-factor") ||
+        $productoRow.find(".nuevaCantidadProducto").attr("data-factor"),
+        10
+    ) || 1;
+    var nombreOrigen = $optOrigen.attr("data-nombre") ||
+        $productoRow.find(".nuevaCantidadProducto").attr("data-nombre-presentacion") ||
+        "Unidad";
     
     // Clonar la fila
     var $nuevoProducto = $productoRow.clone();
@@ -1391,6 +1406,28 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $cantidadInput.val(1);
     $cantidadInput.attr('stock', stockOriginal);
 
+    // Forzar la misma presentación del origen (evita que el clone restaure Balde por el attr selected)
+    var $selNuevo = $nuevoProducto.find(".select-presentacion-venta");
+    if ($selNuevo.length) {
+        $selNuevo.find("option").each(function () {
+            this.selected = String(this.value) === idPresOrigen;
+        });
+        $selNuevo.val(idPresOrigen);
+        $selNuevo.data("valorAnterior", idPresOrigen);
+    }
+    if (window.PresentacionesVenta) {
+        PresentacionesVenta.aplicarPresentacionEnFila(
+            $nuevoProducto,
+            idPresOrigen,
+            nombreOrigen,
+            factorOrigen
+        );
+    } else {
+        $cantidadInput.attr("data-factor", factorOrigen);
+        $cantidadInput.attr("data-id-presentacion", parseInt(idPresOrigen, 10) > 0 ? idPresOrigen : "");
+        $cantidadInput.attr("data-nombre-presentacion", nombreOrigen);
+    }
+
     // Mantener precio unitario ORIGINAL; el subtotal visible = unidades × original
     var $precioDup = $nuevoProducto.find('.nuevoPrecioProducto');
     var precioUnitario = Number($precioDup.attr('precioOriginal') || $precioDup.attr('precioReal') || 0);
@@ -1399,7 +1436,7 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $precioDup.removeAttr('data-promo data-subtotal-final data-precio-final');
     var undDup = window.PresentacionesVenta
         ? PresentacionesVenta.unidadesDeInput($cantidadInput)
-        : 1;
+        : factorOrigen;
     $precioDup.val(parseFloat(precioUnitario * undDup).toFixed(2));
     $nuevoProducto.find('.lv-precio-unit').text('Bs ' + precioUnitario.toFixed(2));
     $nuevoProducto.find('.lv-desc').addClass('es-vacio').text('—');

@@ -148,42 +148,45 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   #catalogoProductos {
-    margin-left: -4px;
-    margin-right: -4px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    align-items: stretch;
   }
 
   #catalogoProductos::after {
-    content: "";
-    display: table;
-    clear: both;
+    display: none;
   }
 
   /* En panel 50%: 4 cards por fila en desktop amplio */
   .col-producto-catalogo {
-    width: 25%;
-    float: left;
-    padding: 4px;
+    width: auto;
+    float: none;
+    padding: 0;
     box-sizing: border-box;
+    min-width: 0;
   }
 
   @media (max-width: 1600px) {
-    .col-producto-catalogo { width: 25%; }
+    #catalogoProductos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
   @media (max-width: 1400px) {
-    .col-producto-catalogo { width: 33.333%; }
+    #catalogoProductos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
   @media (max-width: 1200px) {
-    .col-producto-catalogo { width: 33.333%; }
+    #catalogoProductos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
   @media (max-width: 992px) {
-    .col-producto-catalogo { width: 50%; }
+    #catalogoProductos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   @media (max-width: 767px) {
-    .col-producto-catalogo { width: 50%; }
+    #catalogoProductos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   .catalogo-productos .thumbnail,
@@ -192,12 +195,12 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     border: 1px solid #e3e6ea;
     border-radius: 6px;
     text-align: center;
-    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
     cursor: pointer;
     position: relative;
     padding: 0;
     margin-bottom: 0;
-    box-shadow: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     overflow: visible; /* permite menú ⋮; la imagen se recorta en .card-producto-img */
     height: 100%;
     display: flex;
@@ -213,9 +216,30 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .catalogo-productos .thumbnail:hover,
   #catalogoProductos .thumbnail:hover {
-    transform: none;
-    border-color: #adb5bd;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    border-color: #28a745;
+    box-shadow:
+      0 0 0 2px rgba(40, 167, 69, 0.35),
+      0 8px 18px rgba(40, 167, 69, 0.28),
+      0 3px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .catalogo-productos .thumbnail:hover .dress-name,
+  #catalogoProductos .thumbnail:hover .dress-name {
+    color: #1e7e34;
+  }
+
+  .catalogo-productos .thumbnail:hover .new-price,
+  #catalogoProductos .thumbnail:hover .new-price {
+    color: #b52b27;
+    text-shadow: 0 0 0.5px rgba(181, 43, 39, 0.35);
+  }
+
+  .catalogo-productos .thumbnail .dress-name,
+  .catalogo-productos .thumbnail .new-price,
+  #catalogoProductos .thumbnail .dress-name,
+  #catalogoProductos .thumbnail .new-price {
+    transition: color 0.18s ease, text-shadow 0.18s ease;
   }
 
   .producto-imagen {
@@ -433,7 +457,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     font-size: 11px;
   }
 
-  /* ===== Tabla de líneas de venta (compacta) ===== */
+  /* ===== Tabla de líneas de venta (compacta, legible) ===== */
   .tabla-lineas-venta-wrap {
     margin: 0 0 6px;
     overflow: visible; /* no recortar dropdown de notas */
@@ -443,7 +467,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 11px;
+    font-size: 13px;
     margin-bottom: 0;
     table-layout: fixed;
   }
@@ -451,11 +475,11 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .tabla-lineas-venta thead th {
     background: #f5f7fa;
     color: #555;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.01em;
-    padding: 5px 4px;
+    padding: 6px 4px;
     border-bottom: 1px solid #dde2e8;
     white-space: nowrap;
     text-align: center;
@@ -477,7 +501,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .tabla-lineas-venta tr.linea-venta > td {
-    padding: 4px 3px;
+    padding: 6px 4px;
     vertical-align: middle;
     border-bottom: 1px solid #eceff3;
     background: #fff;
@@ -497,8 +521,8 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .lv-producto-img {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     object-fit: cover;
     border-radius: 4px;
     border: 1px solid #e5e8ec;
@@ -520,7 +544,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     padding: 0;
     height: auto;
     font-weight: 700;
-    font-size: 11px;
+    font-size: 13px;
     color: #222;
     text-transform: uppercase;
     white-space: nowrap;
@@ -552,8 +576,8 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .lv-producto-controles .select-presentacion-venta {
     width: 100%;
     max-width: 140px;
-    height: 24px;
-    font-size: 10px;
+    height: 26px;
+    font-size: 11px;
     padding: 1px 4px;
     margin: 0;
     display: block;
@@ -583,7 +607,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .lv-notas-wrap > .dropdown-toggle {
     padding: 2px 6px;
     line-height: 1.2;
-    height: 24px;
+    height: 26px;
   }
 
   .lv-notas-wrap.open > .btn-abrir-notas,
@@ -612,11 +636,11 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .lv-forma-atencion {
-    width: 52px;
+    width: 56px;
     max-width: 100%;
-    height: 26px;
+    height: 28px;
     padding: 0 2px;
-    font-size: 11px;
+    font-size: 12px;
     display: inline-block;
     margin: 0 auto;
   }
@@ -630,25 +654,25 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .lv-cant .cantidad-stepper {
-    max-width: 92px;
+    max-width: 96px;
     margin: 0 auto;
   }
 
   .tabla-lineas-venta .cantidad-stepper .btn-cantidad-ajuste {
-    width: 24px;
-    min-width: 24px;
-    height: 24px;
-    font-size: 11px;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    font-size: 12px;
   }
 
   .tabla-lineas-venta .cantidad-stepper input[type="number"] {
-    height: 24px;
-    font-size: 12px;
+    height: 26px;
+    font-size: 13px;
     padding: 0 2px;
   }
 
   .lv-cant .lbl-unidades-reales {
-    font-size: 9px;
+    font-size: 10px;
     color: #888;
     margin-top: 1px;
     line-height: 1.1;
@@ -657,7 +681,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .lv-money {
     text-align: right;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     color: #333;
     padding-right: 4px !important;
@@ -671,14 +695,14 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     height: auto;
     text-align: right;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 13px;
     color: #333;
     width: 100%;
   }
 
   .lv-desc {
     text-align: right;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #27ae60;
     white-space: nowrap;
@@ -691,7 +715,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .lv-total-linea {
     text-align: right;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: #111;
     white-space: nowrap;
@@ -704,7 +728,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .lv-acciones .btn {
     margin: 0 1px;
-    padding: 2px 5px;
+    padding: 3px 6px;
   }
 
   .lv-acciones .btn-duplicar-linea {
@@ -718,14 +742,14 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   @media (max-width: 1200px) {
-    .lv-producto-img { width: 24px; height: 24px; }
-    .tabla-lineas-venta { font-size: 10px; }
+    .lv-producto-img { width: 28px; height: 28px; }
+    .tabla-lineas-venta { font-size: 12px; }
   }
 
-  /* Resumen compacto de totales */
+  /* Resumen de totales (legible) */
   .resumen-venta-totales {
     width: 100%;
-    padding: 2px 0 4px;
+    padding: 4px 0 6px;
   }
 
   .resumen-fila {
@@ -733,21 +757,22 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     align-items: baseline;
     justify-content: space-between;
     gap: 8px;
-    padding: 1px 0;
-    line-height: 1.2;
+    padding: 3px 0;
+    line-height: 1.3;
   }
 
   .resumen-label {
     flex: 1 1 auto;
     min-width: 0;
-    font-size: 12px;
+    font-size: 14px;
     color: #555;
     white-space: nowrap;
   }
 
   .resumen-monto {
     flex: 0 0 auto;
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 600;
     color: #333;
     white-space: nowrap;
     text-align: right;
@@ -755,33 +780,33 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .resumen-fila-descuento .resumen-monto {
     color: #c0392b;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .resumen-fila-descuento .resumen-label .fa {
-    font-size: 10px;
+    font-size: 11px;
     margin-left: 3px;
     color: #999;
     cursor: help;
   }
 
   .resumen-fila-total {
-    margin-top: 2px;
-    padding: 5px 8px;
+    margin-top: 4px;
+    padding: 7px 10px;
     border-top: none;
     background: #e8f8ef;
     border-radius: 4px;
   }
 
   .resumen-fila-total .resumen-label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: #1e7e34;
     text-transform: uppercase;
   }
 
   .resumen-fila-total .resumen-monto {
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 700;
     color: #1e7e34;
   }
@@ -1053,18 +1078,18 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       gap: 6px;
       width: 100%;
       margin: 0 0 4px;
-      min-height: 28px;
+      min-height: 32px;
   }
 
   .dress-name {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       flex: 1 1 auto;
       min-width: 0;
-      max-width: calc(100% - 58px);
+      max-width: calc(100% - 64px);
       height: auto;
-      max-height: 28px;
-      line-height: 1.2;
+      max-height: 34px;
+      line-height: 1.25;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -1074,7 +1099,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .new-price {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       color: #d9534f;
       flex: 0 0 auto;
@@ -1082,7 +1107,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       text-align: right;
       white-space: nowrap;
       margin: 0;
-      line-height: 1.2;
+      line-height: 1.25;
       padding-top: 0;
   }
 
