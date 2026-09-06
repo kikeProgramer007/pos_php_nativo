@@ -230,6 +230,56 @@ class ModeloArqueo {
         }
     }
      /**
+     * Actualiza solo el número de ticket (sin sumar montos de venta).
+     * Útil para cuentas pendientes: el ticket se consume aunque aún no haya cobro.
+     */
+    public static function mdlActualizarSoloNroTicket($Arqueo, $nroTicket) {
+        if (!$Arqueo || empty($Arqueo["id"])) {
+            return [
+                'status' => 'error',
+                'message' => 'Arqueo no válido'
+            ];
+        }
+
+        $db = Conexion::conectar();
+        $db->beginTransaction();
+        try {
+            $stmtArqueo = $db->prepare(
+                "UPDATE arqueo_caja SET nroTicket = :nroTicket WHERE id = :idArqueo"
+            );
+            $stmtArqueo->bindParam(":idArqueo", $Arqueo["id"], PDO::PARAM_INT);
+            $stmtArqueo->bindParam(":nroTicket", $nroTicket, PDO::PARAM_STR);
+
+            if (!$stmtArqueo->execute()) {
+                throw new Exception("Fallo al actualizar el número de ticket en arqueo_caja.");
+            }
+
+            $resultadoCaja = self::mdlActualizarNroCaja($Arqueo["id_caja"], $nroTicket);
+            if ($resultadoCaja !== "ok") {
+                throw new Exception("Fallo al actualizar el número de ticket en cajas.");
+            }
+
+            $db->commit();
+            return [
+                'status' => 'ok',
+                'message' => 'Número de ticket actualizado.'
+            ];
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log("Error en mdlActualizarSoloNroTicket: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Error al actualizar: ' . $e->getMessage()
+            ];
+        } finally {
+            if (isset($stmtArqueo)) {
+                $stmtArqueo->closeCursor();
+                $stmtArqueo = null;
+            }
+        }
+    }
+
+    /**
       * Registra el egreso em arqueo de caja 
       * @param int $Arqueo ID de la caja
       * @param int $nroTicket Nuevo número de ticket

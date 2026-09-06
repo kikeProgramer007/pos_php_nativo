@@ -32,12 +32,16 @@ function contarProductoEnVenta(idProducto) {
     });
     return contador;
 }
-// funcion para sumar la cantidad de productos en la venta con el mismo id
+// funcion para sumar la cantidad de productos en la venta con el mismo id (UNIDADES REALES)
 function sumarCantidadProductos(idProducto) {
     var suma = 0;
     $(".nuevoProducto .nuevaCantidadProducto").each(function() {
         if($(this).attr("data-idProducto") == idProducto) {
-            suma += parseInt($(this).val() || 0);
+            if (window.PresentacionesVenta) {
+                suma += PresentacionesVenta.unidadesDeInput($(this));
+            } else {
+                suma += parseInt($(this).val() || 0);
+            }
         }
     });
     return suma;
@@ -47,7 +51,9 @@ $(".formularioVenta").on("click", "button.quitarProducto", function(){
     var idProducto = $(this).attr("idProducto");
     
     // Eliminar el elemento
-    $(this).closest('.row').remove();
+    var $fila = $(this).closest('.linea-venta');
+    if (!$fila.length) $fila = $(this).closest('.row');
+    $fila.remove();
 
     // Contar cuántas veces sigue apareciendo el producto
     var apariciones = contarProductoEnVenta(idProducto);
@@ -259,35 +265,58 @@ MODIFICAR LA CANTIDAD
 =============================================*/
 
 function actualizarCantidadProducto($input) {
-	var row = $input.closest(".row");
+	var row = $input.closest(".linea-venta");
+	if (!row.length) row = $input.closest(".row");
 	var idProducto = row.find(".nuevaDescripcionProducto").attr("idProducto");
-	var precio = row.find(".ingresoPrecio").children().children(".nuevoPrecioProducto");
+	var precio = row.find(".nuevoPrecioProducto");
 	var cantidadMinima = Number($input.attr("min")) || 1;
-	var cantidad = Number($input.val()) || 0;
-
-	if(cantidad < cantidadMinima){
-		cantidad = cantidadMinima;
-		$input.val(cantidad);
+	var qtyPresentaciones = Number($input.val()) || 0;
+	var factor = 1;
+	if (window.PresentacionesVenta) {
+		factor = PresentacionesVenta.factorDeFila(row);
+	} else {
+		factor = parseInt($input.attr("data-factor"), 10) || 1;
 	}
 
+	if(qtyPresentaciones < cantidadMinima){
+		qtyPresentaciones = cantidadMinima;
+		$input.val(qtyPresentaciones);
+	}
+
+	var unidadesLinea = qtyPresentaciones * factor;
 	var precioOriginal = Number(precio.attr("precioOriginal") || precio.attr("precioReal") || 0);
 	precio.attr("precioOriginal", precioOriginal);
 	precio.attr("precioReal", precioOriginal);
-	var subtotalOriginal = cantidad * precioOriginal;
+	var subtotalOriginal = unidadesLinea * precioOriginal;
 	precio.val(parseFloat(subtotalOriginal).toFixed(2));
+	row.find(".lv-precio-unit").text("Bs " + precioOriginal.toFixed(2));
+	row.find(".lv-desc").addClass("es-vacio").text("—");
+	row.find(".lv-total-linea").text("Bs " + subtotalOriginal.toFixed(2));
 
+	if (window.PresentacionesVenta) {
+		PresentacionesVenta.actualizarEtiqueta(row);
+	}
+
+    var unidadesTotalesProducto = unidadesLinea;
     var apariciones = contarProductoEnVenta(idProducto);
 	if(apariciones > 1){
-		cantidad = sumarCantidadProductos(idProducto);
+		unidadesTotalesProducto = sumarCantidadProductos(idProducto);
 	}
 
 	/*SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES*/
 	var esInventariable = Number($input.attr("data-inventariable"));
-	if(esInventariable !== 0 && Number(cantidad) > Number($input.attr("stock"))){
+	if(esInventariable !== 0 && Number(unidadesTotalesProducto) > Number($input.attr("stock"))){
 
 		$input.val(cantidadMinima);
-		subtotalOriginal = Number($input.val()) * precioOriginal;
+		unidadesLinea = cantidadMinima * factor;
+		subtotalOriginal = unidadesLinea * precioOriginal;
 		precio.val(parseFloat(subtotalOriginal).toFixed(2));
+		row.find(".lv-precio-unit").text("Bs " + precioOriginal.toFixed(2));
+		row.find(".lv-desc").addClass("es-vacio").text("—");
+		row.find(".lv-total-linea").text("Bs " + subtotalOriginal.toFixed(2));
+		if (window.PresentacionesVenta) {
+			PresentacionesVenta.actualizarEtiqueta(row);
+		}
 		sumarTotalPrecios();
 		calcularPago();
 		swal({
@@ -325,7 +354,14 @@ function sumarTotalPrecios(){
 
     $(".nuevoPrecioProducto").each(function() {
         var $precio = $(this);
-        var cant = Number($precio.closest(".row").find(".nuevaCantidadProducto").val()) || 0;
+        var cant = 0;
+        var $cantInput = $precio.closest(".linea-venta").find(".nuevaCantidadProducto");
+        if (!$cantInput.length) $cantInput = $precio.closest(".row").find(".nuevaCantidadProducto");
+        if (window.PresentacionesVenta) {
+            cant = PresentacionesVenta.unidadesDeInput($cantInput);
+        } else {
+            cant = Number($cantInput.val()) || 0;
+        }
         var precioOriginal = Number($precio.attr("precioOriginal") || $precio.attr("precioReal") || 0);
         var subtotalOriginal = precioOriginal * cant;
         sumaTotalItems += subtotalOriginal;
@@ -664,7 +700,8 @@ function listarProductos() {
     // Iterar usando each() para mejor manejo de elementos
     $(".nuevaDescripcionProducto").each(function() {
         const $producto = $(this);
-        const $row = $producto.closest('.row');
+        let $row = $producto.closest('.linea-venta');
+        if (!$row.length) $row = $producto.closest('.row');
         
         // Elementos específicos del producto actual
         const $cantidad = $row.find('.nuevaCantidadProducto');
@@ -684,7 +721,24 @@ function listarProductos() {
             id: $producto.attr('idProducto'),
             idDetalle: $producto.attr('data-idDetalle') || null,
             descripcion: $producto.val(),
-            cantidad: $cantidad.val(),
+            cantidad: (function() {
+                if (window.PresentacionesVenta) {
+                    return PresentacionesVenta.unidadesDeInput($cantidad);
+                }
+                return $cantidad.val();
+            })(),
+            cantidad_presentaciones: (function() {
+                if (window.PresentacionesVenta) {
+                    return PresentacionesVenta.qtyPresentaciones($cantidad);
+                }
+                return Number($cantidad.val()) || 1;
+            })(),
+            unidades_por_presentacion: parseInt($cantidad.attr('data-factor'), 10) || 1,
+            id_presentacion: (function() {
+                var idp = parseInt($cantidad.attr('data-id-presentacion'), 10) || 0;
+                return idp > 0 ? idp : null;
+            })(),
+            nombre_presentacion: $cantidad.attr('data-nombre-presentacion') || 'Unidad',
             stock: $cantidad.attr('stock'),
             precioCompra: $precioCompra.attr('precioRealCompra'),
             preferencias: preferencias,
@@ -710,7 +764,9 @@ function listarProductos() {
                         return Number(promo.subtotal_final);
                     }
                 } catch (e) {}
-                var cant = Number($cantidad.val()) || 0;
+                var cant = window.PresentacionesVenta
+                    ? PresentacionesVenta.unidadesDeInput($cantidad)
+                    : (Number($cantidad.val()) || 0);
                 var orig = Number($precio.attr('precioOriginal') || $precio.attr('precioReal') || 0);
                 return Math.round((orig * cant + Number.EPSILON) * 100) / 100;
             })(),
@@ -1253,21 +1309,29 @@ $(".daterangepicker.opensleft .range_inputs .cancelBtn").on("click", function(){
 DUPLICAR PRODUCTO
 =============================================*/
 $(document).on("click", "button[title='Duplicar Producto']", function() {
-    var $productoRow = $(this).closest('.row');
+    var $productoRow = $(this).closest('.linea-venta');
+    if (!$productoRow.length) $productoRow = $(this).closest('.row');
     var idProducto = $productoRow.find('.nuevaDescripcionProducto').attr('idProducto');
     var stockOriginal = parseInt($productoRow.find('.nuevaCantidadProducto').attr('stock'));
     var esInventariable = Number($productoRow.find('.nuevaCantidadProducto').attr('data-inventariable'));
     var cantidadTotal = 0;
     
-    // Calcular la cantidad total actual del producto en la venta
+    // Calcular la cantidad total actual del producto en la venta (UNIDADES)
     $('.nuevaCantidadProducto').each(function() {
-        if($(this).closest('.row').find('.nuevaDescripcionProducto').attr('idProducto') === idProducto) {
-            cantidadTotal += parseInt($(this).val() || 0);
+        var $f = $(this).closest('.linea-venta');
+        if (!$f.length) $f = $(this).closest('.row');
+        if($f.find('.nuevaDescripcionProducto').attr('idProducto') === idProducto) {
+            if (window.PresentacionesVenta) {
+                cantidadTotal += PresentacionesVenta.unidadesDeInput($(this));
+            } else {
+                cantidadTotal += parseInt($(this).val() || 0);
+            }
         }
     });
     
-    // Verificar si hay suficiente stock
-    if(esInventariable !== 0 && cantidadTotal >= stockOriginal) {
+    // Verificar si hay suficiente stock (1 presentación adicional = factor unidades)
+    var factorDup = parseInt($productoRow.find('.nuevaCantidadProducto').attr('data-factor'), 10) || 1;
+    if(esInventariable !== 0 && (cantidadTotal + factorDup) > stockOriginal) {
         swal({
             title: "No hay suficiente stock",
             text: "Solo quedan " + stockOriginal + " unidades disponibles",
@@ -1292,43 +1356,47 @@ $(document).on("click", "button[title='Duplicar Producto']", function() {
     $nuevoProducto.find('.nota-producto').val([]);
     $nuevoProducto.find('.nota-adicional').val('');
     
-    // Establecer cantidad inicial en 1 y actualizar el nuevoStock
+    // Establecer cantidad inicial en 1 presentación y actualizar el nuevoStock
     var $cantidadInput = $nuevoProducto.find('.nuevaCantidadProducto');
     $cantidadInput.val(1);
     $cantidadInput.attr('stock', stockOriginal);
-    
-	// Mantener precio unitario ORIGINAL; el subtotal visible = qty × original
-	var $precioDup = $nuevoProducto.find('.nuevoPrecioProducto');
-	var precioUnitario = Number($precioDup.attr('precioOriginal') || $precioDup.attr('precioReal') || 0);
-	$precioDup.attr('precioOriginal', precioUnitario);
-	$precioDup.attr('precioReal', precioUnitario);
-	$precioDup.removeAttr('data-promo data-subtotal-final data-precio-final');
-	$precioDup.val(parseFloat(precioUnitario).toFixed(2));
-	$nuevoProducto.find('.promo-aplicada-info').remove();
+
+    // Mantener precio unitario ORIGINAL; el subtotal visible = unidades × original
+    var $precioDup = $nuevoProducto.find('.nuevoPrecioProducto');
+    var precioUnitario = Number($precioDup.attr('precioOriginal') || $precioDup.attr('precioReal') || 0);
+    $precioDup.attr('precioOriginal', precioUnitario);
+    $precioDup.attr('precioReal', precioUnitario);
+    $precioDup.removeAttr('data-promo data-subtotal-final data-precio-final');
+    var undDup = window.PresentacionesVenta
+        ? PresentacionesVenta.unidadesDeInput($cantidadInput)
+        : 1;
+    $precioDup.val(parseFloat(precioUnitario * undDup).toFixed(2));
+    $nuevoProducto.find('.lv-precio-unit').text('Bs ' + precioUnitario.toFixed(2));
+    $nuevoProducto.find('.lv-desc').addClass('es-vacio').text('—');
+    $nuevoProducto.find('.lv-total-linea').text('Bs ' + (precioUnitario * undDup).toFixed(2));
+    $nuevoProducto.find('.promo-aplicada-info').remove();
+    $nuevoProducto.removeAttr('data-idDetalle');
+    $nuevoProducto.find('.nuevaDescripcionProducto').removeAttr('data-idDetalle');
+    if (window.PresentacionesVenta) {
+        PresentacionesVenta.actualizarEtiqueta($nuevoProducto);
+    }
 
     // Insertar el nuevo producto después del original
     $productoRow.after($nuevoProducto);
-    
-    // Reinicializar Select2 en el nuevo elemento
-    var $newSelect = $nuevoProducto.find('.select2-nota');
-    $newSelect.select2({
-        theme: "classic",
-        multiple: true,
-        width: '100%',
-        dropdownParent: $nuevoProducto.find('.nota-dropdown'),
-        language: {
-            noResults: function() {
-                return "No hay resultados";
-            }
-        }
-    	}).on('change', function() {
-		listarProductos();
-	  });
 
-	  $('.nota-adicional').on('change keyup', function() {
-		listarProductos();
-	  });
-	
+    $nuevoProducto.find('.select2-container').remove();
+    $nuevoProducto.find('.nota-producto').removeClass('select2-hidden-accessible').removeAttr('data-select2-id aria-hidden tabindex');
+    $nuevoProducto.find('.nota-producto').val([]);
+    $nuevoProducto.find('.nota-adicional').val('');
+    $nuevoProducto.find('.btn-abrir-notas').removeClass('tiene-notas');
+
+    if (typeof inicializarSelect2NotasEnFila === 'function') {
+      inicializarSelect2NotasEnFila($nuevoProducto);
+    }
+    if (typeof actualizarEstadoBotonNotas === 'function') {
+      actualizarEstadoBotonNotas($nuevoProducto);
+    }
+
     listarProductos();
 	if (window.PromocionesVenta && typeof PromocionesVenta.recalcular === "function") {
 		PromocionesVenta.recalcular(function() {

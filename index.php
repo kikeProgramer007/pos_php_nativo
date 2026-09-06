@@ -18,6 +18,7 @@ require_once "controladores/promociones.controlador.php";
 require_once "controladores/perfiles.controlador.php";
 require_once "controladores/permisos.controlador.php";
 require_once "controladores/otros_ingresos.controlador.php";
+require_once "controladores/producto_presentaciones.controlador.php";
 
 require_once "modelos/usuarios.modelo.php";
 require_once "modelos/categorias.modelo.php";
@@ -35,6 +36,7 @@ require_once "modelos/gastos.modelo.php";
 require_once "modelos/promociones.modelo.php";
 require_once "modelos/perfiles.modelo.php";
 require_once "modelos/otros_ingresos.modelo.php";
+require_once "modelos/producto_presentaciones.modelo.php";
 
 $plantilla = new ControladorPlantilla();
 $plantilla -> ctrPlantilla();

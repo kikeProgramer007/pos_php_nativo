@@ -307,6 +307,9 @@ $(".tablaProductos tbody").on("click", "button.btnEditarProducto", function () {
 			if (typeof actualizarCamposInventariableEditar === "function") {
 				actualizarCamposInventariableEditar();
 			}
+			if (window.ProductoPresentacionesAdmin) {
+				ProductoPresentacionesAdmin.cargar(respuesta["id"]);
+			}
 		}
 
 	})

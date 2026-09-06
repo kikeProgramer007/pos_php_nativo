@@ -1,5 +1,7 @@
 <!-- vinculamos  LAS CARPETAS -->
 <script src="vistas/js/cantidad-stepper.js"></script>
+<script src="vistas/js/presentaciones-venta.js"></script>
+<script src="vistas/js/producto-presentaciones.js"></script>
 <script src="vistas/js/plantilla.js"></script>
 <script src="vistas/js/usuarios.js"></script>
 <script src="vistas/js/categorias.js"></script>

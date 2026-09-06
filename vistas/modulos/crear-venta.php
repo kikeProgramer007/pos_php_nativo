@@ -28,6 +28,14 @@ if (isset($_GET["editarCuenta"]) && is_numeric($_GET["editarCuenta"])) {
       $productoLinea = ControladorProductos::ctrMostrarProductos("id", $linea["id_producto"], "id");
       $detalleEditar[$key]["stock_actual"] = $productoLinea ? $productoLinea["stock"] : 0;
       $detalleEditar[$key]["inventariable"] = $productoLinea ? $productoLinea["inventariable"] : 1;
+      $detalleEditar[$key]["imagen"] = $productoLinea ? $productoLinea["imagen"] : "";
+      $detalleEditar[$key]["codigo"] = $productoLinea ? $productoLinea["codigo"] : "";
+      $detalleEditar[$key]["presentaciones"] = [];
+      try {
+        $detalleEditar[$key]["presentaciones"] = ModeloProductoPresentaciones::mdlListarPorProducto($linea["id_producto"], true);
+      } catch (Exception $e) {
+        $detalleEditar[$key]["presentaciones"] = [];
+      }
     }
     $clienteEditar = ControladorClientes::ctrMostrarClientes("id", $ventaEditar["id_cliente"]);
     $clienteEditarNombre = $clienteEditar ? $clienteEditar["nombre"] : "";
@@ -71,8 +79,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .nota-dropdown {
     padding: 10px;
-  /*  min-width: 280px;*/
-  position: absolute;
+    position: absolute;
     right: 0;
     left: auto;
     top: 100%;
@@ -82,10 +89,14 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     border-radius: 4px;
     box-shadow: 0 6px 12px rgba(0,0,0,.175);
     display: none;
+    text-transform: none;
+    min-width: 280px;
   }
 
+  .dropdown.open > .nota-dropdown,
+  .lv-notas-wrap.open > .nota-dropdown,
   .nota-dropdown.show {
-    display: block;
+    display: block !important;
   }
 
   .nota-producto-dropdown {
@@ -102,75 +113,115 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     width: 100%;
   }
 
-  /* Asegurar que el dropdown de Select2 esté por encima de otros elementos */
   .select2-dropdown {
     z-index: 10001 !important;
   }
 
-  /* Ajustar el tamaño del botón de notas */
   .btn-xs.dropdown-toggle {
     padding: 1px 5px;
   }
 
-  /* Estilos para el catálogo de productos */
-  .catalogo-productos {
-    padding: 0px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+  /* Estilos para el catálogo de productos — compacto (50% panel) */
+  .catalogo-productos,
+  #catalogoProductos {
+    padding: 0;
+    background: transparent;
+    margin-bottom: 8px;
   }
 
   .catalogo-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     justify-content: space-between;
     margin-bottom: 0;
-    padding: 15px;
-    border-bottom: 2px solid #f4f4f4;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
   }
 
   .catalogo-header h3 {
     margin: 0;
     color: #333;
     font-weight: 600;
+    font-size: 15px;
   }
 
-  /*.catalogo-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(150px, 1fr));
-    gap: 20px;
-    padding: 15px;
-  } */
+  #catalogoProductos {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
 
-  .thumbnail {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 0px;
+  #catalogoProductos::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  /* En panel 50%: 4 cards por fila en desktop amplio */
+  .col-producto-catalogo {
+    width: 25%;
+    float: left;
+    padding: 4px;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 1600px) {
+    .col-producto-catalogo { width: 25%; }
+  }
+
+  @media (max-width: 1400px) {
+    .col-producto-catalogo { width: 33.333%; }
+  }
+
+  @media (max-width: 1200px) {
+    .col-producto-catalogo { width: 33.333%; }
+  }
+
+  @media (max-width: 992px) {
+    .col-producto-catalogo { width: 50%; }
+  }
+
+  @media (max-width: 767px) {
+    .col-producto-catalogo { width: 50%; }
+  }
+
+  .catalogo-productos .thumbnail,
+  #catalogoProductos .thumbnail {
+    background: #fff;
+    border: 1px solid #e3e6ea;
+    border-radius: 6px;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
     cursor: pointer;
     position: relative;
-    padding: 0px;
-    background-color: #fff;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    overflow: visible; /* permite menú ⋮; la imagen se recorta en .card-producto-img */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
   }
 
-  .thumbnail:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-    
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  #catalogoProductos .col-producto-catalogo:hover .thumbnail,
+  #catalogoProductos .col-producto-catalogo .thumbnail.open,
+  #catalogoProductos .col-producto-catalogo .dropdown.open {
+    z-index: 20;
+  }
+
+  .catalogo-productos .thumbnail:hover,
+  #catalogoProductos .thumbnail:hover {
+    transform: none;
+    border-color: #adb5bd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   }
 
   .producto-imagen {
     object-fit: cover;
     border-radius: 4px;
-    margin: 0 auto 10px;
+    margin: 0 auto;
     width: 100%;
     height: 100%;
   }
@@ -206,21 +257,22 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .btn-agregar {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 4px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #d0d0d0;
+    padding: 2px 8px;
+    border-radius: 3px;
     width: 100%;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
   }
 
   .btn-agregar:hover {
-    background-color: #218838;
+    background-color: #e4e4e4;
   }
 
   .btn-agregar.disabled {
-    background-color: #7d6c6c;
+    background-color: #ececec;
+    color: #999;
     cursor: not-allowed;
   }
 
@@ -343,12 +395,14 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     margin-top: 2px;
     line-height: 1.2;
     min-height: 0;
+    text-align: right;
   }
 
   .promo-etiqueta {
     display: inline-block;
     max-width: 100%;
     font-size: 11px;
+    font-weight: 600;
     color: #27ae60;
     cursor: help;
     white-space: nowrap;
@@ -367,6 +421,295 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     font-size: 11px;
   }
 
+  /* ===== Tabla de líneas de venta (compacta) ===== */
+  .tabla-lineas-venta-wrap {
+    margin: 0 0 6px;
+    overflow: visible; /* no recortar dropdown de notas */
+  }
+
+  .tabla-lineas-venta {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 11px;
+    margin-bottom: 0;
+    table-layout: fixed;
+  }
+
+  .tabla-lineas-venta thead th {
+    background: #f5f7fa;
+    color: #555;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    padding: 5px 4px;
+    border-bottom: 1px solid #dde2e8;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .tabla-lineas-venta thead th.th-producto {
+    text-align: left;
+    padding-left: 6px;
+    width: 32%;
+  }
+
+  .tabla-lineas-venta thead th.th-atencion { width: 7%; }
+  .tabla-lineas-venta thead th.th-cant { width: 14%; }
+  .tabla-lineas-venta thead th.th-money { width: 9%; }
+  .tabla-lineas-venta thead th.th-acciones { width: 8%; }
+
+  .tabla-lineas-venta tbody.nuevoProducto {
+    display: table-row-group;
+  }
+
+  .tabla-lineas-venta tr.linea-venta > td {
+    padding: 4px 3px;
+    vertical-align: middle;
+    border-bottom: 1px solid #eceff3;
+    background: #fff;
+    overflow: visible;
+    position: relative;
+  }
+
+  .tabla-lineas-venta tr.linea-venta:hover > td {
+    background: #fafbfc;
+  }
+
+  .lv-producto {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .lv-producto-img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e5e8ec;
+    flex-shrink: 0;
+    background: #f8f9fa;
+  }
+
+  .lv-producto-info {
+    min-width: 0;
+    flex: 1;
+    position: relative;
+    overflow: visible;
+  }
+
+  .lv-producto-info .nuevaDescripcionProducto {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    height: auto;
+    font-weight: 700;
+    font-size: 11px;
+    color: #222;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  .lv-producto-controles {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .lv-producto-controles .lv-presentacion {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .lv-producto-controles .lv-presentacion.lv-pres-solo-unidad,
+  .select-presentacion-venta.lv-pres-solo-unidad {
+    display: none !important;
+  }
+
+  .lv-producto-controles .select-presentacion-venta {
+    width: 100%;
+    max-width: 140px;
+    height: 24px;
+    font-size: 10px;
+    padding: 1px 4px;
+    margin: 0;
+    display: block;
+  }
+
+  .lv-producto-controles .lv-notas-wrap {
+    flex: 0 0 auto;
+    margin-top: 0;
+    position: relative;
+  }
+
+  .lv-codigo {
+    display: none !important;
+  }
+
+  .lv-producto-meta {
+    display: none !important;
+  }
+
+  .lv-notas-wrap {
+    display: inline-block;
+    text-transform: none;
+    position: relative;
+  }
+
+  .lv-notas-wrap > .btn-abrir-notas,
+  .lv-notas-wrap > .dropdown-toggle {
+    padding: 2px 6px;
+    line-height: 1.2;
+    height: 24px;
+  }
+
+  .lv-notas-wrap.open > .btn-abrir-notas,
+  .lv-notas-wrap > .btn-abrir-notas.tiene-notas {
+    background: #337ab7;
+    border-color: #2e6da4;
+    color: #fff;
+  }
+
+  .tabla-lineas-venta tr.linea-venta > td.lv-celda-producto {
+    overflow: visible;
+    vertical-align: middle;
+  }
+
+  .tabla-lineas-venta tr.linea-venta.dropdown-notas-abierto {
+    position: relative;
+    z-index: 40;
+  }
+
+  .tabla-lineas-venta tr.linea-venta.dropdown-notas-abierto > td.lv-celda-producto {
+    z-index: 41;
+  }
+
+  .lv-atencion {
+    text-align: center;
+  }
+
+  .lv-forma-atencion {
+    width: 52px;
+    max-width: 100%;
+    height: 26px;
+    padding: 0 2px;
+    font-size: 11px;
+    display: inline-block;
+    margin: 0 auto;
+  }
+
+  .lv-presentacion {
+    text-align: left;
+  }
+
+  .lv-cant {
+    text-align: center;
+  }
+
+  .lv-cant .cantidad-stepper {
+    max-width: 92px;
+    margin: 0 auto;
+  }
+
+  .tabla-lineas-venta .cantidad-stepper .btn-cantidad-ajuste {
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .tabla-lineas-venta .cantidad-stepper input[type="number"] {
+    height: 24px;
+    font-size: 12px;
+    padding: 0 2px;
+  }
+
+  .lv-cant .lbl-unidades-reales {
+    font-size: 9px;
+    color: #888;
+    margin-top: 1px;
+    line-height: 1.1;
+  }
+
+  .lv-money {
+    text-align: right;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    padding-right: 4px !important;
+  }
+
+  .lv-subtotal .nuevoPrecioProducto {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    height: auto;
+    text-align: right;
+    font-weight: 600;
+    font-size: 11px;
+    color: #333;
+    width: 100%;
+  }
+
+  .lv-desc {
+    text-align: right;
+    font-size: 11px;
+    font-weight: 700;
+    color: #27ae60;
+    white-space: nowrap;
+  }
+
+  .lv-desc.es-vacio {
+    color: #bbb;
+    font-weight: 500;
+  }
+
+  .lv-total-linea {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 700;
+    color: #111;
+    white-space: nowrap;
+  }
+
+  .lv-acciones {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .lv-acciones .btn {
+    margin: 0 1px;
+    padding: 2px 5px;
+  }
+
+  .lv-acciones .btn-duplicar-linea {
+    background: #5bc0de;
+    border-color: #46b8da;
+    color: #fff;
+  }
+
+  .promo-aplicada-info {
+    display: none !important;
+  }
+
+  @media (max-width: 1200px) {
+    .lv-producto-img { width: 24px; height: 24px; }
+    .tabla-lineas-venta { font-size: 10px; }
+  }
+
   /* Resumen compacto de totales */
   .resumen-venta-totales {
     width: 100%;
@@ -378,21 +721,21 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     align-items: baseline;
     justify-content: space-between;
     gap: 8px;
-    padding: 3px 0;
-    line-height: 1.25;
+    padding: 1px 0;
+    line-height: 1.2;
   }
 
   .resumen-label {
     flex: 1 1 auto;
     min-width: 0;
-    font-size: 13px;
+    font-size: 12px;
     color: #555;
     white-space: nowrap;
   }
 
   .resumen-monto {
     flex: 0 0 auto;
-    font-size: 13px;
+    font-size: 12px;
     color: #333;
     white-space: nowrap;
     text-align: right;
@@ -404,29 +747,31 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .resumen-fila-descuento .resumen-label .fa {
-    font-size: 11px;
+    font-size: 10px;
     margin-left: 3px;
     color: #999;
     cursor: help;
   }
 
   .resumen-fila-total {
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px dashed #ccc;
+    margin-top: 2px;
+    padding: 5px 8px;
+    border-top: none;
+    background: #e8f8ef;
+    border-radius: 4px;
   }
 
   .resumen-fila-total .resumen-label {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
-    color: #222;
+    color: #1e7e34;
     text-transform: uppercase;
   }
 
   .resumen-fila-total .resumen-monto {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
-    color: #28a745;
+    color: #1e7e34;
   }
 
   @media (max-width: 767px) {
@@ -590,16 +935,41 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .thumbnail-image {
-      border-top-left-radius: 10px !important;
-      border-top-right-radius: 10px !important;
+      border-top-left-radius: 6px !important;
+      border-top-right-radius: 6px !important;
       width: 100%;
+      height: 88px;
+      object-fit: contain;
+      object-position: center;
+      background: #f7f7f7;
+      display: block;
+      padding: 4px 4px 0;
+      box-sizing: border-box;
+  }
+
+  .card-producto-img {
+      overflow: hidden;
+      background: #f7f7f7;
+      position: relative;
+      flex-shrink: 0;
   }
 
   .first {
       position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
       width: 100%;
-      padding: 9px;
-      z-index: 2;
+      padding: 4px;
+      z-index: 3;
+      pointer-events: none;
+  }
+
+  .first .card-producto-header,
+  .first .badge,
+  .first .dropdown-disponibilidad,
+  .first .btn-menu-disponibilidad {
+      pointer-events: auto;
   }
 
   .card-producto-header {
@@ -608,14 +978,28 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       align-items: flex-start;
   }
 
+  .card-producto-header .badge {
+      font-size: 10px;
+      padding: 2px 5px;
+      font-weight: 600;
+  }
+
+  .dropdown-disponibilidad {
+      position: relative;
+      float: right;
+      z-index: 4;
+  }
+
   .btn-menu-disponibilidad {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ddd;
       border-radius: 3px;
-      padding: 2px 8px;
+      padding: 1px 5px;
       margin: 0;
       color: #444;
-      font-size: 16px;
+      font-size: 12px;
       line-height: 1;
+      position: relative;
   }
 
   .btn-menu-disponibilidad .icon {
@@ -647,15 +1031,68 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .dress-name {
-      font-size: 13px;
-      font-weight: bold;
-      width: 75%
+      font-size: 11px;
+      font-weight: 700;
+      width: 100%;
+      height: 28px;
+      line-height: 1.2;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin: 0 0 2px;
+      text-align: left;
   }
 
   .new-price {
-      font-size: 13px;
-      font-weight: bold;
-      color: red
+      font-size: 12px;
+      font-weight: 700;
+      color: #d9534f;
+      display: block;
+      text-align: left;
+      margin-bottom: 4px;
+  }
+
+  .catalogo-productos .caption,
+  #catalogoProductos .caption {
+      padding: 4px 6px 6px !important;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+  }
+
+  .catalogo-productos .btn-agregar,
+  .catalogo-productos .btn.btn-agregar,
+  .catalogo-productos .btn.btn-default.btn-sm.btn-agregar,
+  .catalogo-productos .btn.btn-success.btn-sm,
+  #catalogoProductos .btn-agregar,
+  #catalogoProductos .btn.btn-agregar,
+  #catalogoProductos .btn.btn-default.btn-sm.btn-agregar {
+      padding: 2px 4px;
+      font-size: 11px;
+      line-height: 1.25;
+      border-radius: 0 0 5px 5px;
+      margin-top: auto;
+      background: #f0f0f0;
+      border-color: #d0d0d0;
+      color: #333;
+  }
+
+  .catalogo-productos .btn-agregar:hover:not(.disabled):not(:disabled),
+  #catalogoProductos .btn-agregar:hover:not(.disabled):not(:disabled) {
+      background: #e4e4e4;
+      color: #111;
+  }
+
+  .catalogo-productos .btn-agregar.disabled,
+  .catalogo-productos .btn-agregar:disabled,
+  #catalogoProductos .btn-agregar.disabled,
+  #catalogoProductos .btn-agregar:disabled {
+      background: #ececec !important;
+      color: #999 !important;
+      border-color: #ddd !important;
+      opacity: 1;
   }
 
   .buy {
@@ -702,37 +1139,49 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       width: 100%;
   }
 
-  /* Cabecera de venta: datos a la izquierda, acciones de caja a la derecha */
-  .caja-cabecera-venta {
-    margin-bottom: 0;
+  .col-lg-6 > .box > .box-body {
+    padding: 8px 10px;
+  }
+
+  .col-lg-6 > .box > .box-body > hr {
+    margin: 4px 0;
   }
 
   .caja-cabecera-venta .form-group {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
-  .caja-cabecera-venta .col-sm-8 .form-group:last-child {
-    margin-bottom: 0;
+  .caja-cabecera-venta .input-group-addon {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .caja-cabecera-venta .form-control {
+    height: 30px;
+    padding: 4px 8px;
+    font-size: 12px;
   }
 
   .caja-acciones-botones {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 3px;
   }
 
   .caja-acciones-botones .btn {
     width: 100%;
     white-space: nowrap;
+    padding: 4px 8px;
+    font-size: 11px;
   }
 
   .forma-atencion-venta {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 8px;
-    margin-top: 12px;
-    margin-bottom: 10px;
+    gap: 6px;
+    margin-top: 6px;
+    margin-bottom: 4px;
   }
 
   .forma-atencion-venta label {
@@ -740,12 +1189,16 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     white-space: nowrap;
     flex-shrink: 0;
     font-weight: 700;
+    font-size: 12px;
   }
 
   .forma-atencion-venta select {
-    flex: 0 1 260px;
-    width: 260px;
+    flex: 0 1 200px;
+    width: 200px;
     max-width: 100%;
+    height: 30px;
+    padding: 3px 6px;
+    font-size: 12px;
   }
 
   @media (min-width: 768px) {
@@ -839,18 +1292,43 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     flex-basis: 150px; /* Ancho base para el campo de monto */
   }
 
-  /* Estilos para campos de pago y cambio */
+  /* Estilos para campos de pago y cambio (compactos) */
+  .cajasMetodoPago .form-group {
+    margin-bottom: 6px;
+  }
   .cajasMetodoPago .form-group label {
-    font-size: 15px;
-    margin-bottom: 5px;
+    font-size: 11px;
+    margin-bottom: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
   .cajasMetodoPago .form-control {
-    font-size: 22px;
-    font-weight: bold;
-    height: 45px;
+    font-size: 14px;
+    font-weight: 600;
+    height: 32px;
+    padding: 4px 8px;
+  }
+  .cajasMetodoPago textarea.form-control {
+    height: auto;
+    min-height: 52px;
+    font-size: 12px;
+    font-weight: 400;
   }
   .cajasMetodoPago .input-group-addon {
-    font-size: 20px;
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  .cajasMetodoPago select.form-control {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .pago-actions {
+    margin-top: 4px;
+  }
+  .pago-actions .btn {
+    padding: 6px 14px;
+    font-size: 13px;
   }
 
   /* Estilos legacy del total (inputs ocultos; el resumen usa .resumen-venta-totales) */
@@ -942,7 +1420,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       LA TABLA DE PRODUCTOS
       ======================================-->
 
-      <div class="col-lg-7 hidden-md hidden-sm hidden-xs  ">
+      <div class="col-lg-6 hidden-md hidden-sm hidden-xs">
 
         <div class="box box-success">
 
@@ -972,7 +1450,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
           <div class="">
             <div class="">
-              <div style="padding-left: 15px;" id="catalogoProductos">
+              <div class="catalogo-productos" id="catalogoProductos" style="padding-left: 8px; padding-right: 4px;">
                 <!-- Los productos se cargarán dinámicamente aquí -->
               </div>
               <div class="catalogo-paginacion">
@@ -1007,7 +1485,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       EL FORMULARIO
       ======================================-->
 
-      <div class="col-lg-5 col-xs-12">
+      <div class="col-lg-6 col-xs-12">
 
         <div class="box">
 
@@ -1091,7 +1569,11 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
 
                       foreach ($categorias as $key => $value) {
-                        $selectedMesero = $modoEdicionCuenta && $ventaEditar["id_mesero"] == $value['id'] ? 'selected' : ($value['id'] == 1 ? 'selected' : '');
+                        if ($modoEdicionCuenta) {
+                          $selectedMesero = ((int)$ventaEditar["id_mesero"] === (int)$value['id']) ? 'selected' : '';
+                        } else {
+                          $selectedMesero = ((int)$value['id'] === 1) ? 'selected' : '';
+                        }
                         echo "<option value='" . $value['id'] . "' " . $selectedMesero . ">" . $value['nombre'] . "</option>";
                       }
 
@@ -1158,10 +1640,24 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                 ENTRADA PARA AGREGAR PRODUCTO
                 ======================================-->
               
-                <hr style="border-top: 2px solid rgba(69, 69, 69, 0.82); margin:8px 0 6px">
+                <hr style="border-top: 1px solid #ddd; margin:4px 0">
 
-                <div class="form-group row nuevoProducto  ">
-
+                <div class="tabla-lineas-venta-wrap">
+                  <table class="tabla-lineas-venta">
+                    <thead>
+                      <tr>
+                        <th class="th-producto">Producto</th>
+                        <th class="th-atencion">Atención</th>
+                        <th class="th-cant">Cant.</th>
+                        <th class="th-money">P. Unit.</th>
+                        <th class="th-money">Subtotal</th>
+                        <th class="th-money">Desc.</th>
+                        <th class="th-money">Total</th>
+                        <th class="th-acciones">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody class="nuevoProducto"></tbody>
+                  </table>
                 </div>
 
                 <input type="hidden" id="listaProductos" name="listaProductos">
@@ -1195,7 +1691,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                         <span class="resumen-monto" id="vistaTotalDescuento">- Bs 0.00</span>
                       </div>
                       <div class="resumen-fila resumen-fila-total">
-                        <span class="resumen-label">TOTAL</span>
+                        <span class="resumen-label">Total a cobrar</span>
                         <span class="resumen-monto" id="vistaTotalVenta">Bs 0.00</span>
                       </div>
                     </div>
@@ -2058,6 +2554,207 @@ if (actualizarCuentaBtn) {
   });
 }
 
+function htmlOpcionesPreferenciasProducto() {
+  return `
+    <option value="1">Bien cocido </option>
+    <option value="2">Tres cuartos </option>
+    <option value="3">Término medio </option>
+    <option value="4">Medio rojo 🥩</option>
+    <option value="5">Rojo (Inglés) </option>
+    <option value="6">Sin yuca ❌</option>
+    <option value="7">Sin arroz ❌</option>
+    <option value="8">Sin ensalada ❌</option>
+    <option value="9">Sin chorizo ❌</option>
+    <option value="10">Sin Cordon Blue ❌</option>
+    <option value="11">Sin papas fritas ❌</option>
+    <option value="12">Sin arroz con queso ❌</option>
+    <option value="13">Más yuca ✅</option>
+    <option value="14">Más arroz ✅</option>
+    <option value="15">Más ensalada ✅</option>
+    <option value="16">Más chorizo ✅</option>
+    <option value="17">Más Cordon Blue ✅</option>
+    <option value="18">Más papas fritas ✅</option>
+    <option value="19">Más arroz con queso ✅</option>
+    <option value="20">Solo yuca</option>
+    <option value="21">Solo arroz</option>
+    <option value="22">Solo ensalada</option>
+    <option value="23">Solo papas fritas</option>
+    <option value="24">Solo chorizo</option>
+    <option value="25">Poca yuca</option>
+    <option value="26">Poco arroz</option>
+    <option value="27">Poca ensalada</option>
+    <option value="28">Pocas papas fritas</option>
+    <option value="29">Poco chorizo</option>
+    <option value="30">Salsa aparte</option>
+    <option value="31">Ají aparte 🌶️</option>
+    <option value="32">Sin sal</option>
+    <option value="33">Poca sal</option>
+    <option value="34">Bien sazonado</option>`;
+}
+
+function htmlNotasProductoLinea() {
+  return `
+      <div class="dropdown lv-notas-wrap">
+          <button class="btn btn-default btn-xs dropdown-toggle btn-abrir-notas" type="button"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  title="Preferencias">
+            <i class="fa fa-file-text-o"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right nota-dropdown">
+            <li style="width: 280px; padding: 10px;">
+              <form class="noteForm" onsubmit="return false;">
+                <label>Preferencias</label>
+                <div class="form-group">
+                  <select class="select2-nota form-control input-sm nota-producto" multiple="multiple" name="states[]">
+                    ${htmlOpcionesPreferenciasProducto()}
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label>Nota Adicional (Opcional)</label>
+                  <textarea class="form-control input-sm nota-adicional" rows="2"
+                            placeholder="Nota adicional..."></textarea>
+                </div>
+              </form>
+            </li>
+          </ul>
+        </div>`;
+}
+
+function inicializarSelect2NotasEnFila($contexto) {
+  var $root = $contexto && $contexto.length ? $contexto : $(document);
+  $root.find(".select2-nota").each(function() {
+    var $sel = $(this);
+    if ($sel.hasClass("select2-hidden-accessible")) return;
+    $sel.select2({
+      theme: "classic",
+      multiple: true,
+      width: "100%",
+      dropdownParent: $sel.closest(".nota-dropdown"),
+      language: {
+        noResults: function() { return "No hay resultados"; }
+      }
+    }).on("change", function() {
+      var $fila = $(this).closest("tr.linea-venta");
+      if (typeof actualizarEstadoBotonNotas === "function") {
+        actualizarEstadoBotonNotas($fila);
+      }
+      listarProductos();
+    });
+  });
+  $root.find(".nota-adicional").off("change.notas keyup.notas").on("change.notas keyup.notas", function() {
+    var $fila = $(this).closest("tr.linea-venta");
+    if (typeof actualizarEstadoBotonNotas === "function") {
+      actualizarEstadoBotonNotas($fila);
+    }
+    listarProductos();
+  });
+}
+
+function actualizarEstadoBotonNotas($fila) {
+  var $btn = $fila.find(".btn-abrir-notas");
+  if (!$btn.length) return;
+  var prefs = $fila.find(".nota-producto").val() || [];
+  var nota = String($fila.find(".nota-adicional").val() || "").trim();
+  var tiene = (prefs && prefs.length > 0) || nota !== "";
+  $btn.toggleClass("tiene-notas", !!tiene);
+}
+
+function construirHtmlLineaVenta(cfg) {
+  var img = cfg.imagen && String(cfg.imagen).trim() !== ""
+    ? cfg.imagen
+    : "vistas/img/productos/default/anonymous.webp";
+  var presentaciones = cfg.presentaciones || [];
+  var selectorPres = window.PresentacionesVenta
+    ? PresentacionesVenta.bloqueSelectorHtml(presentaciones, cfg.idPresentacion || 0)
+    : '<div class="lv-presentacion lv-pres-solo-unidad"><select class="form-control input-sm select-presentacion-venta lv-pres-solo-unidad"><option value="0" data-factor="1" data-nombre="Unidad">Unidad (1 und.)</option></select></div>';
+  var formaSel1 = cfg.formaAtencion === "1" || cfg.formaAtencion === 1 ? "selected" : "";
+  var formaSel2 = cfg.formaAtencion === "2" || cfg.formaAtencion === 2 ? "selected" : "";
+  var idDetalleAttr = cfg.idDetalle ? ' data-idDetalle="' + cfg.idDetalle + '"' : "";
+  var promoAttrs = cfg.promoAttr
+    ? ' data-promo=\'' + cfg.promoAttr + '\' data-subtotal-final="' + (cfg.subtotalFinal || "") + '" data-precio-final="' + (cfg.precioFinal || "") + '"'
+    : "";
+  var precioUnit = Number(cfg.precioVenta) || 0;
+  var undCalc = (Number(cfg.qty) || 1) * (Number(cfg.factor) || 1);
+  var subtotalBruto = cfg.subtotalBruto != null
+    ? Number(cfg.subtotalBruto)
+    : (precioUnit * undCalc);
+  var descMonto = Number(cfg.descuentoTotal) || 0;
+  var totalLinea = cfg.subtotalFinal != null && cfg.subtotalFinal !== ""
+    ? Number(cfg.subtotalFinal)
+    : (subtotalBruto - descMonto);
+  if (totalLinea < 0) totalLinea = 0;
+  var undLabel = cfg.unidadesLabel || ("= " + undCalc + " und.");
+  var extraNotas = cfg.extra || "";
+  var descHtml = descMonto > 0
+    ? ('- Bs ' + descMonto.toFixed(2))
+    : "—";
+  var descClass = descMonto > 0 ? "lv-desc" : "lv-desc es-vacio";
+  var mostrarDuplicar = cfg.mostrarDuplicar !== false;
+  var btnDuplicar = mostrarDuplicar
+    ? `<button type="button" class="btn btn-info btn-xs btn-duplicar-linea" title="Duplicar Producto" idProducto="${cfg.idProducto}">
+          <i class="fa fa-copy"></i>
+        </button>`
+    : "";
+
+  return `
+    <tr class="linea-venta">
+      <td class="lv-celda-producto">
+        <div class="lv-producto">
+          <img class="lv-producto-img" src="${img}" alt="" onerror="this.src='vistas/img/productos/default/anonymous.webp'">
+          <div class="lv-producto-info">
+            <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
+                   idProducto="${cfg.idProducto}"${idDetalleAttr} name="agregarProducto"
+                   value="${cfg.descripcion}" readonly required>
+            <div class="lv-producto-controles">
+              ${selectorPres}
+              ${extraNotas}
+            </div>
+          </div>
+        </div>
+      </td>
+      <td class="lv-atencion">
+        <select class="form-control input-sm lv-forma-atencion" name="formaAtencionDetalle">
+          <option value="1" ${formaSel1}>🍽️ M</option>
+          <option value="2" ${formaSel2}>🚚 LL</option>
+        </select>
+      </td>
+      <td class="lv-cant">
+        <div class="cantidad-stepper">
+          <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir">
+            <i class="fa fa-minus"></i>
+          </button>
+          <input type="number" class="form-control input-sm nuevaCantidadProducto"
+                 name="nuevaCantidadProducto" min="1" value="${cfg.qty || 1}"
+                 stock="${cfg.stock}" data-idProducto="${cfg.idProducto}" data-inventariable="${cfg.inventariable ? 1 : 0}"
+                 data-factor="${cfg.factor || 1}"
+                 data-id-presentacion="${cfg.idPresentacion > 0 ? cfg.idPresentacion : ""}"
+                 data-nombre-presentacion="${cfg.nombrePresentacion || "Unidad"}" required>
+          <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+        <div class="lbl-unidades-reales">${undLabel}</div>
+      </td>
+      <td class="lv-money lv-precio-unit">Bs ${precioUnit.toFixed(2)}</td>
+      <td class="lv-money lv-subtotal ingresoPrecio">
+        <input type="text" class="form-control input-sm nuevoPrecioProducto"
+               precioReal="${precioUnit}" precioOriginal="${precioUnit}"${promoAttrs}
+               name="nuevoPrecioProducto" value="${subtotalBruto.toFixed(2)}" readonly required>
+        <input type="hidden" precioRealCompra="${cfg.precioCompra}"
+               name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto" value="${cfg.precioCompra}">
+        <div class="promo-aplicada-info"></div>
+      </td>
+      <td class="${descClass}">${descHtml}</td>
+      <td class="lv-total-linea">Bs ${totalLinea.toFixed(2)}</td>
+      <td class="lv-acciones">
+        ${btnDuplicar}
+        <button type="button" class="btn btn-danger btn-xs quitarProducto" idProducto="${cfg.idProducto}" title="Quitar">
+          <i class="fa fa-trash"></i>
+        </button>
+      </td>
+    </tr>`;
+}
+
 function agregarLineaProductoEdicion(linea) {
   var formaAtencionLinea = linea.forma_atencion === "LL" ? "2" : "1";
   var formaAtencionGeneral = $("#formaAtencion").val();
@@ -2092,53 +2789,39 @@ function agregarLineaProductoEdicion(linea) {
   };
   var promoAttr = JSON.stringify(promoData).replace(/'/g, "&#39;");
 
-  $(".nuevoProducto").append(`
-    <div class="row" style="padding:4px 15px">
-      <div class="col-xs-4" style="padding-right:0px">
-        <div class="input-group">
-          <span class="input-group-addon" style="padding: 0px 4px">
-           <button type="button" class="btn btn-danger btn-xs quitarProducto" idProducto="${linea.id_producto}">
-              <i class="fa fa-times"></i>
-            </button>
-          </span>
-          <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
-                 idProducto="${linea.id_producto}" data-idDetalle="${linea.id}" name="agregarProducto"
-                 value="${linea.producto}" readonly required>
-        </div>
-      </div>
-      <div class="col-xs-2" style="padding-right:0px">
-        <select class="form-control input-sm" name="formaAtencionDetalle" style="padding:2px">
-          <option value="1" ${formaAtencionLinea === "1" ? "selected" : ""}>🍽️ M</option>
-          <option value="2" ${formaAtencionLinea === "2" ? "selected" : ""}>🚚 LL</option>
-        </select>
-      </div>
-      <div class="col-xs-2">
-        <div class="cantidad-stepper">
-          <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad">
-            <i class="fa fa-minus"></i>
-          </button>
-          <input type="number" class="form-control input-sm nuevaCantidadProducto"
-                 name="nuevaCantidadProducto" min="1" value="${linea.cantidad}"
-                 stock="${stockLinea}" data-idProducto="${linea.id_producto}" data-inventariable="${esInventariableLinea ? 1 : 0}" required>
-          <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
-            <i class="fa fa-plus"></i>
-          </button>
-        </div>
-      </div>
-      <div class="col-xs-4 ingresoPrecio" style="padding-left:0px">
-        <div class="input-group">
-          <span class="input-group-addon"><i><b>Bs</b></i></span>
-          <input type="text" class="form-control input-sm nuevoPrecioProducto"
-                 precioReal="${precioOrigNum}" precioOriginal="${precioOrigNum}"
-                 data-promo='${promoAttr}' data-subtotal-final="${subtotalFinal}" data-precio-final="${precioFinal}"
-                 name="nuevoPrecioProducto"
-                 value="${subtotalOriginal.toFixed(2)}" readonly required>
-          <input type="hidden" precioRealCompra="${linea.precio_compra}"
-                 name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto"
-                 value="${linea.precio_compra}">
-        </div>
-      </div>
-    </div>`);
+  var factorLinea = parseInt(linea.unidades_por_presentacion, 10) || 1;
+  var idPresLinea = parseInt(linea.id_presentacion, 10) || 0;
+  var nombrePresLinea = linea.nombre_presentacion || "Unidad";
+  var qtyPresLinea = parseInt(linea.cantidad_presentaciones, 10);
+  if (!qtyPresLinea || qtyPresLinea < 1) {
+    qtyPresLinea = Math.max(1, Math.round(cantLinea / factorLinea));
+  }
+
+  $(".nuevoProducto").append(construirHtmlLineaVenta({
+    idProducto: linea.id_producto,
+    idDetalle: linea.id,
+    descripcion: linea.producto,
+    codigo: linea.codigo || "",
+    imagen: linea.imagen || "",
+    stock: stockLinea,
+    inventariable: esInventariableLinea,
+    precioVenta: precioOrigNum,
+    precioCompra: linea.precio_compra,
+    qty: qtyPresLinea,
+    factor: factorLinea,
+    idPresentacion: idPresLinea,
+    nombrePresentacion: nombrePresLinea,
+    presentaciones: linea.presentaciones || [],
+    formaAtencion: formaAtencionLinea,
+    promoAttr: promoAttr,
+    subtotalBruto: subtotalOriginal,
+    descuentoTotal: descTotal,
+    subtotalFinal: subtotalFinal,
+    precioFinal: precioFinal,
+    unidadesLabel: "= " + cantLinea + " und.",
+    extra: esInventariableLinea ? "" : htmlNotasProductoLinea(),
+    mostrarDuplicar: true
+  }));
 
   var nuevoSelector = $(".nuevoProducto").find("select[name='formaAtencionDetalle']").last();
   if (formaAtencionGeneral !== "3") {
@@ -2156,6 +2839,12 @@ $(document).ready(function() {
     sumarTotalPrecios();
     listarProductos();
     $(".nuevoPrecioProducto").number(true, 2);
+    setTimeout(function() {
+      inicializarSelect2NotasEnFila($(".nuevoProducto"));
+      $(".linea-venta").each(function() {
+        actualizarEstadoBotonNotas($(this));
+      });
+    }, 100);
     if (window.PromocionesVenta) {
       PromocionesVenta.recalcular(function(){ listarProductos(); });
     }
@@ -2179,140 +2868,31 @@ function agregarProductoAVenta(producto) {
    let extra = '';
    
   if (!esInventariable) {
-    extra = `
-      <span class="input-group-addon" style="padding: 0px 4px">
-        <div class="dropdown">
-          <button class="btn btn-default btn-xs dropdown-toggle" type="button" 
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-file-text-o"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right nota-dropdown">
-            <li style="width: 280px; padding: 10px;">
-              <form class="noteForm" onsubmit="return false;">
-                <label for="nota">Preferencias</label>
-                <div class="form-group">
-                  <select class="select2-nota form-control input-sm nota-producto" multiple="multiple" name="states[]">
-                      <option value="1">Bien cocido </option>
-                      <option value="2">Tres cuartos </option>
-                      <option value="3">Término medio </option>
-                      <option value="4">Medio rojo 🥩</option>
-                      <option value="5">Rojo (Inglés) </option>
-
-                      <!-- Sin... -->
-                      <option value="6">Sin yuca ❌</option>
-                      <option value="7">Sin arroz ❌</option>
-                      <option value="8">Sin ensalada ❌</option>
-                      <option value="9">Sin chorizo ❌</option>
-                      <option value="10">Sin Cordon Blue ❌</option>
-                      <option value="11">Sin papas fritas ❌</option>
-                      <option value="12">Sin arroz con queso ❌</option>
-
-                      <!-- Más... -->
-                      <option value="13">Más yuca ✅</option>
-                      <option value="14">Más arroz ✅</option>
-                      <option value="15">Más ensalada ✅</option>
-                      <option value="16">Más chorizo ✅</option>
-                      <option value="17">Más Cordon Blue ✅</option>
-                      <option value="18">Más papas fritas ✅</option>
-                      <option value="19">Más arroz con queso ✅</option>
-
-                      <!-- Solo... -->
-                      <option value="20">Solo yuca</option>
-                      <option value="21">Solo arroz</option>
-                      <option value="22">Solo ensalada</option>
-                      <option value="23">Solo papas fritas</option>
-                      <option value="24">Solo chorizo</option>
-
-                      <!-- Poco... -->
-                      <option value="25">Poca yuca</option>
-                      <option value="26">Poco arroz</option>
-                      <option value="27">Poca ensalada</option>
-                      <option value="28">Pocas papas fritas</option>
-                      <option value="29">Poco chorizo</option>
-
-                      <!-- Otros -->
-                      <option value="30">Salsa aparte</option>
-                      <option value="31">Ají aparte 🌶️</option>
-                      <option value="32">Sin sal</option>
-                      <option value="33">Poca sal</option>
-                      <option value="34">Bien sazonado</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="descripcion">Nota Adicional (Opcional)</label>
-                  <textarea class="form-control input-sm nota-adicional" rows="2" 
-                            placeholder="Nota adicional..."></textarea>
-                </div>
-              </form>
-            </li>
-          </ul>
-        </div>
-      </span>`;
+    extra = htmlNotasProductoLinea();
   }
   var formaAtencionGeneral = $("#formaAtencion").val();
 
-  $(".nuevoProducto").append(`
-    <div class="row" style="padding:4px 15px">
-      <!-- Columna para descripción y botones -->
-      <div class="col-xs-4" style="padding-right:0px">
-        <div class="input-group">
-          <span class="input-group-addon" style="padding: 0px 4px">
-           <button type="button" class="btn btn-danger btn-xs quitarProducto" idProducto="${producto.id}">
-              <i class="fa fa-times"></i>
-            </button>
-          </span>
-          <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
-                 idProducto="${producto.id}" name="agregarProducto" 
-                 value="${producto.descripcion}" readonly required>
-                 ${extra}
-        </div>
-      </div>
+  $(".nuevoProducto").append(construirHtmlLineaVenta({
+    idProducto: producto.id,
+    descripcion: producto.descripcion,
+    codigo: producto.codigo || "",
+    imagen: producto.imagen || "",
+    stock: esInventariable ? producto.stock : 1,
+    inventariable: esInventariable,
+    precioVenta: Number(producto.precio_venta) || 0,
+    precioCompra: producto.precio_compra,
+    qty: 1,
+    factor: 1,
+    idPresentacion: 0,
+    nombrePresentacion: "Unidad",
+    presentaciones: producto.presentaciones || [],
+    formaAtencion: formaAtencionGeneral,
+    subtotalBruto: Number(producto.precio_venta || 0),
+    unidadesLabel: "= 1 und.",
+    extra: extra,
+    mostrarDuplicar: true
+  }));
 
-      <!-- Columna para tipo de servicio -->
-      <div class="col-xs-2" style="padding-right:0px">
-        <select class="form-control input-sm" name="formaAtencionDetalle" id="formaAtencionDetalle" style="padding:2px" >
-          <option value="1" ${formaAtencionGeneral === "1" ? "selected" : ""}>🍽️ M</option>
-          <option value="2" ${formaAtencionGeneral === "2" ? "selected" : ""}>🚚 LL</option>
-        </select>
-      </div>
-
-      <!-- Columna para cantidad -->
-      <div class="col-xs-2">
-        <div class="cantidad-stepper">
-          <button type="button" class="btn btn-default btn-sm btn-cantidad-ajuste btn-minus" data-action="decrementar" title="Disminuir cantidad">
-            <i class="fa fa-minus"></i>
-          </button>
-          <input type="number" class="form-control input-sm nuevaCantidadProducto" 
-                 name="nuevaCantidadProducto" min="1" value="1" 
-                 stock="${esInventariable ? producto.stock : 1}" data-idProducto="${producto.id}" data-inventariable="${esInventariable ? 1 : 0}" required>
-          <button type="button" class="btn btn-success btn-sm btn-cantidad-ajuste btn-plus" data-action="incrementar" title="Aumentar cantidad">
-            <i class="fa fa-plus"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Columna para precio -->
-      <div class="col-xs-4 ingresoPrecio" style="padding-left:0px">
-        <div class="input-group">
-          <span class="input-group-addon"><i><b>Bs</b></i></span>
-          <input type="text" class="form-control input-sm nuevoPrecioProducto" 
-                 precioReal="${producto.precio_venta}" precioOriginal="${producto.precio_venta}"
-                 name="nuevoPrecioProducto" 
-                 value="${producto.precio_venta}" readonly required>
-          <input type="hidden" precioRealCompra="${producto.precio_compra}" 
-                 name="nuevoPrecioCompraProducto" class="nuevoPrecioCompraProducto" 
-                 value="${producto.precio_compra}">
-          <span class="input-group-addon" style="padding: 0px 4px">
-            <button type="button" class="btn btn-primary btn-xs" title="Duplicar Producto"">
-            <i class="fa fa-files-o" aria-hidden="true"></i>
-            </button>
-          </span>
-        </div>
-      </div>
-    </div>`);
-
-
- 
   // Después de agregar el producto, verificar el estado actual del selector general
   var nuevoSelector = $(".nuevoProducto").find("select[name='formaAtencionDetalle']").last();
   
@@ -2320,31 +2900,9 @@ function agregarProductoAVenta(producto) {
     nuevoSelector.prop("disabled", true); // Deshabilitar el selector del nuevo producto
   }
 
-  // Inicializar Select2 para las notas con un timeout para asegurar que el DOM esté listo
   setTimeout(function() {
-    $('.select2-nota').each(function() {
-      if (!$(this).hasClass('select2-hidden-accessible')) {
-        $(this).select2({
-          theme: "classic",
-          multiple: true,
-          width: '100%',
-          dropdownParent: $(this).closest('.nota-dropdown'),
-          language: {
-            noResults: function() {
-              return "No hay resultados";
-            }
-          }
-        }).on('change', function() {
-          listarProductos();
-        });
-      }
-    });
+    inicializarSelect2NotasEnFila($(".nuevoProducto .linea-venta").last());
   }, 100);
-
-  // Agregar evento change para la descripción
-  $('.nota-adicional').on('change keyup', function() {
-    listarProductos();
-  });
 
   sumarTotalPrecios();
   calcularPago();
@@ -2359,22 +2917,27 @@ function agregarProductoAVenta(producto) {
   }
 }
 
-// Actualizar el código de inicialización de Select2
+// Preferencias: dropdown Bootstrap (como sistema_old), sin modal
 $(document).ready(function() {
-  // Prevenir que el dropdown se cierre al hacer clic dentro
-  $(document).on('click', '.nota-dropdown', function(e) {
-    e.stopPropagation();
-  });
-  
-  $(document).on('click', '.select2-selection__choice__remove', function(e) {
+  $(document).on("click", ".nota-dropdown", function(e) {
     e.stopPropagation();
   });
 
-  // Detener la propagación de eventos en el select2
-  $(document).on('click', '.select2-container', function(e) {
+  $(document).on("click", ".select2-selection__choice__remove, .select2-container", function(e) {
     e.stopPropagation();
   });
 
+  $(document).on("show.bs.dropdown", ".lv-notas-wrap", function() {
+    $(this).closest("tr.linea-venta").addClass("dropdown-notas-abierto");
+  });
+
+  $(document).on("hide.bs.dropdown", ".lv-notas-wrap", function() {
+    var $fila = $(this).closest("tr.linea-venta");
+    $fila.removeClass("dropdown-notas-abierto");
+    if (typeof actualizarEstadoBotonNotas === "function") {
+      actualizarEstadoBotonNotas($fila);
+    }
+  });
 });
 </script>
 <script src="vistas/js/catalogo-productos.js"></script>

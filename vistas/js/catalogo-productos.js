@@ -3,7 +3,7 @@ class CatalogoProductos {
     this.productos = [];
     this.categorias = [];
     this.paginaActual = 1;
-    this.registrosPorPagina = 12;
+    this.registrosPorPagina = 20;
     this.categoriaSeleccionada = 'todos';
     this.terminoBusqueda = '';
     this.productosAgregados = new Set();
@@ -286,17 +286,17 @@ class CatalogoProductos {
       let stockClass = estaDisponible ? 'badge bg-green' : 'badge bg-red';
       let etiquetaStock;
       if (inventariable) {
-        etiquetaStock = estaDisponible ? `Disponible: ${stock}` : 'Agotado';
+        etiquetaStock = estaDisponible ? `Disp. ${stock}` : 'Agotado';
       } else {
-        etiquetaStock = estaDisponible ? 'Disponible' : 'Agotado';
+        etiquetaStock = estaDisponible ? 'Disp.' : 'Agotado';
       }
 
       const menuHtml = !inventariable
-        ? `<div class="dropdown dropdown-disponibilidad pull-right">
-              <button type="button" class="btn btn-box-tool dropdown-toggle btn-menu-disponibilidad"
+        ? `<div class="dropdown dropdown-disponibilidad">
+              <button type="button" class="btn btn-default btn-xs dropdown-toggle btn-menu-disponibilidad"
                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                       title="Opciones">
-                <i class="icon ion-android-more-vertical"></i>
+                <i class="fa fa-ellipsis-v"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li class="${estaDisponible ? 'disabled' : ''}">
@@ -313,39 +313,30 @@ class CatalogoProductos {
            </div>`
         : '';
 
-      contenedor.append(`<div class="col-sm-3 col-md-3 col-lg-3" style="padding-left:0px">
-        <div class="thumbnail" style="height: 100%;">
+      contenedor.append(`<div class="col-producto-catalogo">
+        <div class="thumbnail">
           <div class="first">
             <div class="card-producto-header">
               <span class="${stockClass}">${etiquetaStock}</span>
               ${menuHtml}
             </div>
-          </div> 
-          <div style="overflow: hidden;">
-            <img src="${producto.imagen}" 
-                 alt="${producto.descripcion}" 
-                 class="thumbnail-image" 
-                 style="object-fit: cover;"
+          </div>
+          <div class="card-producto-img">
+            <img src="${producto.imagen}"
+                 alt="${producto.descripcion}"
+                 class="thumbnail-image"
                  onerror="this.src='vistas/img/productos/default/d.webp'">
           </div>
-          <div class="caption" style=" display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div class="d-flex justify-content-between">
-                <span class="dress-name" style="height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                  ${producto.descripcion}
-                </span>
-                <span class="new-price">Bs ${producto.precio_venta || '0.00'}</span> 
-              </div>
-            </div>
-            <div style="margin-top: auto;">
-              <button class="btn btn-success btn-sm w-100 ${btnClass}"  
-                 href="javascript:void(0)" 
-                 role="button" 
-                 ${puedeAgregar ? '' : 'disabled'} 
-                 idProducto="${producto.id}">
-                 <i class="fa fa-plus"></i> Agregar
-              </button>
-            </div>
+          <div class="caption">
+            <span class="dress-name" title="${producto.descripcion}">${producto.descripcion}</span>
+            <span class="new-price">Bs ${producto.precio_venta || '0.00'}</span>
+            <button class="btn btn-default btn-sm btn-block ${btnClass}"
+               href="javascript:void(0)"
+               role="button"
+               ${puedeAgregar ? '' : 'disabled'}
+               idProducto="${producto.id}">
+               <i class="fa fa-plus"></i> ${puedeAgregar ? 'Agregar' : (estaDisponible ? 'En venta' : 'Agotado')}
+            </button>
           </div>
         </div>
       </div>`);
@@ -369,9 +360,9 @@ class CatalogoProductos {
         <div class="registros-por-pagina">
           <span>Mostrar</span>
           <select id="registrosPorPagina">
-            <option value="12" ${this.registrosPorPagina === 12 ? 'selected' : ''}>12</option>
-            <option value="24" ${this.registrosPorPagina === 24 ? 'selected' : ''}>24</option>
-            <option value="48" ${this.registrosPorPagina === 48 ? 'selected' : ''}>48</option>
+            <option value="20" ${this.registrosPorPagina === 20 ? 'selected' : ''}>20</option>
+            <option value="40" ${this.registrosPorPagina === 40 ? 'selected' : ''}>40</option>
+            <option value="60" ${this.registrosPorPagina === 60 ? 'selected' : ''}>60</option>
           </select>
           <span>registros</span>
         </div>

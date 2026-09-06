@@ -390,14 +390,17 @@ window.PromocionesVenta = {
     var items = [];
     $(".nuevaDescripcionProducto").each(function(linea) {
       var $producto = $(this);
-      var $fila = $producto.closest(".row");
+      var $fila = $producto.closest(".linea-venta");
+      if (!$fila.length) $fila = $producto.closest(".row");
       var $cantidad = $fila.find(".nuevaCantidadProducto");
       var $precio = $fila.find(".nuevoPrecioProducto");
       var precioOriginal = PromocionesVenta.obtenerPrecioOriginal($precio);
       items.push({
         linea: linea,
         id: $producto.attr("idProducto") || $producto.attr("data-idProducto"),
-        cantidad: $cantidad.val(),
+        cantidad: window.PresentacionesVenta
+          ? PresentacionesVenta.unidadesDeInput($cantidad)
+          : $cantidad.val(),
         precio: precioOriginal
       });
     });
@@ -424,11 +427,14 @@ window.PromocionesVenta = {
   aplicarEnUI: function(mapa) {
     $(".nuevaDescripcionProducto").each(function(linea) {
       var $producto = $(this);
-      var $fila = $producto.closest(".row");
+      var $fila = $producto.closest(".linea-venta");
+      if (!$fila.length) $fila = $producto.closest(".row");
       var id = String($producto.attr("idProducto") || $producto.attr("data-idProducto") || "");
       var $cantidad = $fila.find(".nuevaCantidadProducto");
       var $precio = $fila.find(".nuevoPrecioProducto");
-      var cantLinea = parseFloat($cantidad.val() || 0);
+      var cantLinea = window.PresentacionesVenta
+        ? PresentacionesVenta.unidadesDeInput($cantidad)
+        : parseFloat($cantidad.val() || 0);
       var precioBase = PromocionesVenta.obtenerPrecioOriginal($precio);
       var subtotalOriginal = round2(precioBase * cantLinea);
 
@@ -484,7 +490,7 @@ window.PromocionesVenta = {
         };
       }
 
-      // El input visible muestra el SUBTOTAL ORIGINAL (qty × precio original)
+      // SUBTOTAL = bruto; DESC/TOTAL en columnas dedicadas
       $precio.attr("precioReal", precioBase);
       $precio.attr("precioOriginal", precioBase);
       $precio.attr("data-subtotal-final", subtotalFinal);
@@ -492,10 +498,29 @@ window.PromocionesVenta = {
       $precio.attr("data-promo", JSON.stringify(promoData));
       $precio.val(subtotalOriginal.toFixed(2));
 
+      var $precioUnitLbl = $fila.find(".lv-precio-unit");
+      if ($precioUnitLbl.length) {
+        $precioUnitLbl.text("Bs " + precioBase.toFixed(2));
+      }
+
+      var $descCel = $fila.find(".lv-desc");
+      if ($descCel.length) {
+        if (descTotal > 0) {
+          $descCel.removeClass("es-vacio").text("- Bs " + descTotal.toFixed(2));
+        } else {
+          $descCel.addClass("es-vacio").text("—");
+        }
+      }
+
+      var $totalCel = $fila.find(".lv-total-linea");
+      if ($totalCel.length) {
+        $totalCel.text("Bs " + subtotalFinal.toFixed(2));
+      }
+
       var $badge = $fila.find(".promo-aplicada-info");
       if (!$badge.length) {
         $badge = $('<div class="promo-aplicada-info"></div>');
-        $fila.find(".ingresoPrecio").append($badge);
+        $fila.find(".ingresoPrecio, .lv-subtotal").first().append($badge);
       }
 
       // Destruir tooltip previo para no duplicar instancias
@@ -521,7 +546,7 @@ window.PromocionesVenta = {
 
         $badge.html(
           "<span class='promo-etiqueta' tabindex='0'>" +
-          "Promo: - Bs " + descTotal.toFixed(2) +
+          "- Bs " + descTotal.toFixed(2) +
           " <i class='fa fa-info-circle'></i></span>"
         ).show();
 

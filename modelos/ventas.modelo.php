@@ -130,8 +130,8 @@ class ModeloVentas
 			$idVenta = $conexion->lastInsertId();
 
 			// 2. Preparar el statement para insertar los productos en "detalle_venta"
-			$stmtDetalle = $conexion->prepare("INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion) 
-											   VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)");
+			$stmtDetalle = $conexion->prepare("INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion, id_presentacion, nombre_presentacion, cantidad_presentaciones, unidades_por_presentacion) 
+											   VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion, :id_presentacion, :nombre_presentacion, :cantidad_presentaciones, :unidades_por_presentacion)");
 
 			// Enlazamos los parámetros estáticos (que no cambian en el bucle)
 			$stmtDetalle->bindParam(":id_venta", $idVenta, PDO::PARAM_INT);
@@ -168,6 +168,7 @@ class ModeloVentas
 				}
 
 				$stmtDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
+				self::bindPresentacionDetalle($stmtDetalle, $producto);
 
 				// Ejecutar el registro para cada producto
 				if (!$stmtDetalle->execute()) {
@@ -747,8 +748,8 @@ class ModeloVentas
 			$idsDetalleNuevos = [];
 
 			$stmtDetalle = $conexion->prepare(
-				"INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion)
-				 VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion)"
+				"INSERT INTO detalle_venta(id_venta, id_producto, producto, cantidad, precio_venta, precio_original, tipo_descuento, valor_descuento, descuento_unitario, descuento_total, id_promocion, id_intervalo_promocion, nombre_promocion, precio_compra, subtotal, preferencias, nota_adicional, forma_atencion, id_presentacion, nombre_presentacion, cantidad_presentaciones, unidades_por_presentacion)
+				 VALUES (:id_venta, :id_producto, :producto, :cantidad, :precio_venta, :precio_original, :tipo_descuento, :valor_descuento, :descuento_unitario, :descuento_total, :id_promocion, :id_intervalo_promocion, :nombre_promocion, :precio_compra, :subtotal, :preferencias, :nota_adicional, :forma_atencion, :id_presentacion, :nombre_presentacion, :cantidad_presentaciones, :unidades_por_presentacion)"
 			);
 			$stmtDetalle->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
 
@@ -758,7 +759,9 @@ class ModeloVentas
 				 valor_descuento = :valor_descuento, descuento_unitario = :descuento_unitario, descuento_total = :descuento_total,
 				 id_promocion = :id_promocion, id_intervalo_promocion = :id_intervalo_promocion, nombre_promocion = :nombre_promocion,
 				 precio_compra = :precio_compra, subtotal = :subtotal,
-				 preferencias = :preferencias, nota_adicional = :nota_adicional, forma_atencion = :forma_atencion
+				 preferencias = :preferencias, nota_adicional = :nota_adicional, forma_atencion = :forma_atencion,
+				 id_presentacion = :id_presentacion, nombre_presentacion = :nombre_presentacion,
+				 cantidad_presentaciones = :cantidad_presentaciones, unidades_por_presentacion = :unidades_por_presentacion
 				 WHERE id = :id_detalle AND id_venta = :id_venta"
 			);
 			$stmtUpdateDetalle->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
@@ -797,6 +800,7 @@ class ModeloVentas
 					$stmtUpdateDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
+					self::bindPresentacionDetalle($stmtUpdateDetalle, $producto);
 					$stmtUpdateDetalle->bindValue(":id_detalle", $idDetalle, PDO::PARAM_INT);
 
 					if (!$stmtUpdateDetalle->execute()) {
@@ -813,6 +817,7 @@ class ModeloVentas
 					$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
+					self::bindPresentacionDetalle($stmtDetalle, $producto);
 
 					if (!$stmtDetalle->execute()) {
 						throw new Exception("Error al registrar nuevo detalle de venta.");
@@ -953,6 +958,32 @@ class ModeloVentas
 			"id_intervalo_promocion" => $idIntervalo,
 			"nombre_promocion" => $idPromocion ? ($promo["nombre_promocion"] ?? null) : null
 		];
+	}
+
+	static private function bindPresentacionDetalle($stmt, $producto)
+	{
+		$idPres = isset($producto["id_presentacion"]) ? intval($producto["id_presentacion"]) : 0;
+		if ($idPres > 0) {
+			$stmt->bindValue(":id_presentacion", $idPres, PDO::PARAM_INT);
+		} else {
+			$stmt->bindValue(":id_presentacion", null, PDO::PARAM_NULL);
+		}
+		$nombre = $producto["nombre_presentacion"] ?? null;
+		$stmt->bindValue(":nombre_presentacion", $nombre, $nombre === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+
+		$cantPres = isset($producto["cantidad_presentaciones"]) ? intval($producto["cantidad_presentaciones"]) : null;
+		if ($cantPres !== null && $cantPres > 0) {
+			$stmt->bindValue(":cantidad_presentaciones", $cantPres, PDO::PARAM_INT);
+		} else {
+			$stmt->bindValue(":cantidad_presentaciones", null, PDO::PARAM_NULL);
+		}
+
+		$factor = isset($producto["unidades_por_presentacion"]) ? intval($producto["unidades_por_presentacion"]) : null;
+		if ($factor !== null && $factor > 0) {
+			$stmt->bindValue(":unidades_por_presentacion", $factor, PDO::PARAM_INT);
+		} else {
+			$stmt->bindValue(":unidades_por_presentacion", null, PDO::PARAM_NULL);
+		}
 	}
 
 	static private function bindPromocionDetalle($stmt, $producto)

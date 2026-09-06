@@ -183,10 +183,13 @@ class ControladorArqueo {
     }
 
     /**
-     * Obtiene el número de ticket actual de la apertura de caja
-     * @return int
+     * Obtiene el último número de ticket usado en el arqueo.
+     * Prioriza el máximo de ventas (incluye cuentas pendientes) para no
+     * desfasar el N° ticket de la pantalla crear-venta.
      */
     static public function ctrObtenerUltimoNroTicket($idArqueo) {
-        return ModeloArqueo::mdlObtenerUltimoNroTicket($idArqueo);
+        $desdeVentas = (int) ModeloArqueo::mdlObtenerUltimoNroTicketDeVentas($idArqueo);
+        $desdeArqueo = (int) ModeloArqueo::mdlObtenerUltimoNroTicket($idArqueo);
+        return max($desdeVentas, $desdeArqueo);
     }
 } 

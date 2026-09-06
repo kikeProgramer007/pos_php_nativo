@@ -6,6 +6,8 @@ require_once "../modelos/productos.modelo.php";
 require_once "../controladores/categorias.controlador.php";
 require_once "../modelos/categorias.modelo.php";
 
+require_once "../modelos/producto_presentaciones.modelo.php";
+
 class AjaxProductos{
 
   /*=============================================
@@ -63,6 +65,14 @@ class AjaxProductos{
       $valor = $this->idProducto;
       $orden = "id";
       $respuesta = ControladorProductos::ctrMostrarProductos($item, $valor,$orden);
+
+      if (is_array($respuesta) && isset($respuesta["id"])) {
+        try {
+          $respuesta["presentaciones"] = ModeloProductoPresentaciones::mdlListarPorProducto($respuesta["id"], true);
+        } catch (Exception $e) {
+          $respuesta["presentaciones"] = [];
+        }
+      }
 
       echo json_encode($respuesta);
 

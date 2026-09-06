@@ -340,6 +340,53 @@ MODAL EDITAR PRODUCTO
             </div>
             <!-- ENTRADA PARA SUBIR FOTO -->
 
+            <!-- PRESENTACIONES DE VENTA -->
+            <div class="form-group" id="bloquePresentacionesProducto" style="display:none; border-top:1px solid #eee; padding-top:12px; margin-top:8px;">
+              <div class="panel" style="margin-bottom:8px;"><strong>PRESENTACIONES DE VENTA</strong></div>
+              <p class="help-block" style="margin-top:0;">
+                La <strong>Unidad</strong> (1) es automática. Agregue solo presentaciones adicionales (Balde, Six-pack, Caja…).
+                El inventario sigue en unidades individuales.
+              </p>
+              <div class="table-responsive">
+                <table class="table table-bordered table-condensed" id="tablaPresentacionesProducto" style="margin-bottom:8px;">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th width="90">Unidades</th>
+                      <th width="70">Orden</th>
+                      <th width="90">Estado</th>
+                      <th width="90">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="row">
+                <div class="col-xs-4">
+                  <input type="hidden" id="presId" value="0">
+                  <input type="text" class="form-control input-sm" id="presNombre" placeholder="Ej. BALDE" maxlength="80">
+                </div>
+                <div class="col-xs-2">
+                  <input type="number" class="form-control input-sm" id="presUnidades" min="2" placeholder="Und.">
+                </div>
+                <div class="col-xs-2">
+                  <input type="number" class="form-control input-sm" id="presOrden" min="0" value="0" placeholder="Orden">
+                </div>
+                <div class="col-xs-2">
+                  <select class="form-control input-sm" id="presEstado">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                  </select>
+                </div>
+                <div class="col-xs-2">
+                  <button type="button" class="btn btn-success btn-sm btn-block" id="btnGuardarPresentacion">
+                    <i class="fa fa-plus"></i> Agregar
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs btn-block" id="btnCancelarPresentacion" style="margin-top:4px;">Cancelar</button>
+                </div>
+              </div>
+            </div>
+
             <div class="form-group">
 
               <div class="panel">SUBIR IMAGEN</div>

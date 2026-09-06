@@ -96,6 +96,19 @@ class ControladorVentas{
 			$hora = date('H:i:s');
 
 			/*=============================================
+			NORMALIZAR PRESENTACIONES → UNIDADES REALES
+			=============================================*/
+			$norm = self::normalizarPresentacionesEnLista($listaProductos);
+			if ($norm["status"] !== "ok") {
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => $norm["mensaje"]
+				]);
+				return;
+			}
+			$listaProductos = $norm["productos"];
+
+			/*=============================================
 			RECALCULAR PROMOCIONES EN BACKEND (antes de pagos)
 			=============================================*/
 			$promoCalc = self::aplicarPromocionesAListaProductos($listaProductos);
@@ -247,9 +260,20 @@ class ControladorVentas{
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
 				self::actualizarMeseroPorVenta($_POST["seleccionarMesero"], $listaProductos, $fecha.' '.$hora);
 
-				if (!$esPendiente) {
-					$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
-					ModeloArqueo::mdlRegistrarIngreso($arqueoActual ,$ultimoNroTicket, number_format($totalNeto, 2, '.', ''),$totalEfectivo, $totalQR);
+				$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
+				if ($arqueoActual) {
+					if (!$esPendiente) {
+						ModeloArqueo::mdlRegistrarIngreso(
+							$arqueoActual,
+							$ultimoNroTicket,
+							number_format($totalNeto, 2, '.', ''),
+							$totalEfectivo,
+							$totalQR
+						);
+					} else {
+						// Cuenta pendiente: no suma dinero, pero sí consume el N° ticket
+						ModeloArqueo::mdlActualizarSoloNroTicket($arqueoActual, $ultimoNroTicket);
+					}
 				}
 				ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($_POST["idArqueoCaja"]);
 
@@ -261,7 +285,8 @@ class ControladorVentas{
 					"status" => "ok",
 					"mensaje" => $mensaje,
 					"idVenta" => $respuesta["idVenta"],
-					"esPendiente" => $esPendiente
+					"esPendiente" => $esPendiente,
+					"nroTicket" => $ultimoNroTicket
 				]);
 				return ;
 				
@@ -515,6 +540,17 @@ class ControladorVentas{
 			]);
 			return;
 		}
+
+		$norm = self::normalizarPresentacionesEnLista($listaProductos);
+		if ($norm["status"] !== "ok") {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => $norm["mensaje"]
+			]);
+			return;
+		}
+		$listaProductos = $norm["productos"];
+		$_POST["listaProductos"] = json_encode($listaProductos);
 
 		$idVenta = intval($_POST["idVentaEditar"]);
 		$ventaActual = ModeloVentas::mdlMostrarVentas("ventas", "id", $idVenta);
@@ -1147,6 +1183,63 @@ class ControladorVentas{
 		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal, $idCategoria, $idMesero);
 	
 		return $respuesta;
+	}
+
+	/**
+	 * Convierte presentación → unidades reales y revalida factor desde BD.
+	 * cantidad en la lista queda SIEMPRE en unidades de inventario.
+	 */
+	static public function normalizarPresentacionesEnLista($listaProductos)
+	{
+		if (!is_array($listaProductos)) {
+			return ["status" => "error", "mensaje" => "Lista de productos inválida.", "productos" => []];
+		}
+
+		foreach ($listaProductos as $i => $producto) {
+			$idProducto = intval($producto["id"] ?? 0);
+			$idPresentacion = intval($producto["id_presentacion"] ?? 0);
+			$cantPresentaciones = intval($producto["cantidad_presentaciones"] ?? 0);
+			$cantidadCliente = intval($producto["cantidad"] ?? 0);
+
+			if ($idProducto <= 0) {
+				return ["status" => "error", "mensaje" => "Producto inválido en la lista.", "productos" => $listaProductos];
+			}
+
+			if ($idPresentacion > 0 && class_exists("ModeloProductoPresentaciones")) {
+				$pres = ModeloProductoPresentaciones::mdlMostrarPorId($idPresentacion);
+				if (!$pres || intval($pres["id_producto"]) !== $idProducto || intval($pres["estado"]) !== 1) {
+					return [
+						"status" => "error",
+						"mensaje" => "La presentación seleccionada no es válida para el producto.",
+						"productos" => $listaProductos
+					];
+				}
+				$factor = max(1, intval($pres["cantidad_unidades"]));
+				$nombre = $pres["nombre"];
+				if ($cantPresentaciones < 1) {
+					$cantPresentaciones = max(1, (int) floor($cantidadCliente / $factor));
+				}
+				$unidades = $cantPresentaciones * $factor;
+
+				$listaProductos[$i]["id_presentacion"] = $idPresentacion;
+				$listaProductos[$i]["nombre_presentacion"] = $nombre;
+				$listaProductos[$i]["cantidad_presentaciones"] = $cantPresentaciones;
+				$listaProductos[$i]["unidades_por_presentacion"] = $factor;
+				$listaProductos[$i]["cantidad"] = $unidades;
+			} else {
+				// Unidad implícita: cantidad = unidades reales
+				if ($cantPresentaciones < 1) {
+					$cantPresentaciones = max(1, $cantidadCliente);
+				}
+				$listaProductos[$i]["id_presentacion"] = null;
+				$listaProductos[$i]["nombre_presentacion"] = $producto["nombre_presentacion"] ?? "Unidad";
+				$listaProductos[$i]["cantidad_presentaciones"] = $cantPresentaciones;
+				$listaProductos[$i]["unidades_por_presentacion"] = 1;
+				$listaProductos[$i]["cantidad"] = max(1, $cantidadCliente > 0 ? $cantidadCliente : $cantPresentaciones);
+			}
+		}
+
+		return ["status" => "ok", "mensaje" => "", "productos" => $listaProductos];
 	}
 
 	static public function aplicarPromocionesAListaProductos($listaProductos)
