@@ -31,84 +31,180 @@ $totalProductos = count($productos);
 $ventas = ControladorVentas::ctrSumaTotalVentas();
 $ventasTotalMesActual = ControladorVentas::ctrVentasTotalMes();
 $ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
-$ventasTotaldDiaActual = ControladorVentas::ctrVentasTotalDia();
 $arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
+
+$ventasArqueoEf = 0;
+$ventasArqueoQr = 0;
+$ventasArqueoTot = 0;
+$otrosArqueoEf = 0;
+$otrosArqueoQr = 0;
+$otrosArqueoTot = 0;
+$cajaConsEf = 0;
+$cajaConsQr = 0;
+$cajaConsTot = 0;
+$fechaArqueo = date('d-m-Y');
+$cajaAbierta = false;
+
+if (is_array($arqueoCaja) && !empty($arqueoCaja["id"])) {
+  $cajaAbierta = true;
+  $sincronizado = ModeloArqueo::mdlSincronizarMontosArqueo($arqueoCaja["id"]);
+  if (is_array($sincronizado)) {
+    $arqueoCaja = array_merge($arqueoCaja, $sincronizado);
+  }
+  $ventasArqueoEf = floatval($arqueoCaja["monto_ventas_efectivo"] ?? 0);
+  $ventasArqueoQr = floatval($arqueoCaja["monto_ventas_qr"] ?? 0);
+  $ventasArqueoTot = floatval($arqueoCaja["monto_ventas"] ?? 0);
+  $otrosArqueoTot = floatval($arqueoCaja["otros_ingresos"] ?? ModeloArqueo::mdlSumarOtrosIngresosPorArqueo($arqueoCaja["id"]));
+  $otrosArqueoEf = floatval($arqueoCaja["otros_ingresos_efectivo"] ?? ModeloArqueo::mdlSumarOtrosIngresosEfectivoPorArqueo($arqueoCaja["id"]));
+  $otrosArqueoQr = floatval($arqueoCaja["otros_ingresos_qr"] ?? ModeloArqueo::mdlSumarOtrosIngresosQrPorArqueo($arqueoCaja["id"]));
+  $cajaConsEf = $ventasArqueoEf + $otrosArqueoEf;
+  $cajaConsQr = $ventasArqueoQr + $otrosArqueoQr;
+  $cajaConsTot = $cajaConsEf + $cajaConsQr;
+  if (!empty($arqueoCaja["fecha_apertura"])) {
+    $fechaArqueo = date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]));
+  }
+}
 
 ?>
 
 <section class="content">
-  <div class="box box-default">
+  <div class="box box-success">
     <div class="box-header with-border">
-      <h3 class="box-title" style="text-align: center; font-size: 24px; width: 100%; font-weight: bold; text-decoration: underline;">ARQUEO DE CAJA</h3>
+      <h3 class="box-title" style="text-align: center; font-size: 22px; width: 100%; font-weight: bold;">
+        ARQUEO DE CAJA
+        <?php if ($cajaAbierta): ?>
+          <small class="label label-success" style="margin-left:8px;">Turno abierto</small>
+        <?php else: ?>
+          <small class="label label-default" style="margin-left:8px;">Sin caja abierta</small>
+        <?php endif; ?>
+      </h3>
     </div>
-    <!-- /.box-header -->
+    <div class="box-body">
+      <p class="text-muted text-center" style="margin-top:0;">Ventas y otros ingresos del turno (efectivo / QR)</p>
+
+      <h4 class="text-uppercase" style="margin:8px 0 10px; font-weight:700; font-size:14px;">Ventas del turno</h4>
+      <div class="row">
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-green monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($ventasArqueoEf, 2) . 'BS'; ?></h3>
+              <p>Ventas (Efectivo)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/bs.webp" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-green monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($ventasArqueoQr, 2) . 'BS'; ?></h3>
+              <p>Ventas (QR)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/qr.png" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-green monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($ventasArqueoTot, 2) . 'BS'; ?></h3>
+              <p>Ventas (Total)</p>
+            </div>
+            <div class="icon"></div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="text-uppercase" style="margin:12px 0 10px; font-weight:700; font-size:14px;">Otros ingresos del turno</h4>
+      <div class="row">
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-aqua monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($otrosArqueoEf, 2) . 'BS'; ?></h3>
+              <p>Otros ingresos (Efectivo)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/bs.webp" alt="">
+            </div>
+            <a href="otros-ingresos" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-aqua monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($otrosArqueoQr, 2) . 'BS'; ?></h3>
+              <p>Otros ingresos (QR)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/qr.png" alt="">
+            </div>
+            <a href="otros-ingresos" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-aqua monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($otrosArqueoTot, 2) . 'BS'; ?></h3>
+              <p>Otros ingresos (Total)</p>
+            </div>
+            <div class="icon"></div>
+            <a href="otros-ingresos" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="text-uppercase" style="margin:12px 0 10px; font-weight:700; font-size:14px;">Consolidado (ventas + otros ingresos)</h4>
+      <div class="row">
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-teal monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($cajaConsEf, 2) . 'BS'; ?></h3>
+              <p>Caja consolidada (Efectivo)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/bs.webp" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-teal monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($cajaConsQr, 2) . 'BS'; ?></h3>
+              <p>Caja consolidada (QR)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/qr.png" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-xs-6 text-uppercase">
+          <div class="small-box bg-teal monto-dia-box" style="margin-bottom:7px;">
+            <div class="inner">
+              <h3><?php echo number_format($cajaConsTot, 2) . 'BS'; ?></h3>
+              <p>Caja consolidada (Total)</p>
+            </div>
+            <div class="icon">
+              <img src="./vistas/img/plantilla/pagos_qr_efectivo.png" alt="">
+            </div>
+            <a href="arqueo-de-caja" role="button" class="small-box-footer"><?php echo $fechaArqueo; ?></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title" style="text-align: center; font-size: 22px; width: 100%; font-weight: bold;">RESUMEN DE VENTAS</h3>
+    </div>
     <div class="box-body row">
-
-        <div class="col-lg-4 col-xs-6  text-uppercase" >
-          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
-
-            <div class="inner">
-
-              <h3><?php echo number_format($arqueoCaja["monto_ventas_efectivo"]??0, 2) . 'BS'; ?></h3>
-
-              <p>Caja (Efectivo)</p>
-
-            </div>
-
-            <div class="icon">
-              
-            <img src="./vistas/img/plantilla/bs.webp" alt="">
-
-            </div>
-            <a href="arqueo-de-caja" role="button" class="small-box-footer">
-              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
-            </a>
-
-          </div>
-        </div>
-       
-        <div class="col-lg-4 col-xs-6  text-uppercase " >
-          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
-
-            <div class="inner">
-
-              <h3><?php echo number_format($arqueoCaja["monto_ventas_qr"]??0, 2) . 'BS'; ?></h3>
-
-
-              <p>Caja (QR)</p>
-
-            </div>
-
-            <div class="icon">
-              
-          <img src="./vistas/img/plantilla/qr.png" alt="">
-
-            </div>
-            <a href="arqueo-de-caja" role="button" class="small-box-footer">
-              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
-            </a>
-
-          </div>
-        </div>
-
-        <div class="col-lg-4 col-xs-6  text-uppercase ">
-          <div class="small-box bg-green monto-dia-box"  style="margin-bottom:7px;">
-            <div class="inner">
-              <h3><?php echo number_format($arqueoCaja["monto_ventas"]??0, 2) . 'BS'; ?></h3>
-              <p>Caja (Total)</p>
-            </div>
-            <div class="icon">
-            
-            </div>
-            <a href="arqueo-de-caja" role="button" class="small-box-footer">
-              <?php echo date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]??date('d-m-Y'))); ?>
-            </a>
-          </div>
-        </div>
-    </div> <!-- /.box-body -->
-  </div> <!-- /.box -->
-
-<h3 class="box-title" style="text-align: center; font-size: 24px; width: 100%; font-weight: bold; text-decoration: underline;">RESUMEN</h3>
 
 <div class="col-lg-2 col-xs-6  text-uppercase ">
 
@@ -287,6 +383,14 @@ $arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
 
 </div>
 
+    </div><!-- /.box-body resumen ventas -->
+  </div><!-- /.box resumen ventas -->
+
+  <div class="box box-warning">
+    <div class="box-header with-border">
+      <h3 class="box-title" style="text-align: center; font-size: 22px; width: 100%; font-weight: bold;">CATÁLOGO Y OPERACIÓN</h3>
+    </div>
+    <div class="box-body row">
 
 <div class=" col-lg-2 col-xs-6  text-uppercase ">
   <div class="small-box bg-red monto-dia-box">
@@ -452,4 +556,7 @@ $arqueoCaja = ControladorArqueo::ctrVerificarCajaAbierta($_SESSION["id"]);
   </div>
 
 </div>
+
+    </div><!-- /.box-body catalogo -->
+  </div><!-- /.box catalogo -->
 </section>

@@ -154,4 +154,26 @@ class ModeloOtrosIngresos
             return self::mdlSumarPorArqueo($idArqueo, $pdo);
         }
     }
+
+    static public function mdlSumarQrPorArqueo($idArqueo, $pdo = null)
+    {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(COALESCE(monto_qr, 0)), 0) AS total
+                 FROM otros_ingresos
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarQrPorArqueo otros_ingresos: " . $e->getMessage());
+            $total = self::mdlSumarPorArqueo($idArqueo, $pdo);
+            $efectivo = self::mdlSumarEfectivoPorArqueo($idArqueo, $pdo);
+            return max(0, round($total - $efectivo, 2));
+        }
+    }
 }

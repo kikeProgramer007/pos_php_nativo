@@ -132,14 +132,19 @@ class ArqueoCaja {
         this.totales.gastosOperativos = Math.abs(parseFloat(document.getElementById('gastos_operativos').textContent) || 0);
         this.totales.montoCompras = Math.abs(parseFloat(document.getElementById('monto_compras').textContent) || 0);
         this.totales.otrosIngresos = Math.abs(parseFloat(document.getElementById('otros_ingresos').textContent) || 0);
+        this.totales.otrosIngresosEfectivo = Math.abs(parseFloat((document.getElementById('otros_ingresos_efectivo') || {}).textContent) || 0);
+        this.totales.otrosIngresosQr = Math.abs(parseFloat((document.getElementById('otros_ingresos_qr') || {}).textContent) || 0);
+        if (this.totales.otrosIngresosEfectivo <= 0 && this.totales.otrosIngresosQr <= 0 && this.totales.otrosIngresos > 0) {
+            this.totales.otrosIngresosEfectivo = this.totales.otrosIngresos;
+        }
         this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas + this.totales.otrosIngresos;
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
 
-        // efectivo_esperado = apertura + ventas efectivo + otros ingresos - compras - gastos
+        // efectivo_esperado = apertura + ventas efectivo + otros ingresos efectivo - compras - gastos
         const efectivoEsperado = this.totales.montoApertura
             + this.totales.montoVentasEfectivo
-            + this.totales.otrosIngresos
+            + this.totales.otrosIngresosEfectivo
             - this.totales.montoCompras
             - this.totales.gastosOperativos;
         const totalContado = this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta;
@@ -274,6 +279,14 @@ class ArqueoCaja {
         if (otrosIngresosEl) {
             otrosIngresosEl.textContent = '0.00';
         }
+        const otrosIngresosEfEl = document.getElementById('otros_ingresos_efectivo');
+        if (otrosIngresosEfEl) {
+            otrosIngresosEfEl.textContent = '0.00';
+        }
+        const otrosIngresosQrEl = document.getElementById('otros_ingresos_qr');
+        if (otrosIngresosQrEl) {
+            otrosIngresosQrEl.textContent = '0.00';
+        }
         const bloqueComprasInfo = document.getElementById('bloque_compras_informativo');
         if (bloqueComprasInfo) {
             bloqueComprasInfo.style.display = 'none';
@@ -290,6 +303,8 @@ class ArqueoCaja {
             'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
             'monto_ventas_qr': datos.monto_ventas_qr || '0.00',
             'otros_ingresos': datos.otros_ingresos || '0.00',
+            'otros_ingresos_efectivo': datos.otros_ingresos_efectivo || '0.00',
+            'otros_ingresos_qr': datos.otros_ingresos_qr || '0.00',
             'total_descuentos_ventas': datos.total_descuentos_ventas || '0.00',
             'total_ingresos': datos.total_ingresos || '0.00',
             'gastos_operativos': datos.gastos_operativos || '0.00',

@@ -544,6 +544,30 @@ class ModeloArqueo {
     }
 
     /**
+     * Suma solo la parte QR de otros ingresos
+     */
+    static public function mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo = null) {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(COALESCE(monto_qr, 0)), 0) AS total
+                 FROM otros_ingresos
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarOtrosIngresosQrPorArqueo: " . $e->getMessage());
+            $total = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
+            $efectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo);
+            return max(0, round($total - $efectivo, 2));
+        }
+    }
+
+    /**
      * Suma ventas pagadas en efectivo de un arqueo
      */
     static public function mdlSumarVentasEfectivoPorArqueo($idArqueo, $pdo = null) {
@@ -661,6 +685,8 @@ class ModeloArqueo {
             $compras = self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
             $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
             $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
+            $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo);
+            $otrosIngresosQr = self::mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo);
             $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
             $totalIngresos = $montoApertura + $ventas["total"] + $otrosIngresos;
             $totalEgresos = $compras + $gastos;
@@ -698,6 +724,8 @@ class ModeloArqueo {
             $arqueo["total_egresos"] = $totalEgresos;
             $arqueo["resultado_neto"] = $resultadoNeto;
             $arqueo["otros_ingresos"] = $otrosIngresos;
+            $arqueo["otros_ingresos_efectivo"] = $otrosIngresosEfectivo;
+            $arqueo["otros_ingresos_qr"] = $otrosIngresosQr;
             // Informativo comercial: no afecta ingresos/egresos de caja
             $arqueo["total_bruto_ventas"] = $ventas["total_bruto"];
             $arqueo["total_descuentos_ventas"] = $ventas["total_descuento"];
