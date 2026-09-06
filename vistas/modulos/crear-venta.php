@@ -257,22 +257,34 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .btn-agregar {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #d0d0d0;
+    background-color: #28a745;
+    color: #fff;
+    border: 1px solid #24963e;
     padding: 2px 8px;
     border-radius: 3px;
     width: 100%;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .btn-agregar:hover {
-    background-color: #e4e4e4;
+    background-color: #218838;
+    color: #fff;
   }
 
+  .btn-agregar.btn-agregar-en-venta,
+  .btn-agregar.btn-agregar-en-venta.disabled {
+    background-color: #c0c0c0;
+    color: #444;
+    border-color: #a8a8a8;
+    cursor: not-allowed;
+  }
+
+  .btn-agregar.btn-agregar-agotado,
+  .btn-agregar.btn-agregar-agotado.disabled,
   .btn-agregar.disabled {
     background-color: #ececec;
     color: #999;
+    border-color: #ddd;
     cursor: not-allowed;
   }
 
@@ -938,20 +950,23 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       border-top-left-radius: 6px !important;
       border-top-right-radius: 6px !important;
       width: 100%;
-      height: 88px;
-      object-fit: contain;
+      height: 100%;
+      object-fit: cover;
       object-position: center;
-      background: #f7f7f7;
       display: block;
-      padding: 4px 4px 0;
+      padding: 0;
       box-sizing: border-box;
   }
 
   .card-producto-img {
       overflow: hidden;
-      background: #f7f7f7;
+      background: #f0f0f0;
       position: relative;
       flex-shrink: 0;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
   }
 
   .first {
@@ -1030,17 +1045,31 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       opacity: 0.55;
   }
 
+  .card-producto-meta {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      margin: 0 0 4px;
+      min-height: 28px;
+  }
+
   .dress-name {
       font-size: 11px;
       font-weight: 700;
-      width: 100%;
-      height: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: calc(100% - 58px);
+      height: auto;
+      max-height: 28px;
       line-height: 1.2;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-      margin: 0 0 2px;
+      margin: 0;
       text-align: left;
   }
 
@@ -1048,9 +1077,13 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       font-size: 12px;
       font-weight: 700;
       color: #d9534f;
+      flex: 0 0 auto;
       display: block;
-      text-align: left;
-      margin-bottom: 4px;
+      text-align: right;
+      white-space: nowrap;
+      margin: 0;
+      line-height: 1.2;
+      padding-top: 0;
   }
 
   .catalogo-productos .caption,
@@ -1065,7 +1098,6 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   .catalogo-productos .btn-agregar,
   .catalogo-productos .btn.btn-agregar,
   .catalogo-productos .btn.btn-default.btn-sm.btn-agregar,
-  .catalogo-productos .btn.btn-success.btn-sm,
   #catalogoProductos .btn-agregar,
   #catalogoProductos .btn.btn-agregar,
   #catalogoProductos .btn.btn-default.btn-sm.btn-agregar {
@@ -1074,19 +1106,37 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       line-height: 1.25;
       border-radius: 0 0 5px 5px;
       margin-top: auto;
-      background: #f0f0f0;
-      border-color: #d0d0d0;
-      color: #333;
+      background: #28a745;
+      border-color: #24963e;
+      color: #fff;
   }
 
   .catalogo-productos .btn-agregar:hover:not(.disabled):not(:disabled),
   #catalogoProductos .btn-agregar:hover:not(.disabled):not(:disabled) {
-      background: #e4e4e4;
-      color: #111;
+      background: #218838;
+      color: #fff;
+      border-color: #1e7e34;
   }
 
+  .catalogo-productos .btn-agregar.btn-agregar-en-venta,
+  .catalogo-productos .btn-agregar.btn-agregar-en-venta.disabled,
+  .catalogo-productos .btn-agregar.btn-agregar-en-venta:disabled,
+  #catalogoProductos .btn-agregar.btn-agregar-en-venta,
+  #catalogoProductos .btn-agregar.btn-agregar-en-venta.disabled,
+  #catalogoProductos .btn-agregar.btn-agregar-en-venta:disabled {
+      background: #c0c0c0 !important;
+      color: #444 !important;
+      border-color: #a8a8a8 !important;
+      opacity: 1;
+  }
+
+  .catalogo-productos .btn-agregar.btn-agregar-agotado,
+  .catalogo-productos .btn-agregar.btn-agregar-agotado.disabled,
+  .catalogo-productos .btn-agregar.btn-agregar-agotado:disabled,
   .catalogo-productos .btn-agregar.disabled,
   .catalogo-productos .btn-agregar:disabled,
+  #catalogoProductos .btn-agregar.btn-agregar-agotado,
+  #catalogoProductos .btn-agregar.btn-agregar-agotado.disabled,
   #catalogoProductos .btn-agregar.disabled,
   #catalogoProductos .btn-agregar:disabled {
       background: #ececec !important;
@@ -2659,6 +2709,47 @@ function actualizarEstadoBotonNotas($fila) {
   $btn.toggleClass("tiene-notas", !!tiene);
 }
 
+/** Normaliza texto de preferencia para comparar (trim, espacios, emoji variation). */
+function normalizarTextoPreferencia(t) {
+  return String(t || "")
+    .replace(/\uFE0F/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Restaura preferencias (texto CSV guardado en BD) y nota adicional en una fila.
+ * Debe llamarse después de inicializar Select2 en esa fila.
+ */
+function aplicarPreferenciasYNotaEnFila($fila, preferenciasStr, notaAdicional) {
+  if (!$fila || !$fila.length) return;
+  var $sel = $fila.find(".nota-producto");
+  var $nota = $fila.find(".nota-adicional");
+  if ($nota.length) {
+    $nota.val(notaAdicional != null ? String(notaAdicional) : "");
+  }
+  if (!$sel.length) {
+    actualizarEstadoBotonNotas($fila);
+    return;
+  }
+
+  var textos = String(preferenciasStr || "")
+    .split(",")
+    .map(normalizarTextoPreferencia)
+    .filter(Boolean);
+  var valores = [];
+  if (textos.length) {
+    $sel.find("option").each(function () {
+      var optTxt = normalizarTextoPreferencia($(this).text());
+      if (textos.indexOf(optTxt) !== -1) {
+        valores.push(String($(this).val()));
+      }
+    });
+  }
+  $sel.val(valores).trigger("change");
+  actualizarEstadoBotonNotas($fila);
+}
+
 function construirHtmlLineaVenta(cfg) {
   var img = cfg.imagen && String(cfg.imagen).trim() !== ""
     ? cfg.imagen
@@ -2827,6 +2918,10 @@ function agregarLineaProductoEdicion(linea) {
   if (formaAtencionGeneral !== "3") {
     nuevoSelector.prop("disabled", true);
   }
+
+  var $fila = $(".nuevoProducto .linea-venta").last();
+  $fila.data("prefsEdicion", linea.preferencias || "");
+  $fila.data("notaEdicion", linea.nota_adicional || "");
 }
 
 <?php if ($modoEdicionCuenta): ?>
@@ -2837,10 +2932,20 @@ $(document).ready(function() {
       agregarLineaProductoEdicion(linea);
     });
     sumarTotalPrecios();
-    listarProductos();
     $(".nuevoPrecioProducto").number(true, 2);
     setTimeout(function() {
       inicializarSelect2NotasEnFila($(".nuevoProducto"));
+      $(".nuevoProducto .linea-venta").each(function() {
+        var $fila = $(this);
+        aplicarPreferenciasYNotaEnFila(
+          $fila,
+          $fila.data("prefsEdicion"),
+          $fila.data("notaEdicion")
+        );
+        $fila.removeData("prefsEdicion");
+        $fila.removeData("notaEdicion");
+      });
+      listarProductos();
       $(".linea-venta").each(function() {
         actualizarEstadoBotonNotas($(this));
       });

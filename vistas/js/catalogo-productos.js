@@ -281,14 +281,16 @@ class CatalogoProductos {
       const estaAgregado = this.productosAgregados.has(producto.id);
       const puedeAgregar = !estaAgregado && estaDisponible;
       
-      const btnClass = puedeAgregar ? 'btn-agregar' : 'btn-agregar disabled';
+      const btnClass = puedeAgregar
+        ? 'btn-agregar'
+        : (estaDisponible ? 'btn-agregar btn-agregar-en-venta disabled' : 'btn-agregar btn-agregar-agotado disabled');
 
       let stockClass = estaDisponible ? 'badge bg-green' : 'badge bg-red';
       let etiquetaStock;
       if (inventariable) {
-        etiquetaStock = estaDisponible ? `Disp. ${stock}` : 'Agotado';
+        etiquetaStock = estaDisponible ? `Disponible ${stock}` : 'Agotado';
       } else {
-        etiquetaStock = estaDisponible ? 'Disp.' : 'Agotado';
+        etiquetaStock = estaDisponible ? 'Disponible' : 'Agotado';
       }
 
       const menuHtml = !inventariable
@@ -328,8 +330,10 @@ class CatalogoProductos {
                  onerror="this.src='vistas/img/productos/default/d.webp'">
           </div>
           <div class="caption">
-            <span class="dress-name" title="${producto.descripcion}">${producto.descripcion}</span>
-            <span class="new-price">Bs ${producto.precio_venta || '0.00'}</span>
+            <div class="card-producto-meta">
+              <span class="dress-name" title="${producto.descripcion}">${producto.descripcion}</span>
+              <span class="new-price">Bs ${producto.precio_venta || '0.00'}</span>
+            </div>
             <button class="btn btn-default btn-sm btn-block ${btnClass}"
                href="javascript:void(0)"
                role="button"
