@@ -119,6 +119,42 @@ $mesesEspanol = [
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box mt-3">
+            <div class="box-body">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="text-align: center;">GANANCIAS ENTRE FECHAS</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form id="fechas-report-form">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label><i class="text-danger">*</i> Fecha inicio:</label>
+                                        <input type="date" class="form-control" id="fecha_inicio_ganancia" name="fecha_inicio_ganancia" value="<?php echo date('Y-m-d'); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label><i class="text-danger">*</i> Fecha fin:</label>
+                                        <input type="date" class="form-control" id="fecha_fin_ganancia" name="fecha_fin_ganancia" value="<?php echo date('Y-m-d'); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDFFechas()">
+                                            <i class="fa fa-print"></i> Generar PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                     <img src="vistas/img/plantilla/4.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
                 </div>
             </div>
@@ -129,6 +165,13 @@ $mesesEspanol = [
 
 <script>
     var popupWindow = null;
+    const fechaActualGanancia = "<?php echo date('Y-m-d'); ?>";
+    (function () {
+        var fi = document.getElementById('fecha_inicio_ganancia');
+        var ff = document.getElementById('fecha_fin_ganancia');
+        if (fi) fi.setAttribute('max', fechaActualGanancia);
+        if (ff) ff.setAttribute('max', fechaActualGanancia);
+    })();
 
     function GanaciasgeneratePDF() {
         const mes = document.getElementById('month').value;
@@ -190,6 +233,55 @@ $mesesEspanol = [
         popupWindow = window.open(
             "extensiones/tcpdf/pdf/pdf-ganancias-year.php?yearini=" + encodeURIComponent(startyear) +
             "&yearfin=" + encodeURIComponent(endyear) +
+            "&idUsuario=" + encodeURIComponent(idUsuario),
+            "_blank",
+            windowFeatures
+        );
+    }
+
+    function GanaciasgeneratePDFFechas() {
+        const fechaInicio = document.getElementById('fecha_inicio_ganancia').value;
+        const fechaFin = document.getElementById('fecha_fin_ganancia').value;
+        const idUsuario = document.getElementById('id_usuario').value;
+
+        if (!fechaInicio || !fechaFin) {
+            swal({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Por favor, seleccione fecha inicio y fecha fin.',
+            });
+            return;
+        }
+        if (fechaFin > fechaActualGanancia) {
+            swal({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La fecha fin no puede ser mayor a la fecha actual: ' + fechaActualGanancia,
+            });
+            return;
+        }
+        if (fechaInicio > fechaFin) {
+            swal({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'La fecha de inicio debe ser menor o igual a la fecha fin.',
+            });
+            return;
+        }
+
+        const width = 800;
+        const height = 600;
+        const left = (screen.width / 2) - (width / 2);
+        const top = (screen.height / 2) - (height / 2);
+        const windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
+
+        if (popupWindow && !popupWindow.closed) {
+            popupWindow.close();
+        }
+
+        popupWindow = window.open(
+            "extensiones/tcpdf/pdf/pdf-ganancias-fechas.php?fechaInicio=" + encodeURIComponent(fechaInicio) +
+            "&fechaFin=" + encodeURIComponent(fechaFin) +
             "&idUsuario=" + encodeURIComponent(idUsuario),
             "_blank",
             windowFeatures
