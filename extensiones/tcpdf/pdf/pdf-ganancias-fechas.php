@@ -63,15 +63,21 @@ class PdfGananciasFechas extends FPDF
 
         $this->Ln(5);
 
-        $this->SetFont('Arial', 'B', 11);
-        $this->Cell(12, 5, utf8_decode('#'), 1, 0, 'L');
-        $this->Cell(26, 5, utf8_decode('Nº Ticket'), 1, 0, 'C');
-        $this->Cell(26, 5, utf8_decode('Fecha'), 1, 0, 'C');
-        $this->Cell(30, 5, utf8_decode('Usuario'), 1, 0, 'C');
-        $this->Cell(50, 5, utf8_decode('Mesero'), 1, 0, 'C');
-        $this->Cell(24, 5, utf8_decode('Monto'), 1, 0, 'C');
-        $this->Cell(24, 5, utf8_decode('Ganancia'), 1, 1, 'C');
-        $this->SetFont('Arial', '', 11);
+        // Ticket | Fecha | Mesero | Cobrado | Descuento | Costo | Ganancia  (~190)
+        $this->SetFont('Arial', 'B', 9);
+        $this->Cell(20, 6, utf8_decode('Ticket'), 1, 0, 'C');
+        $this->Cell(24, 6, utf8_decode('Fecha'), 1, 0, 'C');
+        $this->Cell(50, 6, utf8_decode('Mesero'), 1, 0, 'C');
+        $this->Cell(24, 6, utf8_decode('Cobrado'), 1, 0, 'C');
+        $this->Cell(24, 6, utf8_decode('Descuento'), 1, 0, 'C');
+        $this->Cell(24, 6, utf8_decode('Costo'), 1, 0, 'C');
+        $this->Cell(24, 6, utf8_decode('Ganancia'), 1, 1, 'C');
+        $this->SetFont('Arial', '', 8);
+    }
+
+    private function fmtBs($n)
+    {
+        return number_format((float) $n, 2, '.', ',') . ' Bs.';
     }
 
     public function generarpdfganancia()
@@ -81,38 +87,49 @@ class PdfGananciasFechas extends FPDF
         $pdf->AddPage();
         $ganancias = ModeloReportes::mdlObtenerGananciasEntreFechas($this->fechaInicio, $this->fechaFin);
 
-        $contador = 1;
-        $sum = 0;
-        $sum_ganancias = 0;
-        $sum_descuentos = 0;
+        $sumCobrado = 0;
+        $sumCosto = 0;
+        $sumGanancias = 0;
 
-        foreach ($ganancias as $ganancia) {
-            $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(26, 5, ltrim($ganancia['codigo'], '0'), 1, 0, 'C');
-            $pdf->Cell(26, 5, utf8_decode($ganancia['fecha']), 1, 0, 'C');
-            $pdf->Cell(30, 5, utf8_decode($ganancia['vendedor']), 1, 0, 'C');
-            $pdf->Cell(50, 5, utf8_decode($ganancia['mesero']), 1, 0, 'C');
-            $pdf->Cell(24, 5, $ganancia['total'] . ' Bs.', 1, 0, 'C');
-            $pdf->Cell(24, 5, number_format($ganancia['ganancias'], 2, '.', ',') . ' Bs.', 1, 1, 'C');
-            $sum += $ganancia['total'];
-            $sum_ganancias += $ganancia['ganancias'];
-            $sum_descuentos += floatval($ganancia['total_descuento'] ?? 0);
-            $contador++;
+        foreach ($ganancias as $row) {
+            $cobrado = floatval($row['total'] ?? 0);
+            $descuento = floatval($row['total_descuento'] ?? 0);
+            $costo = floatval($row['costo'] ?? 0);
+            $ganancia = floatval($row['ganancias'] ?? 0);
+
+            $mesero = (string) ($row['mesero'] ?? '');
+            if (strlen($mesero) > 28) {
+                $mesero = substr($mesero, 0, 27) . '.';
+            }
+
+            $pdf->Cell(20, 5, ltrim((string) $row['codigo'], '0'), 1, 0, 'C');
+            $pdf->Cell(24, 5, utf8_decode($row['fecha']), 1, 0, 'C');
+            $pdf->Cell(50, 5, utf8_decode($mesero), 1, 0, 'L');
+            $pdf->Cell(24, 5, $this->fmtBs($cobrado), 1, 0, 'R');
+            $pdf->Cell(24, 5, $this->fmtBs($descuento), 1, 0, 'R');
+            $pdf->Cell(24, 5, $this->fmtBs($costo), 1, 0, 'R');
+            $pdf->Cell(24, 5, $this->fmtBs($ganancia), 1, 1, 'R');
+
+            $sumCobrado += $cobrado;
+            $sumCosto += $costo;
+            $sumGanancias += $ganancia;
         }
 
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(168, 5, 'Total Ganancias', 0, 0, 'R');
-        $pdf->Cell(24, 5, number_format($sum_ganancias, 2, '.', ',') . ' Bs.', 1, 0, 'R');
-        $pdf->Ln(5);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(38, 5, utf8_decode('Número de ventas:'), 0, 0, 'L');
-        $pdf->Cell(20, 5, $contador - 1, 0, 1, 'L');
-        $pdf->Cell(38, 5, utf8_decode('Monto total de ventas:'), 0, 0, 'L');
-        $pdf->Cell(20, 5, number_format($sum, 2, '.', ',') . ' Bs.', 0, 1, 'L');
-        $pdf->Cell(38, 5, utf8_decode('Total descuentos:'), 0, 0, 'L');
-        $pdf->Cell(20, 5, number_format($sum_descuentos, 2, '.', ',') . ' Bs.', 0, 1, 'L');
-        $pdf->Cell(38, 5, utf8_decode('Total Ganancia:'), 0, 0, 'L');
-        $pdf->Cell(20, 5, number_format($sum_ganancias, 2, '.', ',') . ' Bs.', 0, 1, 'L');
+        $pdf->Ln(6);
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(40, 6, utf8_decode('Vendiste:'), 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(50, 6, $this->fmtBs($sumCobrado), 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(40, 6, utf8_decode('Te costó:'), 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(50, 6, $this->fmtBs($sumCosto), 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(40, 6, utf8_decode('Te quedó (ganancia):'), 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->Cell(50, 6, $this->fmtBs($sumGanancias), 0, 1, 'L');
 
         $pdf->Output('ReporteDeGananciasEntreFechas.pdf', 'I');
     }
