@@ -2790,7 +2790,8 @@ function construirHtmlLineaVenta(cfg) {
     ? ' data-promo=\'' + cfg.promoAttr + '\' data-subtotal-final="' + (cfg.subtotalFinal || "") + '" data-precio-final="' + (cfg.precioFinal || "") + '"'
     : "";
   var precioUnit = Number(cfg.precioVenta) || 0;
-  var undCalc = (Number(cfg.qty) || 1) * (Number(cfg.factor) || 1);
+  var factorNum = Number(cfg.factor) || 1;
+  var undCalc = (Number(cfg.qty) || 1) * factorNum;
   var subtotalBruto = cfg.subtotalBruto != null
     ? Number(cfg.subtotalBruto)
     : (precioUnit * undCalc);
@@ -2799,7 +2800,13 @@ function construirHtmlLineaVenta(cfg) {
     ? Number(cfg.subtotalFinal)
     : (subtotalBruto - descMonto);
   if (totalLinea < 0) totalLinea = 0;
-  var undLabel = cfg.unidadesLabel || ("= " + undCalc + " und.");
+  var undLabel = cfg.unidadesLabel;
+  if (undLabel === undefined || undLabel === null) {
+    undLabel = factorNum > 1 ? ("= " + undCalc + " Unidades") : "";
+  } else if (factorNum <= 1) {
+    undLabel = "";
+  }
+  var undStyle = undLabel ? "" : ' style="display:none"';
   var extraNotas = cfg.extra || "";
   var descHtml = descMonto > 0
     ? ('- Bs ' + descMonto.toFixed(2))
@@ -2849,7 +2856,7 @@ function construirHtmlLineaVenta(cfg) {
             <i class="fa fa-plus"></i>
           </button>
         </div>
-        <div class="lbl-unidades-reales">${undLabel}</div>
+        <div class="lbl-unidades-reales"${undStyle}>${undLabel}</div>
       </td>
       <td class="lv-money lv-precio-unit">Bs ${precioUnit.toFixed(2)}</td>
       <td class="lv-money lv-subtotal ingresoPrecio">
@@ -2934,7 +2941,7 @@ function agregarLineaProductoEdicion(linea) {
     descuentoTotal: descTotal,
     subtotalFinal: subtotalFinal,
     precioFinal: precioFinal,
-    unidadesLabel: "= " + cantLinea + " und.",
+    unidadesLabel: factorLinea > 1 ? ("= " + cantLinea + " Unidades") : "",
     extra: esInventariableLinea ? "" : htmlNotasProductoLinea(),
     mostrarDuplicar: true
   }));
@@ -3018,7 +3025,7 @@ function agregarProductoAVenta(producto) {
     presentaciones: producto.presentaciones || [],
     formaAtencion: formaAtencionGeneral,
     subtotalBruto: Number(producto.precio_venta || 0),
-    unidadesLabel: "= 1 und.",
+    unidadesLabel: "",
     extra: extra,
     mostrarDuplicar: true
   }));

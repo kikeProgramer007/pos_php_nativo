@@ -41,8 +41,14 @@ window.PresentacionesVenta = {
     var $input = $fila.find(".nuevaCantidadProducto").first();
     var $lbl = $fila.find(".lbl-unidades-reales");
     if (!$lbl.length) return;
+    var factor = parseInt($input.attr("data-factor"), 10) || 1;
+    // Solo visible si la presentación multiplica unidades (ej. Balde 5)
+    if (factor <= 1) {
+      $lbl.text("").hide();
+      return;
+    }
     var und = this.unidadesDeInput($input);
-    $lbl.text("= " + und + " und.");
+    $lbl.text("= " + und + " Unidades").show();
   },
 
   aplicarPresentacionEnFila: function ($fila, id, nombre, factor) {
