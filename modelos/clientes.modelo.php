@@ -204,21 +204,49 @@ class ModeloClientes{
 
 	}
 
-	public static function mdlBuscarClientes($tabla, $valor) {
-		// Preparar la consulta
-		$stmt = Conexion::conectar()->prepare("SELECT id, nombre FROM $tabla WHERE nombre LIKE :valor AND estado=1 ");
-		// Agregar comodines para la búsqueda
-		$searchValue = "%" . $valor . "%";
-		$stmt->bindParam(':valor', $searchValue, PDO::PARAM_STR);
-		
-		// Ejecutar la consulta
+	public static function mdlBuscarClientes($tabla, $valor, $page = 1, $perPage = 40) {
+		$page = max(1, (int) $page);
+		$perPage = max(1, min(50, (int) $perPage));
+		$offset = ($page - 1) * $perPage;
+
+		$valor = trim((string) $valor);
+		$sqlWhere = "estado = 1";
+		if ($valor !== "") {
+			$sqlWhere .= " AND nombre LIKE :valor";
+		}
+
+		$pdo = Conexion::conectar();
+
+		$stmtCount = $pdo->prepare("SELECT COUNT(*) FROM $tabla WHERE $sqlWhere");
+		if ($valor !== "") {
+			$searchValue = "%" . $valor . "%";
+			$stmtCount->bindParam(":valor", $searchValue, PDO::PARAM_STR);
+		}
+		$stmtCount->execute();
+		$total = (int) $stmtCount->fetchColumn();
+
+		$stmt = $pdo->prepare(
+			"SELECT id, nombre FROM $tabla
+			 WHERE $sqlWhere
+			 ORDER BY nombre ASC
+			 LIMIT :limite OFFSET :offset"
+		);
+		if ($valor !== "") {
+			$searchValue = "%" . $valor . "%";
+			$stmt->bindParam(":valor", $searchValue, PDO::PARAM_STR);
+		}
+		$stmt->bindValue(":limite", $perPage, PDO::PARAM_INT);
+		$stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
 		$stmt->execute();
-	
-		// Obtener los resultados
-		$clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		
-		// Retornar los resultados
-		return $clientes;
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return array(
+			"items" => $rows,
+			"total" => $total,
+			"page" => $page,
+			"perPage" => $perPage,
+			"more" => ($offset + count($rows)) < $total
+		);
 	}
 
 	

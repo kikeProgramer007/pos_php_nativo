@@ -64,22 +64,52 @@ if (isset($_POST["validarCliente"])) {
 }
 
 
-if (isset($_GET["term"])) {
+if (isset($_GET["term"]) || isset($_GET["page"])) {
+
+	header('Content-Type: application/json; charset=utf-8');
 
 	$tabla = "clientes";
-	$valor = $_GET["term"];  // Asegúrate de obtener el término de búsqueda correctamente
+	$valor = isset($_GET["term"]) ? trim((string) $_GET["term"]) : "";
+	$esSelect2 = isset($_GET["page"]);
 
-	// Asumiendo que estás utilizando un modelo para acceder a los datos
-	$clientes = ModeloClientes::mdlBuscarClientes($tabla, $valor); // Cambia esto según tu modelo
+	// Select2: lista paginada (term vacío = primeras páginas)
+	if ($esSelect2) {
+		$page = isset($_GET["page"]) ? (int) $_GET["page"] : 1;
+		$perPage = 20;
+		$busqueda = ModeloClientes::mdlBuscarClientes($tabla, $valor, $page, $perPage);
+		$results = array();
+		if (!empty($busqueda["items"])) {
+			foreach ($busqueda["items"] as $row) {
+				$results[] = array(
+					"id" => $row["id"],
+					"text" => $row["nombre"]
+				);
+			}
+		}
+		echo json_encode(array(
+			"results" => $results,
+			"pagination" => array(
+				"more" => !empty($busqueda["more"])
+			)
+		));
+		exit;
+	}
 
+	// Autocomplete legado (crear-venta): array plano, mín. 2 letras
 	$returnData = array();
-
-	if (!empty($clientes)) {
-		foreach ($clientes as $row) {
-			$data['id'] = $row['id'];
-			$data['value'] = $row['nombre'];
-			array_push($returnData, $data);
+	if (mb_strlen($valor) >= 2) {
+		$busqueda = ModeloClientes::mdlBuscarClientes($tabla, $valor, 1, 40);
+		if (!empty($busqueda["items"])) {
+			foreach ($busqueda["items"] as $row) {
+				$returnData[] = array(
+					"id" => $row["id"],
+					"value" => $row["nombre"],
+					"text" => $row["nombre"]
+				);
+			}
 		}
 	}
+
 	echo json_encode($returnData);
+	exit;
 }
