@@ -88,8 +88,11 @@ $fechaActual = date('Y-m-d');
             </div>
 
             <div class="text-right">
-  <button type="button" class="btn btn-primary" onclick="generatePDF()">
-    <i class="fa fa-print"></i> Generar PDF
+  <button type="button" class="btn btn-primary" onclick="generatePDF()" style="margin-right:6px;">
+    <i class="fa fa-print"></i> PDF
+  </button>
+  <button type="button" class="btn btn-success" onclick="generateExcelCompras()">
+    <i class="fa fa-file-excel-o"></i> Excel
   </button>
 </div>
 
@@ -124,7 +127,6 @@ function generatePDF() {
   const idProveedor = document.getElementById('id_proveedor').value;
   const idUsuario = document.getElementById('id_usuario').value;
   const idCategoria = document.getElementById('id_categoria').value;
-  // Validar campos
   if (!fechaInicio.value || !fechaFin.value) {
     swal({
     icon: 'warning',
@@ -162,14 +164,39 @@ function generatePDF() {
         popupWindow.close();
     }
 
-    popupWindow = window.open(
-        "extensiones/tcpdf/pdf/reporte-compras.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+    const qs = "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
         "&fechaFin=" + encodeURIComponent(fechaFin.value) +
         "&idProveedor=" + encodeURIComponent(idProveedor) +
         "&idUsuario=" + encodeURIComponent(idUsuario) +
-        "&idCategoria=" + encodeURIComponent(idCategoria) ,
+        "&idCategoria=" + encodeURIComponent(idCategoria);
+
+    popupWindow = window.open(
+        "extensiones/tcpdf/pdf/reporte-compras.php?" + qs,
         "_blank",
         windowFeatures
     );
+}
+
+function generateExcelCompras() {
+  const idProveedor = document.getElementById('id_proveedor').value;
+  const idUsuario = document.getElementById('id_usuario').value;
+  const idCategoria = document.getElementById('id_categoria').value;
+  if (!fechaInicio.value || !fechaFin.value) {
+    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
+    return;
+  }
+  if (fechaFin.value > fechaActual) {
+    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual });
+    return;
+  }
+  if (fechaInicio.value > fechaFin.value) {
+    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.' });
+    return;
+  }
+  window.location.href = "extensiones/excel/reporte-compras.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+    "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+    "&idProveedor=" + encodeURIComponent(idProveedor) +
+    "&idUsuario=" + encodeURIComponent(idUsuario) +
+    "&idCategoria=" + encodeURIComponent(idCategoria);
 }
 </script>

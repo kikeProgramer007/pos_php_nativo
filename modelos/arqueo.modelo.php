@@ -1,6 +1,6 @@
 <?php
 
-require_once "conexion.php";
+require_once __DIR__ . "/conexion.php";
 
 /**
  * Modelo para gestionar las operaciones de arqueo de caja en la base de datos

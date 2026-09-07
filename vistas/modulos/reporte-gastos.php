@@ -96,8 +96,11 @@ $fechaActual = date('Y-m-d');
             </div>
 
             <div class="text-right">
-              <button type="button" class="btn btn-primary" onclick="generatePDFGastos()">
-                <i class="fa fa-print"></i> Generar PDF
+              <button type="button" class="btn btn-primary" onclick="generatePDFGastos()" style="margin-right:6px;">
+                <i class="fa fa-print"></i> PDF
+              </button>
+              <button type="button" class="btn btn-success" onclick="generateExcelGastos()">
+                <i class="fa fa-file-excel-o"></i> Excel
               </button>
             </div>
           </div>
@@ -174,5 +177,32 @@ function generatePDFGastos() {
     "_blank",
     windowFeatures
   );
+}
+
+function generateExcelGastos() {
+  const idUsuarioSesion = document.getElementById('id_usuario_sesion').value;
+  const idTipoGasto = document.getElementById('id_tipo_gasto').value;
+  const formaPago = document.getElementById('forma_pago').value;
+  const idUsuarioFiltro = document.getElementById('id_usuario_filtro').value;
+
+  if (!fechaInicio.value || !fechaFin.value) {
+    swal({ type: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
+    return;
+  }
+  if (fechaFin.value > fechaActual) {
+    swal({ type: 'warning', title: 'Advertencia', text: 'La fecha fin no puede ser mayor a la fecha actual.' });
+    return;
+  }
+  if (fechaInicio.value > fechaFin.value) {
+    swal({ type: 'warning', title: 'Advertencia', text: 'La fecha de inicio debe ser menor o igual a la fecha fin.' });
+    return;
+  }
+
+  window.location.href = "extensiones/excel/reporte-gastos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+    "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+    "&idTipoGasto=" + encodeURIComponent(idTipoGasto) +
+    "&formaPago=" + encodeURIComponent(formaPago) +
+    "&idUsuarioFiltro=" + encodeURIComponent(idUsuarioFiltro) +
+    "&idUsuario=" + encodeURIComponent(idUsuarioSesion);
 }
 </script>

@@ -84,11 +84,13 @@ $fechaActual = date('Y-m-d');
                             <div class="col-12 col-sm-2 text-right">
                                 <div class="form-group">
                                     <label>&nbsp;</label>
-                                    <button type="button" class="btn btn-warning btn-block" onclick="generatePDF()">
-                                        <i class="fa fa-print"></i> Generar PDF
+                                    <button type="button" class="btn btn-warning btn-block" onclick="generatePDF()" style="margin-bottom:6px;">
+                                        <i class="fa fa-print"></i> PDF
+                                    </button>
+                                    <button type="button" class="btn btn-success btn-block" onclick="generateExcelTopMeseros()">
+                                        <i class="fa fa-file-excel-o"></i> Excel
                                     </button>
                                 </div>
-                              
                         </div>
                       
                             
@@ -260,5 +262,43 @@ $fechaActual = date('Y-m-d');
             "_blank",
             windowFeatures
         );
+    }
+
+    function generateExcelTopMeseros() {
+        const idUsuario = document.getElementById('id_usuario').value;
+
+        if (!fechaInicio.value || !fechaFin.value) {
+            swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
+            return;
+        }
+        if (fechaFin.value > fechaActual) {
+            swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual });
+            return;
+        }
+        if (fechaInicio.value > fechaFin.value) {
+            swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.' });
+            return;
+        }
+
+        const idMesero = document.getElementById('id_mesero').value;
+        const categoriaSelect = document.getElementById('id_categoria');
+        let selectedCategorias = Array.from(categoriaSelect.selectedOptions).map(option => option.value);
+        const allCategoriesSelected = selectedCategorias.includes('0');
+        selectedCategorias = selectedCategorias.filter(categoriaId => categoriaId !== '0');
+
+        let queryString = "extensiones/excel/top-meseros.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+            "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+            "&idUsuario=" + encodeURIComponent(idUsuario) +
+            "&idMesero=" + encodeURIComponent(idMesero);
+
+        if (allCategoriesSelected && selectedCategorias.length === 0) {
+            queryString += "&idCategoria[]=0";
+        } else {
+            selectedCategorias.forEach(categoriaId => {
+                queryString += "&idCategoria[]=" + encodeURIComponent(categoriaId);
+            });
+        }
+
+        window.location.href = queryString;
     }
 </script>

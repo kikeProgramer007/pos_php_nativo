@@ -46,9 +46,18 @@ $fechaActual = date('Y-m-d');
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group" style="margin-top: 24px;">
-                                    <button type="button" class="btn btn-primary btn-block" onclick="generateProductoCategoriaPDF()">
-                                        <i class="fa fa-print"></i> Generar PDF
-                                    </button>
+                                    <div class="row">
+                                        <div class="col-xs-6" style="padding-right:5px;">
+                                            <button type="button" class="btn btn-primary btn-block" onclick="generateProductoCategoriaPDF()">
+                                                <i class="fa fa-print"></i> PDF
+                                            </button>
+                                        </div>
+                                        <div class="col-xs-6" style="padding-left:5px;">
+                                            <button type="button" class="btn btn-success btn-block" onclick="generateProductoCategoriaExcel()">
+                                                <i class="fa fa-file-excel-o"></i> Excel
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -86,5 +95,12 @@ $fechaActual = date('Y-m-d');
             "_blank",
             windowFeatures
         );
+    }
+
+    function generateProductoCategoriaExcel() {
+        const idCategoria = document.getElementById('id_categoria').value;
+        const idUsuario = document.getElementById('id_usuario').value;
+        window.location.href = "extensiones/excel/reporte-categoria.php?idCategoria=" + encodeURIComponent(idCategoria) +
+            "&idUsuario=" + encodeURIComponent(idUsuario);
     }
 </script>

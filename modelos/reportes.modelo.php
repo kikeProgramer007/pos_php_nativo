@@ -1,6 +1,6 @@
 <?php
 
-require_once "conexion.php";
+require_once __DIR__ . "/conexion.php";
 
 class ModeloReportes{
 
@@ -118,6 +118,7 @@ class ModeloReportes{
 					v.total,
 					COALESCE(v.total_bruto, v.total) AS total_bruto,
 					COALESCE(v.total_descuento, 0) AS total_descuento,
+					SUM(COALESCE(dv.precio_compra, p.precio_compra, 0) * dv.cantidad) AS costo,
 					SUM(
 						COALESCE(dv.subtotal, 0)
 						- (COALESCE(dv.precio_compra, p.precio_compra, 0) * dv.cantidad)

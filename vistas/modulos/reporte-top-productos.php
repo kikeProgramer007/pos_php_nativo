@@ -84,9 +84,18 @@ $fechaActual = date('Y-m-d');
           </div>
           <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
             <label class="small">&nbsp;</label>
-            <button type="button" class="btn btn-block rv-btn-orange" onclick="generatePDF()">
-              <i class="fa fa-file-pdf"></i> Generar PDF
-            </button>
+            <div class="row">
+              <div class="col-xs-6" style="padding-right:4px;">
+                <button type="button" class="btn btn-block rv-btn-orange" onclick="generatePDF()">
+                  <i class="fa fa-file-pdf"></i> PDF
+                </button>
+              </div>
+              <div class="col-xs-6" style="padding-left:4px;">
+                <button type="button" class="btn btn-block btn-success" onclick="generateExcelTopProductos()">
+                  <i class="fa fa-file-excel-o"></i> Excel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </form>
@@ -161,5 +170,30 @@ $fechaActual = date('Y-m-d');
       "_blank",
       windowFeatures
     );
+  }
+
+  function generateExcelTopProductos() {
+    const idUsuario = document.getElementById('id_usuario').value;
+    const idCategoria = document.getElementById('id_categoria').value;
+    const idMesero = document.getElementById('id_mesero').value;
+
+    if (!fechaInicio || !fechaFin || !fechaInicio.value || !fechaFin.value) {
+      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
+      return;
+    }
+    if (fechaFin.value > fechaActual) {
+      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual });
+      return;
+    }
+    if (fechaInicio.value > fechaFin.value) {
+      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.' });
+      return;
+    }
+
+    window.location.href = "extensiones/excel/top-productos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+      "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+      "&idUsuario=" + encodeURIComponent(idUsuario) +
+      "&idCategoria=" + encodeURIComponent(idCategoria) +
+      "&idMesero=" + encodeURIComponent(idMesero);
   }
 </script>

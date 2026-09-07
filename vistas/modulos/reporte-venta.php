@@ -184,7 +184,8 @@ $fechaActual = date('Y-m-d');
           </div>
         </div>
         <div>
-          <button class="rv-btn-orange" type="button" onclick="generatePDF()"><i class="fa fa-file-pdf"></i> Generar PDF</button>
+          <button class="rv-btn-orange" type="button" onclick="generatePDF()" style="margin-right:8px;"><i class="fa fa-file-pdf"></i> PDF</button>
+          <button class="btn btn-success" type="button" onclick="generateExcelVentas()" style="padding:10px 16px;border-radius:8px;"><i class="fa fa-file-excel-o"></i> Excel</button>
         </div>
       </div>
 <img src="vistas/img/plantilla/1.webp" class="responsive-image" style="display: block; margin: 0 auto; max-width: 100%; height: auto; object-fit: contain;">
@@ -463,27 +464,47 @@ $fechaActual = date('Y-m-d');
 
   var popupWindow = null;
 
-  function generatePDF() {
-    const idMesero = document.getElementById('id_mesero').value;
-    const idUsuario = document.getElementById('id_usuario').value;
-    const idCategoria = document.getElementById('id_categoria').value;
-    const idCliente = document.getElementById('id_cliente').value || '0';
-    const tipoPago = document.getElementById('tipo_pago').value;
-    const estadoPago = document.getElementById('estado_pago').value;
-    const registroEliminados = document.getElementById('registros_eliminados').checked;
-
+  function validarFiltrosVentas() {
     if (!fechaInicio.value || !fechaFin.value) {
       swal({icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.'});
-      return;
+      return null;
     }
     if (fechaFin.value > fechaActual) {
       swal({icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual});
-      return;
+      return null;
     }
     if (fechaInicio.value > fechaFin.value) {
       swal({icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.'});
-      return;
+      return null;
     }
+    return {
+      fechaInicio: fechaInicio.value,
+      fechaFin: fechaFin.value,
+      idMesero: document.getElementById('id_mesero').value,
+      idUsuario: document.getElementById('id_usuario').value,
+      idCategoria: document.getElementById('id_categoria').value,
+      idCliente: document.getElementById('id_cliente').value || '0',
+      tipoPago: document.getElementById('tipo_pago').value,
+      estadoPago: document.getElementById('estado_pago').value,
+      registroEliminados: document.getElementById('registros_eliminados').checked
+    };
+  }
+
+  function queryReporteVentas(f) {
+    return "fechaInicio=" + encodeURIComponent(f.fechaInicio) +
+      "&fechaFin=" + encodeURIComponent(f.fechaFin) +
+      "&idMesero=" + encodeURIComponent(f.idMesero) +
+      "&idUsuario=" + encodeURIComponent(f.idUsuario) +
+      "&idCategoria=" + encodeURIComponent(f.idCategoria) +
+      "&idCliente=" + encodeURIComponent(f.idCliente) +
+      "&tipoPago=" + encodeURIComponent(f.tipoPago) +
+      "&estadoPago=" + encodeURIComponent(f.estadoPago) +
+      "&registroEliminados=" + encodeURIComponent(f.registroEliminados);
+  }
+
+  function generatePDF() {
+    const f = validarFiltrosVentas();
+    if (!f) return;
 
     const width = 1000; const height = 700;
     const left = (screen.width / 2) - (width / 2);
@@ -491,17 +512,16 @@ $fechaActual = date('Y-m-d');
     const windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
     if (popupWindow && !popupWindow.closed) popupWindow.close();
 
-    const url = "extensiones/tcpdf/pdf/reporte-ventas.php?" +
-      "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-      "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-      "&idMesero=" + encodeURIComponent(idMesero) +
-      "&idUsuario=" + encodeURIComponent(idUsuario) +
-      "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idCliente=" + encodeURIComponent(idCliente) +
-      "&tipoPago=" + encodeURIComponent(tipoPago) +
-      "&estadoPago=" + encodeURIComponent(estadoPago) +
-      "&registroEliminados=" + encodeURIComponent(registroEliminados);
+    popupWindow = window.open(
+      "extensiones/tcpdf/pdf/reporte-ventas.php?" + queryReporteVentas(f),
+      "_blank",
+      windowFeatures
+    );
+  }
 
-    popupWindow = window.open(url, "_blank", windowFeatures);
+  function generateExcelVentas() {
+    const f = validarFiltrosVentas();
+    if (!f) return;
+    window.location.href = "extensiones/excel/reporte-ventas.php?" + queryReporteVentas(f);
   }
 </script>

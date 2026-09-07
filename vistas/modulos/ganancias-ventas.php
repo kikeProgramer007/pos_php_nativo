@@ -61,12 +61,21 @@ $mesesEspanol = [
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
-                                        <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDF()">
-                                            <i class="fa fa-print"></i> Generar PDF
-                                        </button>
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right:5px;">
+                                                <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDF()">
+                                                    <i class="fa fa-print"></i> PDF
+                                                </button>
+                                            </div>
+                                            <div class="col-xs-6" style="padding-left:5px;">
+                                                <button type="button" class="btn btn-success btn-block" onclick="GananciasgenerateExcelMes()">
+                                                    <i class="fa fa-file-excel-o"></i> Excel
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -108,12 +117,21 @@ $mesesEspanol = [
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
-                                        <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDFYear()">
-                                            <i class="fa fa-print"></i> Generar PDF
-                                        </button>
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right:5px;">
+                                                <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDFYear()">
+                                                    <i class="fa fa-print"></i> PDF
+                                                </button>
+                                            </div>
+                                            <div class="col-xs-6" style="padding-left:5px;">
+                                                <button type="button" class="btn btn-success btn-block" onclick="GananciasgenerateExcelYear()">
+                                                    <i class="fa fa-file-excel-o"></i> Excel
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -144,12 +162,21 @@ $mesesEspanol = [
                                         <input type="date" class="form-control" id="fecha_fin_ganancia" name="fecha_fin_ganancia" value="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
-                                        <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDFFechas()">
-                                            <i class="fa fa-print"></i> Generar PDF
-                                        </button>
+                                        <div class="row">
+                                            <div class="col-xs-6" style="padding-right:5px;">
+                                                <button type="button" class="btn btn-primary btn-block" onclick="GanaciasgeneratePDFFechas()">
+                                                    <i class="fa fa-print"></i> PDF
+                                                </button>
+                                            </div>
+                                            <div class="col-xs-6" style="padding-left:5px;">
+                                                <button type="button" class="btn btn-success btn-block" onclick="GananciasgenerateExcelFechas()">
+                                                    <i class="fa fa-file-excel-o"></i> Excel
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,6 +233,26 @@ $mesesEspanol = [
         );
     }
 
+    function GananciasgenerateExcelMes() {
+        const mes = document.getElementById('month').value;
+        const anio = document.getElementById('year').value;
+        const idUsuario = document.getElementById('id_usuario').value;
+
+        if (!mes || !anio) {
+            swal({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Por favor, seleccione un Mes y un Año.',
+            });
+            return;
+        }
+
+        window.location.href =
+            "extensiones/excel/ganancias-mes.php?month=" + encodeURIComponent(mes) +
+            "&year=" + encodeURIComponent(anio) +
+            "&idUsuario=" + encodeURIComponent(idUsuario);
+    }
+
     function GanaciasgeneratePDFYear() {
         const startyear = document.getElementById('startyear').value;
         const endyear = document.getElementById('endyear').value;
@@ -239,10 +286,29 @@ $mesesEspanol = [
         );
     }
 
-    function GanaciasgeneratePDFFechas() {
+    function GananciasgenerateExcelYear() {
+        const startyear = document.getElementById('startyear').value;
+        const endyear = document.getElementById('endyear').value;
+        const idUsuario = document.getElementById('id_usuario').value;
+
+        if (!startyear || !endyear || (startyear > endyear)) {
+            swal({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: 'Por favor, seleccione un rango de años correcto.',
+            });
+            return;
+        }
+
+        window.location.href =
+            "extensiones/excel/ganancias-year.php?yearini=" + encodeURIComponent(startyear) +
+            "&yearfin=" + encodeURIComponent(endyear) +
+            "&idUsuario=" + encodeURIComponent(idUsuario);
+    }
+
+    function validarFechasGanancia() {
         const fechaInicio = document.getElementById('fecha_inicio_ganancia').value;
         const fechaFin = document.getElementById('fecha_fin_ganancia').value;
-        const idUsuario = document.getElementById('id_usuario').value;
 
         if (!fechaInicio || !fechaFin) {
             swal({
@@ -250,7 +316,7 @@ $mesesEspanol = [
                 title: 'Advertencia',
                 text: 'Por favor, seleccione fecha inicio y fecha fin.',
             });
-            return;
+            return null;
         }
         if (fechaFin > fechaActualGanancia) {
             swal({
@@ -258,7 +324,7 @@ $mesesEspanol = [
                 title: 'Advertencia',
                 text: 'La fecha fin no puede ser mayor a la fecha actual: ' + fechaActualGanancia,
             });
-            return;
+            return null;
         }
         if (fechaInicio > fechaFin) {
             swal({
@@ -266,8 +332,15 @@ $mesesEspanol = [
                 title: 'Advertencia',
                 text: 'La fecha de inicio debe ser menor o igual a la fecha fin.',
             });
-            return;
+            return null;
         }
+        return { fechaInicio: fechaInicio, fechaFin: fechaFin };
+    }
+
+    function GanaciasgeneratePDFFechas() {
+        const fechas = validarFechasGanancia();
+        if (!fechas) return;
+        const idUsuario = document.getElementById('id_usuario').value;
 
         const width = 800;
         const height = 600;
@@ -280,11 +353,22 @@ $mesesEspanol = [
         }
 
         popupWindow = window.open(
-            "extensiones/tcpdf/pdf/pdf-ganancias-fechas.php?fechaInicio=" + encodeURIComponent(fechaInicio) +
-            "&fechaFin=" + encodeURIComponent(fechaFin) +
+            "extensiones/tcpdf/pdf/pdf-ganancias-fechas.php?fechaInicio=" + encodeURIComponent(fechas.fechaInicio) +
+            "&fechaFin=" + encodeURIComponent(fechas.fechaFin) +
             "&idUsuario=" + encodeURIComponent(idUsuario),
             "_blank",
             windowFeatures
         );
+    }
+
+    function GananciasgenerateExcelFechas() {
+        const fechas = validarFechasGanancia();
+        if (!fechas) return;
+        const idUsuario = document.getElementById('id_usuario').value;
+
+        window.location.href =
+            "extensiones/excel/ganancias-fechas.php?fechaInicio=" + encodeURIComponent(fechas.fechaInicio) +
+            "&fechaFin=" + encodeURIComponent(fechas.fechaFin) +
+            "&idUsuario=" + encodeURIComponent(idUsuario);
     }
 </script>
