@@ -1384,6 +1384,37 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     height: 32px;
     padding: 4px 8px;
   }
+  /* Estilos destacados para Pago en Efectivo y Cambio */
+  #nuevoValorEfectivo,
+  #nuevoCambioEfectivo {
+    font-size: 2rem !important; /* 32px */
+    font-weight: bold !important;
+    height: 45px !important;
+    padding: 8px 12px !important;
+    text-align: center;
+    line-height: 1;
+  }
+  /* Contenedores de Pago en Efectivo y Cambio */
+  #contenedorEfectivo .input-group,
+  #capturarCambioEfectivo .input-group {
+    display: flex;
+    align-items: center;
+  }
+  #contenedorEfectivo .input-group-addon,
+  #capturarCambioEfectivo .input-group-addon {
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    padding: 0 14px !important;
+    min-width: 60px;
+  }
+  #contenedorEfectivo .input-group-addon i,
+  #capturarCambioEfectivo .input-group-addon i {
+    font-size: 24px;
+    line-height: 1;
+  }
   .cajasMetodoPago textarea.form-control {
     height: auto;
     min-height: 52px;
