@@ -124,6 +124,11 @@ class imprimirFactura
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $tipoPago . '</td>
             </tr>
+            <tr >
+                <td width="25%"><strong>ATENCIÓN</strong></td>
+                <td width="3%"><strong>:</strong></td>
+                <td width="72%">' . $respuestaVenta["forma_atencion"] . '</td>
+            </tr>
             <tr><td colspan="2"></td></tr>
           </tbody>
         </table>';
