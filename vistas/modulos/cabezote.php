@@ -4,10 +4,10 @@
   <a href="inicio" class="logo">
     <!-- logo mini -->
     <span class="logo-mini">
-      <img src="vistas/img/plantilla/Logo_POS.webp" class="img-responsive" style="padding:2px">
+      <img src="vistas/img/plantilla/Logo_POS2.webp" class="img-responsive" style="padding:2px">
     </span>
     <!-- logo normal -->
-    <span class="logo-lg"><b>El Gato </b>Rico</span>
+    <span class="logo-lg"><b>Pollos 360</b></span>
   </a>
 
   <!-- BARRA DE NAVEGACIÓN -->

@@ -123,7 +123,7 @@
 
 <style>
 .skin-blue .main-header .navbar {
-    background: linear-gradient(to right, #6E3B0B, #A86514, #C87A18, #E09A2A);
+    background: linear-gradient(to right, #f07a1ada, #ff8d1ade, #e09a2ae8);
     color: #fff;
     box-shadow: 0 2px 8px rgba(240, 160, 32, 0.35);
 }
