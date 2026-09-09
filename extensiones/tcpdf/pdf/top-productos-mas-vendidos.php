@@ -21,8 +21,8 @@ class reporteTopProductosMasVendidos
     public $idUsuario;
     public $idCategoria;
     public $idMesero;
-    private $nombreTienda = "Pollos Rosy";
-    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+    private $nombreTienda = "Pollos 360 ";
+    private $direccionTienda = "Ave.Miguel Servet ";
 
     public function generarPdfVentasTopProducto()
     {

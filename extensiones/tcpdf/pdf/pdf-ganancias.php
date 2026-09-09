@@ -16,8 +16,8 @@ class PdfGanancias extends FPDF
     
     public $month = null;
     public $year = null;
-    private $nombreTienda = "El Gato Rico ";
-    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+    private $nombreTienda = "Pollos 360 ";
+    private $direccionTienda = "Ave.Miguel Servet";
 
     // Sobrescribimos el método Header para añadir el encabezado
     function Header()

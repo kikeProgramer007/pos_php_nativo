@@ -16,8 +16,8 @@ class reporteGastos
     public $idUsuarioFiltro;
     public $idUsuario;
 
-    private $nombreTienda = "El Gato Rico ";
-    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+    private $nombreTienda = "Pollos 360 ";
+    private $direccionTienda = "Ave.Miguel Servet ";
 
     private function etiquetaFormaPago($valor)
     {

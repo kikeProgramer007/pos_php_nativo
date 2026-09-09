@@ -23,8 +23,8 @@ class PdfGananciasYear
         $yearini = $this->yearini;
         $yearfin = $this->yearfin;
         // if (!isset($this->session->id_usuario)) {return redirect()->to(base_url());}
-        $nombreTienda = "El Gato Rico "; //$this->configuracion->select('valor')->where('nombre','tienda_nombre')->get()->getRow()->valor;
-        $direccionTienda = "Heroes Del Chaco 9,Cotoca"; // $this->configuracion->select('valor')->where('nombre','tienda_direccion')->get()->getRow()->valor;
+        $nombreTienda = "Pollos 360 "; //$this->configuracion->select('valor')->where('nombre','tienda_nombre')->get()->getRow()->valor;
+        $direccionTienda = "Ave.Miguel Servet"; // $this->configuracion->select('valor')->where('nombre','tienda_direccion')->get()->getRow()->valor;
 
         $DateAndTime = date('d-m-Y h:i:s a', time());
         // $db     =\Config\Database::connect();

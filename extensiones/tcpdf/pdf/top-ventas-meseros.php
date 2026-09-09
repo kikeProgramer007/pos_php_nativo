@@ -22,8 +22,8 @@ class reporteTopVentasMeseros
     public $idUsuario;
     public $idMesero;
     public $idCategoria;
-    private $nombreTienda = "El Gato Rico ";
-    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+    private $nombreTienda = "Pollos 360 ";
+    private $direccionTienda = "Ave.Miguel Servet ";
 
     public function generarPdfVentasTopMeseros()
     {

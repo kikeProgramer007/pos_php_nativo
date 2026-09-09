@@ -15,8 +15,8 @@ class PdfGananciasFechas extends FPDF
     public $idUsuario;
     public $fechaInicio = null;
     public $fechaFin = null;
-    private $nombreTienda = "El Gato Rico ";
-    private $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+    private $nombreTienda = "Pollos 360 ";
+    private $direccionTienda = "Ave.Miguel Servet";
 
     function Header()
     {
