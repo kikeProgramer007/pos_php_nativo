@@ -17,7 +17,7 @@ class PDF extends FPDF
         $this->Image('vistas/img/plantilla/logo-blanco-bloque.png', 12, 4.5, 31);
 
         $this->SetFont('Arial', 'B', 16);
-        $this->Cell(0, 15, iconv('UTF-8', 'ISO-8859-1', 'El Gato Rico -Churrasqueria'), 0, 1, 'C');
+        $this->Cell(0, 15, iconv('UTF-8', 'ISO-8859-1', 'Pollos 360'), 0, 1, 'C');
 
         $this->SetFont('Arial', 'B', 12);
         $textoAncho = 90;
@@ -153,7 +153,7 @@ class PDF extends FPDF
         $this->SetFont('Arial', 'I', 8);
         $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Fecha de impresion: ') . date('d/m/Y H:i:s'), 0, 0, 'L');
         $this->Cell(70, 10, iconv('UTF-8', 'ISO-8859-1', 'Pagina ') . $this->PageNo() . '/{nb}', 0, 0, 'C');
-        $this->Cell(50, 10, 'El Gato Rico -Churrasqueria', 0, 0, 'R');
+        $this->Cell(50, 10, 'Pollos 360', 0, 0, 'R');
     }
 }
 
