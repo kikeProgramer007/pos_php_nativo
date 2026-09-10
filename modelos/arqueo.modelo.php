@@ -458,7 +458,7 @@ class ModeloArqueo {
 
     /**
      * Suma solo la parte en efectivo de gastos (para disponibilidad de caja)
-     * forma_pago: 1=Efectivo, 2=QR, 3=Transferencia, 4=Mixto
+     * forma_pago: 1=Efectivo, 2=QR, 4=Mixto
      */
     static public function mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo = null) {
         try {
@@ -495,6 +495,48 @@ class ModeloArqueo {
                 return floatval($row["total"] ?? 0);
             } catch (PDOException $e2) {
                 return self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
+            }
+        }
+    }
+
+    /**
+     * Suma solo la parte QR de gastos
+     * forma_pago: 1=Efectivo, 2=QR, 4=Mixto
+     */
+    static public function mdlSumarGastosQrPorArqueo($idArqueo, $pdo = null) {
+        try {
+            $conexion = $pdo ?: Conexion::conectar();
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(
+                    CASE
+                        WHEN forma_pago IN (2, '2') THEN COALESCE(NULLIF(monto_qr, 0), monto)
+                        WHEN forma_pago IN (4, '4') THEN COALESCE(monto_qr, 0)
+                        ELSE 0
+                    END
+                 ), 0) AS total
+                 FROM gastos
+                 WHERE id_arqueo = :id_arqueo"
+            );
+            $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error en mdlSumarGastosQrPorArqueo: " . $e->getMessage());
+            try {
+                $conexion = $pdo ?: Conexion::conectar();
+                $stmt = $conexion->prepare(
+                    "SELECT COALESCE(SUM(monto), 0) AS total
+                     FROM gastos
+                     WHERE id_arqueo = :id_arqueo
+                       AND forma_pago IN (2, '2')"
+                );
+                $stmt->bindValue(":id_arqueo", intval($idArqueo), PDO::PARAM_INT);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                return floatval($row["total"] ?? 0);
+            } catch (PDOException $e2) {
+                return 0;
             }
         }
     }
@@ -684,6 +726,8 @@ class ModeloArqueo {
             $ventas = self::mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo);
             $compras = self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
             $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
+            $gastosEfectivo = self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo);
+            $gastosQr = self::mdlSumarGastosQrPorArqueo($idArqueo, $pdo);
             $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
             $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo);
             $otrosIngresosQr = self::mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo);
@@ -720,6 +764,8 @@ class ModeloArqueo {
             $arqueo["monto_ventas_qr"] = $ventas["total_qr"];
             $arqueo["monto_compras"] = $compras;
             $arqueo["gastos_operativos"] = $gastos;
+            $arqueo["gastos_efectivo"] = $gastosEfectivo;
+            $arqueo["gastos_qr"] = $gastosQr;
             $arqueo["total_ingresos"] = $totalIngresos;
             $arqueo["total_egresos"] = $totalEgresos;
             $arqueo["resultado_neto"] = $resultadoNeto;

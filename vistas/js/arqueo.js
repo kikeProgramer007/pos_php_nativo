@@ -23,6 +23,8 @@ class ArqueoCaja {
             montoVentasQr: 0,
             totalEfectivoEnCaja: 0,
             gastosOperativos: 0,
+            gastosEfectivo: 0,
+            gastosQr: 0,
             montoCompras: 0,
             totalIngresos: 0,
             totalEgresos: 0,
@@ -130,6 +132,8 @@ class ArqueoCaja {
         this.totales.montoVentasEfectivo = parseFloat(document.getElementById('monto_ventas_efectivo').textContent) || 0;
         this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent) || 0;
         this.totales.gastosOperativos = Math.abs(parseFloat(document.getElementById('gastos_operativos').textContent) || 0);
+        this.totales.gastosEfectivo = Math.abs(parseFloat((document.getElementById('gastos_efectivo') || {}).textContent) || 0);
+        this.totales.gastosQr = Math.abs(parseFloat((document.getElementById('gastos_qr') || {}).textContent) || 0);
         this.totales.montoCompras = Math.abs(parseFloat(document.getElementById('monto_compras').textContent) || 0);
         this.totales.otrosIngresos = Math.abs(parseFloat(document.getElementById('otros_ingresos').textContent) || 0);
         this.totales.otrosIngresosEfectivo = Math.abs(parseFloat((document.getElementById('otros_ingresos_efectivo') || {}).textContent) || 0);
@@ -137,16 +141,19 @@ class ArqueoCaja {
         if (this.totales.otrosIngresosEfectivo <= 0 && this.totales.otrosIngresosQr <= 0 && this.totales.otrosIngresos > 0) {
             this.totales.otrosIngresosEfectivo = this.totales.otrosIngresos;
         }
+        if (this.totales.gastosEfectivo <= 0 && this.totales.gastosQr <= 0 && this.totales.gastosOperativos > 0) {
+            this.totales.gastosEfectivo = this.totales.gastosOperativos;
+        }
         this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas + this.totales.otrosIngresos;
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
 
-        // efectivo_esperado = apertura + ventas efectivo + otros ingresos efectivo - compras - gastos
+        // efectivo_esperado = apertura + ventas efectivo + otros ingresos efectivo - compras - gastos efectivo
         const efectivoEsperado = this.totales.montoApertura
             + this.totales.montoVentasEfectivo
             + this.totales.otrosIngresosEfectivo
             - this.totales.montoCompras
-            - this.totales.gastosOperativos;
+            - this.totales.gastosEfectivo;
         const totalContado = this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta;
 
         // Diferencia = contado - esperado (sin forzar a cero ni usar Math.abs del neto)
@@ -287,6 +294,14 @@ class ArqueoCaja {
         if (otrosIngresosQrEl) {
             otrosIngresosQrEl.textContent = '0.00';
         }
+        const gastosEfEl = document.getElementById('gastos_efectivo');
+        if (gastosEfEl) {
+            gastosEfEl.textContent = '0.00';
+        }
+        const gastosQrEl = document.getElementById('gastos_qr');
+        if (gastosQrEl) {
+            gastosQrEl.textContent = '0.00';
+        }
         const bloqueComprasInfo = document.getElementById('bloque_compras_informativo');
         if (bloqueComprasInfo) {
             bloqueComprasInfo.style.display = 'none';
@@ -308,6 +323,8 @@ class ArqueoCaja {
             'total_descuentos_ventas': datos.total_descuentos_ventas || '0.00',
             'total_ingresos': datos.total_ingresos || '0.00',
             'gastos_operativos': datos.gastos_operativos || '0.00',
+            'gastos_efectivo': datos.gastos_efectivo || '0.00',
+            'gastos_qr': datos.gastos_qr || '0.00',
             'monto_compras': datos.monto_compras || '0.00',
             'total_egresos': datos.total_egresos || '0.00',
             'resultado_neto': datos.resultado_neto || '0.00',

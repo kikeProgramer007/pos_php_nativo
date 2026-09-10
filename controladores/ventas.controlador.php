@@ -168,9 +168,6 @@ class ControladorVentas{
 					$totalPagado = number_format($totalQR, 2, '.', '');
 					$totalQR = number_format($totalVenta, 2, '.', '');
 					break;
-				case 3:
-					$tipoPago = "Transferencia";
-					break;
 					case 4:
 						$tipoPago = "Qr y Efectivo(Mixto)";
 

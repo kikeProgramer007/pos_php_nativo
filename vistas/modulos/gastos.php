@@ -213,11 +213,6 @@ MODAL EDITAR Mesero
                   <span class="gasto-pago-icono"><i class="fa fa-exchange"></i></span>
                   <span class="gasto-pago-texto">MIXTO</span>
                 </label>
-                <label class="gasto-pago-opcion" data-tipo="3">
-                  <input type="radio" name="editarTipoPago" value="3">
-                  <span class="gasto-pago-icono"><i class="fa fa-university"></i></span>
-                  <span class="gasto-pago-texto">TRANSF.</span>
-                </label>
               </div>
             </div>
 
