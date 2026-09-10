@@ -1372,8 +1372,8 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     margin-bottom: 6px;
   }
   .cajasMetodoPago .form-group label {
-    font-size: 11px;
-    margin-bottom: 2px;
+    font-size: 14px;
+    margin-bottom: 4px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -1384,8 +1384,9 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     height: 32px;
     padding: 4px 8px;
   }
-  /* Estilos destacados para Pago en Efectivo y Cambio */
+  /* Misma altura/tamaño: Efectivo, QR y Cambio */
   #nuevoValorEfectivo,
+  #nuevoValorQR,
   #nuevoCambioEfectivo {
     font-size: 2rem !important; /* 32px */
     font-weight: bold !important;
@@ -1394,13 +1395,25 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     text-align: center;
     line-height: 1;
   }
-  /* Contenedores de Pago en Efectivo y Cambio */
+  .pago-mixto-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .pago-mixto-row > [class*="col-"] {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  /* Contenedores de Pago en Efectivo, QR y Cambio */
   #contenedorEfectivo .input-group,
+  #contenedorQR .input-group,
   #capturarCambioEfectivo .input-group {
     display: flex;
     align-items: center;
   }
   #contenedorEfectivo .input-group-addon,
+  #contenedorQR .input-group-addon,
   #capturarCambioEfectivo .input-group-addon {
     height: 45px;
     display: flex;
@@ -1411,6 +1424,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     min-width: 60px;
   }
   #contenedorEfectivo .input-group-addon i,
+  #contenedorQR .input-group-addon i,
   #capturarCambioEfectivo .input-group-addon i {
     font-size: 24px;
     line-height: 1;
@@ -1869,17 +1883,19 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                         </div>
                       </div>
 
-                      <div class="form-group position-relative" id="contenedorQR">
-                        <!-- Botón flotante -->
-                        <!-- <button type="button" class="btn btn-default btnEditarQR btn-editar-qr">
-                          <i class="fa fa-edit" aria-hidden="true"></i>
-                        </button> -->
-                        <label for="nuevoValorQR">Pago en QR:</label>
-                        <div class="input-group">
-                          <span class="input-group-addon">
-                            <i class="fa fa-qrcode"></i>
-                          </span>
-                          <input type="text" class="form-control" id="nuevoValorQR" name="nuevoValorQR" placeholder="0" min="0" step="0.01"  inputmode="decimal" readonly required>
+                      <div class="col-md-6" id="contenedorQR">
+                        <div class="form-group position-relative">
+                          <!-- Botón flotante -->
+                          <!-- <button type="button" class="btn btn-default btnEditarQR btn-editar-qr">
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                          </button> -->
+                          <label for="nuevoValorQR">Pago en QR:</label>
+                          <div class="input-group">
+                            <span class="input-group-addon">
+                              <i class="fa fa-qrcode"></i>
+                            </span>
+                            <input type="text" class="form-control" id="nuevoValorQR" name="nuevoValorQR" placeholder="0" min="0" step="0.01"  inputmode="decimal" readonly required>
+                          </div>
                         </div>
                       </div>
 
