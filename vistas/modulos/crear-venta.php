@@ -1910,8 +1910,9 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                       <div class="input-group">
                         <span class="input-group-addon text-bold">IMPRIMIR EN</span>
                         <select class="form-control input-sm text-uppercase text-bold" id="idTipoImpresion" name="idTipoImpresion">
-                          <option value="1"selected>CAJA Y COCINA</option>
-                          <option value="2">CAJA</option>
+                          <option value="1">CAJA Y COCINA</option>
+                          <option value="2">CAJA (TICKET)</option>
+                          <option value="5" selected>CAJA (TICKET + COMANDA)</option>
                           <option value="3">COCINA</option>
                           <option value="4">NO IMPRIMIR</option>
                         </select>
@@ -2234,10 +2235,6 @@ document.addEventListener("DOMContentLoaded", function () {
       setColumna(efectivo, "col-md-6");
       setColumna(qr, "col-md-6");
 
-    } 
-    else { // Transferencia
-      efectivo.style.display = "none";
-      qr.style.display = "none";
     }
   }
 
@@ -2501,6 +2498,10 @@ function continuarTrasCuentaPendiente(respuesta) {
     imprimirSoloCaja(respuesta.idVenta).finally(function() {
       window.location.href = "crear-venta";
     });
+  } else if (idImpresion == "5") {
+    imprimirAmbosEnCaja(respuesta.idVenta).finally(function() {
+      window.location.href = "crear-venta";
+    });
   } else if (idImpresion == "1") {
     imprimirCajaCocina(respuesta.idVenta).finally(function() {
       window.location.href = "crear-venta";
@@ -2525,6 +2526,10 @@ function continuarTrasActualizarCuenta(respuesta) {
     var idImpresion = $("#idTipoImpresion").val();
     if (idImpresion == "2") {
       imprimirSoloCaja(respuesta.idVenta, idsDetalle).finally(function() {
+        window.location.href = "ventas";
+      });
+    } else if (idImpresion == "5") {
+      imprimirAmbosEnCaja(respuesta.idVenta, idsDetalle).finally(function() {
         window.location.href = "ventas";
       });
     } else if (idImpresion == "1") {

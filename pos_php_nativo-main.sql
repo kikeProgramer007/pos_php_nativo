@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Aug 31, 2026 at 02:14 AM
+-- Generation Time: Sep 09, 2026 at 09:53 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -75,7 +75,8 @@ INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs1
 (5, '2026-08-06 18:38:40', '2026-08-23 18:15:43', 2, 10, 2, 2, 1, 0, 1, 1, 0, 0, 1533.00, 0.00, 1533.00, 0.00, 1553.00, 0.00, 0.00, 0.00, 1553.00, 1553.00, 0.00, 1553.00, 0.00, 0, 0.00, 'cerrada', 23, NULL, 1, 1),
 (6, '2026-08-23 18:17:17', '2026-08-24 00:07:18', 18, 15, 8, 0, 4, 1, 2, 0, 0, 0, 5374.00, 0.00, 5374.00, 100.00, 5664.00, 116.00, 0.00, 116.00, 5548.00, 5549.00, 0.00, 5549.00, 1.00, 0, 0.00, 'cerrada', 17, NULL, 1, 1),
 (7, '2026-08-24 00:07:53', '2026-08-24 00:08:33', 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 55.00, 0.00, 55.00, 0.00, 55.00, 0.00, 0.00, 0.00, 55.00, 55.00, 0.00, 55.00, 0.00, 0, 0.00, 'cerrada', 1, NULL, 1, 1),
-(8, '2026-08-30 22:26:43', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 621.00, 0.00, 621.00, 0.00, 631.00, 11.00, 0.00, 11.00, 620.00, 0.00, 0.00, 0.00, 0.00, 0, 0.00, 'abierta', 13, NULL, 1, 4);
+(8, '2026-08-30 22:26:43', '2026-09-06 19:15:30', 20, 12, 0, 2, 0, 0, 1, 1, 0, 0, 1993.00, 3241.00, 5234.00, 0.00, 5254.00, 11.00, 0.00, 11.00, 5243.00, 5243.00, 0.00, 5243.00, 0.00, 0, 0.00, 'cerrada', 26, NULL, 1, 4),
+(9, '2026-09-06 19:17:55', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 410.00, 0.00, 410.00, 100.00, 530.00, 0.00, 0.00, 0.00, 530.00, 0.00, 0.00, 0.00, 0.00, 1, 110.00, 'abierta', 4, NULL, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -96,7 +97,7 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 13, 1),
+(1, 'Caja de ventas', '1', 4, 1),
 (2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
@@ -146,7 +147,53 @@ INSERT INTO `clientes` (`id`, `nombre`, `fecha`, `estado`) VALUES
 (2, 'marcos', '2026-08-03 00:30:05', 1),
 (3, 'natalia saucedo', '2026-08-07 02:53:41', 1),
 (4, 'sebas', '2026-08-07 02:57:21', 1),
-(5, 'FULANITO', '2026-08-24 01:13:28', 1);
+(5, 'FULANITO', '2026-08-24 01:13:28', 1),
+(6, 'enrique', '2026-09-06 17:29:41', 1),
+(7, 'Ana María López', '2026-09-07 00:22:35', 1),
+(8, 'Carlos Eduardo Pérez', '2026-09-07 00:22:35', 1),
+(9, 'María Fernanda Gutiérrez', '2026-09-07 00:22:35', 1),
+(10, 'José Luis Ramírez', '2026-09-07 00:22:35', 1),
+(11, 'Patricia Alejandra Soto', '2026-09-07 00:22:35', 1),
+(12, 'Roberto Daniel Mendoza', '2026-09-07 00:22:35', 1),
+(13, 'Lucía Beatriz Vargas', '2026-09-07 00:22:35', 1),
+(14, 'Andrés Felipe Rojas', '2026-09-07 00:22:35', 1),
+(15, 'Valentina Isabel Cruz', '2026-09-07 00:22:35', 1),
+(16, 'Diego Alejandro Morales', '2026-09-07 00:22:35', 1),
+(17, 'Camila Andrea Torres', '2026-09-07 00:22:35', 1),
+(18, 'Fernando Javier Ruiz', '2026-09-07 00:22:35', 1),
+(19, 'Sofía Carolina Díaz', '2026-09-07 00:22:35', 1),
+(20, 'Miguel Ángel Castillo', '2026-09-07 00:22:35', 1),
+(21, 'Gabriela Patricia Flores', '2026-09-07 00:22:35', 1),
+(22, 'Ricardo Esteban Herrera', '2026-09-07 00:22:35', 1),
+(23, 'Daniela Marcela Jiménez', '2026-09-07 00:22:35', 1),
+(24, 'Héctor Manuel Ortega', '2026-09-07 00:22:35', 1),
+(25, 'Claudia Vanessa Romero', '2026-09-07 00:22:35', 1),
+(26, 'Sebastián Ignacio Vega', '2026-09-07 00:22:35', 1),
+(27, 'Paula Andrea Navarro', '2026-09-07 00:22:35', 1),
+(28, 'Martín Nicolás Silva', '2026-09-07 00:22:35', 1),
+(29, 'Carolina Elizabeth Paredes', '2026-09-07 00:22:35', 1),
+(30, 'Jorge Antonio Medina', '2026-09-07 00:22:35', 1),
+(31, 'Elena Cristina Aguilar', '2026-09-07 00:22:35', 1),
+(32, 'Francisco Javier Campos', '2026-09-07 00:22:35', 1),
+(33, 'Adriana Lucía Guerrero', '2026-09-07 00:22:35', 1),
+(34, 'Pablo Ernesto Salazar', '2026-09-07 00:22:35', 1),
+(35, 'Mónica Alejandra Ríos', '2026-09-07 00:22:35', 1),
+(36, 'Álvaro Enrique Delgado', '2026-09-07 00:22:35', 1),
+(37, 'Verónica Paulina Núñez', '2026-09-07 00:22:35', 1),
+(38, 'Gustavo Adolfo Peña', '2026-09-07 00:22:35', 1),
+(39, 'Natalia Esperanza Cabrera', '2026-09-07 00:22:35', 1),
+(40, 'Eduardo Raúl Miranda', '2026-09-07 00:22:35', 1),
+(41, 'Silvia Beatriz Acosta', '2026-09-07 00:22:35', 1),
+(42, 'Óscar David Fuentes', '2026-09-07 00:22:35', 1),
+(43, 'Liliana Mercedes Cordero', '2026-09-07 00:22:35', 1),
+(44, 'Raúl Esteban Ponce', '2026-09-07 00:22:35', 1),
+(45, 'Yesenia Marisol Bravo', '2026-09-07 00:22:35', 1),
+(46, 'César Augusto León', '2026-09-07 00:22:35', 1),
+(47, 'Enrique Test Cliente 01', '2026-09-07 00:22:35', 1),
+(48, 'Enrique Test Cliente 02', '2026-09-07 00:22:35', 1),
+(49, 'Enrique Test Cliente 03', '2026-09-07 00:22:35', 1),
+(50, 'Cliente Prueba Scroll A', '2026-09-07 00:22:35', 1),
+(51, 'Cliente Prueba Scroll B', '2026-09-07 00:22:35', 1);
 
 -- --------------------------------------------------------
 
@@ -174,7 +221,8 @@ INSERT INTO `compras` (`id`, `codigo`, `total`, `id_usuario`, `id_proveedor`, `f
 (1, 1, 29500.00, 1, 1, '2026-07-27 04:35:06', 1, 1, 0),
 (2, 2, 100.00, 1, 1, '2026-07-29 03:39:39', 1, 4, 0),
 (3, 3, 18.00, 1, 1, '2026-08-24 03:45:34', 0, 6, 1),
-(4, 4, 25.00, 1, 1, '2026-08-24 03:45:08', 1, 6, 0);
+(4, 4, 25.00, 1, 1, '2026-08-24 03:45:08', 1, 6, 0),
+(5, 5, 3000.00, 1, 1, '2026-09-06 21:59:51', 1, 8, 0);
 
 -- --------------------------------------------------------
 
@@ -219,7 +267,8 @@ INSERT INTO `detalle_compra` (`id`, `id_producto`, `id_compra`, `producto`, `can
 (20, 16, 3, 'Soda Personal', 1, 8.00, 8.00),
 (21, 17, 3, 'Tropifrut', 1, 10.00, 10.00),
 (22, 21, 4, 'Chicha Jarra Grande', 1, 15.00, 15.00),
-(23, 17, 4, 'Tropifrut', 1, 10.00, 10.00);
+(23, 17, 4, 'Tropifrut', 1, 10.00, 10.00),
+(24, 9, 5, 'Huari 620 ml', 100, 30.00, 3000.00);
 
 -- --------------------------------------------------------
 
@@ -246,144 +295,219 @@ CREATE TABLE `detalle_venta` (
   `subtotal` decimal(10,2) NOT NULL,
   `preferencias` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `nota_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-  `forma_atencion` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+  `forma_atencion` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `id_presentacion` int DEFAULT NULL,
+  `nombre_presentacion` varchar(80) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cantidad_presentaciones` int DEFAULT NULL,
+  `unidades_por_presentacion` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `detalle_venta`
 --
 
-INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_original`, `tipo_descuento`, `valor_descuento`, `descuento_unitario`, `descuento_total`, `id_promocion`, `id_intervalo_promocion`, `nombre_promocion`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`) VALUES
-(1, 8, 1, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(2, 1, 2, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(4, 8, 4, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(7, 1, 3, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'LL'),
-(8, 1, 5, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(9, 8, 6, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(10, 14, 7, 'Soda Popular', 1, 13.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(12, 9, 8, 'Huari 620 ml', 1, 32.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 32.00, NULL, NULL, 'M'),
-(13, 8, 9, 'Corona', 5, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 125.00, NULL, NULL, 'M'),
-(14, 8, 10, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(16, 8, 11, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M'),
-(17, 9, 12, 'Huari 620 ml', 10, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 320.00, NULL, NULL, 'M'),
-(18, 33, 13, 'Chancho a la Caja China Personal (Chancho, arroz, yuca y ensalada)', 3, 50.00, 55.00, 'fijo', 5.00, 5.00, 15.00, 2, 2, 'promolocura', 50.00, 150.00, NULL, NULL, 'M'),
-(19, 8, 14, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M'),
-(20, 33, 15, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(21, 33, 16, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(22, 33, 17, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(23, 33, 18, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(24, 33, 19, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(25, 34, 20, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(26, 33, 21, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(27, 33, 22, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(28, 33, 23, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(29, 8, 24, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(30, 8, 25, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(31, 8, 26, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(32, 8, 27, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(33, 35, 28, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(34, 19, 29, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M'),
-(35, 35, 29, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(36, 34, 30, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(37, 34, 31, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(38, 33, 32, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(39, 5, 33, 'Vino Kohlberg', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(40, 6, 34, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(41, 6, 35, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(42, 1, 36, 'Paletas Q\' Deli', 10, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 150.00, NULL, NULL, 'M'),
-(43, 33, 37, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(44, 19, 38, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M'),
-(45, 26, 39, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(46, 26, 40, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(47, 26, 41, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(48, 26, 42, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(49, 25, 43, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M'),
-(50, 8, 44, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(51, 1, 45, 'Paletas Q\' Deli', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(52, 35, 46, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(53, 8, 47, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M'),
-(54, 26, 48, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(55, 25, 49, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M'),
-(56, 28, 50, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M'),
-(57, 32, 51, 'Cuadril Personal', 5, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 275.00, NULL, NULL, 'LL'),
-(58, 10, 51, 'Agua con Gas (500 ml)', 1, 8.00, 8.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 8.00, NULL, NULL, 'LL'),
-(59, 33, 52, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(60, 35, 53, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(61, 8, 53, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(62, 35, 54, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Sin fideo ❌', NULL, 'M'),
-(63, 33, 57, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(64, 35, 59, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Término medio 🔥', NULL, 'M'),
-(65, 25, 60, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, 'Poco chorizo,Poca sal', NULL, 'M'),
-(66, 33, 61, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(67, 34, 61, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(68, 30, 61, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(69, 29, 61, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M'),
-(70, 31, 61, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(71, 33, 62, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(72, 30, 62, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(73, 31, 62, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(74, 35, 62, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(75, 34, 62, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(76, 36, 62, 'Tablita Mixta 2 personas', 2, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 200.00, NULL, NULL, 'M'),
-(77, 32, 62, 'Cuadril Personal', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(78, 29, 62, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M'),
-(79, 25, 62, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M'),
-(80, 26, 62, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(81, 27, 62, 'Porción de Papas Fritas', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(82, 14, 62, 'Soda Popular', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(83, 13, 62, 'Agua 500 ml', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 7.00, NULL, NULL, 'M'),
-(84, 15, 62, 'Soda 2 Lt', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M'),
-(85, 4, 62, 'Ron Habana Club', 2, 180.00, 180.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 150.00, 360.00, NULL, NULL, 'M'),
-(86, 5, 62, 'Vino Kohlberg', 2, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 100.00, NULL, NULL, 'M'),
-(87, 6, 62, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(88, 8, 62, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M'),
-(89, 9, 62, 'Huari 620 ml', 2, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 64.00, NULL, NULL, 'M'),
-(90, 11, 62, 'Power de 1 Lt', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(91, 12, 62, 'Power de 500 ml', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 10.00, NULL, NULL, 'M'),
-(92, 10, 62, 'Agua con Gas (500 ml)', 1, 8.00, 8.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 8.00, NULL, NULL, 'M'),
-(93, 33, 63, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(94, 1, 64, 'Paletas Q\' Deli', 27, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 405.00, NULL, NULL, 'M'),
-(95, 2, 64, 'Cheesecake de Oreo', 50, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 750.00, NULL, NULL, 'M'),
-(96, 33, 65, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(97, 33, 66, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(98, 33, 67, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(99, 35, 68, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(100, 31, 69, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(101, 35, 69, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(102, 34, 69, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M'),
-(103, 33, 70, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(104, 33, 71, 'Chancho a la Caja China Personal ', 2, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 110.00, NULL, NULL, 'M'),
-(105, 33, 72, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(106, 29, 73, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M'),
-(107, 30, 73, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(108, 9, 74, 'Huari 620 ml', 15, 31.00, 32.00, 'fijo', 1.00, 1.00, 15.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 465.00, NULL, NULL, 'M'),
-(109, 19, 75, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M'),
-(110, 33, 76, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(111, 29, 76, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M'),
-(112, 36, 77, 'Tablita Mixta 2 personas', 3, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 300.00, NULL, NULL, 'M'),
-(113, 35, 77, 'Tablita Personal ', 3, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 225.00, NULL, NULL, 'M'),
-(114, 33, 77, 'Chancho a la Caja China Personal ', 2, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 110.00, NULL, NULL, 'M'),
-(115, 31, 77, 'Costilla a la Parrilla ', 4, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 240.00, NULL, NULL, 'M'),
-(116, 29, 77, 'Keperí ', 3, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 165.00, NULL, NULL, 'M'),
-(117, 32, 77, 'Cuadril Personal', 3, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 165.00, NULL, NULL, 'M'),
-(118, 25, 77, 'porción de Arroz', 2, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 20.00, NULL, NULL, 'M'),
-(119, 30, 77, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(120, 33, 78, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(121, 35, 78, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M'),
-(122, 33, 79, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(123, 6, 80, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(124, 1, 81, 'Paletas Q\' Deli', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M'),
-(125, 16, 82, 'Soda Personal', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M'),
-(126, 28, 83, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M'),
-(127, 26, 84, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M'),
-(128, 6, 85, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(129, 6, 86, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(130, 6, 87, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M'),
-(131, 36, 88, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M'),
-(132, 36, 89, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M'),
-(133, 30, 90, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M'),
-(134, 33, 91, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M'),
-(135, 6, 92, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M');
+INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_original`, `tipo_descuento`, `valor_descuento`, `descuento_unitario`, `descuento_total`, `id_promocion`, `id_intervalo_promocion`, `nombre_promocion`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`, `id_presentacion`, `nombre_presentacion`, `cantidad_presentaciones`, `unidades_por_presentacion`) VALUES
+(1, 8, 1, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(2, 1, 2, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(4, 8, 4, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(7, 1, 3, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'LL', NULL, NULL, NULL, NULL),
+(8, 1, 5, 'Paletas Q\' Deli', 1, 15.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(9, 8, 6, 'Corona', 1, 25.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(10, 14, 7, 'Soda Popular', 1, 13.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(12, 9, 8, 'Huari 620 ml', 1, 32.00, NULL, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 32.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(13, 8, 9, 'Corona', 5, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 125.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(14, 8, 10, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(16, 8, 11, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(17, 9, 12, 'Huari 620 ml', 10, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 320.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(18, 33, 13, 'Chancho a la Caja China Personal (Chancho, arroz, yuca y ensalada)', 3, 50.00, 55.00, 'fijo', 5.00, 5.00, 15.00, 2, 2, 'promolocura', 50.00, 150.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(19, 8, 14, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(20, 33, 15, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(21, 33, 16, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(22, 33, 17, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(23, 33, 18, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(24, 33, 19, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(25, 34, 20, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(26, 33, 21, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(27, 33, 22, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(28, 33, 23, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(29, 8, 24, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(30, 8, 25, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(31, 8, 26, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(32, 8, 27, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(33, 35, 28, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(34, 19, 29, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(35, 35, 29, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(36, 34, 30, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(37, 34, 31, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(38, 33, 32, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(39, 5, 33, 'Vino Kohlberg', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(40, 6, 34, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(41, 6, 35, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(42, 1, 36, 'Paletas Q\' Deli', 10, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 150.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(43, 33, 37, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(44, 19, 38, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(45, 26, 39, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(46, 26, 40, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(47, 26, 41, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(48, 26, 42, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(49, 25, 43, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(50, 8, 44, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(51, 1, 45, 'Paletas Q\' Deli', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(52, 35, 46, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(53, 8, 47, 'Corona', 5, 24.00, 25.00, 'fijo', 1.00, 1.00, 5.00, 1, 1, 'balde de coronasssss', 20.00, 120.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(54, 26, 48, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(55, 25, 49, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(56, 28, 50, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(57, 32, 51, 'Cuadril Personal', 5, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 275.00, NULL, NULL, 'LL', NULL, NULL, NULL, NULL),
+(58, 10, 51, 'Agua con Gas (500 ml)', 1, 8.00, 8.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 8.00, NULL, NULL, 'LL', NULL, NULL, NULL, NULL),
+(59, 33, 52, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(60, 35, 53, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(61, 8, 53, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(62, 35, 54, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Sin fideo ❌', NULL, 'M', NULL, NULL, NULL, NULL),
+(63, 33, 57, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(64, 35, 59, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Término medio 🔥', NULL, 'M', NULL, NULL, NULL, NULL),
+(65, 25, 60, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, 'Poco chorizo,Poca sal', NULL, 'M', NULL, NULL, NULL, NULL),
+(66, 33, 61, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(67, 34, 61, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(68, 30, 61, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(69, 29, 61, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(70, 31, 61, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(71, 33, 62, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(72, 30, 62, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(73, 31, 62, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(74, 35, 62, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(75, 34, 62, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(76, 36, 62, 'Tablita Mixta 2 personas', 2, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 200.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(77, 32, 62, 'Cuadril Personal', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(78, 29, 62, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(79, 25, 62, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(80, 26, 62, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(81, 27, 62, 'Porción de Papas Fritas', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(82, 14, 62, 'Soda Popular', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(83, 13, 62, 'Agua 500 ml', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 7.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(84, 15, 62, 'Soda 2 Lt', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(85, 4, 62, 'Ron Habana Club', 2, 180.00, 180.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 150.00, 360.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(86, 5, 62, 'Vino Kohlberg', 2, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 100.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(87, 6, 62, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(88, 8, 62, 'Corona', 1, 25.00, 25.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 25.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(89, 9, 62, 'Huari 620 ml', 2, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 64.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(90, 11, 62, 'Power de 1 Lt', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(91, 12, 62, 'Power de 500 ml', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 10.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(92, 10, 62, 'Agua con Gas (500 ml)', 1, 8.00, 8.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 5.00, 8.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(93, 33, 63, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(94, 1, 64, 'Paletas Q\' Deli', 27, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 405.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(95, 2, 64, 'Cheesecake de Oreo', 50, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 750.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(96, 33, 65, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(97, 33, 66, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(98, 33, 67, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(99, 35, 68, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(100, 31, 69, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(101, 35, 69, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(102, 34, 69, 'Costilla a la Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(103, 33, 70, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(104, 33, 71, 'Chancho a la Caja China Personal ', 2, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 110.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(105, 33, 72, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(106, 29, 73, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(107, 30, 73, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(108, 9, 74, 'Huari 620 ml', 15, 31.00, 32.00, 'fijo', 1.00, 1.00, 15.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 465.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(109, 19, 75, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(110, 33, 76, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(111, 29, 76, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(112, 36, 77, 'Tablita Mixta 2 personas', 3, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 300.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(113, 35, 77, 'Tablita Personal ', 3, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 225.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(114, 33, 77, 'Chancho a la Caja China Personal ', 2, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 110.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(115, 31, 77, 'Costilla a la Parrilla ', 4, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 240.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(116, 29, 77, 'Keperí ', 3, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 165.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(117, 32, 77, 'Cuadril Personal', 3, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 165.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(118, 25, 77, 'porción de Arroz', 2, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 20.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(119, 30, 77, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(120, 33, 78, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(121, 35, 78, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(122, 33, 79, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(123, 6, 80, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(124, 1, 81, 'Paletas Q\' Deli', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(125, 16, 82, 'Soda Personal', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(126, 28, 83, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(127, 26, 84, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(128, 6, 85, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(129, 6, 86, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(130, 6, 87, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(131, 36, 88, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(132, 36, 89, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(133, 30, 90, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(134, 33, 91, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(135, 6, 92, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(136, 33, 93, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(137, 34, 94, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(138, 33, 95, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(139, 34, 96, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(140, 35, 96, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(141, 6, 96, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(142, 29, 97, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(143, 6, 98, 'Vino Campos del Solana', 1, 50.00, 50.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 50.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(144, 33, 99, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(145, 29, 99, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(146, 33, 100, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(147, 33, 101, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, NULL, NULL, NULL),
+(149, 35, 102, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Medio rojo 🥩,Rojo (Inglés) ,Sin yuca ❌', 'test tiedy', 'M', NULL, 'Unidad', 1, 1),
+(150, 33, 102, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, 'Término medio ', NULL, 'M', NULL, 'Unidad', 1, 1),
+(151, 34, 102, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, 'Tres cuartos ', NULL, 'M', NULL, 'Unidad', 1, 1),
+(152, 35, 102, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, 'Término medio ', NULL, 'M', NULL, 'Unidad', 1, 1),
+(153, 33, 102, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, 'Término medio ', NULL, 'M', NULL, 'Unidad', 1, 1),
+(154, 34, 102, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, 'Medio rojo 🥩', NULL, 'M', NULL, 'Unidad', 1, 1),
+(155, 35, 102, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(156, 30, 102, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(157, 31, 102, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(158, 29, 102, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(159, 32, 102, 'Cuadril Personal', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(160, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(161, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(162, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(163, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(164, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(165, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(166, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(167, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(168, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(169, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(170, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(171, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(172, 31, 102, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(173, 32, 102, 'Cuadril Personal', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(174, 30, 102, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(175, 29, 102, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(176, 33, 102, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(177, 34, 102, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(178, 35, 102, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(179, 36, 102, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(180, 27, 102, 'Porción de Papas Fritas', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(181, 26, 102, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(182, 25, 102, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(183, 21, 102, 'Chicha Jarra Grande', 1, 20.00, 20.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 20.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(184, 22, 102, 'Cuadril (Carne Extra)', 1, 40.00, 40.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 40.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(185, 23, 102, 'Porción Cordon Blue', 1, 35.00, 35.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 35.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(186, 24, 102, 'Porción de Chorizo', 1, 12.00, 12.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 12.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(187, 28, 102, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(188, 17, 102, 'Tropifrut', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(189, 18, 102, 'Limonada Jarra Mediana', 1, 16.00, 16.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 14.00, 16.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(190, 19, 102, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(191, 20, 102, 'Chicha Jarra Mediana', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(192, 33, 103, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, 'Término medio ,Sin yuca ❌', 'test', 'M', NULL, 'Unidad', 1, 1),
+(193, 9, 103, 'Huari 620 ml', 5, 31.00, 32.00, 'fijo', 1.00, 1.00, 5.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 155.00, NULL, NULL, 'M', NULL, 'Unidad', 5, 1),
+(194, 9, 103, 'Huari 620 ml', 10, 31.00, 32.00, 'fijo', 1.00, 1.00, 10.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 310.00, NULL, NULL, 'M', 1, 'BALDE', 2, 5),
+(195, 9, 103, 'Huari 620 ml', 1, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 32.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(196, 9, 104, 'Huari 620 ml', 10, 31.00, 32.00, 'fijo', 1.00, 1.00, 10.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 310.00, NULL, NULL, 'M', 1, 'BALDE', 2, 5),
+(197, 9, 105, 'Huari 620 ml', 10, 31.00, 32.00, 'fijo', 1.00, 1.00, 10.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 310.00, NULL, NULL, 'M', 1, 'BALDE', 2, 5),
+(198, 30, 106, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(199, 25, 106, 'porción de Arroz', 4, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 40.00, NULL, NULL, 'M', NULL, 'Unidad', 4, 1),
+(200, 9, 107, 'Huari 620 ml', 5, 31.00, 32.00, 'fijo', 1.00, 1.00, 5.00, 3, 3, 'BALDE CORONA HUARI', 30.00, 155.00, NULL, NULL, 'M', 1, 'BALDE', 1, 5),
+(201, 9, 107, 'Huari 620 ml', 3, 32.00, 32.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 96.00, NULL, NULL, 'M', NULL, 'Unidad', 3, 1),
+(202, 33, 108, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(203, 34, 108, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, 'Rojo (Inglés) ', NULL, 'M', NULL, 'Unidad', 1, 1),
+(204, 34, 108, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(205, 34, 108, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(206, 33, 109, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(207, 29, 109, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -438,11 +562,11 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 379, '2026-08-30 23:55:21', '2026-08-31 03:55:21', 1),
-(2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 16, '2026-08-31 01:12:03', '2026-08-31 05:12:03', 1),
-(3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 4, '2026-08-30 23:50:17', '2026-08-31 03:50:17', 1),
-(4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 4, '2026-08-31 01:08:02', '2026-08-31 05:08:02', 1),
-(5, 'Carla Viviana Tiain Bairo', '14138040', '123-45-678', 'B/ San Antonio', 4, '2026-08-06 20:49:12', '2026-08-07 00:49:12', 1);
+(1, 's/n', '0000000', '00000000', 's/n', 434, '2026-09-09 20:38:39', '2026-09-10 00:38:39', 1),
+(2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 16, '2026-08-31 01:12:03', '2026-09-04 03:01:17', 1),
+(3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 5, '2026-09-06 13:29:41', '2026-09-06 17:29:41', 1),
+(4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 50, '2026-08-31 01:08:02', '2026-09-06 22:29:25', 1),
+(5, 'Carla Viviana Tiain Bairo', '14138040', '123-45-678', 'B/ San Antonio', 5, '2026-08-06 20:49:12', '2026-09-04 03:02:07', 1);
 
 -- --------------------------------------------------------
 
@@ -472,7 +596,9 @@ INSERT INTO `otros_ingresos` (`id`, `id_arqueo_caja`, `id_usuario`, `descripcion
 (2, 6, 1, 'test', 90.00, 'MIXTO', 50.00, 40.00, '2026-08-24 00:18:06', 1),
 (3, 6, 1, 'aportes', 100.00, 'QR', 0.00, 100.00, '2026-08-24 00:20:11', 1),
 (4, 8, 4, 'karoke', 10.00, 'EFECTIVO', 10.00, 0.00, '2026-08-31 02:28:51', 0),
-(5, 8, 4, 'karoke', 10.00, 'EFECTIVO', 10.00, 0.00, '2026-08-31 02:30:14', 1);
+(5, 8, 4, 'karoke', 10.00, 'EFECTIVO', 10.00, 0.00, '2026-08-31 02:30:14', 1),
+(6, 8, 1, 'karaoke', 10.00, 'EFECTIVO', 10.00, 0.00, '2026-09-04 03:18:25', 1),
+(7, 9, 4, 'karaoke', 20.00, 'QR', 0.00, 20.00, '2026-09-06 23:19:13', 1);
 
 -- --------------------------------------------------------
 
@@ -789,9 +915,9 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (3, 2, '201', 'ron flor de caña', 'vistas/img/productos/201/162.png', 50, 120, 100, 0, '2026-07-30 02:52:42', 1, 1),
 (4, 2, '202', 'Ron Habana Club', 'vistas/img/productos/202/609.webp', 45, 180, 150, 5, '2026-08-23 22:38:05', 1, 1),
 (5, 2, '203', 'Vino Kohlberg', 'vistas/img/productos/203/469.webp', 41, 50, 40, 9, '2026-08-23 22:38:05', 1, 1),
-(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/204/418.webp', 33, 50, 40, 17, '2026-08-31 05:12:03', 1, 1),
-(8, 2, '206', 'Corona', 'vistas/img/productos/206/236.png', 0, 25, 20, 55, '2026-08-23 22:38:05', 1, 1),
-(9, 2, '207', 'Huari 620 ml', 'vistas/img/productos/207/939.webp', 14, 32, 30, 36, '2026-08-24 00:48:03', 1, 1),
+(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/204/418.webp', 31, 50, 40, 19, '2026-09-04 03:24:06', 1, 1),
+(8, 2, '206', 'Corona', 'vistas/img/productos/206/236.png', 50, 25, 20, 55, '2026-09-07 02:11:26', 1, 1),
+(9, 2, '207', 'Huari 620 ml', 'vistas/img/productos/207/939.webp', 78, 32, 30, 72, '2026-09-06 23:51:38', 1, 1),
 (10, 3, '301', 'Agua con Gas (500 ml)', 'vistas/img/productos/301/151.webp', 48, 8, 5, 2, '2026-08-23 22:38:05', 1, 1),
 (11, 3, '302', 'Power de 1 Lt', 'vistas/img/productos/302/864.png', 49, 15, 10, 1, '2026-08-23 22:38:05', 1, 1),
 (12, 3, '303', 'Power de 500 ml', 'vistas/img/productos/303/353.png', 49, 10, 5, 1, '2026-08-23 22:38:05', 1, 1),
@@ -799,26 +925,50 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (14, 3, '305', 'Soda Popular', 'vistas/img/productos/305/106.png', 42, 13, 10, 8, '2026-08-23 22:38:05', 1, 1),
 (15, 3, '306', 'Soda 2 Lt', 'vistas/img/productos/306/425.jpg', 49, 22, 20, 1, '2026-08-23 22:38:05', 1, 1),
 (16, 3, '307', 'Soda Personal', 'vistas/img/productos/307/302.webp', 49, 10, 8, 1, '2026-08-31 02:36:26', 1, 1),
-(17, 3, '308', 'Tropifrut', 'vistas/img/productos/308/810.png', 61, 15, 10, 0, '2026-08-24 03:45:34', 1, 1),
-(18, 3, '309', 'Limonada Jarra Mediana', 'vistas/img/productos/309/448.png', 99999, 16, 14, 1, '2026-08-23 23:33:06', 0, 1),
-(19, 3, '310', 'Limonada Jarra Grande', 'vistas/img/productos/310/244.png', 99999, 22, 20, 4, '2026-08-24 01:02:33', 0, 1),
-(20, 3, '311', 'Chicha Jarra Mediana', 'vistas/img/productos/311/416.png', 99999, 15, 10, 1, '2026-08-23 23:33:06', 0, 1),
-(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/312/991.png', 48, 20, 15, 3, '2026-08-24 03:45:08', 1, 1),
-(22, 4, '401', 'Cuadril (Carne Extra)', 'vistas/img/productos/401/311.png', 99999, 40, 30, 0, '2026-08-23 23:33:06', 0, 1),
-(23, 4, '402', 'Porción Cordon Blue', 'vistas/img/productos/402/339.png', 99999, 35, 30, 0, '2026-08-23 23:33:06', 0, 1),
-(24, 4, '403', 'Porción de Chorizo', 'vistas/img/productos/403/352.png', 99999, 12, 10, 2, '2026-08-23 23:33:06', 0, 1),
-(25, 4, '404', 'porción de Arroz', 'vistas/img/productos/404/556.webp', 99999, 10, 8, 9, '2026-08-24 01:03:49', 0, 1),
-(26, 4, '405', 'Porción Yuca Frita', 'vistas/img/productos/405/548.png', 99999, 13, 10, 11, '2026-08-31 02:41:57', 0, 1),
-(27, 4, '406', 'Porción de Papas Fritas', 'vistas/img/productos/406/195.webp', 99999, 15, 10, 4, '2026-08-23 23:33:06', 0, 1),
-(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/501/405.png', 99999, 18, 15, 13, '2026-08-31 02:36:39', 0, 1),
-(29, 6, '601', 'Keperí ', 'vistas/img/productos/601/874.png', 99999, 55, 40, 12, '2026-08-24 01:03:49', 0, 1),
-(30, 6, '602', 'Ojo de Bife ', 'vistas/img/productos/602/171.png', 99999, 60, 50, 8, '2026-08-31 03:55:21', 0, 1),
-(31, 6, '603', 'Costilla a la Parrilla ', 'vistas/img/productos/603/785.png', 99999, 60, 50, 10, '2026-08-31 03:37:33', 0, 1),
-(32, 6, '604', 'Cuadril Personal', 'vistas/img/productos/604/948.png', 99999, 55, 50, 12, '2026-08-24 01:03:49', 0, 1),
-(33, 6, '605', 'Chancho a la Caja China Personal ', 'vistas/img/productos/605/118.png', 99999, 55, 50, 39, '2026-08-31 05:08:02', 0, 1),
-(34, 6, '606', 'Costilla  Parrilla 2 personas', 'vistas/img/productos/606/493.png', 99999, 85, 70, 10, '2026-08-31 03:38:20', 0, 1),
-(35, 6, '607', 'Tablita Personal ', 'vistas/img/productos/607/257.png', 99999, 75, 70, 17, '2026-08-24 01:13:28', 0, 1),
-(36, 6, '608', 'Tablita Mixta 2 personas', 'vistas/img/productos/608/301.png', 99999, 100, 90, 18, '2026-08-31 03:54:51', 0, 1);
+(17, 3, '308', 'Tropifrut', 'vistas/img/productos/308/810.png', 60, 15, 10, 1, '2026-09-06 23:00:47', 1, 1),
+(18, 3, '309', 'Limonada Jarra Mediana', 'vistas/img/productos/309/448.png', 99999, 16, 14, 2, '2026-09-06 23:00:47', 0, 1),
+(19, 3, '310', 'Limonada Jarra Grande', 'vistas/img/productos/310/244.png', 99999, 22, 20, 5, '2026-09-06 23:00:47', 0, 1),
+(20, 3, '311', 'Chicha Jarra Mediana', 'vistas/img/productos/311/416.png', 99999, 15, 10, 2, '2026-09-06 23:00:47', 0, 1),
+(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/312/991.png', 47, 20, 15, 4, '2026-09-06 23:00:47', 1, 1),
+(22, 4, '401', 'Cuadril (Carne Extra)', 'vistas/img/productos/401/311.png', 99999, 40, 30, 1, '2026-09-06 23:00:47', 0, 1),
+(23, 4, '402', 'Porción Cordon Blue', 'vistas/img/productos/402/339.png', 99999, 35, 30, 1, '2026-09-06 23:00:47', 0, 1),
+(24, 4, '403', 'Porción de Chorizo', 'vistas/img/productos/403/352.png', 99999, 12, 10, 3, '2026-09-06 23:00:47', 0, 1),
+(25, 4, '404', 'porción de Arroz', 'vistas/img/productos/404/556.webp', 99999, 10, 8, 14, '2026-09-06 23:21:30', 0, 1),
+(26, 4, '405', 'Porción Yuca Frita', 'vistas/img/productos/405/548.png', 99999, 13, 10, 12, '2026-09-06 23:00:47', 0, 1),
+(27, 4, '406', 'Porción de Papas Fritas', 'vistas/img/productos/406/195.webp', 99999, 15, 10, 5, '2026-09-06 23:00:47', 0, 1),
+(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/501/405.png', 99999, 18, 15, 14, '2026-09-07 01:30:42', 0, 1),
+(29, 6, '601', 'Keperí ', 'vistas/img/productos/601/874.png', 99999, 55, 40, 17, '2026-09-10 00:38:39', 0, 1),
+(30, 6, '602', 'Ojo de Bife ', 'vistas/img/productos/602/171.png', 99999, 60, 50, 11, '2026-09-06 23:21:30', 0, 1),
+(31, 6, '603', 'Costilla a la Parrilla ', 'vistas/img/productos/603/785.png', 99999, 60, 50, 12, '2026-09-06 23:00:47', 0, 1),
+(32, 6, '604', 'Cuadril Personal', 'vistas/img/productos/604/948.png', 99999, 55, 50, 14, '2026-09-06 23:00:47', 0, 1),
+(33, 6, '605', 'Chancho a la Caja China Personal ', 'vistas/img/productos/605/118.png', 99999, 55, 50, 50, '2026-09-10 00:38:39', 0, 1),
+(34, 6, '606', 'Costilla  Parrilla 2 personas', 'vistas/img/productos/606/493.png', 99999, 85, 70, 18, '2026-09-10 00:38:24', 0, 1),
+(35, 6, '607', 'Tablita Personal ', 'vistas/img/productos/607/257.png', 99999, 75, 70, 22, '2026-09-06 23:00:47', 0, 1),
+(36, 6, '608', 'Tablita Mixta 2 personas', 'vistas/img/productos/608/301.png', 99999, 100, 90, 31, '2026-09-07 01:30:16', 0, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `producto_presentaciones`
+--
+
+CREATE TABLE `producto_presentaciones` (
+  `id` int NOT NULL,
+  `id_producto` int NOT NULL,
+  `nombre` varchar(80) COLLATE utf8mb4_general_ci NOT NULL,
+  `cantidad_unidades` int NOT NULL COMMENT 'Unidades reales por 1 presentación (ej. Balde=5)',
+  `orden` int NOT NULL DEFAULT '0',
+  `estado` tinyint NOT NULL DEFAULT '1' COMMENT '1=activo, 0=inactivo',
+  `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `producto_presentaciones`
+--
+
+INSERT INTO `producto_presentaciones` (`id`, `id_producto`, `nombre`, `cantidad_unidades`, `orden`, `estado`, `fecha`) VALUES
+(1, 9, 'BALDE', 5, 1, 1, '2026-09-06 18:21:12'),
+(2, 8, 'BALDE', 5, 0, 1, '2026-09-07 02:11:23');
 
 -- --------------------------------------------------------
 
@@ -846,7 +996,7 @@ CREATE TABLE `promociones` (
 INSERT INTO `promociones` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`, `prioridad`, `estado`, `modo_cantidad`, `observacion`, `fecha`) VALUES
 (1, 'balde de coronasssss', 'bien heladas', '2026-08-02 21:26:00', '2030-07-30 21:26:00', 5, 1, 'individual', '', '2026-08-03 01:27:07'),
 (2, 'promolocura', 'fulll', '2026-08-02 21:51:00', '2037-05-02 21:51:00', 3, 1, 'individual', 'rico', '2026-08-03 01:52:02'),
-(3, 'BALDE CORONA HUARI', 'BALDE CERVEZA HUARI.', '2026-08-23 20:44:00', '2026-09-06 20:49:00', 1, 1, 'individual', '', '2026-08-24 00:44:41');
+(3, 'BALDE CORONA HUARI', 'BALDE CERVEZA HUARI.', '2026-08-23 20:44:00', '2026-10-11 20:49:00', 1, 1, 'multiplo', '', '2026-08-24 00:44:41');
 
 -- --------------------------------------------------------
 
@@ -872,7 +1022,8 @@ CREATE TABLE `promocion_intervalos` (
 INSERT INTO `promocion_intervalos` (`id`, `id_promocion`, `cantidad_minima`, `cantidad_maxima`, `tipo_descuento`, `valor_descuento`, `estado`, `fecha`) VALUES
 (1, 1, 5, 5, 'fijo', 1.00, 1, '2026-08-03 01:29:37'),
 (2, 2, 3, 3, 'fijo', 5.00, 1, '2026-08-03 01:53:16'),
-(3, 3, 5, 10, 'fijo', 1.00, 1, '2026-08-24 00:45:36');
+(3, 3, 5, NULL, 'fijo', 1.00, 1, '2026-08-24 00:45:36'),
+(4, 3, 10, 10, 'fijo', 1.00, 0, '2026-09-04 03:05:53');
 
 -- --------------------------------------------------------
 
@@ -975,9 +1126,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `id_perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-08-30 23:28:01', '2026-08-31 03:28:01', 1),
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-09 20:04:40', '2026-09-10 00:04:40', 1),
 (3, 'Irys Gabriela Vargas Jimenez ', 'Gabriela ', '$2a$07$asxx54ahjppf45sd87a5auTjc6l.msIbvUzGvRzKgYOcSUPnmTqBa', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-08-02 17:43:05', '2026-08-16 23:07:45', 1),
-(4, 'Daniel Rico roca ', 'daniel', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 3, 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-08-30 23:05:29', '2026-08-31 03:05:29', 1);
+(4, 'Daniel Rico roca ', 'daniel', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 3, 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-09-06 19:14:46', '2026-09-06 23:14:46', 1);
 
 -- --------------------------------------------------------
 
@@ -1102,7 +1253,24 @@ INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`
 (89, 10, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-08-31 03:54:51', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-08-30 23:54:51', 2, 1, 1, 8),
 (90, 11, NULL, 0, 60, 60, 60.00, 0.00, 60, '2026-08-31 03:55:21', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-08-30 23:55:21', 1, 1, 1, 8),
 (91, 12, NULL, 0, 55, 55, 55.00, 0.00, 100, '2026-08-31 05:08:02', '', 'Efectivo', 45, 'En Mesa', 1, 'PAGADA', '2026-08-31 01:08:02', 4, 1, 1, 8),
-(92, 13, NULL, 0, 50, 50, 50.00, 0.00, 100, '2026-08-31 05:12:03', '', 'Efectivo', 50, 'En Mesa', 1, 'PAGADA', '2026-08-31 01:12:03', 2, 1, 1, 8);
+(92, 13, NULL, 0, 50, 50, 50.00, 0.00, 100, '2026-08-31 05:12:03', '', 'Efectivo', 50, 'En Mesa', 1, 'PAGADA', '2026-08-31 01:12:03', 2, 1, 1, 8),
+(93, 14, NULL, 55, 0, 55, 55.00, 0.00, 55, '2026-09-06 23:06:10', '', 'QR', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:06:10', 1, 1, 1, 8),
+(94, 15, NULL, 0, 85, 85, 85.00, 0.00, 85, '2026-09-06 23:06:04', '', 'Qr y Efectivo(Mixto)', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:06:04', 1, 1, 1, 8),
+(95, 16, NULL, 0, 55, 55, 55.00, 0.00, 60, '2026-09-04 02:59:12', '', 'Efectivo', 5, 'En Mesa', 1, 'PAGADA', '2026-09-03 22:59:12', 1, 1, 1, 8),
+(96, 17, NULL, 210, 0, 210, 210.00, 0.00, 210, '2026-09-06 23:05:59', '', 'QR', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:59', 4, 1, 1, 8),
+(97, 18, NULL, 0, 55, 55, 55.00, 0.00, 55, '2026-09-06 23:05:54', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:54', 5, 1, 1, 8),
+(98, 19, NULL, 0, 50, 50, 50.00, 0.00, 60, '2026-09-04 03:24:06', '', 'Efectivo', 10, 'En Mesa', 1, 'PAGADA', '2026-09-03 23:24:06', 1, 1, 1, 8),
+(99, 20, NULL, 60, 50, 110, 110.00, 0.00, 110, '2026-09-06 23:05:49', '', 'Qr y Efectivo(Mixto)', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:49', 1, 1, 1, 8),
+(100, 21, NULL, 0, 55, 55, 55.00, 0.00, 55, '2026-09-06 23:05:41', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:41', 3, 6, 1, 8),
+(101, 22, NULL, 55, 0, 55, 55.00, 0.00, 55, '2026-09-06 23:05:38', '', 'QR', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:38', 1, 1, 1, 8),
+(102, 23, NULL, 2711, 0, 2711, 2711.00, 0.00, 2711, '2026-09-06 23:05:31', 'TEST', 'QR', 0, 'Mixto', 1, 'PAGADA', '2026-09-06 19:05:31', 4, 6, 1, 8),
+(103, 24, NULL, 0, 552, 552, 567.00, 15.00, 552, '2026-09-06 23:05:26', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:05:26', 1, 1, 1, 8),
+(104, 25, NULL, 0, 310, 310, 320.00, 10.00, 310, '2026-09-06 23:09:07', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:09:07', 1, 1, 1, 8),
+(105, 26, NULL, 150, 160, 310, 320.00, 10.00, 310, '2026-09-06 23:12:36', '', 'Qr y Efectivo(Mixto)', 0, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:12:36', 1, 1, 1, 8),
+(106, 1, NULL, 0, 100, 100, 100.00, 0.00, 105, '2026-09-06 23:21:30', '', 'Efectivo', 5, 'En Mesa', 1, 'PAGADA', '2026-09-06 19:21:30', 1, 1, 4, 9),
+(107, 2, NULL, 101, 150, 251, 256.00, 5.00, 251, '2026-09-06 23:51:38', '', 'Qr y Efectivo(Mixto)', 0, 'En Mesa', 0, 'PAGADA', '2026-09-06 19:50:00', 1, 1, 4, 9),
+(108, 3, NULL, 0, 310, 310, 310.00, 0.00, 350, '2026-09-10 00:38:24', '', 'Efectivo', 40, 'En Mesa', 1, 'PAGADA', '2026-09-09 20:38:24', 1, 1, 1, 9),
+(109, 4, NULL, 0, 0, 110, 110.00, 0.00, 0, '2026-09-10 00:38:39', '', '', 0, 'En Mesa', 1, 'PENDIENTE', NULL, 1, 1, 1, 9);
 
 --
 -- Indexes for dumped tables
@@ -1219,6 +1387,14 @@ ALTER TABLE `productos`
   ADD KEY `id_categoria` (`id_categoria`);
 
 --
+-- Indexes for table `producto_presentaciones`
+--
+ALTER TABLE `producto_presentaciones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_pp_producto` (`id_producto`),
+  ADD KEY `idx_pp_estado` (`estado`);
+
+--
 -- Indexes for table `promociones`
 --
 ALTER TABLE `promociones`
@@ -1285,7 +1461,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `cajas`
@@ -1303,25 +1479,25 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `detalle_compra`
 --
 ALTER TABLE `detalle_compra`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
 
 --
 -- AUTO_INCREMENT for table `gastos`
@@ -1339,7 +1515,7 @@ ALTER TABLE `meseros`
 -- AUTO_INCREMENT for table `otros_ingresos`
 --
 ALTER TABLE `otros_ingresos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `perfiles`
@@ -1366,6 +1542,12 @@ ALTER TABLE `productos`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
+-- AUTO_INCREMENT for table `producto_presentaciones`
+--
+ALTER TABLE `producto_presentaciones`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `promociones`
 --
 ALTER TABLE `promociones`
@@ -1375,13 +1557,13 @@ ALTER TABLE `promociones`
 -- AUTO_INCREMENT for table `promocion_intervalos`
 --
 ALTER TABLE `promocion_intervalos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `promocion_productos`
 --
 ALTER TABLE `promocion_productos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `proveedor`
@@ -1405,7 +1587,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 
 --
 -- Constraints for dumped tables

@@ -57,7 +57,13 @@
         <tr>
             <td class="tree-cell">
                 <ul class="tree-view">
-                    <li>Gastos</li>
+                    <li>
+                        Gastos
+                        <ul>
+                            <li>QR</li>
+                            <li>Efectivo</li>
+                        </ul>
+                    </li>
                     <li>
                         Compras pagadas con caja
                         <i class="fa fa-info-circle text-muted"
@@ -68,6 +74,8 @@
             </td>
             <td class="tree-values">
                 <div id="gastos_operativos" class="text-bold">0.00</div>
+                <div id="gastos_qr">0.00</div>
+                <div id="gastos_efectivo">0.00</div>
                 <div id="monto_compras" class="text-bold">0.00</div>
             </td>
         </tr>

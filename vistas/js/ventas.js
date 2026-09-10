@@ -636,14 +636,6 @@ function calcularPago(formatear = true) {
 
         cambio = (efectivo + qr) - totalVenta;
 
-    } else {
-        // TRANSFERENCIA
-        efectivo = 0;
-        qr = 0;
-        cambio = 0;
-
-        $("#nuevoValorEfectivo").val("");
-        $("#nuevoValorQR").val("0.00");
     }
 
     if (cambio < 0) {
@@ -907,8 +899,9 @@ $(".tablas").on("click", ".btnImprimirFactura", async function(){
         input: "select",
         inputOptions: {
             "1": "Caja y Cocina",
-            "2": "Solo Caja",
-            "3": "Solo Cocina"
+            "2": "Caja (Ticket)",
+            "5": "Caja (Ticket + Comanda)",
+            "3": "Cocina"
         },
         inputPlaceholder: "Seleccione",
         showCancelButton: true,
@@ -1043,9 +1036,11 @@ async function imprimirVentaSegunTipo(codigoVenta, idParameterImpresion = null, 
       
         if (idTipoImpresion == 1) {//Caja y Cocina
             await imprimirCajaCocina(codigoVenta, idsDetalle);
-        } else if (idTipoImpresion == 2) {//Solo Caja
+        } else if (idTipoImpresion == 2) {//Caja (Ticket)
             await imprimirSoloCaja(codigoVenta, idsDetalle);
-        } else if (idTipoImpresion == 3) {//Solo Cocina
+        } else if (idTipoImpresion == 5) {//Caja (Ticket + Comanda) ambos en IMPRESORA-CAJA
+            await imprimirAmbosEnCaja(codigoVenta, idsDetalle);
+        } else if (idTipoImpresion == 3) {//Cocina
             await imprimirSoloCocina(codigoVenta, idsDetalle);
         } else if (idTipoImpresion == 4) {//Sin Imprimir
             await imprimirSoloCaja(codigoVenta, idsDetalle, false);
@@ -1067,6 +1062,44 @@ function construirUrlImpresion(baseUrl, codigoVenta, idsDetalle = null) {
         url += `&idsDetalle=${idsDetalle}`;
     }
     return url;
+}
+
+async function imprimirAmbosEnCaja(codigoVenta, idsDetalle = null) {
+    const response = await fetch(
+        construirUrlImpresion('extensiones/tcpdf/pdf/facturaComanda.php', codigoVenta, idsDetalle), {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        }
+    );
+    if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('📋 Respuesta del servidor:', data);
+    if (!data.success) {
+        alert('Error al generar los PDFs');
+        return;
+    }
+
+    await mostrarVenta(data.facturaComandaBase64);
+
+    try {
+        const printResponse = await fetch('http://localhost:3000/print-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pdfBase64: data.facturaComandaBase64,
+                printerName: 'IMPRESORA-CAJA'
+            })
+        });
+
+        if (!printResponse.ok) {
+            console.warn('⚠️ Advertencia: No se pudo imprimir en caja. Continuando...');
+        }
+        console.log('✅ Impresión enviada correctamente (ticket + comanda en caja)');
+    } catch (error) {
+        console.error('❌ Error de impresión:', error);
+    }
 }
 
  async function imprimirCajaCocina(codigoVenta, idsDetalle = null) {

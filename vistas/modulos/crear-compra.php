@@ -218,7 +218,7 @@ $cajaAbierta = !empty($_SESSION["idArqueoCaja"])
                     </label>
                   </div>
                   <p class="help-block" style="margin-top:8px;margin-bottom:0;">
-                    Sin marcar si pagó por otro medio (bolsillo, transferencia, etc.).
+                    Sin marcar si pagó por otro medio (bolsillo, etc.).
                     <?php if ($cajaAbierta) { ?>
                       <span class="text-muted"> · Caja abierta.</span>
                     <?php } else { ?>

@@ -25,7 +25,6 @@ class reporteGastos
             0 => "Todas",
             1 => "Efectivo",
             2 => "QR",
-            3 => "Transferencia",
             4 => "QR y Efectivo (Mixto)"
         ];
         $clave = intval($valor);

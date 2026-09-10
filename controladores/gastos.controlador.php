@@ -12,7 +12,7 @@ class ControladorGastos{
         $montoEfectivo = floatval(str_replace(",", ".", (string)$montoEfectivo));
         $montoQr = floatval(str_replace(",", ".", (string)$montoQr));
 
-        if (!in_array($formaPago, [1, 2, 3, 4], true)) {
+        if (!in_array($formaPago, [1, 2, 4], true)) {
             return ["ok" => false, "mensaje" => "Seleccione una forma de pago válida."];
         }
 
@@ -31,13 +31,10 @@ class ControladorGastos{
             if ($formaPago === 1) {
                 $montoEfectivo = $monto;
                 $montoQr = 0;
-            } elseif ($formaPago === 2) {
+            } else {
+                // QR
                 $montoEfectivo = 0;
                 $montoQr = $monto;
-            } else {
-                // Transferencia: no afecta efectivo de caja
-                $montoEfectivo = 0;
-                $montoQr = 0;
             }
         }
 
@@ -77,7 +74,7 @@ class ControladorGastos{
             if(preg_match('/^[0-9]+$/', $_POST["id_tipo_gasto"]) &&
                preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ.,\-\s]+$/', $_POST["descripcion_gasto"]) &&
                preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $_POST["fecha_gasto"]) &&
-               preg_match('/^[1-4]$/', $_POST["tipo_pago_gasto"])){
+               preg_match('/^[124]$/', $_POST["tipo_pago_gasto"])){
 
                 $montos = self::resolverMontosFormaPago(
                     $_POST["tipo_pago_gasto"],
@@ -249,7 +246,7 @@ class ControladorGastos{
             'id_tipo_gasto' => preg_match('/^[0-9]+$/', $_POST["editarIdTipoGasto"]),
             'descripcion' => preg_match('/^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ.,\-\s]+$/', $_POST["editarDescripcion"]),
             'fecha' => preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $_POST["editarFecha"]),
-            'tipo_pago' => preg_match('/^[1-4]$/', $_POST["editarTipoPago"]),
+            'tipo_pago' => preg_match('/^[124]$/', $_POST["editarTipoPago"]),
         ];
     
         if (in_array(false, $validaciones, true)) return;

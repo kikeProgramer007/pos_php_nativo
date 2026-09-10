@@ -75,6 +75,8 @@ class imprimirFactura
 
         // Egresos se muestran como valores positivos; la resta solo aplica al saldo neto
         $gastosOperativos = abs(floatval($arqueo["gastos_operativos"] ?? 0));
+        $gastosEfectivo = abs(floatval($arqueo["gastos_efectivo"] ?? ModeloArqueo::mdlSumarGastosEfectivoPorArqueo($arqueo["id"])));
+        $gastosQr = abs(floatval($arqueo["gastos_qr"] ?? ModeloArqueo::mdlSumarGastosQrPorArqueo($arqueo["id"])));
         $montoCompras = abs(floatval($arqueo["monto_compras"] ?? 0));
         $comprasInformativo = floatval($arqueo["monto_compras_informativo"] ?? ModeloArqueo::mdlSumarComprasInformativasPorArqueo($arqueo["id"]));
         $totalEgresos = abs(floatval($arqueo["total_egresos"] ?? ($gastosOperativos + $montoCompras)));
@@ -249,6 +251,14 @@ class imprimirFactura
                 <td style="text-align:right; ">' . number_format($gastosOperativos,2) . '</td>
             </tr>
               <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; QR:</td>
+                <td style="text-align:right; ">' . number_format($gastosQr,2) . '</td>
+            </tr>
+              <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
+                <td style="text-align:right; ">' . number_format($gastosEfectivo,2) . '</td>
+            </tr>
+              <tr>
                 <td style="text-align:left;"> COMPRAS PAGADAS CON CAJA:</td>
                 <td style="text-align:right; ">' . number_format($montoCompras,2) . '</td>
             </tr>
@@ -407,7 +417,7 @@ class imprimirFactura
                 <td style="text-align:right;">' . number_format($comprasSoloInventario, 2) . '</td>
             </tr>
             <tr>
-                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (bolsillo, transferencia)</td>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (bolsillo u otro medio)</td>
                 <td style="text-align:right;"></td>
             </tr>
             <tr><td colspan="2"></td></tr>
