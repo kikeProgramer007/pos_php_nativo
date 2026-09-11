@@ -47,7 +47,7 @@ foreach ($categorias as $cat) {
         <meta name="author" content="modinatheme">
         <meta name="description" content="Foodking - Fast Food Restaurant Html">
         <!-- ======== Page title ============ -->
-        <title>El Gato Rico</title>
+        <title>Pollos360</title>
         <!--<< Favcion >>-->
         <link rel="shortcut icon" href="../vistas/img/plantilla/logo-blanco-bloque.png">
         <!--<< Bootstrap min.css >>-->
@@ -78,6 +78,72 @@ foreach ($categorias as $cat) {
                 display: block;
                 margin: 0 auto;
             }
+            
+            /* Estilos para el logo en el header */
+            .logo {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            
+            .header-logo {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .header-logo img,
+            .offcanvas__logo img {
+                max-width: 100%;
+                height: auto;
+                object-fit: contain;
+                display: block;
+            }
+            
+            /* Logo en header desktop */
+            .header-1 .header-main .logo {
+                max-width: 150px;
+            }
+            
+            .header-1 .header-main .header-logo img {
+                max-width: 100%;
+                max-height: 80px;
+            }
+            
+            /* Logo en sidebar/offcanvas */
+            .offcanvas__logo img {
+                max-width: 120px;
+                max-height: 60px;
+            }
+            
+            /* Responsive para tablets */
+            @media (max-width: 991px) {
+                .header-1 .header-main .logo {
+                    max-width: 120px;
+                }
+                
+                .header-1 .header-main .header-logo img {
+                    max-height: 60px;
+                }
+            }
+            
+            /* Responsive para móviles */
+            @media (max-width: 576px) {
+                .header-1 .header-main .logo {
+                    max-width: 100px;
+                }
+                
+                .header-1 .header-main .header-logo img {
+                    max-height: 50px;
+                }
+                
+                .offcanvas__logo img {
+                    max-width: 100px;
+                    max-height: 50px;
+                }
+            }
+            
             .testimonial-image-slider {
                 display: none !important;
         }
@@ -85,59 +151,63 @@ foreach ($categorias as $cat) {
 </head>
 <body>
         <!-- cragando -->
-        <div id="preloader" class="preloader">
-            <div class="animation-preloader">
-                <div class="spinner">                
-                </div>
-                <div class="txt-loading">
-                    <span  class="letters-loading">
-                    E
-                    </span>
-                    <span class="letters-loading">
-                    L
-                    </span>
-                    <span  class="letters-loading">
-                    G
-                    </span>
-                    <span  class="letters-loading">
-                    A
-                    </span>
-                    <span " class="letters-loading">
-                    T
-                    </span>
-                    <span  class="letters-loading">
-                    O
-                    </span>
-                    <span  class="letters-loading">
-                    R
-                    </span>
-                    <span  class="letters-loading">
-                    I
-                    </span>
-                    <span  class="letters-loading">
-                    C
-                    </span>
-                    <span  class="letters-loading">
-                    O
-                    </span>
-                   
-                </div>
-                <p class="text-center">Cargando..</p>
+       <div id="preloader" class="preloader">
+        <div class="animation-preloader">
+            <div class="spinner">
             </div>
-            <div class="loader">
-                <div class="row">
-                    <div class="col-3 loader-section section-left">
-                        <div class="bg"></div>
-                    </div>
-                    <div class="col-3 loader-section section-left">
-                        <div class="bg"></div>
-                    </div>
-                    <div class="col-3 loader-section section-right">
-                        <div class="bg"></div>
-                    </div>
-                    <div class="col-3 loader-section section-right">
-                        <div class="bg"></div>
+            <div class="txt-loading">
+                <span class="letters-loading">
+                    P
+                </span>
+                <span class="letters-loading">
+                    O
+                </span>
+                <span class="letters-loading">
+                    L
+                </span>
+                <span class="letters-loading">
+                    L
+                </span>
+                <span " class=" letters-loading">
+                    O
+                </span>
+                <span class="letters-loading">
+                    S
+                </span>
+                <span class="letters-loading">
+                    
+                </span>
+                <span class="letters-loading">
+                    3
+                </span>
+                <span class="letters-loading">
+                    6
+                </span>
+                <span class="letters-loading">
+                    0
+                </span>
+                
+            </div>
+            <p class="text-center">Cargando..</p>
         </div>
+        <div class="loader">
+            <div class="row">
+                <div class="col-3 loader-section section-left">
+                    <div class="bg"></div>
+                </div>
+                <div class="col-3 loader-section section-left">
+                    <div class="bg"></div>
+                </div>
+                <div class="col-3 loader-section section-right">
+                    <div class="bg"></div>
+                </div>
+                <div class="col-3 loader-section section-right">
+                    <div class="bg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
                 </div>
             </div>
         </div>
@@ -160,7 +230,7 @@ foreach ($categorias as $cat) {
                              </div>
                         </div>
                         <p class="text d-none d-lg-block">
-                            La Mejor Churrrasqueria de la Ciudad
+                            Los Mejores Pollo de la Ciudad
                         </p>
                       
                         <div class="mobile-menu fix mb-3"></div>
@@ -168,7 +238,7 @@ foreach ($categorias as $cat) {
                             
                             
                             <div class="header-button mt-4">
-                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn" data-wow-delay=".5s">
+                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS pollo360" target="BLANK" class="theme-btn" data-wow-delay=".5s">
                                 <span class="button-content-wrapper d-flex align-items-center justify-content-center">
                                 <span class="button-icon"><i class="flaticon-delivery"></i></span>
                                 <span class="button-text">ordenar ahora</span>
@@ -238,7 +308,7 @@ foreach ($categorias as $cat) {
                               
                                 <div class="header-button">
 
-                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
+                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN POLLOS pollo360" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
                    
                     </div>
                                 
@@ -325,7 +395,7 @@ foreach ($categorias as $cat) {
                                             <p data-animation="fadeInUp">Ven por el sabor, quédate por la experiencia.</p>
                                             <h1  data-animation="fadeInUp" data-delay="0.5s">
                                                 MAS QUE
-                                                <span>Comida</span>
+                                                <span>POLLO</span>
                                                 PASIÓN
                                             </h1>
                                         
@@ -575,7 +645,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            "La mejor carne que he probado en Cotoca. Jugoso, bien sazonado y servido . ¡Volveria sin dudar!"
+                                            "El mejor pollo que he probado en Santa Cruz. Jugoso, bien sazonado y servido . ¡Volveria sin dudar!"
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -593,7 +663,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            "Llevé a mi familia el domingo y quedamos encantados. con la carne estaba perfecto y las guarniciones riquísimas."
+                                            "Llevé a mi familia el domingo y quedamos encantados. El pollo a la brasa estaba perfecto y las guarniciones riquísimas."
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -611,7 +681,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            Siempre paso después del trabajo por tablita. La atención es rapida
+                                            Siempre paso después del trabajo por mi cuarto de pollo. La atención es rapida
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -631,7 +701,7 @@ foreach ($categorias as $cat) {
                                             <h5>Cliente</h5>
                                         </div>
                                         <h3>
-                                            Pedí para llevar y me gustó que todo vino bien empacado. la tablita estaba rico
+                                            Pedí para llevar y me gustó que todo vino bien empacado. El pollo estaba rico
                                         </h3>
                                         <div class="star">
                                             <span class="fas fa-star"></span>
@@ -685,7 +755,7 @@ foreach ($categorias as $cat) {
                         <span class="theme-color-3">delivery</span>
                     </h2>
       </div>
-                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
+                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN  pollo360" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
                     <span class="button-content-wrapper d-flex align-items-center">
                         <span class="button-icon"><i class="flaticon-delivery"></i></span>
                         <span class="button-text">Ordenar Ahora</span>
@@ -709,7 +779,7 @@ foreach ($categorias as $cat) {
         <div class="container">
                 <div class="footer-bottom-wrapper d-flex align-items-center justify-content-between">
                     <p class="wow fadeInLeft" data-wow-delay=".3s">
-                        © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/">El Gato Rico -Churrasqueria </a>.Todos los derechos reservados.
+                        © Copyright <span class="theme-color-3">2025</span> <a href="../pagina/"> pollo360 </a>.Todos los derechos reservados.
                     </p>
                     <div class="card-image wow fadeInRight" data-wow-delay=".5s">
                         <img src="assets/img/card.webp" alt="card-img">
