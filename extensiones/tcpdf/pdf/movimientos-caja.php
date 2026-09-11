@@ -404,19 +404,19 @@ class imprimirFactura
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Total registrado:</td>
                 <td style="text-align:right;">' . number_format($comprasInformativo, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Pagadas con caja:</td>
                 <td style="text-align:right;">' . number_format($montoCompras, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (ya en egresos)</td>
                 <td style="text-align:right;"></td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Otro medio:</td>
                 <td style="text-align:right;">' . number_format($comprasSoloInventario, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (bolsillo u otro medio)</td>
                 <td style="text-align:right;"></td>
             </tr>
