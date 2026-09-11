@@ -537,21 +537,35 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     overflow: visible;
   }
 
-  .lv-producto-info .nuevaDescripcionProducto {
-    border: none;
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-    height: auto;
+  .lv-producto-info .lv-nombre-producto {
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.25;
     color: #222;
     text-transform: uppercase;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-word;
+    overflow-wrap: anywhere;
     width: 100%;
     margin-bottom: 2px;
+    cursor: help;
+  }
+
+  /* Input real oculto: el JS sigue leyendo .val() / idProducto */
+  .lv-producto-info .nuevaDescripcionProducto {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   .lv-producto-controles {
@@ -1078,24 +1092,27 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
       gap: 6px;
       width: 100%;
       margin: 0 0 4px;
-      min-height: 32px;
+      min-height: 36px;
   }
 
   .dress-name {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       flex: 1 1 auto;
       min-width: 0;
       max-width: calc(100% - 64px);
       height: auto;
-      max-height: 34px;
+      max-height: 48px;
       line-height: 1.25;
       overflow: hidden;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
+      word-break: break-word;
+      overflow-wrap: anywhere;
       margin: 0;
       text-align: left;
+      cursor: help;
   }
 
   .new-price {
@@ -2870,6 +2887,12 @@ function construirHtmlLineaVenta(cfg) {
           <i class="fa fa-copy"></i>
         </button>`
     : "";
+  var nombreProducto = String(cfg.descripcion || "");
+  var nombreEscapado = nombreProducto
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 
   return `
     <tr class="linea-venta">
@@ -2877,9 +2900,10 @@ function construirHtmlLineaVenta(cfg) {
         <div class="lv-producto">
           <img class="lv-producto-img" src="${img}" alt="" onerror="this.src='vistas/img/productos/default/anonymous.webp'">
           <div class="lv-producto-info">
+            <div class="lv-nombre-producto" title="${nombreEscapado}">${nombreEscapado}</div>
             <input type="text" class="form-control input-sm nuevaDescripcionProducto text-uppercase"
                    idProducto="${cfg.idProducto}"${idDetalleAttr} name="agregarProducto"
-                   value="${cfg.descripcion}" readonly required>
+                   value="${nombreEscapado}" readonly required tabindex="-1" aria-hidden="true">
             <div class="lv-producto-controles">
               ${selectorPres}
               ${extraNotas}

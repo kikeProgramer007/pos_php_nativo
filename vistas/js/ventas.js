@@ -1081,22 +1081,38 @@ async function imprimirAmbosEnCaja(codigoVenta, idsDetalle = null) {
         return;
     }
 
+    // Preview: ambas hojas juntas
     await mostrarVenta(data.facturaComandaBase64);
 
     try {
-        const printResponse = await fetch('http://localhost:3000/print-pdf', {
+        // Dos trabajos separados → la impresora corta entre ticket y comanda
+        const printTicket = await fetch('http://localhost:3000/print-pdf', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                pdfBase64: data.facturaComandaBase64,
+                pdfBase64: data.facturaBase64,
                 printerName: 'IMPRESORA-CAJA'
             })
         });
 
-        if (!printResponse.ok) {
-            console.warn('⚠️ Advertencia: No se pudo imprimir en caja. Continuando...');
+        if (!printTicket.ok) {
+            console.warn('⚠️ Advertencia: No se pudo imprimir el ticket en caja. Continuando...');
         }
-        console.log('✅ Impresión enviada correctamente (ticket + comanda en caja)');
+
+        const printComanda = await fetch('http://localhost:3000/print-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pdfBase64: data.comandaBase64,
+                printerName: 'IMPRESORA-CAJA'
+            })
+        });
+
+        if (!printComanda.ok) {
+            console.warn('⚠️ Advertencia: No se pudo imprimir la comanda en caja. Continuando...');
+        }
+
+        console.log('✅ Impresión enviada correctamente (ticket + comanda en caja, 2 trabajos)');
     } catch (error) {
         console.error('❌ Error de impresión:', error);
     }
