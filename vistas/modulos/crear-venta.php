@@ -1969,7 +1969,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                   <?php if ($modoEdicionCuenta): ?>
                   <button type="button" id="actualizarCuentaBtn" class="btn-actualizar" style="margin-right:0;">Actualizar cuenta</button>
                   <?php else: ?>
-                  <button type="button" id="cuentaPendienteBtn" class="btn-pagar-despues">Cobrar Despues</button>
+                 <!--  <button type="button" id="cuentaPendienteBtn" class="btn-pagar-despues">Cobrar Despues</button> -->
                   <?php endif; ?>
                   <button type="button" id="guardarVentaBtn" class="btn-pagar-ahora" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Cobrar Ahora</button>
                   </div>

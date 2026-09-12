@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 11, 2026 at 01:30 AM
+-- Generation Time: Sep 12, 2026 at 05:26 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -69,7 +69,7 @@ CREATE TABLE `arqueo_caja` (
 
 INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `cuentas_pendientes_cantidad`, `cuentas_pendientes_total`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
 (1, '2026-09-10 19:47:27', '2026-09-10 19:48:35', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 10.00, 0.00, 10.00, 10.00, 0, 0.00, 'cerrada', 0, NULL, 1, 1),
-(2, '2026-09-10 19:48:41', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 632.00, 0.00, 632.00, 0.00, 642.00, 15.00, 0.00, 15.00, 627.00, 0.00, 0.00, 0.00, 0.00, 1, 100.00, 'abierta', 14, NULL, 1, 1);
+(2, '2026-09-10 19:48:41', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 758.00, 0.00, 758.00, 0.00, 768.00, 15.00, 0.00, 15.00, 753.00, 0.00, 0.00, 0.00, 0.00, 1, 100.00, 'abierta', 23, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -90,7 +90,7 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 14, 1),
+(1, 'Caja de ventas', '1', 23, 1),
 (2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
@@ -222,7 +222,17 @@ INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `canti
 (147, 42, 17, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
 (148, 38, 18, 'económico pecho brasa', 2, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 30.00, NULL, NULL, 'LL', NULL, 'Unidad', 2, 1),
 (149, 40, 18, 'económico ala brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'LL', NULL, 'Unidad', 1, 1),
-(150, 30, 19, 'económico pierna broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
+(150, 30, 19, 'económico pierna broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(151, 38, 20, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(152, 31, 21, 'económico ala broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(153, 40, 21, 'económico ala brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(154, 38, 22, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(155, 43, 23, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(156, 43, 24, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(157, 43, 25, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(158, 38, 26, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(159, 39, 27, 'económico pierna brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(160, 31, 28, 'económico ala broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -273,7 +283,7 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 395, '2026-09-10 23:45:51', '2026-09-11 03:45:51', 1),
+(1, 's/n', '0000000', '00000000', 's/n', 405, '2026-09-12 16:23:35', '2026-09-12 20:23:35', 1),
 (2, 'lisandra', 'sin carnet', '000-00-000', 'sin dirección', 0, NULL, '2026-09-09 02:15:56', 1);
 
 -- --------------------------------------------------------
@@ -641,19 +651,19 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (28, 5, '505', 'cuarto broasterd contra con  pierna ', 'vistas/img/productos/505/212.png', 99999, 25, 25, 0, '2026-09-11 02:44:20', 0, 1),
 (29, 5, '506', 'económico pecho broasterd', 'vistas/img/productos/506/965.png', 99999, 15, 15, 2, '2026-09-11 02:49:28', 0, 1),
 (30, 5, '507', 'económico pierna broasterd', 'vistas/img/productos/507/427.png', 99999, 15, 15, 2, '2026-09-11 03:45:51', 0, 1),
-(31, 5, '508', 'económico ala broasterd', 'vistas/img/productos/508/851.png', 99999, 15, 15, 0, '2026-09-11 02:49:01', 0, 1),
+(31, 5, '508', 'económico ala broasterd', 'vistas/img/productos/508/851.png', 99999, 15, 15, 2, '2026-09-12 20:23:35', 0, 1),
 (32, 5, '509', 'económico contra broasterd', 'vistas/img/productos/509/585.png', 99999, 15, 15, 0, '2026-09-11 02:49:09', 0, 1),
 (33, 4, '401', 'entero brasa sin porción', 'vistas/img/productos/401/750.webp', 99999, 80, 80, 0, '2026-09-11 01:24:54', 0, 1),
 (34, 4, '402', 'entero brasa con porción ', 'vistas/img/productos/402/438.png', 99999, 100, 100, 0, '2026-09-11 02:37:50', 0, 1),
 (35, 4, '403', '1/2 brasa', 'vistas/img/productos/403/922.png', 99999, 50, 50, 0, '2026-09-11 02:38:06', 0, 1),
 (36, 4, '404', 'cuarto  brasa pecho con ala', 'vistas/img/productos/404/862.png', 99999, 25, 25, 0, '2026-09-11 02:40:27', 0, 1),
 (37, 4, '405', 'cuarto brasa contra con pierna ', 'vistas/img/productos/405/170.png', 99999, 25, 25, 0, '2026-09-11 02:43:53', 0, 1),
-(38, 4, '406', 'económico pecho brasa', 'vistas/img/productos/406/144.png', 99999, 15, 15, 2, '2026-09-11 03:31:42', 0, 1),
-(39, 4, '407', 'económico pierna brasa', 'vistas/img/productos/407/523.png', 99999, 15, 15, 0, '2026-09-11 02:52:44', 0, 1),
-(40, 4, '408', 'económico ala brasa', 'vistas/img/productos/408/252.png', 99999, 15, 15, 1, '2026-09-11 03:31:42', 0, 1),
+(38, 4, '406', 'económico pecho brasa', 'vistas/img/productos/406/144.png', 99999, 15, 15, 5, '2026-09-12 20:13:37', 0, 1),
+(39, 4, '407', 'económico pierna brasa', 'vistas/img/productos/407/523.png', 99999, 15, 15, 1, '2026-09-12 20:22:57', 0, 1),
+(40, 4, '408', 'económico ala brasa', 'vistas/img/productos/408/252.png', 99999, 15, 15, 2, '2026-09-11 05:04:24', 0, 1),
 (41, 4, '409', 'económico contra brasa', 'vistas/img/productos/409/580.png', 99999, 15, 15, 0, '2026-09-11 02:56:54', 0, 1),
 (42, 3, '301', ' presa de pollo', 'vistas/img/productos/301/943.png', 99999, 10, 10, 2, '2026-09-11 03:30:51', 0, 1),
-(43, 3, '302', 'porción de arroz', 'vistas/img/productos/302/399.png', 99999, 7, 7, 0, '2026-09-11 03:06:53', 0, 1),
+(43, 3, '302', 'porción de arroz', 'vistas/img/productos/302/399.png', 99999, 7, 7, 3, '2026-09-11 05:18:02', 0, 1),
 (44, 3, '303', 'porción de fideo', 'vistas/img/productos/303/298.png', 99999, 7, 7, 0, '2026-09-11 03:08:36', 0, 1),
 (45, 3, '304', 'porción de papa', 'vistas/img/productos/304/407.png', 99999, 7, 7, 1, '2026-09-11 03:11:44', 0, 1);
 
@@ -800,7 +810,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `id_perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-10 23:54:03', '2026-09-11 03:54:03', 1),
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-12 16:13:22', '2026-09-12 20:13:22', 1),
 (2, 'zusana murgia', 'zusana', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 3, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:12:40', 1),
 (3, 'epifania', 'epifania', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:14:54', 1),
 (4, 'santiago', 'santiago', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:15:17', 1);
@@ -853,7 +863,16 @@ INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`
 (16, 11, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 03:30:31', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:30:31', 1, 1, 1, 2),
 (17, 12, NULL, 0, 10, 10, 10.00, 0.00, 100, '2026-09-11 03:30:51', '', 'Efectivo', 90, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:30:51', 1, 1, 1, 2),
 (18, 13, NULL, 0, 45, 45, 45.00, 0.00, 100, '2026-09-11 03:31:42', '', 'Efectivo', 55, 'Para Llevar', 1, 'PAGADA', '2026-09-10 23:31:42', 1, 1, 1, 2),
-(19, 14, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 03:45:51', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:45:51', 1, 1, 1, 2);
+(19, 14, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 03:45:51', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:45:51', 1, 1, 1, 2),
+(20, 15, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 05:03:57', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:03:57', 1, 1, 1, 2),
+(21, 16, NULL, 0, 30, 30, 30.00, 0.00, 100, '2026-09-11 05:04:24', '', 'Efectivo', 70, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:04:24', 1, 1, 1, 2),
+(22, 17, NULL, 0, 15, 15, 15.00, 0.00, 15, '2026-09-12 20:23:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:23:45', 1, 1, 1, 2),
+(23, 18, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:06:56', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:06:56', 1, 1, 1, 2),
+(24, 19, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:08:09', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:08:09', 1, 1, 1, 2),
+(25, 20, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:18:02', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:18:02', 1, 1, 1, 2),
+(26, 21, NULL, 0, 15, 15, 15.00, 0.00, 15, '2026-09-12 20:13:37', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:13:37', 1, 1, 1, 2),
+(27, 22, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-12 20:22:57', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:22:56', 1, 1, 1, 2),
+(28, 23, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-12 20:23:35', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:23:35', 1, 1, 1, 2);
 
 --
 -- Indexes for dumped tables
@@ -1080,7 +1099,7 @@ ALTER TABLE `detalle_compra`
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
 
 --
 -- AUTO_INCREMENT for table `gastos`
@@ -1170,7 +1189,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Constraints for dumped tables
