@@ -45,6 +45,8 @@ CREATE TABLE `arqueo_caja` (
   `monto_ventas_qr` decimal(11,2) DEFAULT '0.00',
   `monto_ventas` decimal(11,2) NOT NULL DEFAULT '0.00',
   `monto_apertura` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_apertura_efectivo` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_apertura_qr` decimal(11,2) NOT NULL DEFAULT '0.00',
   `total_ingresos` decimal(11,2) NOT NULL DEFAULT '0.00',
   `gastos_operativos` decimal(11,2) NOT NULL DEFAULT '0.00',
   `monto_compras` decimal(11,2) NOT NULL DEFAULT '0.00',
@@ -272,7 +274,7 @@ CREATE TABLE `perfiles` (
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `activo` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `perfiles`
@@ -293,7 +295,7 @@ CREATE TABLE `perfil_permisos` (
   `id` int NOT NULL,
   `id_perfil` int NOT NULL,
   `id_permiso` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `perfil_permisos`
@@ -465,7 +467,7 @@ CREATE TABLE `permisos` (
   `descripcion` varchar(255) DEFAULT NULL,
   `orden` int NOT NULL DEFAULT '0',
   `estado` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `permisos`
@@ -647,7 +649,7 @@ CREATE TABLE `promociones` (
   `modo_cantidad` varchar(20) NOT NULL DEFAULT 'individual',
   `observacion` text,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -664,7 +666,7 @@ CREATE TABLE `promocion_intervalos` (
   `valor_descuento` decimal(10,2) NOT NULL DEFAULT '0.00',
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -678,7 +680,7 @@ CREATE TABLE `promocion_productos` (
   `id_producto` int NOT NULL,
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 

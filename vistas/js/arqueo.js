@@ -18,6 +18,8 @@ class ArqueoCaja {
         this.totalEfectivoEnCaja = 0;
         this.totales = {
             montoApertura: 0,
+            montoAperturaEfectivo: 0,
+            montoAperturaQr: 0,
             montoVentas: 0,
             montoVentasEfectivo: 0,
             montoVentasQr: 0,
@@ -122,12 +124,21 @@ class ArqueoCaja {
     }
 
     actualizarTotalesEnPantalla() {
-       
+        const inputQrEnCuenta = document.getElementById('qr_en_caja');
+        this.totales.totalQrEnCuenta = parseFloat(inputQrEnCuenta && inputQrEnCuenta.value) || 0;
+
         if (this.estado === ESTADO.CERRADA) {
-            document.getElementById('monto_apertura').textContent = this.totales.totalEfectivoEnCaja.toFixed(CONFIG.DECIMALES);
+            const aperturaEfectivo = this.totales.totalEfectivoEnCaja;
+            const aperturaQr = this.totales.totalQrEnCuenta;
+            const aperturaTotal = aperturaEfectivo + aperturaQr;
+            this.actualizarTexto('monto_apertura_efectivo', aperturaEfectivo);
+            this.actualizarTexto('monto_apertura_qr', aperturaQr);
+            this.actualizarTexto('monto_apertura', aperturaTotal);
         }
-        
+
         this.totales.montoApertura = parseFloat(document.getElementById('monto_apertura').textContent) || 0;
+        this.totales.montoAperturaEfectivo = parseFloat((document.getElementById('monto_apertura_efectivo') || {}).textContent) || 0;
+        this.totales.montoAperturaQr = parseFloat((document.getElementById('monto_apertura_qr') || {}).textContent) || 0;
         this.totales.montoVentas = parseFloat(document.getElementById('monto_ventas').textContent) || 0;
         this.totales.montoVentasEfectivo = parseFloat(document.getElementById('monto_ventas_efectivo').textContent) || 0;
         this.totales.montoVentasQr = parseFloat(document.getElementById('monto_ventas_qr').textContent) || 0;
@@ -148,8 +159,8 @@ class ArqueoCaja {
         this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
         this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
 
-        // efectivo_esperado = apertura + ventas efectivo + otros ingresos efectivo - compras - gastos efectivo
-        const efectivoEsperado = this.totales.montoApertura
+        // efectivo_esperado = apertura efectivo + ventas efectivo + otros ingresos efectivo - compras - gastos efectivo
+        const efectivoEsperado = this.totales.montoAperturaEfectivo
             + this.totales.montoVentasEfectivo
             + this.totales.otrosIngresosEfectivo
             - this.totales.montoCompras
@@ -171,6 +182,17 @@ class ArqueoCaja {
             'total_efectivo_qr_en_caja': totalContado,
             'diferencia': this.totales.diferencia
         });
+    }
+
+    formatearMonto(valor) {
+        return (parseFloat(valor) || 0).toFixed(CONFIG.DECIMALES);
+    }
+
+    actualizarTexto(id, valor) {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.textContent = valor.toFixed(CONFIG.DECIMALES);
+        }
     }
 
     actualizarElementos(elementos) {
@@ -266,6 +288,7 @@ class ArqueoCaja {
         }
 
         this.mostrarDatosApertura(data);
+        this.actualizarTotalesEnPantalla();
         this.mostrarCuentasPendientes(data.cuentas_pendientes || { cantidad: 0, total_por_cobrar: 0 });
     }
 
@@ -302,17 +325,23 @@ class ArqueoCaja {
         if (gastosQrEl) {
             gastosQrEl.textContent = '0.00';
         }
+        this.actualizarTexto('monto_apertura', 0);
+        this.actualizarTexto('monto_apertura_efectivo', 0);
+        this.actualizarTexto('monto_apertura_qr', 0);
         const bloqueComprasInfo = document.getElementById('bloque_compras_informativo');
         if (bloqueComprasInfo) {
             bloqueComprasInfo.style.display = 'none';
         }
         this.cargarCuentasPendientes();
+        this.calcularTotal();
     }
 
     mostrarDatosApertura(datos) {
         const campos = {
             'nro_ticket': datos.nroTicket  || '0',
-            'monto_apertura': datos.monto_apertura || '0.00',
+            'monto_apertura': this.formatearMonto(datos.monto_apertura),
+            'monto_apertura_efectivo': this.formatearMonto(datos.monto_apertura_efectivo ?? datos.monto_apertura),
+            'monto_apertura_qr': this.formatearMonto(datos.monto_apertura_qr),
             'idCaja': datos.id_caja,
             'monto_ventas': datos.monto_ventas || '0.00',
             'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
@@ -489,6 +518,8 @@ class ArqueoCaja {
             accion: 'AperturarCaja',
             fechaApertura: fechaAperturaCierre,
             montoApertura: this.totales.montoApertura,
+            montoAperturaEfectivo: this.totales.montoAperturaEfectivo,
+            montoAperturaQr: this.totales.montoAperturaQr,
             nroTicket,
             totalIngresos: this.totales.totalIngresos,
             resultadoNeto: this.totales.resultadoNeto,

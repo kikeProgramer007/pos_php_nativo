@@ -54,6 +54,8 @@ class ModeloArqueo {
             $stmt = $pdo->prepare("INSERT INTO arqueo_caja (
                 fecha_apertura,
                 monto_apertura,
+                monto_apertura_efectivo,
+                monto_apertura_qr,
                 total_ingresos,
                 resultado_neto, 
                 estado,
@@ -63,6 +65,8 @@ class ModeloArqueo {
             ) VALUES (
                 :fecha_apertura,
                 :monto_apertura,
+                :monto_apertura_efectivo,
+                :monto_apertura_qr,
                 :total_ingresos,
                 :resultado_neto,
                 :estado,
@@ -73,6 +77,8 @@ class ModeloArqueo {
 
             $stmt->bindParam(":fecha_apertura", $datos["fecha_apertura"], PDO::PARAM_STR);
             $stmt->bindParam(":monto_apertura", $datos["monto_apertura"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_apertura_efectivo", $datos["monto_apertura_efectivo"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_apertura_qr", $datos["monto_apertura_qr"], PDO::PARAM_STR);
             $stmt->bindParam(":total_ingresos", $datos["total_ingresos"], PDO::PARAM_STR);
             $stmt->bindParam(":resultado_neto", $datos["resultado_neto"], PDO::PARAM_STR);
             $stmt->bindParam(":estado", $datos["estado"], PDO::PARAM_STR);
@@ -657,6 +663,29 @@ class ModeloArqueo {
     }
 
     /**
+     * Normaliza apertura mixta: total = efectivo + QR.
+     * Si las columnas nuevas están en 0 y existe monto_apertura histórico, se asume 100% efectivo.
+     */
+    static public function mdlNormalizarMontosApertura($arqueo) {
+        $efectivo = floatval($arqueo["monto_apertura_efectivo"] ?? 0);
+        $qr = floatval($arqueo["monto_apertura_qr"] ?? 0);
+        $total = round($efectivo + $qr, 2);
+        $totalGuardado = floatval($arqueo["monto_apertura"] ?? 0);
+
+        if (abs($total) < 0.0001 && abs($totalGuardado) >= 0.0001) {
+            $efectivo = $totalGuardado;
+            $qr = 0.00;
+            $total = $totalGuardado;
+        }
+
+        return [
+            "monto_apertura" => $total,
+            "monto_apertura_efectivo" => $efectivo,
+            "monto_apertura_qr" => $qr
+        ];
+    }
+
+    /**
      * Efectivo disponible para egresos en efectivo (compras/gastos)
      */
     static public function mdlCalcularEfectivoDisponible($idArqueo, $pdo = null) {
@@ -664,7 +693,7 @@ class ModeloArqueo {
         $forUpdate = ($pdo && $pdo->inTransaction()) ? " FOR UPDATE" : "";
 
         $stmt = $conexion->prepare(
-            "SELECT monto_apertura, estado
+            "SELECT monto_apertura, monto_apertura_efectivo, monto_apertura_qr, estado
              FROM arqueo_caja
              WHERE id = :id" . $forUpdate
         );
@@ -690,17 +719,20 @@ class ModeloArqueo {
             ];
         }
 
-        $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
+        $apertura = self::mdlNormalizarMontosApertura($arqueo);
+        $montoAperturaEfectivo = $apertura["monto_apertura_efectivo"];
         $ventasEfectivo = self::mdlSumarVentasEfectivoPorArqueo($idArqueo, $conexion);
         $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $conexion);
         $compras = self::mdlSumarComprasPorArqueo($idArqueo, $conexion);
         $gastos = self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $conexion);
-        $disponible = $montoApertura + $ventasEfectivo + $otrosIngresosEfectivo - $gastos - $compras;
+        $disponible = $montoAperturaEfectivo + $ventasEfectivo + $otrosIngresosEfectivo - $gastos - $compras;
 
         return [
             "ok" => true,
             "disponible" => round($disponible, 2),
-            "monto_apertura" => $montoApertura,
+            "monto_apertura" => $apertura["monto_apertura"],
+            "monto_apertura_efectivo" => $montoAperturaEfectivo,
+            "monto_apertura_qr" => $apertura["monto_apertura_qr"],
             "ventas_efectivo" => $ventasEfectivo,
             "otros_ingresos" => $otrosIngresosEfectivo,
             "compras" => $compras,
@@ -731,13 +763,15 @@ class ModeloArqueo {
             $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
             $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo);
             $otrosIngresosQr = self::mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo);
-            $montoApertura = floatval($arqueo["monto_apertura"] ?? 0);
+            $apertura = self::mdlNormalizarMontosApertura($arqueo);
+            $montoApertura = $apertura["monto_apertura"];
             $totalIngresos = $montoApertura + $ventas["total"] + $otrosIngresos;
             $totalEgresos = $compras + $gastos;
             $resultadoNeto = $totalIngresos - $totalEgresos;
 
             $stmtUpdate = $pdo->prepare(
                 "UPDATE arqueo_caja SET
+                    monto_apertura = :monto_apertura,
                     monto_ventas = :monto_ventas,
                     monto_ventas_efectivo = :monto_ventas_efectivo,
                     monto_ventas_qr = :monto_ventas_qr,
@@ -748,6 +782,7 @@ class ModeloArqueo {
                     resultado_neto = :resultado_neto
                  WHERE id = :id"
             );
+            $stmtUpdate->bindValue(":monto_apertura", $montoApertura, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":monto_ventas", $ventas["total"], PDO::PARAM_STR);
             $stmtUpdate->bindValue(":monto_ventas_efectivo", $ventas["total_efectivo"], PDO::PARAM_STR);
             $stmtUpdate->bindValue(":monto_ventas_qr", $ventas["total_qr"], PDO::PARAM_STR);
@@ -759,6 +794,9 @@ class ModeloArqueo {
             $stmtUpdate->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
             $stmtUpdate->execute();
 
+            $arqueo["monto_apertura"] = $montoApertura;
+            $arqueo["monto_apertura_efectivo"] = $apertura["monto_apertura_efectivo"];
+            $arqueo["monto_apertura_qr"] = $apertura["monto_apertura_qr"];
             $arqueo["monto_ventas"] = $ventas["total"];
             $arqueo["monto_ventas_efectivo"] = $ventas["total_efectivo"];
             $arqueo["monto_ventas_qr"] = $ventas["total_qr"];

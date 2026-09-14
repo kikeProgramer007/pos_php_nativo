@@ -193,7 +193,15 @@ class imprimirFactura
             </tr>
              <tr>
                 <td style="text-align:left; "> SALDO INICIAL EN CAJA:</td>
-                <td style="text-align:right; ">' . $arqueo["monto_apertura"] . '</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["monto_apertura"] ?? 0), 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; QR:</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["monto_apertura_qr"] ?? 0), 2) . '</td>
+            </tr>
+            <tr>
+                <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["monto_apertura_efectivo"] ?? $arqueo["monto_apertura"] ?? 0), 2) . '</td>
             </tr>
             <tr>
                 <td style="text-align:left; "> <strong>VENTAS</strong></td>

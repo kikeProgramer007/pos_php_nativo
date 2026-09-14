@@ -19,7 +19,13 @@
         <tr>
             <td class="tree-cell">
                 <ul class="tree-view">
-                    <li>Saldo inicial en caja</li>
+                    <li>
+                        Saldo inicial en caja
+                        <ul>
+                            <li>QR</li>
+                            <li>Efectivo</li>
+                        </ul>
+                    </li>
                     <li>
                         Ventas
                         <ul>
@@ -39,6 +45,8 @@
             </td>
             <td class="tree-values">
                 <div id="monto_apertura" class="text-bold">0.00</div>
+                <div id="monto_apertura_qr">0.00</div>
+                <div id="monto_apertura_efectivo">0.00</div>
                 <div id="monto_ventas" class="text-bold">0.00</div>
                 <div id="monto_ventas_qr">0.00</div>
                 <div id="monto_ventas_efectivo">0.00</div>
@@ -156,4 +164,4 @@
         <i class="fa fa-print"></i> Imprimir
     </button>
 </div>
-
+

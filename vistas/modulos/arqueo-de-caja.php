@@ -429,4 +429,4 @@
 <script>
   const idUsuario = <?php echo $_SESSION["id"]; ?>;
 </script>
-<script src="vistas/js/arqueo.js"></script>
+<script src="vistas/js/arqueo.js?v=20260914apertura"></script>
