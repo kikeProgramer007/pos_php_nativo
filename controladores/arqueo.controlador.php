@@ -63,12 +63,22 @@ class ControladorArqueo {
             }
         }
 
+        $montoAperturaEfectivo = round(floatval($_POST["montoAperturaEfectivo"] ?? 0), 2);
+        $montoAperturaQr = round(floatval($_POST["montoAperturaQr"] ?? 0), 2);
+        if (!isset($_POST["montoAperturaEfectivo"]) && isset($_POST["montoApertura"])) {
+            $montoAperturaEfectivo = round(floatval($_POST["montoApertura"]), 2);
+            $montoAperturaQr = 0;
+        }
+        $montoApertura = round($montoAperturaEfectivo + $montoAperturaQr, 2);
+
         $datos = array(
             "fecha_apertura" => self::sanitizarInput($_POST["fechaApertura"]),
-            "monto_apertura" => floatval($_POST["montoApertura"]),
+            "monto_apertura" => $montoApertura,
+            "monto_apertura_efectivo" => $montoAperturaEfectivo,
+            "monto_apertura_qr" => $montoAperturaQr,
             "nro_ticket" => floatval($_POST["nroTicket"]),
-            "total_ingresos" => floatval($_POST["totalIngresos"]),
-            "resultado_neto" => floatval($_POST["resultadoNeto"]),
+            "total_ingresos" => $montoApertura,
+            "resultado_neto" => $montoApertura,
             "estado" => self::sanitizarInput($_POST["estado"]),
             "id_caja" => intval($_POST["idCaja"]),
             "id_usuario" => intval($_POST["idUsuario"])

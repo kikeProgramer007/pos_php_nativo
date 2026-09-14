@@ -1033,8 +1033,8 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .card-producto-header .badge {
-      font-size: 10px;
-      padding: 2px 5px;
+      font-size: 14px;
+      padding: 3px 7px;
       font-weight: 600;
   }
 
@@ -1096,7 +1096,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .dress-name {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       flex: 1 1 auto;
       min-width: 0;
@@ -1116,7 +1116,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .new-price {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: #d9534f;
       flex: 0 0 auto;
@@ -1144,7 +1144,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   #catalogoProductos .btn.btn-agregar,
   #catalogoProductos .btn.btn-default.btn-sm.btn-agregar {
       padding: 2px 4px;
-      font-size: 11px;
+      font-size: 13px;
       line-height: 1.25;
       border-radius: 0 0 5px 5px;
       margin-top: auto;
