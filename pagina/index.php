@@ -168,7 +168,7 @@ foreach ($categorias as $cat) {
                             
                             
                             <div class="header-button mt-4">
-                                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn" data-wow-delay=".5s">
+                                <a href="https://wa.me/59172644999?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn" data-wow-delay=".5s">
                                 <span class="button-content-wrapper d-flex align-items-center justify-content-center">
                                 <span class="button-icon"><i class="flaticon-delivery"></i></span>
                                 <span class="button-text">ordenar ahora</span>
@@ -238,7 +238,7 @@ foreach ($categorias as $cat) {
                               
                                 <div class="header-button">
 
-                                    <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
+                                    <a href="https://wa.me/59172644999?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-red-2" data-wow-delay=".5s">Pide aquí</a>
                    
                     </div>
                                 
@@ -416,7 +416,7 @@ foreach ($categorias as $cat) {
                         <div class="swiper-slide">
                             <div class="catagory-product-card-2 shadow-style text-center">
                                 <div class="icon">
-                                    <a href="https://wa.me/59175620296?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" target="_blank">
+                                    <a href="https://wa.me/59172644999?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" target="_blank">
                                         <i class="fab fa-whatsapp"></i>
                                     </a>
                                 </div>
@@ -425,7 +425,7 @@ foreach ($categorias as $cat) {
                                 </div>
                                 <div class="catagory-product-content">
                                     <div class="catagory-button">
-                                        <a href="https://wa.me/59175620296?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" 
+                                        <a href="https://wa.me/59172644999?text=Hola%20Quiero%20comprar%20este%20producto:%20<?=urlencode(htmlspecialchars($producto['descripcion']))?>%20Precio:%20<?=urlencode(number_format($producto['precio_venta'],2))?>%20Bs" 
                                            target="_blank" 
                                            class="theme-btn-2">
                                             <i class="fab fa-whatsapp"></i> Pedir
@@ -685,7 +685,7 @@ foreach ($categorias as $cat) {
                         <span class="theme-color-3">delivery</span>
                     </h2>
       </div>
-                <a href="https://wa.me/59175620296?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
+                <a href="https://wa.me/59172644999?text=QUIERO%20HACER%20UN%20PEDIDO EN El Gato Rico -Churrasqueria" target="BLANK" class="theme-btn bg-white wow fadeInUp" data-wow-delay=".5s">
                     <span class="button-content-wrapper d-flex align-items-center">
                         <span class="button-icon"><i class="flaticon-delivery"></i></span>
                         <span class="button-text">Ordenar Ahora</span>
