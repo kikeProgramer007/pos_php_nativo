@@ -132,7 +132,7 @@ class imprimirFactura
             <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <span style="font-size: 10px;">El Gato Rico </span><br>
+                    <span style="font-size: 10px;">EL GATO RICO</span><br>
                     <span style="font-size: 14px;"><strong>ARQUEO DE CAJA</strong></span><br>
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
@@ -412,19 +412,19 @@ class imprimirFactura
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Total registrado:</td>
                 <td style="text-align:right;">' . number_format($comprasInformativo, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Pagadas con caja:</td>
                 <td style="text-align:right;">' . number_format($montoCompras, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (ya en egresos)</td>
                 <td style="text-align:right;"></td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;">&nbsp;&nbsp;&nbsp; Otro medio:</td>
                 <td style="text-align:right;">' . number_format($comprasSoloInventario, 2) . '</td>
             </tr>
-            <tr>
+            <tr style="display:none;">
                 <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; (bolsillo u otro medio)</td>
                 <td style="text-align:right;"></td>
             </tr>
