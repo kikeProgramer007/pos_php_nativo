@@ -92,7 +92,7 @@ class imprimirFactura
             <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <span style="font-size: 10px;">El Gato Rico </span><br>
+                    <span style="font-size: 16px;">EL GATO RICO</span><br>
                     <span style="font-size: 14px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
@@ -188,7 +188,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 75620296</p>
+         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 72644999</p>
         ';
 
         $pdf->writeHTML($html, false, false, false, false, '');
@@ -293,6 +293,7 @@ class imprimirFactura
             '.$notaHtml.'
             </tbody>
         </table>
+         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 72644999<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>
         ';
 
         $pdf->writeHTML($html, false, false, false, false, '');

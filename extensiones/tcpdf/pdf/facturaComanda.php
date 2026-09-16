@@ -131,7 +131,7 @@ class imprimirFacturaComanda
         $html .= '</tbody></table>';
         
         if (!$esComanda) {
-            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 75620296</p>';
+            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 72644999<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>';
         }
 
         return $html;
@@ -148,7 +148,7 @@ class imprimirFacturaComanda
             <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <span style="font-size: 10px;">El Gato Rico </span><br>
+                    <span style="font-size: 16px;">EL GATO RICO</span><br>
                     <span style="font-size: 25px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
