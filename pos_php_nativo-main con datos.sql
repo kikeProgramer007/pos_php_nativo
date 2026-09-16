@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 15, 2026 at 11:18 PM
+-- Generation Time: Sep 15, 2026 at 11:41 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -45,6 +45,8 @@ CREATE TABLE `arqueo_caja` (
   `monto_ventas_qr` decimal(11,2) DEFAULT '0.00',
   `monto_ventas` decimal(11,2) NOT NULL DEFAULT '0.00',
   `monto_apertura` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_apertura_efectivo` decimal(11,2) NOT NULL DEFAULT '0.00',
+  `monto_apertura_qr` decimal(11,2) NOT NULL DEFAULT '0.00',
   `total_ingresos` decimal(11,2) NOT NULL DEFAULT '0.00',
   `gastos_operativos` decimal(11,2) NOT NULL DEFAULT '0.00',
   `monto_compras` decimal(11,2) NOT NULL DEFAULT '0.00',
@@ -62,6 +64,13 @@ CREATE TABLE `arqueo_caja` (
   `id_caja` int NOT NULL,
   `id_usuario` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `arqueo_caja`
+--
+
+INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `monto_apertura_efectivo`, `monto_apertura_qr`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `cuentas_pendientes_cantidad`, `cuentas_pendientes_total`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
+(1, '2026-09-15 22:37:08', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 158.00, 756.00, 914.00, 0.00, 0.00, 0.00, 914.00, 0.00, 0.00, 0.00, 914.00, 0.00, 0.00, 0.00, 0.00, 0, 0.00, 'abierta', 5, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -82,7 +91,7 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 2, 1),
+(1, 'Caja de ventas', '1', 5, 1),
 (2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
@@ -122,6 +131,13 @@ CREATE TABLE `clientes` (
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `estado` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
+
+--
+-- Dumping data for table `clientes`
+--
+
+INSERT INTO `clientes` (`id`, `nombre`, `fecha`, `estado`) VALUES
+(1, 's/n', '2026-09-16 02:40:22', 1);
 
 -- --------------------------------------------------------
 
@@ -189,6 +205,35 @@ CREATE TABLE `detalle_venta` (
   `unidades_por_presentacion` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_original`, `tipo_descuento`, `valor_descuento`, `descuento_unitario`, `descuento_total`, `id_promocion`, `id_intervalo_promocion`, `nombre_promocion`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`, `id_presentacion`, `nombre_presentacion`, `cantidad_presentaciones`, `unidades_por_presentacion`) VALUES
+(1, 35, 1, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(2, 26, 2, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(3, 27, 3, 'Porción de Papas Fritas', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(4, 36, 4, 'Tablita Mixta 2 personas', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(5, 35, 4, 'Tablita Personal ', 1, 75.00, 75.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 75.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(6, 32, 4, 'Cuadril Personal', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(7, 31, 4, 'Costilla a la Parrilla ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(8, 30, 4, 'Ojo de Bife ', 1, 60.00, 60.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 60.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(9, 29, 4, 'Keperí ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 40.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(10, 33, 4, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(11, 34, 4, 'Costilla  Parrilla 2 personas', 1, 85.00, 85.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 70.00, 85.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(12, 25, 4, 'porción de Arroz', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 8.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(13, 22, 4, 'Cuadril (Carne Extra)', 1, 40.00, 40.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 40.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(14, 26, 4, 'Porción Yuca Frita', 1, 13.00, 13.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 13.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(15, 27, 4, 'Porción de Papas Fritas', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(16, 28, 4, 'Sopa de Maní', 1, 18.00, 18.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 18.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(17, 24, 4, 'Porción de Chorizo', 1, 12.00, 12.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 12.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(18, 23, 4, 'Porción Cordon Blue', 1, 35.00, 35.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 30.00, 35.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(19, 20, 4, 'Chicha Jarra Mediana', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(20, 19, 4, 'Limonada Jarra Grande', 1, 22.00, 22.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 20.00, 22.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(21, 18, 4, 'Limonada Jarra Mediana', 1, 16.00, 16.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 14.00, 16.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(22, 2, 4, 'Cheesecake de Oreo', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(23, 33, 5, 'Chancho a la Caja China Personal ', 1, 55.00, 55.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 50.00, 55.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -231,7 +276,7 @@ CREATE TABLE `meseros` (
 --
 
 INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 0, NULL, '2026-09-16 02:13:16', 1),
+(1, 's/n', '0000000', '00000000', 's/n', 28, '2026-09-15 22:40:30', '2026-09-16 02:40:30', 1),
 (2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 0, NULL, '2026-09-16 02:14:56', 1),
 (3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 0, NULL, '2026-09-16 02:13:16', 1),
 (4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 0, NULL, '2026-09-16 02:13:16', 1),
@@ -566,40 +611,40 @@ CREATE TABLE `productos` (
 
 INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`, `stock`, `precio_venta`, `precio_compra`, `ventas`, `fecha`, `inventariable`, `estado`) VALUES
 (1, 1, '101', 'Paletas Q\' Deli', 'vistas/img/productos/101/641.jpg', 0, 15, 10, 50, '2026-08-31 02:36:16', 1, 1),
-(2, 1, '102', 'Cheesecake de Oreo', 'vistas/img/productos/102/731.png', 99999, 15, 10, 50, '2026-09-16 01:18:22', 0, 1),
-(3, 2, '201', 'ron flor de caña', 'vistas/img/productos/201/162.png', 50, 120, 100, 0, '2026-07-30 02:52:42', 1, 1),
-(4, 2, '202', 'Ron Habana Club', 'vistas/img/productos/202/609.webp', 45, 180, 150, 5, '2026-08-23 22:38:05', 1, 1),
-(5, 2, '203', 'Vino Kohlberg', 'vistas/img/productos/203/469.webp', 41, 50, 40, 9, '2026-08-23 22:38:05', 1, 1),
-(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/204/418.webp', 30, 50, 40, 20, '2026-09-16 01:14:39', 1, 1),
-(8, 2, '206', 'Corona', 'vistas/img/productos/206/236.png', 5, 25, 20, 100, '2026-09-16 02:06:30', 1, 1),
-(9, 2, '207', 'Huari 620 ml', 'vistas/img/productos/207/939.webp', 78, 32, 30, 72, '2026-09-06 23:51:38', 1, 1),
-(10, 3, '301', 'Agua con Gas (500 ml)', 'vistas/img/productos/301/151.webp', 48, 8, 5, 2, '2026-08-23 22:38:05', 1, 1),
-(11, 3, '302', 'Power de 1 Lt', 'vistas/img/productos/302/864.png', 49, 15, 10, 1, '2026-08-23 22:38:05', 1, 1),
-(12, 3, '303', 'Power de 500 ml', 'vistas/img/productos/303/353.png', 49, 10, 5, 1, '2026-08-23 22:38:05', 1, 1),
-(13, 3, '304', 'Agua 500 ml', 'vistas/img/productos/304/974.png', 49, 7, 5, 1, '2026-08-23 22:38:05', 1, 1),
-(14, 3, '305', 'Soda Popular', 'vistas/img/productos/305/106.png', 42, 13, 10, 8, '2026-08-23 22:38:05', 1, 1),
-(15, 3, '306', 'Soda 2 Lt', 'vistas/img/productos/306/425.jpg', 49, 22, 20, 1, '2026-08-23 22:38:05', 1, 1),
-(16, 3, '307', 'Soda Personal', 'vistas/img/productos/307/302.webp', 49, 10, 8, 1, '2026-08-31 02:36:26', 1, 1),
-(17, 3, '308', 'Tropifrut', 'vistas/img/productos/308/810.png', 60, 15, 10, 1, '2026-09-06 23:00:47', 1, 1),
-(18, 3, '309', 'Limonada Jarra Mediana', 'vistas/img/productos/309/448.png', 99999, 16, 14, 2, '2026-09-06 23:00:47', 0, 1),
-(19, 3, '310', 'Limonada Jarra Grande', 'vistas/img/productos/310/244.png', 99999, 22, 20, 5, '2026-09-06 23:00:47', 0, 1),
-(20, 3, '311', 'Chicha Jarra Mediana', 'vistas/img/productos/311/416.png', 99999, 15, 10, 2, '2026-09-06 23:00:47', 0, 1),
-(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/312/991.png', 47, 20, 15, 4, '2026-09-06 23:00:47', 1, 1),
-(22, 4, '401', 'Cuadril (Carne Extra)', 'vistas/img/productos/401/311.png', 99999, 40, 30, 1, '2026-09-06 23:00:47', 0, 1),
-(23, 4, '402', 'Porción Cordon Blue', 'vistas/img/productos/402/339.png', 99999, 35, 30, 1, '2026-09-06 23:00:47', 0, 1),
-(24, 4, '403', 'Porción de Chorizo', 'vistas/img/productos/403/352.png', 99999, 12, 10, 4, '2026-09-16 00:59:42', 0, 1),
-(25, 4, '404', 'porción de Arroz', 'vistas/img/productos/404/556.webp', 99999, 10, 8, 14, '2026-09-06 23:21:30', 0, 1),
-(26, 4, '405', 'Porción Yuca Frita', 'vistas/img/productos/405/548.png', 99999, 13, 10, 12, '2026-09-06 23:00:47', 0, 1),
-(27, 4, '406', 'Porción de Papas Fritas', 'vistas/img/productos/406/195.webp', 99999, 15, 10, 5, '2026-09-06 23:00:47', 0, 1),
-(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/501/405.png', 99999, 18, 15, 14, '2026-09-07 01:30:42', 0, 1),
-(29, 6, '601', 'Keperí ', 'vistas/img/productos/601/874.png', 99999, 55, 40, 17, '2026-09-10 00:38:39', 0, 1),
-(30, 6, '602', 'Ojo de Bife ', 'vistas/img/productos/602/171.png', 99999, 60, 50, 11, '2026-09-06 23:21:30', 0, 1),
-(31, 6, '603', 'Costilla a la Parrilla ', 'vistas/img/productos/603/785.png', 99999, 60, 50, 12, '2026-09-06 23:00:47', 0, 1),
-(32, 6, '604', 'Cuadril Personal', 'vistas/img/productos/604/948.png', 99999, 55, 50, 14, '2026-09-06 23:00:47', 0, 1),
-(33, 6, '605', 'Chancho a la Caja China Personal ', 'vistas/img/productos/605/118.png', 99999, 55, 50, 54, '2026-09-16 02:14:00', 0, 1),
-(34, 6, '606', 'Costilla  Parrilla 2 personas', 'vistas/img/productos/606/493.png', 99999, 85, 70, 19, '2026-09-16 00:58:22', 0, 1),
-(35, 6, '607', 'Tablita Personal ', 'vistas/img/productos/607/257.png', 99999, 75, 70, 23, '2026-09-16 01:06:13', 0, 1),
-(36, 6, '608', 'Tablita Mixta 2 personas', 'vistas/img/productos/608/301.png', 99999, 100, 90, 31, '2026-09-07 01:30:16', 0, 1);
+(2, 1, '102', 'Cheesecake de Oreo', 'vistas/img/productos/102/731.png', 99999, 15, 10, 51, '2026-09-16 02:38:59', 0, 1),
+(3, 2, '201', 'ron flor de caña', 'vistas/img/productos/201/162.png', 0, 120, 100, 0, '2026-09-16 02:32:31', 1, 1),
+(4, 2, '202', 'Ron Habana Club', 'vistas/img/productos/202/609.webp', 0, 180, 150, 5, '2026-09-16 02:32:39', 1, 1),
+(5, 2, '203', 'Vino Kohlberg', 'vistas/img/productos/203/469.webp', 0, 50, 40, 9, '2026-09-16 02:32:48', 1, 1),
+(6, 2, '204', 'Vino Campos del Solana', 'vistas/img/productos/204/418.webp', 0, 50, 40, 20, '2026-09-16 02:33:00', 1, 1),
+(8, 2, '206', 'Corona', 'vistas/img/productos/206/236.png', 0, 25, 20, 105, '2026-09-16 02:30:05', 1, 1),
+(9, 2, '207', 'Huari 620 ml', 'vistas/img/productos/207/939.webp', 0, 32, 30, 72, '2026-09-16 02:33:09', 1, 1),
+(10, 3, '301', 'Agua con Gas (500 ml)', 'vistas/img/productos/301/151.webp', 0, 8, 5, 2, '2026-09-16 02:33:21', 1, 1),
+(11, 3, '302', 'Power de 1 Lt', 'vistas/img/productos/302/864.png', 0, 15, 10, 1, '2026-09-16 02:33:34', 1, 1),
+(12, 3, '303', 'Power de 500 ml', 'vistas/img/productos/303/353.png', 0, 10, 5, 1, '2026-09-16 02:33:42', 1, 1),
+(13, 3, '304', 'Agua 500 ml', 'vistas/img/productos/304/974.png', 0, 7, 5, 1, '2026-09-16 02:33:52', 1, 1),
+(14, 3, '305', 'Soda Popular', 'vistas/img/productos/305/106.png', 0, 13, 10, 8, '2026-09-16 02:34:05', 1, 1),
+(15, 3, '306', 'Soda 2 Lt', 'vistas/img/productos/306/425.jpg', 0, 22, 20, 1, '2026-09-16 02:34:12', 1, 1),
+(16, 3, '307', 'Soda Personal', 'vistas/img/productos/307/302.webp', 0, 10, 8, 1, '2026-09-16 02:34:20', 1, 1),
+(17, 3, '308', 'Tropifrut', 'vistas/img/productos/308/810.png', 0, 15, 10, 1, '2026-09-16 02:34:30', 1, 1),
+(18, 3, '309', 'Limonada Jarra Mediana', 'vistas/img/productos/309/448.png', 99999, 16, 14, 3, '2026-09-16 02:38:59', 0, 1),
+(19, 3, '310', 'Limonada Jarra Grande', 'vistas/img/productos/310/244.png', 99999, 22, 20, 6, '2026-09-16 02:38:59', 0, 1),
+(20, 3, '311', 'Chicha Jarra Mediana', 'vistas/img/productos/311/416.png', 99999, 15, 10, 3, '2026-09-16 02:38:59', 0, 1),
+(21, 3, '312', 'Chicha Jarra Grande', 'vistas/img/productos/312/991.png', 0, 20, 15, 4, '2026-09-16 02:34:43', 1, 1),
+(22, 4, '401', 'Cuadril (Carne Extra)', 'vistas/img/productos/401/311.png', 99999, 40, 30, 2, '2026-09-16 02:38:59', 0, 1),
+(23, 4, '402', 'Porción Cordon Blue', 'vistas/img/productos/402/339.png', 99999, 35, 30, 2, '2026-09-16 02:38:59', 0, 1),
+(24, 4, '403', 'Porción de Chorizo', 'vistas/img/productos/403/352.png', 99999, 12, 10, 5, '2026-09-16 02:38:59', 0, 1),
+(25, 4, '404', 'porción de Arroz', 'vistas/img/productos/404/556.webp', 99999, 10, 8, 15, '2026-09-16 02:38:59', 0, 1),
+(26, 4, '405', 'Porción Yuca Frita', 'vistas/img/productos/405/548.png', 99999, 13, 10, 14, '2026-09-16 02:38:59', 0, 1),
+(27, 4, '406', 'Porción de Papas Fritas', 'vistas/img/productos/406/195.webp', 99999, 15, 10, 7, '2026-09-16 02:38:59', 0, 1),
+(28, 5, '501', 'Sopa de Maní', 'vistas/img/productos/501/405.png', 99999, 18, 15, 15, '2026-09-16 02:38:59', 0, 1),
+(29, 6, '601', 'Keperí ', 'vistas/img/productos/601/874.png', 99999, 55, 40, 18, '2026-09-16 02:38:59', 0, 1),
+(30, 6, '602', 'Ojo de Bife ', 'vistas/img/productos/602/171.png', 99999, 60, 50, 12, '2026-09-16 02:38:59', 0, 1),
+(31, 6, '603', 'Costilla a la Parrilla ', 'vistas/img/productos/603/785.png', 99999, 60, 50, 13, '2026-09-16 02:38:59', 0, 1),
+(32, 6, '604', 'Cuadril Personal', 'vistas/img/productos/604/948.png', 99999, 55, 50, 15, '2026-09-16 02:38:59', 0, 1),
+(33, 6, '605', 'Chancho a la Caja China Personal ', 'vistas/img/productos/605/118.png', 99999, 55, 50, 56, '2026-09-16 02:40:30', 0, 1),
+(34, 6, '606', 'Costilla  Parrilla 2 personas', 'vistas/img/productos/606/493.png', 99999, 85, 70, 20, '2026-09-16 02:38:59', 0, 1),
+(35, 6, '607', 'Tablita Personal ', 'vistas/img/productos/607/257.png', 99999, 75, 70, 25, '2026-09-16 02:38:59', 0, 1),
+(36, 6, '608', 'Tablita Mixta 2 personas', 'vistas/img/productos/608/301.png', 99999, 100, 90, 32, '2026-09-16 02:38:59', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -643,6 +688,13 @@ CREATE TABLE `promociones` (
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `promociones`
+--
+
+INSERT INTO `promociones` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`, `prioridad`, `estado`, `modo_cantidad`, `observacion`, `fecha`) VALUES
+(1, 'balde de coronas', 'balde de coronas', '2026-09-15 22:25:00', '2056-06-08 22:25:00', 5, 1, 'individual', '', '2026-09-16 02:25:32');
+
 -- --------------------------------------------------------
 
 --
@@ -660,6 +712,13 @@ CREATE TABLE `promocion_intervalos` (
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `promocion_intervalos`
+--
+
+INSERT INTO `promocion_intervalos` (`id`, `id_promocion`, `cantidad_minima`, `cantidad_maxima`, `tipo_descuento`, `valor_descuento`, `estado`, `fecha`) VALUES
+(1, 1, 5, NULL, 'fijo', 1.00, 1, '2026-09-16 02:28:35');
+
 -- --------------------------------------------------------
 
 --
@@ -673,6 +732,13 @@ CREATE TABLE `promocion_productos` (
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `promocion_productos`
+--
+
+INSERT INTO `promocion_productos` (`id`, `id_promocion`, `id_producto`, `estado`, `fecha`) VALUES
+(1, 1, 8, 1, '2026-09-16 02:28:44');
 
 -- --------------------------------------------------------
 
@@ -749,7 +815,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `id_perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-15 22:18:12', '2026-09-16 02:18:12', 1),
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-15 22:20:55', '2026-09-16 02:20:55', 1),
 (3, 'Irys Gabriela Vargas Jimenez ', 'Gabriela ', '$2a$07$asxx54ahjppf45sd87a5auTjc6l.msIbvUzGvRzKgYOcSUPnmTqBa', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-08-02 17:43:05', '2026-08-16 23:07:45', 1),
 (4, 'Daniel Rico roca ', 'daniel', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 3, 'vistas/img/usuarios/default/anonymous.webp', 1, '2026-09-06 19:14:46', '2026-09-06 23:14:46', 1);
 
@@ -782,6 +848,17 @@ CREATE TABLE `ventas` (
   `id_vendedor` int DEFAULT NULL,
   `id_arqueo_caja` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
+
+--
+-- Dumping data for table `ventas`
+--
+
+INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`, `total`, `total_bruto`, `total_descuento`, `total_pagado`, `fecha`, `nota`, `tipo_pago`, `cambio`, `forma_atencion`, `estado`, `estado_pago`, `fecha_pago`, `id_mesero`, `id_cliente`, `id_vendedor`, `id_arqueo_caja`) VALUES
+(1, 1, NULL, 0, 75, 75, 75.00, 0.00, 100, '2026-09-16 02:37:14', '', 'Efectivo', 25, 'En Mesa', 1, 'PAGADA', '2026-09-15 22:37:14', 1, 1, 1, 1),
+(2, 2, NULL, 0, 13, 13, 13.00, 0.00, 100, '2026-09-16 02:37:26', '', 'Efectivo', 87, 'En Mesa', 1, 'PAGADA', '2026-09-15 22:37:26', 1, 1, 1, 1),
+(3, 3, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-16 02:38:01', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-15 22:38:01', 1, 1, 1, 1),
+(4, 4, NULL, 756, 0, 756, 756.00, 0.00, 756, '2026-09-16 02:38:59', '', 'QR', 0, 'En Mesa', 1, 'PAGADA', '2026-09-15 22:38:58', 1, 1, 1, 1),
+(5, 5, NULL, 0, 55, 55, 55.00, 0.00, 100, '2026-09-16 02:40:30', '', 'Efectivo', 45, 'En Mesa', 1, 'PAGADA', '2026-09-15 22:40:30', 1, 1, 1, 1);
 
 --
 -- Indexes for dumped tables
@@ -972,7 +1049,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT for table `arqueo_caja`
 --
 ALTER TABLE `arqueo_caja`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cajas`
@@ -990,7 +1067,7 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `compras`
@@ -1008,7 +1085,7 @@ ALTER TABLE `detalle_compra`
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `gastos`
@@ -1062,19 +1139,19 @@ ALTER TABLE `producto_presentaciones`
 -- AUTO_INCREMENT for table `promociones`
 --
 ALTER TABLE `promociones`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `promocion_intervalos`
 --
 ALTER TABLE `promocion_intervalos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `promocion_productos`
 --
 ALTER TABLE `promocion_productos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `proveedor`
@@ -1098,7 +1175,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
