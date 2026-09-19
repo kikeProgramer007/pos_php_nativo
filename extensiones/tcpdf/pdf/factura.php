@@ -242,7 +242,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 72644999<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>
+         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 79902345<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>
         ';
 
         $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');
