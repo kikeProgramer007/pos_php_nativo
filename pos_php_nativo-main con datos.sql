@@ -265,8 +265,7 @@ CREATE TABLE `meseros` (
   `documento` varchar(11) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
   `telefono` text CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
   `direccion` text CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
-  `compras` int NOT NULL DEFAULT '0',
-  `ultima_compra` datetime DEFAULT NULL,
+  `ventas_atendidas` int NOT NULL DEFAULT '0',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `estado` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
@@ -275,12 +274,12 @@ CREATE TABLE `meseros` (
 -- Dumping data for table `meseros`
 --
 
-INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 28, '2026-09-15 22:40:30', '2026-09-16 02:40:30', 1),
-(2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 0, NULL, '2026-09-16 02:14:56', 1),
-(3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 0, NULL, '2026-09-16 02:13:16', 1),
-(4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 0, NULL, '2026-09-16 02:13:16', 1),
-(5, 'Carla Viviana Tiain Bairo', '14138040', '123-45-678', 'B/ San Antonio', 0, NULL, '2026-09-16 02:13:16', 1);
+INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `ventas_atendidas`, `fecha`, `estado`) VALUES
+(1, 's/n', '0000000', '00000000', 's/n', 28, '2026-09-16 02:40:30', 1),
+(2, 'Belen Figueroa Miranda', ' 8870938', ' 690-90-581', 'Cotoca B/ San Marino', 0, '2026-09-16 02:14:56', 1),
+(3, 'Raquel Taceo', '8160365', '123-45-678', 'Cotoca -Barrio las madresitas sector los tojos', 0, '2026-09-16 02:13:16', 1),
+(4, 'Vanessa surubi paticu ', '14773348', '123-45-678', 'Calle 9 de abril atras de la escuelita vieja', 0, '2026-09-16 02:13:16', 1),
+(5, 'Carla Viviana Tiain Bairo', '14138040', '123-45-678', 'B/ San Antonio', 0, '2026-09-16 02:13:16', 1);
 
 -- --------------------------------------------------------
 

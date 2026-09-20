@@ -39,7 +39,7 @@ class TablaMeseros
                 "' . $meseros[$i]["documento"] . '",
                 "' . $meseros[$i]["telefono"] . '",
                 "' . $meseros[$i]["direccion"] . '",
-                "' . $meseros[$i]["compras"] . '",
+                "' . $meseros[$i]["ventas_atendidas"] . '",
            
                 "' . $meseros[$i]["fecha"] . '",
                 "' . $botones . '"
