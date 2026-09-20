@@ -50,7 +50,7 @@ if (!Permisos::tiene("meseros.eliminados")) {
               <th>N° De Carnet</th>
               <th>Telefono</th>
               <th>Dirección</th>
-              <th>Total compras</th>
+              <th>Ventas atendidas</th>
         
               <th>Ingreso al sistema</th>
               <th>Acción</th>

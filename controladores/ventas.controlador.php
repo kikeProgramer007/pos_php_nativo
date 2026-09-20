@@ -255,7 +255,7 @@ class ControladorVentas{
 
 			
 			if(is_array($respuesta) && $respuesta["status"] == "ok"){
-				self::actualizarMeseroPorVenta($_POST["seleccionarMesero"], $listaProductos, $fecha.' '.$hora);
+				self::actualizarMeseroPorVenta($_POST["seleccionarMesero"]);
 
 				$arqueoActual = ModeloArqueo::mdlObtnerArqueoPorIDUsuario($_POST["idVendedor"]);
 				if ($arqueoActual) {
@@ -303,117 +303,153 @@ class ControladorVentas{
 	
 
 	/*=============================================
+	DEBUG: enviar mensaje a consola del navegador
+	=============================================*/
+	static private function debugEliminarVentaConsola($nivel, $mensaje, $datos = null){
+		$payload = [
+			"origen" => "ctrEliminarVenta",
+			"mensaje" => $mensaje,
+			"datos" => $datos
+		];
+		$json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		if ($json === false) {
+			$json = json_encode(["origen" => "ctrEliminarVenta", "mensaje" => $mensaje]);
+		}
+		$fn = ($nivel === "error") ? "console.error" : (($nivel === "warn") ? "console.warn" : "console.log");
+		echo '<script>'.$fn.'("[ELIMINAR-VENTA]", '.$json.');</script>';
+	}
+
+	/*=============================================
 	ELIMINAR VENTA
 	=============================================*/
 
 	static public function ctrEliminarVenta(){
 
-		if(isset($_GET["idVenta"]) ){
+		if(!isset($_GET["idVenta"])){
+			return;
+		}
+
+		try {
+
+			self::debugEliminarVentaConsola("log", "Inicio anulación", [
+				"idVentaGET" => $_GET["idVenta"],
+				"phpVersion" => PHP_VERSION
+			]);
 
 			if (!Permisos::tiene("ventas.eliminar")) {
+				self::debugEliminarVentaConsola("error", "Sin permiso ventas.eliminar — aborta");
 				Permisos::requiere("ventas.eliminar");
 				return;
 			}
-		
-			$tabla = "ventas";
 
+			self::debugEliminarVentaConsola("log", "Permiso ventas.eliminar OK");
+
+			$tabla = "ventas";
 			$item = "id";
 			$valor = $_GET["idVenta"];
 
 			$traerVenta = ModeloVentas::mdlMostrarVentas($tabla, $item, $valor);
-			
 
-			/*=============================================
-			VERIFICAR QUE LA CAJA O ARQUEO A LA QUE PERTENECE ESTE ABIERTO
-			=============================================*/
+			if (empty($traerVenta) || !is_array($traerVenta) || empty($traerVenta["id"])) {
+				self::debugEliminarVentaConsola("error", "Venta no encontrada o respuesta vacía", [
+					"idBuscado" => $valor,
+					"traerVenta" => $traerVenta
+				]);
+				echo '<script>
+					swal({
+						type: "error",
+						title: "No se encontró la venta a anular",
+						text: "Revisá la consola del navegador (F12) para más detalle.",
+						showConfirmButton: true,
+						confirmButtonText: "Cerrar"
+					}).then(function(result){
+						if (result.value) { window.location = "ventas"; }
+					});
+				</script>';
+				return;
+			}
+
+			self::debugEliminarVentaConsola("log", "Venta cargada", [
+				"id" => $traerVenta["id"],
+				"codigo" => $traerVenta["codigo"] ?? null,
+				"estado" => $traerVenta["estado"] ?? null,
+				"estado_pago" => $traerVenta["estado_pago"] ?? null,
+				"id_mesero" => $traerVenta["id_mesero"] ?? null,
+				"id_arqueo_caja" => $traerVenta["id_arqueo_caja"] ?? null,
+				"total" => $traerVenta["total"] ?? null,
+				"total_efectivo" => $traerVenta["total_efectivo"] ?? null,
+				"total_qr" => $traerVenta["total_qr"] ?? null
+			]);
+
 			if (session_status() == PHP_SESSION_NONE) {
 				session_start();
 			}
 
-			if ($_SESSION["idArqueoCaja"] != $traerVenta["id_arqueo_caja"]) {
-			echo '<script>
-					swal({ 
+			$idArqueoSesion = $_SESSION["idArqueoCaja"] ?? null;
+			$idArqueoVenta = $traerVenta["id_arqueo_caja"] ?? null;
+			$cajaAbiertaEnBd = !empty($idArqueoVenta)
+				? (bool) ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($idArqueoVenta)
+				: false;
+
+			self::debugEliminarVentaConsola("log", "Comparación sesión vs venta (arqueo)", [
+				"session_idArqueoCaja" => $idArqueoSesion,
+				"session_idArqueoCaja_tipo" => gettype($idArqueoSesion),
+				"venta_id_arqueo_caja" => $idArqueoVenta,
+				"venta_id_arqueo_caja_tipo" => gettype($idArqueoVenta),
+				"sonIguales_loose" => ($idArqueoSesion != $idArqueoVenta) ? false : true,
+				"sonIguales_intval" => (intval($idArqueoSesion) === intval($idArqueoVenta)),
+				"cajaAbiertaEnBd" => $cajaAbiertaEnBd,
+				"session_idCaja" => $_SESSION["idCaja"] ?? null,
+				"session_idUsuario" => $_SESSION["id"] ?? null
+			]);
+
+			/*=============================================
+			VERIFICAR QUE LA CAJA O ARQUEO A LA QUE PERTENECE ESTE ABIERTO
+			=============================================*/
+			if ($idArqueoSesion != $idArqueoVenta) {
+				self::debugEliminarVentaConsola("error", "ABORTA: sesión de caja != arqueo de la venta (no se llegó a estado=0)", [
+					"session_idArqueoCaja" => $idArqueoSesion,
+					"venta_id_arqueo_caja" => $idArqueoVenta,
+					"cajaAbiertaEnBd" => $cajaAbiertaEnBd,
+					"estado_pago" => $traerVenta["estado_pago"] ?? null,
+					"hint" => "El boton Cobrar mira BD; Eliminar mira session idArqueoCaja. Si no coinciden, no borra."
+				]);
+				echo '<script>
+					swal({
 						type: "error",
 						title: "La venta no puede eliminarse dado que su caja ha sido cerrada",
+						text: "DEBUG: sesión arqueo=' . htmlspecialchars((string)$idArqueoSesion, ENT_QUOTES, "UTF-8") .
+							' | venta arqueo=' . htmlspecialchars((string)$idArqueoVenta, ENT_QUOTES, "UTF-8") .
+							' | caja abierta en BD=' . ($cajaAbiertaEnBd ? "sí" : "no") .
+							'. Ver consola F12.",
 						showConfirmButton: true,
 						confirmButtonText: "Cerrar"
-						}).then(function(result){
-									if (result.value) {
-									window.location = "ventas";
-									}
-								})
-					</script>';
+					}).then(function(result){
+						if (result.value) {
+							window.location = "ventas";
+						}
+					});
+				</script>';
 				return;
 			}
-			
-			/*=============================================
-			ACTUALIZAR FECHA ÚLTIMA COMPRA
-			=============================================*/
 
-			$tablaMeseros = "meseros";
+			self::debugEliminarVentaConsola("log", "Validación arqueo/sesión OK — continúa anulación");
 
-			$itemVentas = null;
-			$valorVentas = null;
-
-			$traerVentas = ModeloVentas::mdlMostrarVentas($tabla, $itemVentas, $valorVentas);
-
-			$guardarFechas = array();
-
-
-			// Verificar que $traerVenta y $traerVenta["id_mesero"] existen
-			if (isset($traerVenta["id_mesero"]) && is_array($traerVentas)) {
-				foreach ($traerVentas as $value) {
-					if (isset($value["id_mesero"]) && $value["id_mesero"] == $traerVenta["id_mesero"]) {
-						array_push($guardarFechas, $value["fecha"]);
-					}
-				}
-			}
-
-			
-			if(count($guardarFechas) > 1){
-
-				if($traerVenta["fecha"] > $guardarFechas[count($guardarFechas)-2]){
-
-					$item = "ultima_compra";
-					$valor = $guardarFechas[count($guardarFechas)-2];
-					$valorIdMesero = $traerVenta["id_mesero"];
-
-					$comprasMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item, $valor, $valorIdMesero);
-
-				}else{
-
-					$item = "ultima_compra";
-					$valor = $guardarFechas[count($guardarFechas)-1];
-					$valorIdMesero = $traerVenta["id_mesero"];
-
-					$comprasMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item, $valor, $valorIdMesero);
-
-				}
-
-
-			}else{
-
-				$item = "ultima_compra";
-				$valor = "0000-00-00 00:00:00";
-				$valorIdMesero = $traerVenta["id_mesero"];
-
-				$comprasMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item, $valor, $valorIdMesero);
-
-			}
-		
 			/*=============================================
 			FORMATEAR TABLA DE PRODUCTOS Y LA DE MESEROS
 			=============================================*/
 
-			// $productos =  json_decode($traerVenta["productos"], true);
 			$productos = ModeloVentas::mdlMostrarDetalleVentas($traerVenta["id"]);
-	
-			$totalProductosComprados = array();
+			if (!is_array($productos)) {
+				$productos = [];
+			}
+
+			self::debugEliminarVentaConsola("log", "Detalle de venta para devolver stock", [
+				"cantidadLineas" => count($productos)
+			]);
 
 			foreach ($productos as $value) {
 
-				array_push($totalProductosComprados, $value["cantidad"]);
-				
 				$tablaProductos = "productos";
 
 				$item = "id";
@@ -423,6 +459,9 @@ class ControladorVentas{
 				$traerProducto = ModeloProductos::mdlMostrarProductos($tablaProductos, $item, $valor, $orden);
 
 				if (!$traerProducto) {
+					self::debugEliminarVentaConsola("warn", "Producto no encontrado al devolver stock", [
+						"id_producto" => $valor
+					]);
 					continue;
 				}
 
@@ -441,26 +480,51 @@ class ControladorVentas{
 			$itemMesero = "id";
 			$valorMesero = $traerVenta["id_mesero"];
 
-			//cambiar
-            $estado=1;
+			$estado=1;
 			$traerMesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, $itemMesero, $valorMesero,$estado);
 
-			$item1a = "compras";
-			$valor1a = $traerMesero["compras"] - array_sum($totalProductosComprados);
+			if (!$traerMesero || !is_array($traerMesero)) {
+				self::debugEliminarVentaConsola("error", "Mesero no encontrado/activo (antes de restar ventas_atendidas)", [
+					"id_mesero" => $valorMesero,
+					"estadoBuscado" => $estado,
+					"traerMesero" => $traerMesero
+				]);
+			} else {
+				$item1a = "ventas_atendidas";
+				$valor1a = max(0, intval($traerMesero["ventas_atendidas"] ?? 0) - 1);
 
-			$comprasMesero = ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1a, $valor1a, $valorMesero);
+				self::debugEliminarVentaConsola("log", "Actualizar ventas_atendidas mesero (-1 ticket)", [
+					"id_mesero" => $valorMesero,
+					"ventasAtendidasActuales" => $traerMesero["ventas_atendidas"] ?? null,
+					"ventasAtendidasNuevas" => $valor1a
+				]);
+
+				ModeloMeseros::mdlActualizarMesero($tablaMeseros, $item1a, $valor1a, $valorMesero);
+			}
 
 			/*=============================================
 			ELIMINAR VENTA
 			=============================================*/
 
+			self::debugEliminarVentaConsola("log", "Llamando mdlEliminarVenta (UPDATE estado=0)");
 			$respuesta = ModeloVentas::mdlEliminarVenta($tabla, $_GET["idVenta"]);
-			
+			self::debugEliminarVentaConsola($respuesta == "ok" ? "log" : "error", "Resultado mdlEliminarVenta", [
+				"respuesta" => $respuesta,
+				"estado_pago" => $traerVenta["estado_pago"] ?? null
+			]);
+
 			if($respuesta == "ok"){
 				if (isset($traerVenta["estado_pago"]) && $traerVenta["estado_pago"] === "PAGADA") {
+					self::debugEliminarVentaConsola("log", "Post-borrado PAGADA: mdlEliminarIngreso");
 					ModeloArqueo::mdlEliminarIngreso($traerVenta["id_arqueo_caja"], $traerVenta["total"], $traerVenta["total_efectivo"], $traerVenta["total_qr"]);
 				} elseif (isset($traerVenta["estado_pago"]) && $traerVenta["estado_pago"] === "PENDIENTE" && !empty($traerVenta["id_arqueo_caja"])) {
+					self::debugEliminarVentaConsola("log", "Post-borrado PENDIENTE: sync cuentas pendientes");
 					ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($traerVenta["id_arqueo_caja"]);
+				} else {
+					self::debugEliminarVentaConsola("warn", "Post-borrado: sin acción de arqueo", [
+						"estado_pago" => $traerVenta["estado_pago"] ?? null,
+						"id_arqueo_caja" => $traerVenta["id_arqueo_caja"] ?? null
+					]);
 				}
 				echo'<script>
 
@@ -477,8 +541,39 @@ class ControladorVentas{
 								}
 							})
 
-				</script>'; 
+				</script>';
+			} else {
+				self::debugEliminarVentaConsola("error", "mdlEliminarVenta no devolvió ok", [
+					"respuesta" => $respuesta
+				]);
+				echo '<script>
+					swal({
+						type: "error",
+						title: "No se pudo anular la venta",
+						text: "Revisá la consola del navegador (F12).",
+						showConfirmButton: true,
+						confirmButtonText: "Cerrar"
+					});
+				</script>';
 			}
+
+		} catch (Throwable $e) {
+			self::debugEliminarVentaConsola("error", "Excepción/Error capturado en ctrEliminarVenta", [
+				"tipo" => get_class($e),
+				"mensaje" => $e->getMessage(),
+				"archivo" => $e->getFile(),
+				"linea" => $e->getLine(),
+				"trace" => $e->getTraceAsString()
+			]);
+			echo '<script>
+				swal({
+					type: "error",
+					title: "Error al anular la venta",
+					text: ' . json_encode($e->getMessage(), JSON_UNESCAPED_UNICODE) . ' + " (ver consola F12)",
+					showConfirmButton: true,
+					confirmButtonText: "Cerrar"
+				});
+			</script>';
 		}
 
 	}
@@ -587,9 +682,7 @@ class ControladorVentas{
 		}
 		self::ajustarMeseroPorDiferencia(
 			$ventaActual["id_mesero"],
-			intval($_POST["seleccionarMesero"]),
-			$detalleAnterior,
-			$listaProductos
+			intval($_POST["seleccionarMesero"])
 		);
 
 		$formaAtencion = self::obtenerFormaAtencionTexto($_POST["formaAtencion"]);
@@ -958,12 +1051,7 @@ class ControladorVentas{
 		return true;
 	}
 
-	private static function actualizarMeseroPorVenta($idMesero, $listaProductos, $fechaHora){
-		$totalProductos = 0;
-		foreach ($listaProductos as $producto) {
-			$totalProductos += intval($producto["cantidad"]);
-		}
-
+	private static function actualizarMeseroPorVenta($idMesero){
 		$tablaMeseros = "meseros";
 		$traerMesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMesero, 1);
 		if (!$traerMesero) {
@@ -972,40 +1060,38 @@ class ControladorVentas{
 
 		ModeloMeseros::mdlActualizarMesero(
 			$tablaMeseros,
-			"compras",
-			intval($traerMesero["compras"]) + $totalProductos,
+			"ventas_atendidas",
+			intval($traerMesero["ventas_atendidas"] ?? 0) + 1,
 			$idMesero
 		);
-		ModeloMeseros::mdlActualizarMesero($tablaMeseros, "ultima_compra", $fechaHora, $idMesero);
 	}
 
-	private static function ajustarMeseroPorDiferencia($idMeseroAnterior, $idMeseroNuevo, $detalleAnterior, $productosNuevos){
-		$totalAnterior = array_sum(array_column($detalleAnterior, "cantidad"));
-		$totalNuevo = 0;
-		foreach ($productosNuevos as $producto) {
-			$totalNuevo += intval($producto["cantidad"]);
+	private static function ajustarMeseroPorDiferencia($idMeseroAnterior, $idMeseroNuevo){
+		if (intval($idMeseroAnterior) === intval($idMeseroNuevo)) {
+			return;
 		}
 
 		$tablaMeseros = "meseros";
 		$estado = 1;
 
-		if ($idMeseroAnterior != $idMeseroNuevo) {
-			$meseroAnterior = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroAnterior, $estado);
-			if ($meseroAnterior) {
-				ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $meseroAnterior["compras"] - $totalAnterior, $idMeseroAnterior);
-			}
-			$meseroNuevo = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroNuevo, $estado);
-			if ($meseroNuevo) {
-				ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $meseroNuevo["compras"] + $totalNuevo, $idMeseroNuevo);
-			}
-		} else {
-			$diff = $totalNuevo - $totalAnterior;
-			if ($diff !== 0) {
-				$mesero = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroNuevo, $estado);
-				if ($mesero) {
-					ModeloMeseros::mdlActualizarMesero($tablaMeseros, "compras", $mesero["compras"] + $diff, $idMeseroNuevo);
-				}
-			}
+		$meseroAnterior = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroAnterior, $estado);
+		if ($meseroAnterior) {
+			ModeloMeseros::mdlActualizarMesero(
+				$tablaMeseros,
+				"ventas_atendidas",
+				max(0, intval($meseroAnterior["ventas_atendidas"] ?? 0) - 1),
+				$idMeseroAnterior
+			);
+		}
+
+		$meseroNuevo = ModeloMeseros::mdlMostrarMeseros($tablaMeseros, "id", $idMeseroNuevo, $estado);
+		if ($meseroNuevo) {
+			ModeloMeseros::mdlActualizarMesero(
+				$tablaMeseros,
+				"ventas_atendidas",
+				intval($meseroNuevo["ventas_atendidas"] ?? 0) + 1,
+				$idMeseroNuevo
+			);
 		}
 	}
 

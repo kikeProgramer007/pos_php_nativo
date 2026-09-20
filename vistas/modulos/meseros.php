@@ -139,7 +139,7 @@ if (!Permisos::tiene("meseros.ver")) {
               <th>N° De Carnet</th>
               <th>Teléfono</th>
               <th>Dirección</th>
-              <th>Total de ventas</th>
+              <th>Ventas atendidas</th>
               <th>Ingreso al sistema</th>
               <th>Acciones</th>
             </tr>
