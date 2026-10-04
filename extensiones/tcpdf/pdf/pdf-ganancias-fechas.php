@@ -9,6 +9,7 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 require_once "../../../fpdf/fpdf.php";
+require_once __DIR__ . "/fila-tabla.php";
 
 class PdfGananciasFechas extends FPDF
 {
@@ -97,18 +98,15 @@ class PdfGananciasFechas extends FPDF
             $costo = floatval($row['costo'] ?? 0);
             $ganancia = floatval($row['ganancias'] ?? 0);
 
-            $mesero = (string) ($row['mesero'] ?? '');
-            if (strlen($mesero) > 28) {
-                $mesero = substr($mesero, 0, 27) . '.';
-            }
-
-            $pdf->Cell(20, 5, ltrim((string) $row['codigo'], '0'), 1, 0, 'C');
-            $pdf->Cell(24, 5, utf8_decode($row['fecha']), 1, 0, 'C');
-            $pdf->Cell(50, 5, utf8_decode($mesero), 1, 0, 'L');
-            $pdf->Cell(24, 5, $this->fmtBs($cobrado), 1, 0, 'R');
-            $pdf->Cell(24, 5, $this->fmtBs($descuento), 1, 0, 'R');
-            $pdf->Cell(24, 5, $this->fmtBs($costo), 1, 0, 'R');
-            $pdf->Cell(24, 5, $this->fmtBs($ganancia), 1, 1, 'R');
+            fpdfDibujarFila($pdf, array(
+                array('w' => 20, 'txt' => ltrim((string) $row['codigo'], '0'), 'align' => 'C'),
+                array('w' => 24, 'txt' => utf8_decode($row['fecha']), 'align' => 'C'),
+                array('w' => 50, 'txt' => utf8_decode((string) ($row['mesero'] ?? '')), 'align' => 'L'),
+                array('w' => 24, 'txt' => $this->fmtBs($cobrado), 'align' => 'R'),
+                array('w' => 24, 'txt' => $this->fmtBs($descuento), 'align' => 'R'),
+                array('w' => 24, 'txt' => $this->fmtBs($costo), 'align' => 'R'),
+                array('w' => 24, 'txt' => $this->fmtBs($ganancia), 'align' => 'R'),
+            ), 5);
 
             $sumCobrado += $cobrado;
             $sumCosto += $costo;

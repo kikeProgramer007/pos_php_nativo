@@ -13,6 +13,7 @@ require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 
 require_once "../../../fpdf/fpdf.php";
+require_once __DIR__ . "/fila-tabla.php";
 
 class reporteProductoFaltante
 {
@@ -101,22 +102,28 @@ class reporteProductoFaltante
 
 
         $contador = 1;
-        $sum = 0;
-        $cortar = 47;
         $pdf->SetAutoPageBreak(false);
         foreach ($respuestaProductos as $producto) {
-            $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(28, 5, $producto['codigo'], 1, 0, 'C');
-            $pdf->Cell(70, 5, utf8_decode($producto['descripcion']), 1, 0, 'C');
-            $pdf->Cell(30, 5, $producto['precio_compra'].' Bs', 1, 0, 'C');
-            $pdf->Cell(28, 5, $producto['precio_venta'].' Bs', 1, 0, 'C');
-            $pdf->Cell(24, 5, $producto['stock'], 1, 1, 'C');
-            $contador++;
-
-            if ($contador == $cortar) {
+            if ($pdf->GetY() > 250) {
                 $pdf->AddPage();
-                $cortar = $cortar + 50;
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(12, 5, utf8_decode('#'), 1, 0, 'C');
+                $pdf->Cell(28, 5, utf8_decode('Codigo'), 1, 0, 'C');
+                $pdf->Cell(70, 5, utf8_decode('Producto'), 1, 0, 'C');
+                $pdf->Cell(30, 5, utf8_decode('Precio compra'), 1, 0, 'C');
+                $pdf->Cell(28, 5, utf8_decode('Precio venta'), 1, 0, 'C');
+                $pdf->Cell(24, 5, utf8_decode('Cantidad'), 1, 1, 'C');
+                $pdf->SetFont('Arial', '', 11);
             }
+            fpdfDibujarFila($pdf, array(
+                array('w' => 12, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 28, 'txt' => $producto['codigo'], 'align' => 'C'),
+                array('w' => 70, 'txt' => utf8_decode($producto['descripcion']), 'align' => 'L'),
+                array('w' => 30, 'txt' => $producto['precio_compra'] . ' Bs', 'align' => 'R'),
+                array('w' => 28, 'txt' => $producto['precio_venta'] . ' Bs', 'align' => 'R'),
+                array('w' => 24, 'txt' => $producto['stock'], 'align' => 'C'),
+            ), 5);
+            $contador++;
         }
         $pdf->Ln();
 

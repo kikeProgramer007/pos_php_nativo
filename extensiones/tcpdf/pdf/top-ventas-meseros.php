@@ -70,6 +70,7 @@ class reporteTopVentasMeseros
         }
 
         require_once('tcpdf_include.php');
+        require_once('fila-tabla.php');
 
         // Configuración del PDF para UTF-8
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
@@ -128,11 +129,12 @@ class reporteTopVentasMeseros
         $sumTotal = 0;
         foreach ($respuestaVentas as $item) {
             $total =  $item["total"];
-            $pdf->Cell(18, 5,  $contador, 1, 0, 'C');
-            $pdf->Cell(70, 5, $item["mesero"], 1, 0, 'C');
-            $pdf->Cell(48, 5, $item["cantidad"], 1, 0, 'C');
-       
-            $pdf->Cell(60, 5, $item["total"] . ' Bs', 1, 1, 'C');
+            pdfDibujarFila($pdf, array(
+                array('w' => 18, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 70, 'txt' => $item["mesero"], 'align' => 'L'),
+                array('w' => 48, 'txt' => $item["cantidad"], 'align' => 'C'),
+                array('w' => 60, 'txt' => $item["total"] . ' Bs', 'align' => 'R'),
+            ), 5);
             $contador++;
             $sumTotal += $total;
         }

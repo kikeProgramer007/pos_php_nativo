@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/etiqueta-periodo.php";
+
 $productos = ControladorVentas::ctrReporteProductosMasVendidos($fechaInicial, $fechaFinal);
 if (!is_array($productos)) {
 	$productos = [];
@@ -15,6 +17,7 @@ foreach ($productos as $producto) {
 
 $limiteLeyenda = min(10, count($productos));
 $limiteLista = min(5, count($productos));
+$periodoProductos = etiquetaPeriodoGrafico($fechaInicial, $fechaFinal);
 
 $pieData = [];
 for ($i = 0; $i < $limiteLeyenda; $i++) {
@@ -36,7 +39,7 @@ PRODUCTOS MÁS VENDIDOS
 	
 	<div class="box-header with-border">
   
-      <h3 class="box-title">Productos más vendidos</h3>
+      <h3 class="box-title">Productos más vendidos por cantidad<?php if ($periodoProductos !== '') { echo ' <small>' . htmlspecialchars($periodoProductos) . '</small>'; } ?></h3>
 
     </div>
 
@@ -48,7 +51,11 @@ PRODUCTOS MÁS VENDIDOS
 
 	 			<div class="chart-responsive" style="height: 220px; position: relative;">
 	            
+	            	<?php if (count($productos) === 0) { ?>
+	            		<p class="text-muted text-center" style="padding-top:90px;">No hay productos vendidos en este período.</p>
+	            	<?php } else { ?>
 	            	<canvas id="pieChart" height="220" width="220" style="width:100%; height:220px;"></canvas>
+	            	<?php } ?>
 	          
 	          	</div>
 

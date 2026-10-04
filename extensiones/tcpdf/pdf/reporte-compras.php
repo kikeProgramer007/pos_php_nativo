@@ -61,6 +61,7 @@ class reporteCompra
         //REQUERIMOS LA CLASE TCPDF
 
         require_once('tcpdf_include.php');
+        require_once('fila-tabla.php');
 
         // Configuración del PDF para UTF-8
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
@@ -141,12 +142,14 @@ class reporteCompra
         $sumTotal = 0;
         foreach ($respuestaCompra as $item) {
             $total =  $item["total"];
-            $pdf->Cell(14, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(22, 5, $item["codigo"], 1, 0, 'C');
-            $pdf->Cell(30, 5, $item["fecha_alta"], 1, 0, 'C');
-            $pdf->Cell(50, 5, $item["usuario"], 1, 0, 'C');
-            $pdf->Cell(50, 5, $item["proveedor"], 1, 0, 'C');
-            $pdf->Cell(30, 5, $total . ' Bs', 1, 1, 'C');
+            pdfDibujarFila($pdf, array(
+                array('w' => 14, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 22, 'txt' => $item["codigo"], 'align' => 'C'),
+                array('w' => 30, 'txt' => $item["fecha_alta"], 'align' => 'C'),
+                array('w' => 50, 'txt' => $item["usuario"], 'align' => 'L'),
+                array('w' => 50, 'txt' => $item["proveedor"], 'align' => 'L'),
+                array('w' => 30, 'txt' => $total . ' Bs', 'align' => 'R'),
+            ), 5);
             $contador++;
             $sumTotal += $total;
         }

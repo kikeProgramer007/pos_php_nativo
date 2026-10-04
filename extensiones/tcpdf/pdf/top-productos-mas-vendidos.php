@@ -95,6 +95,7 @@ class reporteTopProductosMasVendidos
         }
 
         require_once('tcpdf_include.php');
+        require_once('fila-tabla.php');
 
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
@@ -182,16 +183,34 @@ class reporteTopProductosMasVendidos
             $ventaNeta = floatval($item['venta_neta'] ?? 0);
             $ganancia = floatval($item['ganancia'] ?? 0);
 
-            $pdf->Cell($cNum, $alto, $contador, 1, 0, 'C');
-            $pdf->Cell($cFecha, $alto, date('d/m/Y', strtotime($item['fecha'])), 1, 0, 'C');
-            $pdf->Cell($cMesero, $alto, isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
-            $pdf->Cell($cProducto, $alto, $item['descripcion'], 1, 0, 'L');
-            $pdf->Cell($cCant, $alto, $cantidad, 1, 0, 'C');
-            $pdf->Cell($cVenta, $alto, $this->monto($precioVenta), 1, 0, 'R');
-            $pdf->Cell($cCosto, $alto, $this->monto($costo), 1, 0, 'R');
-            $pdf->Cell($cDesc, $alto, $this->monto($descuento), 1, 0, 'R');
-            $pdf->Cell($cNeta, $alto, $this->monto($ventaNeta), 1, 0, 'R');
-            $pdf->Cell($cGan, $alto, $this->monto($ganancia), 1, 1, 'R');
+            pdfDibujarFila($pdf, array(
+                array('w' => $cNum, 'txt' => $contador, 'align' => 'C'),
+                array('w' => $cFecha, 'txt' => date('d/m/Y', strtotime($item['fecha'])), 'align' => 'C'),
+                array('w' => $cMesero, 'txt' => isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 'align' => 'L'),
+                array('w' => $cProducto, 'txt' => $item['descripcion'], 'align' => 'L'),
+                array('w' => $cCant, 'txt' => $cantidad, 'align' => 'C'),
+                array('w' => $cVenta, 'txt' => $this->monto($precioVenta), 'align' => 'R'),
+                array('w' => $cCosto, 'txt' => $this->monto($costo), 'align' => 'R'),
+                array('w' => $cDesc, 'txt' => $this->monto($descuento), 'align' => 'R'),
+                array('w' => $cNeta, 'txt' => $this->monto($ventaNeta), 'align' => 'R'),
+                array('w' => $cGan, 'txt' => $this->monto($ganancia), 'align' => 'R'),
+            ), $alto, function ($pdf) use ($cNum, $cFecha, $cMesero, $cProducto, $cCant, $cVenta, $cCosto, $cDesc, $cNeta, $cGan, $alto) {
+                $pdf->SetFont('helvetica', 'B', 8);
+                $pdf->SetFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell($cNum, $alto, '#', 1, 0, 'C', 1);
+                $pdf->Cell($cFecha, $alto, 'Fecha', 1, 0, 'C', 1);
+                $pdf->Cell($cMesero, $alto, 'Mesero', 1, 0, 'C', 1);
+                $pdf->Cell($cProducto, $alto, 'Producto', 1, 0, 'C', 1);
+                $pdf->Cell($cCant, $alto, 'Cant.', 1, 0, 'C', 1);
+                $pdf->Cell($cVenta, $alto, 'P. venta', 1, 0, 'C', 1);
+                $pdf->Cell($cCosto, $alto, 'Costo', 1, 0, 'C', 1);
+                $pdf->Cell($cDesc, $alto, 'Descuento', 1, 0, 'C', 1);
+                $pdf->Cell($cNeta, $alto, 'Venta neta', 1, 0, 'C', 1);
+                $pdf->Cell($cGan, $alto, 'Ganancia', 1, 1, 'C', 1);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->SetFont('helvetica', '', 8);
+            });
 
             $contador++;
         }

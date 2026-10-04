@@ -554,48 +554,65 @@ class ModeloVentas
 		if ($fechaInicial <= $fechaFinal) {
 
 			$idCategoria = is_array($idCategoria) ? $idCategoria : array($idCategoria);
-			$idCategoria = array_filter($idCategoria, function ($id) {
-				return intval($id) !== 0;
-			});
-
-			$query = "SELECT meseros.nombre as mesero,
-					COUNT(ventas.id) as cantidad,
-					CAST(COALESCE(SUM(ventas.total), 0) AS DECIMAL(12,2)) as total,
-					GROUP_CONCAT(DISTINCT productos.descripcion ORDER BY productos.descripcion SEPARATOR ', ') as productos
-					FROM $tabla 
-					JOIN meseros ON ventas.id_mesero = meseros.id
-					LEFT JOIN detalle_venta ON detalle_venta.id_venta = ventas.id
-					LEFT JOIN productos ON productos.id = detalle_venta.id_producto
-					WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
-					AND ventas.estado=1
-					AND ventas.estado_pago = 'PAGADA'";
-
-			if ($idMesero != 0) {
-				$query .= " AND meseros.id = :idMesero";
-			}
-
-			if (count($idCategoria) > 0) {
-				$placeholders = array();
-				foreach ($idCategoria as $index => $categoriaId) {
-					$placeholders[] = ":idCategoria{$index}";
+			$idsCategoria = array();
+			foreach ($idCategoria as $id) {
+				$id = intval($id);
+				if ($id > 0) {
+					$idsCategoria[$id] = $id;
 				}
-				$query .= " AND productos.id_categoria IN (" . implode(', ', $placeholders) . ")";
+			}
+			$idsCategoria = array_values($idsCategoria);
+
+			$filtroMesero = "";
+			if (intval($idMesero) !== 0) {
+				$filtroMesero = " AND v.id_mesero = :idMesero";
 			}
 
-			$query .= " GROUP BY meseros.nombre ORDER BY SUM(ventas.total) DESC;";
+			if (count($idsCategoria) > 0) {
+				$marcadores = array();
+				foreach ($idsCategoria as $indice => $id) {
+					$marcadores[] = ":idCategoria" . $indice;
+				}
+				// Con categoría: solo el neto de esas líneas, igual que el reporte de productos.
+				$query = "SELECT m.nombre AS mesero,
+						COUNT(DISTINCT v.id) AS cantidad,
+						CAST(COALESCE(SUM(dv.subtotal), 0) AS DECIMAL(12,2)) AS total
+					FROM $tabla v
+					INNER JOIN meseros m ON m.id = v.id_mesero
+					INNER JOIN detalle_venta dv ON dv.id_venta = v.id
+					INNER JOIN productos p ON p.id = dv.id_producto
+					WHERE DATE(v.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
+					AND v.estado = 1
+					AND v.estado_pago = 'PAGADA'
+					AND p.id_categoria IN (" . implode(", ", $marcadores) . ")
+					$filtroMesero
+					GROUP BY m.id, m.nombre
+					ORDER BY total DESC";
+			} else {
+				// Sin categoría: una vez el total cobrado de cada ticket.
+				$query = "SELECT m.nombre AS mesero,
+						COUNT(v.id) AS cantidad,
+						CAST(COALESCE(SUM(v.total), 0) AS DECIMAL(12,2)) AS total
+					FROM $tabla v
+					INNER JOIN meseros m ON m.id = v.id_mesero
+					WHERE DATE(v.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
+					AND v.estado = 1
+					AND v.estado_pago = 'PAGADA'
+					$filtroMesero
+					GROUP BY m.id, m.nombre
+					ORDER BY total DESC";
+			}
 
 			$stmt = Conexion::conectar()->prepare($query);
 			$stmt->bindParam(':fechaInicio', $fechaInicial);
 			$stmt->bindParam(':fechaFin', $fechaFinal);
 
-			if ($idMesero != 0) {
-				$stmt->bindParam(':idMesero', $idMesero, PDO::PARAM_INT);
+			if (intval($idMesero) !== 0) {
+				$stmt->bindValue(':idMesero', intval($idMesero), PDO::PARAM_INT);
 			}
 
-			if (count($idCategoria) > 0) {
-				foreach ($idCategoria as $index => $categoriaId) {
-					$stmt->bindValue(":idCategoria{$index}", intval($categoriaId), PDO::PARAM_INT);
-				}
+			foreach ($idsCategoria as $indice => $id) {
+				$stmt->bindValue(":idCategoria" . $indice, $id, PDO::PARAM_INT);
 			}
 
 			$stmt->execute();

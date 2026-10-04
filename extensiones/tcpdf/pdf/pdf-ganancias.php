@@ -9,6 +9,7 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 require_once "../../../fpdf/fpdf.php";
+require_once __DIR__ . "/fila-tabla.php";
 
 class PdfGanancias extends FPDF
 {
@@ -107,13 +108,15 @@ class PdfGanancias extends FPDF
         $sum_descuentos = 0;
 
         foreach ($ganancias as $ganancia) {
-            $pdf->Cell(12, 5, $contador, 1, 0, 'L');
-            $pdf->Cell(26, 5, ltrim($ganancia['codigo'],'0'),1, 0, 'C');
-            $pdf->Cell(26, 5, utf8_decode($ganancia['fecha']), 1, 0, 'C');
-            $pdf->Cell(30, 5, utf8_decode($ganancia['vendedor']), 1, 0, 'C');
-            $pdf->Cell(50, 5, utf8_decode($ganancia['mesero']), 1, 0, 'C');
-            $pdf->Cell(24, 5, $ganancia['total']. ' Bs.', 1, 0, 'C');
-            $pdf->Cell(24, 5, number_format($ganancia['ganancias'], 2, '.', ','). ' Bs.', 1, 1, 'C');
+            fpdfDibujarFila($pdf, array(
+                array('w' => 12, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 26, 'txt' => ltrim($ganancia['codigo'], '0'), 'align' => 'C'),
+                array('w' => 26, 'txt' => utf8_decode($ganancia['fecha']), 'align' => 'C'),
+                array('w' => 30, 'txt' => utf8_decode($ganancia['vendedor']), 'align' => 'L'),
+                array('w' => 50, 'txt' => utf8_decode($ganancia['mesero']), 'align' => 'L'),
+                array('w' => 24, 'txt' => $ganancia['total'] . ' Bs.', 'align' => 'R'),
+                array('w' => 24, 'txt' => number_format($ganancia['ganancias'], 2, '.', ',') . ' Bs.', 'align' => 'R'),
+            ), 5);
             $sum += $ganancia['total'];
             $sum_ganancias += $ganancia['ganancias'];
             $sum_descuentos += floatval($ganancia['total_descuento'] ?? 0);

@@ -80,6 +80,7 @@ class reporteGastos
         $nombreFormaPago = $this->etiquetaFormaPago($formaPago);
 
         require_once('tcpdf_include.php');
+        require_once('fila-tabla.php');
 
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
@@ -167,40 +168,15 @@ class reporteGastos
                 $monto = floatval($item["monto"]);
                 $sumTotal += $monto;
 
-                $descripcion = $item["descripcion"] ?? "";
-                if (function_exists("mb_substr") && function_exists("mb_strlen")) {
-                    if (mb_strlen($descripcion) > 34) {
-                        $descripcion = mb_substr($descripcion, 0, 34) . "...";
-                    }
-                } elseif (strlen($descripcion) > 34) {
-                    $descripcion = substr($descripcion, 0, 34) . "...";
-                }
-
-                $tipoNombre = $item["nombre_tipo_gasto"] ?? "";
-                if (function_exists("mb_substr") && function_exists("mb_strlen")) {
-                    if (mb_strlen($tipoNombre) > 18) {
-                        $tipoNombre = mb_substr($tipoNombre, 0, 18) . "...";
-                    }
-                } elseif (strlen($tipoNombre) > 18) {
-                    $tipoNombre = substr($tipoNombre, 0, 18) . "...";
-                }
-
-                $usuarioNombre = $item["nombre_usuario"] ?? "";
-                if (function_exists("mb_substr") && function_exists("mb_strlen")) {
-                    if (mb_strlen($usuarioNombre) > 16) {
-                        $usuarioNombre = mb_substr($usuarioNombre, 0, 16) . "...";
-                    }
-                } elseif (strlen($usuarioNombre) > 16) {
-                    $usuarioNombre = substr($usuarioNombre, 0, 16) . "...";
-                }
-
-                $pdf->Cell(10, 5, $contador, 1, 0, 'C');
-                $pdf->Cell(22, 5, date("d-m-Y", strtotime($item["fecha"])), 1, 0, 'C');
-                $pdf->Cell(32, 5, $tipoNombre, 1, 0, 'L');
-                $pdf->Cell(50, 5, $descripcion, 1, 0, 'L');
-                $pdf->Cell(28, 5, $item["forma_pago_descripcion"] ?? "", 1, 0, 'C');
-                $pdf->Cell(30, 5, $usuarioNombre, 1, 0, 'L');
-                $pdf->Cell(24, 5, number_format($monto, 2, '.', ',') . ' Bs', 1, 1, 'R');
+                pdfDibujarFila($pdf, array(
+                    array('w' => 10, 'txt' => $contador, 'align' => 'C'),
+                    array('w' => 22, 'txt' => date("d-m-Y", strtotime($item["fecha"])), 'align' => 'C'),
+                    array('w' => 32, 'txt' => $item["nombre_tipo_gasto"] ?? "", 'align' => 'L'),
+                    array('w' => 50, 'txt' => $item["descripcion"] ?? "", 'align' => 'L'),
+                    array('w' => 28, 'txt' => $item["forma_pago_descripcion"] ?? "", 'align' => 'C'),
+                    array('w' => 30, 'txt' => $item["nombre_usuario"] ?? "", 'align' => 'L'),
+                    array('w' => 24, 'txt' => number_format($monto, 2, '.', ',') . ' Bs', 'align' => 'R'),
+                ), 5);
             }
         }
 
