@@ -303,7 +303,7 @@
 					echo '<li>
 						<a href="reporte-top-productos">
 						  <i class="fa fa-trophy"></i>
-							<span>Prod. más vendido</span>
+							<span>Productos vendidos</span>
 						</a>
 					</li>';
 				}

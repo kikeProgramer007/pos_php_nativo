@@ -4,6 +4,25 @@ if (!Permisos::tiene("reportes.ventas")) {
   return;
 }
 ?>
+<?php
+date_default_timezone_set('America/La_Paz');
+
+$fechaInicialReporte = isset($_GET["fechaInicial"]) ? $_GET["fechaInicial"] : "";
+$fechaFinalReporte = isset($_GET["fechaFinal"]) ? $_GET["fechaFinal"] : "";
+$fechasValidas = preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaInicialReporte)
+	&& preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaFinalReporte)
+	&& $fechaInicialReporte <= $fechaFinalReporte;
+
+if (!$fechasValidas) {
+	$fechaInicialReporte = date('Y-m-01');
+	$fechaFinalReporte = date('Y-m-t');
+}
+
+$esMesActual = ($fechaInicialReporte === date('Y-m-01') && $fechaFinalReporte === date('Y-m-t'));
+$textoRangoReporte = $esMesActual
+	? 'Este mes'
+	: date('d/m/Y', strtotime($fechaInicialReporte)) . ' - ' . date('d/m/Y', strtotime($fechaFinalReporte));
+?>
 <div class="content-wrapper text-uppercase">
 
   <section class="content-header">
@@ -32,10 +51,10 @@ if (!Permisos::tiene("reportes.ventas")) {
 
         <div class="input-group">
 
-          <button type="button" class="btn btn-default" id="daterange-btn2">
+          <button type="button" class="btn btn-default" id="daterange-btn2" data-inicio="<?php echo $fechaInicialReporte; ?>" data-fin="<?php echo $fechaFinalReporte; ?>">
            
             <span>
-              <i class="fa fa-calendar"></i> Rango de fecha
+              <i class="fa fa-calendar"></i> <?php echo $textoRangoReporte; ?>
             </span>
 
             <i class="fa fa-caret-down"></i>
@@ -48,15 +67,7 @@ if (!Permisos::tiene("reportes.ventas")) {
 
         <?php
 
-        if(isset($_GET["fechaInicial"])){
-
-          echo '<a href="vistas/modulos/descargar-reporte.php?reporte=reporte&fechaInicial='.$_GET["fechaInicial"].'&fechaFinal='.$_GET["fechaFinal"].'">';
-
-        }else{
-
-           echo '<a href="vistas/modulos/descargar-reporte.php?reporte=reporte">';
-
-        }         
+          echo '<a href="vistas/modulos/descargar-reporte.php?reporte=reporte&fechaInicial='.$fechaInicialReporte.'&fechaFinal='.$fechaFinalReporte.'">';
 
         ?>
            
@@ -75,6 +86,9 @@ if (!Permisos::tiene("reportes.ventas")) {
           <div class="col-xs-12">
             
             <?php
+
+            $fechaInicial = $fechaInicialReporte;
+            $fechaFinal = $fechaFinalReporte;
 
             include "reportes/grafico-ventas.php";
 

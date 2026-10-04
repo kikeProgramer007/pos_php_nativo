@@ -592,6 +592,30 @@ class ControladorVentas{
 		
 	}
 
+	static public function ctrReporteVentasPorDia($fechaInicial, $fechaFinal){
+
+		return ModeloVentas::mdlReporteVentasPorDia("ventas", $fechaInicial, $fechaFinal);
+
+	}
+
+	static public function ctrReporteVentasPorUsuario($fechaInicial, $fechaFinal){
+
+		return ModeloVentas::mdlReporteVentasPorUsuario("ventas", $fechaInicial, $fechaFinal);
+
+	}
+
+	static public function ctrReporteVentasPorMesero($fechaInicial, $fechaFinal){
+
+		return ModeloVentas::mdlReporteVentasPorMesero("ventas", $fechaInicial, $fechaFinal);
+
+	}
+
+	static public function ctrReporteProductosMasVendidos($fechaInicial, $fechaFinal){
+
+		return ModeloVentas::mdlReporteProductosMasVendidos($fechaInicial, $fechaFinal);
+
+	}
+
 	static public function ctrRangoFechasVentasRealizadas($fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null){
 
 		$tabla = "ventas";
@@ -1132,6 +1156,11 @@ class ControladorVentas{
 			header('Content-Disposition:; filename="'.$Name.'"');
 			header("Content-Transfer-Encoding: binary");
 
+			echo '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head>'
+				. '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">'
+				. '<style>td.num{mso-number-format:"\#\,\#\#0\.00";}</style>'
+				. '</head><body>';
+
 			echo utf8_decode("<table border='0'> 
 
 				<tr> 
@@ -1175,19 +1204,17 @@ class ControladorVentas{
 		 		
 		 		}
 
-		 		echo utf8_decode("</td>
-				
-					
-					<td style='border:1px solid #eee;'>Bs ".number_format($item["total"],2)."</td>
-				
-					<td style='border:1px solid #eee;'>".substr($item["fecha"],0,10)."</td>		
-		 			</tr>");
+		 		$monto = number_format((float) $item["total"], 2, '.', '');
+		 		$montoVisible = number_format((float) $item["total"], 2, ',', '');
+		 		echo utf8_decode("</td>");
+		 		echo "<td class=\"num\" x:num=\"".$monto."\" style=\"border:1px solid #eee;\">".$montoVisible."</td>";
+		 		echo utf8_decode("<td style='border:1px solid #eee;'>".substr($item["fecha"],0,10)."</td></tr>");
 
 
 			}
 
 
-			echo "</table>";
+			echo "</table></body></html>";
 
 		}
 
@@ -1259,11 +1286,11 @@ class ControladorVentas{
 	/*=============================================
 	rango fechas para obtener top productos mas vendidos:
 	=============================================*/
-	static public function ctrRangoFechasTopProductoMasVendidosPdf($fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null){
+	static public function ctrRangoFechasTopProductoMasVendidosPdf($fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array()){
 
 		$tabla = "ventas";
 	
-		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal, $idCategoria, $idMesero);
+		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal, $idCategoria, $idMesero, $idProductos);
 	
 		return $respuesta;
 	}

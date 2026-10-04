@@ -34,10 +34,10 @@ $fechaActual = date('Y-m-d');
       <div class="rv-header">
         <div class="icon"><i class="fa fa-star"></i></div>
         <div style="flex:1;min-width:220px">
-          <h1 class="rv-title">REPORTE DE PRODUCTOS MÁS VENDIDOS</h1>
-          <div class="rv-sub">Consulta y exporta los productos con mayor demanda por rango de fechas</div>
+          <h1 class="rv-title">REPORTE DE PRODUCTOS VENDIDOS</h1>
+          <div class="rv-sub">Consulta y exporta los productos vendidos por rango de fechas</div>
         </div>
-        <div class="rv-breadcrumb">Inicio &gt; Reportes &gt; Top Productos</div>
+        <div class="rv-breadcrumb">Inicio &gt; Reportes &gt; Productos vendidos</div>
       </div>
     </div>
 
@@ -82,6 +82,19 @@ $fechaActual = date('Y-m-d');
               ?>
             </select>
           </div>
+          <div class="col-lg-6 col-md-8 col-sm-12 mb-3">
+            <label class="small">Producto</label>
+            <select class="form-control select2" id="id_producto" name="id_producto[]" multiple="multiple" data-placeholder="Todos los productos">
+              <?php
+              $productos = ControladorProductos::ctrMostrarProductos(null, null, "descripcion");
+              if (is_array($productos)) {
+                foreach ($productos as $producto) {
+                  echo '<option value="' . intval($producto["id"]) . '">' . htmlspecialchars($producto["descripcion"]) . '</option>';
+                }
+              }
+              ?>
+            </select>
+          </div>
           <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
             <label class="small">&nbsp;</label>
             <div class="row">
@@ -113,8 +126,20 @@ $fechaActual = date('Y-m-d');
 
   if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
     $(document).ready(function(){
-      $('.select2').select2({width: '100%'});
+      $('#id_categoria, #id_mesero').select2({width: '100%'});
+      $('#id_producto').select2({width: '100%', placeholder: 'Todos los productos', allowClear: true});
     });
+  }
+
+  function queryProductos() {
+    const select = document.getElementById('id_producto');
+    if (!select) {
+      return '';
+    }
+    const ids = Array.from(select.selectedOptions)
+      .map(function(option) { return option.value; })
+      .filter(function(valor) { return valor && valor !== '0'; });
+    return ids.map(function(id) { return '&idProducto[]=' + encodeURIComponent(id); }).join('');
   }
 
   var popupWindow = null;
@@ -151,8 +176,8 @@ $fechaActual = date('Y-m-d');
       return;
     }
 
-    const width = 800;
-    const height = 600;
+    const width = 1100;
+    const height = 700;
     const left = (screen.width / 2) - (width / 2);
     const top = (screen.height / 2) - (height / 2);
     const windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
@@ -166,7 +191,8 @@ $fechaActual = date('Y-m-d');
       "&fechaFin=" + encodeURIComponent(fechaFin.value) +
       "&idUsuario=" + encodeURIComponent(idUsuario) +
       "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idMesero=" + encodeURIComponent(idMesero),
+      "&idMesero=" + encodeURIComponent(idMesero) +
+      queryProductos(),
       "_blank",
       windowFeatures
     );
@@ -194,6 +220,7 @@ $fechaActual = date('Y-m-d');
       "&fechaFin=" + encodeURIComponent(fechaFin.value) +
       "&idUsuario=" + encodeURIComponent(idUsuario) +
       "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idMesero=" + encodeURIComponent(idMesero);
+      "&idMesero=" + encodeURIComponent(idMesero) +
+      queryProductos();
   }
 </script>

@@ -1,47 +1,24 @@
 <?php
 
-error_reporting(0);
+$porDia = ControladorVentas::ctrReporteVentasPorDia($fechaInicial, $fechaFinal);
+$mapaDias = array();
 
-if(isset($_GET["fechaInicial"])){
-
-    $fechaInicial = $_GET["fechaInicial"];
-    $fechaFinal = $_GET["fechaFinal"];
-
-}else{
-
-$fechaInicial = null;
-$fechaFinal = null;
-
+foreach ($porDia as $fila) {
+	$mapaDias[$fila["dia"]] = floatval($fila["ventas"]);
 }
 
-$respuesta = ControladorVentas::ctrRangoFechasVentas($fechaInicial, $fechaFinal);
+$serieVentas = array();
+$cursor = new DateTime($fechaInicial);
+$limite = new DateTime($fechaFinal);
 
-$arrayFechas = array();
-$arrayVentas = array();
-$sumaPagosMes = array();
-
-foreach ($respuesta as $key => $value) {
-
-	#Capturamos sólo el año y el mes
-	$fecha = substr($value["fecha"],0,7);
-
-	#Introducir las fechas en arrayFechas
-	array_push($arrayFechas, $fecha);
-
-	#Capturamos las ventas
-	$arrayVentas = array($fecha => $value["total"]);
-
-	#Sumamos los pagos que ocurrieron el mismo mes
-	foreach ($arrayVentas as $key => $value) {
-		
-		$sumaPagosMes[$key] += $value;
-	}
-
+while ($cursor <= $limite) {
+	$dia = $cursor->format('Y-m-d');
+	$serieVentas[] = array(
+		"y" => $dia,
+		"ventas" => isset($mapaDias[$dia]) ? $mapaDias[$dia] : 0
+	);
+	$cursor->modify('+1 day');
 }
-
-
-$noRepetirFechas = array_unique($arrayFechas);
-
 
 ?>
 
@@ -73,30 +50,7 @@ GRÁFICO DE VENTAS
  var line = new Morris.Line({
     element          : 'line-chart-ventas',
     resize           : true,
-    data             : [
-
-    <?php
-
-    if($noRepetirFechas != null){
-
-	    foreach($noRepetirFechas as $key){
-
-	    	echo "{ y: '".$key."', ventas: ".$sumaPagosMes[$key]." },";
-
-
-	    }
-
-	    echo "{y: '".$key."', ventas: ".$sumaPagosMes[$key]." }";
-
-    }else{
-
-       echo "{ y: '0', ventas: '0' }";
-
-    }
-
-    ?>
-
-    ],
+    data             : <?php echo json_encode($serieVentas); ?>,
     xkey             : 'y',
     ykeys            : ['ventas'],
     labels           : ['ventas'],
