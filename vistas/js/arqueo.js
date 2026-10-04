@@ -113,12 +113,13 @@ class ArqueoCaja {
     }
 
     calcularTotal() {
-        this.totales.totalEfectivoEnCaja = Array.from(document.querySelectorAll('.cantidad-input'))
+        const centavosContados = Array.from(document.querySelectorAll('.cantidad-input'))
             .reduce((total, input) => {
                 const valor = parseFloat(input.dataset.valor);
                 const cantidad = parseFloat(input.value) || 0;
-                return total + (valor * cantidad);
+                return total + this.centavos(valor * cantidad);
             }, 0);
+        this.totales.totalEfectivoEnCaja = centavosContados / 100;
 
         this.actualizarTotalesEnPantalla();
     }
@@ -155,21 +156,27 @@ class ArqueoCaja {
         if (this.totales.gastosEfectivo <= 0 && this.totales.gastosQr <= 0 && this.totales.gastosOperativos > 0) {
             this.totales.gastosEfectivo = this.totales.gastosOperativos;
         }
-        this.totales.totalIngresos = this.totales.montoApertura + this.totales.montoVentas + this.totales.otrosIngresos;
-        this.totales.totalEgresos = this.totales.gastosOperativos + this.totales.montoCompras;
-        this.totales.resultadoNeto = this.totales.totalIngresos - this.totales.totalEgresos;
+        const ingresosC = this.centavos(this.totales.montoApertura)
+            + this.centavos(this.totales.montoVentas)
+            + this.centavos(this.totales.otrosIngresos);
+        const egresosC = this.centavos(this.totales.gastosOperativos)
+            + this.centavos(this.totales.montoCompras);
+        const netoC = ingresosC - egresosC;
+        this.totales.totalIngresos = ingresosC / 100;
+        this.totales.totalEgresos = egresosC / 100;
+        this.totales.resultadoNeto = netoC / 100;
 
-        // efectivo_esperado = apertura efectivo + ventas efectivo + otros ingresos efectivo - compras - gastos efectivo
-        const efectivoEsperado = this.totales.montoAperturaEfectivo
-            + this.totales.montoVentasEfectivo
-            + this.totales.otrosIngresosEfectivo
-            - this.totales.montoCompras
-            - this.totales.gastosEfectivo;
-        const totalContado = this.totales.totalEfectivoEnCaja + this.totales.totalQrEnCuenta;
+        const efectivoEsperadoC = this.centavos(this.totales.montoAperturaEfectivo)
+            + this.centavos(this.totales.montoVentasEfectivo)
+            + this.centavos(this.totales.otrosIngresosEfectivo)
+            - this.centavos(this.totales.montoCompras)
+            - this.centavos(this.totales.gastosEfectivo);
+        const totalContadoC = this.centavos(this.totales.totalEfectivoEnCaja)
+            + this.centavos(this.totales.totalQrEnCuenta);
+        const totalContado = totalContadoC / 100;
 
-        // Diferencia = contado - esperado (sin forzar a cero ni usar Math.abs del neto)
-        this.totales.diferencia = totalContado - this.totales.resultadoNeto;
-        this.totales.efectivoEsperado = efectivoEsperado;
+        this.totales.diferencia = (totalContadoC - netoC) / 100;
+        this.totales.efectivoEsperado = efectivoEsperadoC / 100;
 
         this.actualizarElementos({
             'total_efectivo_en_caja_tabla': this.totales.totalEfectivoEnCaja,
@@ -185,7 +192,23 @@ class ArqueoCaja {
     }
 
     formatearMonto(valor) {
-        return (parseFloat(valor) || 0).toFixed(CONFIG.DECIMALES);
+        return this.desdeCentavos(this.centavos(valor));
+    }
+
+    centavos(valor) {
+        const texto = (parseFloat(valor) || 0).toFixed(CONFIG.DECIMALES);
+        const negativo = texto.charAt(0) === '-';
+        const limpio = negativo ? texto.slice(1) : texto;
+        const partes = limpio.split('.');
+        const c = (parseInt(partes[0], 10) * 100) + parseInt(partes[1] || '0', 10);
+        return negativo ? -c : c;
+    }
+
+    desdeCentavos(centavos) {
+        const negativo = centavos < 0;
+        const abs = Math.abs(centavos);
+        const texto = Math.floor(abs / 100) + '.' + String(abs % 100).padStart(2, '0');
+        return negativo ? '-' + texto : texto;
     }
 
     actualizarTexto(id, valor) {
@@ -343,23 +366,23 @@ class ArqueoCaja {
             'monto_apertura_efectivo': this.formatearMonto(datos.monto_apertura_efectivo ?? datos.monto_apertura),
             'monto_apertura_qr': this.formatearMonto(datos.monto_apertura_qr),
             'idCaja': datos.id_caja,
-            'monto_ventas': datos.monto_ventas || '0.00',
-            'monto_ventas_efectivo': datos.monto_ventas_efectivo || '0.00',
-            'monto_ventas_qr': datos.monto_ventas_qr || '0.00',
-            'otros_ingresos': datos.otros_ingresos || '0.00',
-            'otros_ingresos_efectivo': datos.otros_ingresos_efectivo || '0.00',
-            'otros_ingresos_qr': datos.otros_ingresos_qr || '0.00',
-            'total_descuentos_ventas': datos.total_descuentos_ventas || '0.00',
-            'total_ingresos': datos.total_ingresos || '0.00',
-            'gastos_operativos': datos.gastos_operativos || '0.00',
-            'gastos_efectivo': datos.gastos_efectivo || '0.00',
-            'gastos_qr': datos.gastos_qr || '0.00',
-            'monto_compras': datos.monto_compras || '0.00',
-            'total_egresos': datos.total_egresos || '0.00',
-            'resultado_neto': datos.resultado_neto || '0.00',
-            'total_ganancia_perdida': datos.resultado_neto || '0.00',
-            'efectivo_en_caja': datos.efectivo_en_caja || '0.00',
-            'total_efectivo_qr_en_caja': datos.total_efectivo_qr_en_caja || '0.00',
+            'monto_ventas': this.formatearMonto(datos.monto_ventas),
+            'monto_ventas_efectivo': this.formatearMonto(datos.monto_ventas_efectivo),
+            'monto_ventas_qr': this.formatearMonto(datos.monto_ventas_qr),
+            'otros_ingresos': this.formatearMonto(datos.otros_ingresos),
+            'otros_ingresos_efectivo': this.formatearMonto(datos.otros_ingresos_efectivo),
+            'otros_ingresos_qr': this.formatearMonto(datos.otros_ingresos_qr),
+            'total_descuentos_ventas': this.formatearMonto(datos.total_descuentos_ventas),
+            'total_ingresos': this.formatearMonto(datos.total_ingresos),
+            'gastos_operativos': this.formatearMonto(datos.gastos_operativos),
+            'gastos_efectivo': this.formatearMonto(datos.gastos_efectivo),
+            'gastos_qr': this.formatearMonto(datos.gastos_qr),
+            'monto_compras': this.formatearMonto(datos.monto_compras),
+            'total_egresos': this.formatearMonto(datos.total_egresos),
+            'resultado_neto': this.formatearMonto(datos.resultado_neto),
+            'total_ganancia_perdida': this.formatearMonto(datos.resultado_neto),
+            'efectivo_en_caja': this.formatearMonto(datos.efectivo_en_caja),
+            'total_efectivo_qr_en_caja': this.formatearMonto(datos.total_efectivo_qr_en_caja),
             'idVendedor': datos.id_usuario || '0',
             'usuario': datos.nameUsuario || 'no encontrado'
         };

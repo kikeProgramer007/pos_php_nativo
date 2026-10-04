@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/../modelos/moneda.php";
+
 class ControladorVentas{
 
 	/*=============================================
@@ -220,22 +222,23 @@ class ControladorVentas{
 
 		
 
+			$pago = Moneda::cuadrarPago($totalNeto, $esPendiente ? 0 : $totalEfectivo, $esPendiente ? 0 : $totalQR, !$esPendiente);
 			$datos = array("id_vendedor"=>$_POST["idVendedor"],
 						   "id_mesero"=>$_POST["seleccionarMesero"],
 						   "id_cliente"=>$_POST["id_cliente"],
 						   "codigo"=>$ultimoNroTicket,
 						   "productos"=>$_POST["listaProductos"],
-						   "total"=>number_format($totalNeto, 2, '.', ''),
-						   "total_bruto"=>number_format($totalBruto, 2, '.', ''),
-						   "total_descuento"=>number_format($totalDescuento, 2, '.', ''),
+						   "total"=>$pago["total"],
+						   "total_bruto"=>Moneda::texto($totalBruto),
+						   "total_descuento"=>Moneda::texto($totalDescuento),
 						   "nota"=>strtoupper($_POST["nota"]),
 						   "tipo_pago"=>$tipoPago,
-						   "cambio"=>$esPendiente ? 0 : $_POST["nuevoCambioEfectivo"],
+						   "cambio"=>$esPendiente ? "0.00" : Moneda::texto($_POST["nuevoCambioEfectivo"] ?? 0),
 						   "forma_atencion"=>$formaAtencion,
 						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
-							"total_pagado"=>number_format($totalPagado, 2, '.', ''),
-							"total_efectivo"=>number_format($totalEfectivo, 2, '.', ''),
-							"total_qr"=>number_format($totalQR, 2, '.', ''),
+							"total_pagado"=>Moneda::texto($totalPagado),
+							"total_efectivo"=>$pago["total_efectivo"],
+							"total_qr"=>$pago["total_qr"],
 							"cliente"=>$_POST["cliente"],
 							"estado_pago"=>$estadoPago,
 							"fecha_pago"=>$esPendiente ? null : ($fecha.' '.$hora)
@@ -263,9 +266,9 @@ class ControladorVentas{
 						ModeloArqueo::mdlRegistrarIngreso(
 							$arqueoActual,
 							$ultimoNroTicket,
-							number_format($totalNeto, 2, '.', ''),
-							$totalEfectivo,
-							$totalQR
+							$pago["total"],
+							$pago["total_efectivo"],
+							$pago["total_qr"]
 						);
 					} else {
 						// Cuenta pendiente: no suma dinero, pero sí consume el N° ticket
@@ -860,15 +863,16 @@ class ControladorVentas{
 		date_default_timezone_set('America/La_Paz');
 		$fechaPago = date('Y-m-d H:i:s');
 
+		$pagoCobro = Moneda::cuadrarPago($totalVenta, $totalEfectivo, $totalQR, true);
 		$datos = array(
 			"id_venta" => $idVenta,
 			"fecha_pago" => $fechaPago,
 			"tipo_pago" => $tipoPago,
-			"total_efectivo" => $totalEfectivo,
-			"total_qr" => $totalQR,
-			"total_pagado" => number_format($totalPagado, 2, '.', ''),
-			"cambio" => $_POST["nuevoCambioEfectivoCobro"] ?? 0,
-			"total" => $totalVenta,
+			"total_efectivo" => $pagoCobro["total_efectivo"],
+			"total_qr" => $pagoCobro["total_qr"],
+			"total_pagado" => Moneda::texto($totalPagado),
+			"cambio" => Moneda::texto($_POST["nuevoCambioEfectivoCobro"] ?? 0),
+			"total" => $pagoCobro["total"],
 			"id_arqueo_caja" => $idArqueoVenta
 		);
 
@@ -879,9 +883,9 @@ class ControladorVentas{
 			ModeloArqueo::mdlRegistrarIngreso(
 				$arqueoActual,
 				$ultimoNroTicket,
-				$totalVenta,
-				$totalEfectivo,
-				$totalQR
+				$pagoCobro["total"],
+				$pagoCobro["total_efectivo"],
+				$pagoCobro["total_qr"]
 			);
 			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($idArqueoVenta);
 
@@ -1443,15 +1447,21 @@ class ControladorVentas{
 				);
 			}
 
+			$subtotalFinalC = Moneda::centavos($subtotalOriginal) - Moneda::centavos($descTotal);
+			if ($subtotalFinalC < 0) {
+				$subtotalFinalC = 0;
+			}
+			$promo["subtotal_final"] = Moneda::desdeCentavos($subtotalFinalC);
 			$totalDescuento += $descTotal;
 			$listaProductos[$i]["precio"] = $precioFinal;
-			$listaProductos[$i]["total"] = round($precioFinal * $cant, 2);
+			$listaProductos[$i]["total"] = $promo["subtotal_final"];
 			$listaProductos[$i]["promo"] = $promo;
+			$totalNetoLineas = ($totalNetoLineas ?? 0) + $subtotalFinalC;
 		}
 
 		$totalBruto = round($totalBruto, 2);
 		$totalDescuento = round($totalDescuento, 2);
-		$totalNeto = round($totalBruto - $totalDescuento, 2);
+		$totalNeto = floatval(Moneda::desdeCentavos($totalNetoLineas ?? 0));
 		if ($totalNeto < 0) {
 			$totalNeto = 0;
 		}

@@ -56,6 +56,7 @@ var bar = new Morris.Bar({
   ykeys: ['a'],
   labels: ['ventas'],
   preUnits: 'Bs',
+  yLabelFormat: function (y) { return (Number(y) || 0).toFixed(2); },
   hideHover: 'auto'
 });
 

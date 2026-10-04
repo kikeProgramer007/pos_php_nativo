@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/conexion.php";
+require_once __DIR__ . "/moneda.php";
 
 class ModeloVentas
 {
@@ -99,6 +100,21 @@ class ModeloVentas
 				}
 			}
 
+			$esPagada = (($datos["estado_pago"] ?? "PAGADA") === "PAGADA");
+			$pago = Moneda::cuadrarPago(
+				$datos["total"] ?? 0,
+				$datos["total_efectivo"] ?? 0,
+				$datos["total_qr"] ?? 0,
+				$esPagada
+			);
+			$datos["total"] = $pago["total"];
+			$datos["total_efectivo"] = $pago["total_efectivo"];
+			$datos["total_qr"] = $pago["total_qr"];
+			$datos["total_bruto"] = Moneda::texto($datos["total_bruto"] ?? $datos["total"]);
+			$datos["total_descuento"] = Moneda::texto($datos["total_descuento"] ?? 0);
+			$datos["total_pagado"] = Moneda::texto($datos["total_pagado"] ?? 0);
+			$datos["cambio"] = Moneda::texto($datos["cambio"] ?? 0);
+
 			// 1. Registrar la venta principal en la tabla "ventas"
 			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total, total_bruto, total_descuento, total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja, estado_pago, fecha_pago) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total, :total_bruto, :total_descuento, :total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja, :estado_pago, :fecha_pago)");
 
@@ -148,10 +164,10 @@ class ModeloVentas
 				$stmtDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
 				$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
-				$stmtDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+				$stmtDetalle->bindValue(":precio_venta", Moneda::texto($producto["precio"]), PDO::PARAM_STR);
 				self::bindPromocionDetalle($stmtDetalle, $producto);
-				$stmtDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
-				$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
+				$stmtDetalle->bindValue(":precio_compra", Moneda::texto($producto["precioCompra"]), PDO::PARAM_STR);
+				$stmtDetalle->bindValue(":subtotal", Moneda::texto($producto["total"]), PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
 				$stmtDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
 
@@ -299,7 +315,7 @@ class ModeloVentas
 			return [];
 		}
 
-		$stmt = Conexion::conectar()->prepare("SELECT DATE(fecha) AS dia, SUM(total) AS ventas
+		$stmt = Conexion::conectar()->prepare("SELECT DATE(fecha) AS dia, CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) AS ventas
 			FROM $tabla
 			WHERE estado = 1 AND estado_pago = 'PAGADA'
 			AND DATE(fecha) BETWEEN :fechaInicial AND :fechaFinal
@@ -318,7 +334,7 @@ class ModeloVentas
 			return [];
 		}
 
-		$stmt = Conexion::conectar()->prepare("SELECT u.nombre AS nombre, SUM(v.total) AS total
+		$stmt = Conexion::conectar()->prepare("SELECT u.nombre AS nombre, CAST(COALESCE(SUM(v.total), 0) AS DECIMAL(12,2)) AS total
 			FROM $tabla v
 			INNER JOIN usuarios u ON u.id = v.id_vendedor
 			WHERE v.estado = 1 AND v.estado_pago = 'PAGADA'
@@ -338,7 +354,7 @@ class ModeloVentas
 			return [];
 		}
 
-		$stmt = Conexion::conectar()->prepare("SELECT m.nombre AS nombre, SUM(v.total) AS total
+		$stmt = Conexion::conectar()->prepare("SELECT m.nombre AS nombre, CAST(COALESCE(SUM(v.total), 0) AS DECIMAL(12,2)) AS total
 			FROM $tabla v
 			INNER JOIN meseros m ON m.id = v.id_mesero
 			WHERE v.estado = 1 AND v.estado_pago = 'PAGADA'
@@ -384,7 +400,7 @@ class ModeloVentas
 		date_default_timezone_set('America/La_Paz');
 		$anio = date('Y'); // Obtener el año actual
 
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE YEAR(fecha) = :anio AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
+		$stmt = Conexion::conectar()->prepare("SELECT CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) as total FROM $tabla WHERE YEAR(fecha) = :anio AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->bindParam(":anio", $anio, PDO::PARAM_INT);
 		$stmt->execute();
@@ -403,7 +419,7 @@ class ModeloVentas
 		date_default_timezone_set('America/La_Paz');
 		$yearactual = date('Y');
 		$mesActual = date('m');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
+		$stmt = Conexion::conectar()->prepare("SELECT CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) as total FROM $tabla WHERE MONTH(fecha)='$mesActual' AND YEAR(fecha) = '$yearactual' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->execute();
 
@@ -422,7 +438,7 @@ class ModeloVentas
 	{
 		date_default_timezone_set('America/La_Paz');
 		$hoy = date('Y-m-d');
-		$stmt = Conexion::conectar()->prepare("SELECT SUM(total) as total, SUM(total_qr) as total_qr, SUM(total_efectivo) as total_efectivo FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
+		$stmt = Conexion::conectar()->prepare("SELECT CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) as total, CAST(COALESCE(SUM(total_qr), 0) AS DECIMAL(12,2)) as total_qr, CAST(COALESCE(SUM(total_efectivo), 0) AS DECIMAL(12,2)) as total_efectivo FROM $tabla WHERE DATE(fecha)='$hoy' AND $tabla.estado=1 AND $tabla.estado_pago = 'PAGADA'");
 
 		$stmt->execute();
 
@@ -544,7 +560,7 @@ class ModeloVentas
 
 			$query = "SELECT meseros.nombre as mesero,
 					COUNT(ventas.id) as cantidad,
-					SUM(ventas.total) as total,
+					CAST(COALESCE(SUM(ventas.total), 0) AS DECIMAL(12,2)) as total,
 					GROUP_CONCAT(DISTINCT productos.descripcion ORDER BY productos.descripcion SEPARATOR ', ') as productos
 					FROM $tabla 
 					JOIN meseros ON ventas.id_mesero = meseros.id
@@ -731,7 +747,7 @@ class ModeloVentas
 	static public function mdlResumenCuentasPendientes()
 	{
 		$stmt = Conexion::conectar()->prepare(
-			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+			"SELECT COUNT(*) AS cantidad, CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) AS total_por_cobrar
 			 FROM ventas
 			 WHERE estado = 1 AND estado_pago = 'PENDIENTE'"
 		);
@@ -745,7 +761,7 @@ class ModeloVentas
 	static public function mdlResumenCuentasPendientesPorArqueo($idArqueo)
 	{
 		$stmt = Conexion::conectar()->prepare(
-			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(total), 0) AS total_por_cobrar
+			"SELECT COUNT(*) AS cantidad, CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) AS total_por_cobrar
 			 FROM ventas
 			 WHERE id_arqueo_caja = :id_arqueo_caja
 			   AND estado = 1
@@ -767,7 +783,7 @@ class ModeloVentas
 	static public function mdlResumenCuentasPendientesCajasCerradas()
 	{
 		$stmt = Conexion::conectar()->prepare(
-			"SELECT COUNT(*) AS cantidad, COALESCE(SUM(v.total), 0) AS total_por_cobrar
+			"SELECT COUNT(*) AS cantidad, CAST(COALESCE(SUM(v.total), 0) AS DECIMAL(12,2)) AS total_por_cobrar
 			 FROM ventas v
 			 LEFT JOIN arqueo_caja a ON a.id = v.id_arqueo_caja
 			 WHERE v.estado = 1
@@ -822,11 +838,12 @@ class ModeloVentas
 				 nota = :nota, forma_atencion = :forma_atencion
 				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
 			);
+			$datos["total"] = Moneda::texto($datos["total"] ?? 0);
+			$totalBrutoUpd = Moneda::texto($datos["total_bruto"] ?? $datos["total"]);
+			$totalDescUpd = Moneda::texto($datos["total_descuento"] ?? 0);
 			$stmtUpdate->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
 			$stmtUpdate->bindParam(":id_cliente", $datos["id_cliente"], PDO::PARAM_INT);
 			$stmtUpdate->bindParam(":total", $datos["total"], PDO::PARAM_STR);
-			$totalBrutoUpd = $datos["total_bruto"] ?? $datos["total"];
-			$totalDescUpd = $datos["total_descuento"] ?? 0;
 			$stmtUpdate->bindParam(":total_bruto", $totalBrutoUpd, PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":total_descuento", $totalDescUpd, PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":nota", $datos["nota"], PDO::PARAM_STR);
@@ -892,10 +909,10 @@ class ModeloVentas
 					$stmtUpdateDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
 					$stmtUpdateDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
-					$stmtUpdateDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":precio_venta", Moneda::texto($producto["precio"]), PDO::PARAM_STR);
 					self::bindPromocionDetalle($stmtUpdateDetalle, $producto);
-					$stmtUpdateDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
-					$stmtUpdateDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":precio_compra", Moneda::texto($producto["precioCompra"]), PDO::PARAM_STR);
+					$stmtUpdateDetalle->bindValue(":subtotal", Moneda::texto($producto["total"]), PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
 					$stmtUpdateDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
@@ -909,10 +926,10 @@ class ModeloVentas
 					$stmtDetalle->bindValue(":id_producto", $producto["id"], PDO::PARAM_INT);
 					$stmtDetalle->bindValue(":producto", $producto["descripcion"], PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":cantidad", $producto["cantidad"], PDO::PARAM_INT);
-					$stmtDetalle->bindValue(":precio_venta", $producto["precio"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":precio_venta", Moneda::texto($producto["precio"]), PDO::PARAM_STR);
 					self::bindPromocionDetalle($stmtDetalle, $producto);
-					$stmtDetalle->bindValue(":precio_compra", $producto["precioCompra"], PDO::PARAM_STR);
-					$stmtDetalle->bindValue(":subtotal", $producto["total"], PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":precio_compra", Moneda::texto($producto["precioCompra"]), PDO::PARAM_STR);
+					$stmtDetalle->bindValue(":subtotal", Moneda::texto($producto["total"]), PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":preferencias", isset($producto["preferencias"]) ? $producto["preferencias"] : null, PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":nota_adicional", isset($producto["nota_adicional"]) ? $producto["nota_adicional"] : null, PDO::PARAM_STR);
 					$stmtDetalle->bindValue(":forma_atencion", $formaAtencion, PDO::PARAM_STR);
@@ -1003,6 +1020,18 @@ class ModeloVentas
 				   AND estado_pago = 'PENDIENTE'
 				   AND id_arqueo_caja = :id_arqueo_caja"
 			);
+
+			$pagoCobro = Moneda::cuadrarPago(
+				$datos["total"] ?? 0,
+				$datos["total_efectivo"] ?? 0,
+				$datos["total_qr"] ?? 0,
+				true
+			);
+			$datos["total"] = $pagoCobro["total"];
+			$datos["total_efectivo"] = $pagoCobro["total_efectivo"];
+			$datos["total_qr"] = $pagoCobro["total_qr"];
+			$datos["total_pagado"] = Moneda::texto($datos["total_pagado"] ?? 0);
+			$datos["cambio"] = Moneda::texto($datos["cambio"] ?? 0);
 
 			$stmtUpdate->bindParam(":fecha_pago", $datos["fecha_pago"], PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":tipo_pago", $datos["tipo_pago"], PDO::PARAM_STR);
