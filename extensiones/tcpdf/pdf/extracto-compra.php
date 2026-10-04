@@ -52,6 +52,7 @@ class imprimirCompra {
 
         // REQUERIMOS LA CLASE TCPDF
         require_once('tcpdf_include.php');
+        require_once('fila-tabla.php');
 
         // Configuración del PDF para UTF-8
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
@@ -156,12 +157,13 @@ class imprimirCompra {
             $importe = number_format($precio * $item["cantidad"], 2, '.', ',');
 
             // Imprimir el número de ítem
-            $pdf->Cell(14, 5, $contador, 1, 0, 'L');
-
-            $pdf->Cell(90, 5, $descripcion, 1, 0, 'L');
-            $pdf->Cell(28, 5, number_format($precio, 2, '.', ','). ' Bs', 1, 0, 'C');
-            $pdf->Cell(25, 5, $item["cantidad"], 1, 0, 'C');
-            $pdf->Cell(39, 5, $importe . ' Bs', 1, 1, 'C');
+            pdfDibujarFila($pdf, array(
+                array('w' => 14, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 90, 'txt' => $descripcion, 'align' => 'L'),
+                array('w' => 28, 'txt' => number_format($precio, 2, '.', ',') . ' Bs', 'align' => 'R'),
+                array('w' => 25, 'txt' => $item["cantidad"], 'align' => 'C'),
+                array('w' => 39, 'txt' => $importe . ' Bs', 'align' => 'R'),
+            ), 5);
             $contador++;
         }
 

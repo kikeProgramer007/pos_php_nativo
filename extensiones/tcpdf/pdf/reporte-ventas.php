@@ -20,6 +20,7 @@ require_once "../../../modelos/meseros.modelo.php";
 require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 require_once('tcpdf_include.php');
+require_once('fila-tabla.php');
 
 class reporteVenta extends TCPDF
 {
@@ -244,49 +245,23 @@ class reporteVenta extends TCPDF
             $fechaCompleta = $item["fecha"];
             $fechaFormateada = date('Y-m-d H:i', strtotime($fechaCompleta));
 
-            $fila = array(
-                $contador,
-                ltrim($item["codigo"], '0'),
-                $fechaFormateada,
-                $item["usuario"],
-                strtolower($item["mesero"]),
-                strtolower($item["cliente"]),
-                $this->etiquetaEstadoPagoFila($item["estado_pago"] ?? ''),
-                $item["tipo_pago"],
-                number_format($item["total_efectivo"], 2, '.', ','),
-                number_format($item["total_qr"], 2, '.', ','),
-                number_format($total, 2, '.', ',')
-            );
-
-            $anchos = array(8, 12, 17, 20, 22, 24, 18, 19, 17, 17, 16);
-
-            $altura = 0;
-            foreach ($fila as $i => $texto) {
-                $numLineas = $this->getNumLines($texto, $anchos[$i]);
-                $altura = max($altura, $numLineas * 4);
-            }
-
-            $limiteInferior = $this->getPageHeight() - $this->getBreakMargin();
-            if (($this->GetY() + $altura + 6) > $limiteInferior) {
-                $this->AddPage();
+            pdfDibujarFila($this, array(
+                array('w' => 8, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 12, 'txt' => ltrim($item["codigo"], '0'), 'align' => 'C'),
+                array('w' => 17, 'txt' => $fechaFormateada, 'align' => 'C'),
+                array('w' => 20, 'txt' => $item["usuario"], 'align' => 'L'),
+                array('w' => 22, 'txt' => $item["mesero"], 'align' => 'L'),
+                array('w' => 24, 'txt' => $item["cliente"], 'align' => 'L'),
+                array('w' => 18, 'txt' => $this->etiquetaEstadoPagoFila($item["estado_pago"] ?? ''), 'align' => 'C'),
+                array('w' => 19, 'txt' => $item["tipo_pago"], 'align' => 'C'),
+                array('w' => 17, 'txt' => number_format($item["total_efectivo"], 2, '.', ','), 'align' => 'R'),
+                array('w' => 17, 'txt' => number_format($item["total_qr"], 2, '.', ','), 'align' => 'R'),
+                array('w' => 16, 'txt' => number_format($total, 2, '.', ','), 'align' => 'R'),
+            ), 4, function () {
                 $this->SetY(62);
                 $this->dibujarCabeceraTabla();
-            }
-
-            $x = $this->GetX();
-            $y = $this->GetY();
-
-            $this->MultiCell($anchos[0], $altura, $fila[0], 1, 'L', false, 0, $x, $y);
-            $this->MultiCell($anchos[1], $altura, $fila[1], 1, 'C', false, 0);
-            $this->MultiCell($anchos[2], $altura, $fila[2], 1, 'C', false, 0);
-            $this->MultiCell($anchos[3], $altura, $fila[3], 1, 'C', false, 0);
-            $this->MultiCell($anchos[4], $altura, $fila[4], 1, 'C', false, 0);
-            $this->MultiCell($anchos[5], $altura, $fila[5], 1, 'C', false, 0);
-            $this->MultiCell($anchos[6], $altura, $fila[6], 1, 'C', false, 0);
-            $this->MultiCell($anchos[7], $altura, $fila[7], 1, 'C', false, 0);
-            $this->MultiCell($anchos[8], $altura, $fila[8], 1, 'R', false, 0);
-            $this->MultiCell($anchos[9], $altura, $fila[9], 1, 'R', false, 0);
-            $this->MultiCell($anchos[10], $altura, $fila[10], 1, 'R', false, 1);
+                $this->SetFont('helvetica', '', 7);
+            });
             $contador++;
             $sumTotal += $total;
             $sumTotalEfectivo += $totalEfectivo;

@@ -47,6 +47,11 @@
     </div> 
 
     <div class="row">
+      <?php
+        date_default_timezone_set('America/La_Paz');
+        $fechaInicial = date('Y-m-01');
+        $fechaFinal = date('Y-m-d');
+      ?>
       <div class="col-lg-12">
         <?php if (Permisos::tiene("reportes.ventas")) { include "reportes/grafico-ventas.php"; } ?>
       </div>

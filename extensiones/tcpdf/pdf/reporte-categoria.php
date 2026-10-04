@@ -13,6 +13,7 @@ require_once "../../../controladores/usuarios.controlador.php";
 require_once "../../../modelos/usuarios.modelo.php";
 
 require_once "../../../fpdf/fpdf.php";
+require_once __DIR__ . "/fila-tabla.php";
 
 class reporteProductoPorCategoria extends FPDF
 {
@@ -99,12 +100,14 @@ class reporteProductoPorCategoria extends FPDF
         $contador = 1;
         // Detalles de los productos
         foreach ($respuestaProductos as $producto) {
-            $this->Cell(12, 5, $contador, 1, 0, 'C');
-            $this->Cell(25, 5, utf8_decode($producto['codigo']), 1, 0, 'C');
-            $this->Cell(70, 5, utf8_decode($producto['descripcion']), 1, 0, 'C');
-            $this->Cell(32, 5, utf8_decode($producto['precio_compra']) . ' Bs', 1, 0, 'C');
-            $this->Cell(28, 5, utf8_decode($producto['precio_venta']) . ' Bs', 1, 0, 'C');
-            $this->Cell(24, 5, utf8_decode($producto['stock']), 1, 1, 'C');
+            fpdfDibujarFila($this, array(
+                array('w' => 12, 'txt' => $contador, 'align' => 'C'),
+                array('w' => 25, 'txt' => utf8_decode($producto['codigo']), 'align' => 'C'),
+                array('w' => 70, 'txt' => utf8_decode($producto['descripcion']), 'align' => 'L'),
+                array('w' => 32, 'txt' => utf8_decode($producto['precio_compra']) . ' Bs', 'align' => 'R'),
+                array('w' => 28, 'txt' => utf8_decode($producto['precio_venta']) . ' Bs', 'align' => 'R'),
+                array('w' => 24, 'txt' => utf8_decode($producto['stock']), 'align' => 'C'),
+            ), 5);
             $contador++;
         }
         $this->Ln();

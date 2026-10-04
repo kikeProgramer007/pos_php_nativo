@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/etiqueta-periodo.php";
+
 $porDia = ControladorVentas::ctrReporteVentasPorDia($fechaInicial, $fechaFinal);
 $mapaDias = array();
 
@@ -20,6 +22,8 @@ while ($cursor <= $limite) {
 	$cursor->modify('+1 day');
 }
 
+$periodoGrafico = etiquetaPeriodoGrafico($fechaInicial, $fechaFinal);
+
 ?>
 
 <!--=====================================
@@ -33,7 +37,7 @@ GRÁFICO DE VENTAS
 		
  		<i class="fa fa-th"></i>
 
-  		<h3 class="box-title">Gráfico de Ventas</h3>
+  		<h3 class="box-title">Ventas cobradas por día<?php if ($periodoGrafico !== '') { echo ' <small style="color:#fff;">' . htmlspecialchars($periodoGrafico) . '</small>'; } ?></h3>
 
 	</div>
 
