@@ -131,7 +131,7 @@ class imprimirFacturaComanda
         $html .= '</tbody></table>';
         
         if (!$esComanda) {
-            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 72661611<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>';
+            $html .= '<p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 73688519<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>';
         }
 
         return $html;
@@ -168,17 +168,6 @@ class imprimirFacturaComanda
                 <td width="25%"><strong>CLIENTE</strong></td>
                 <td width="3%"><strong>:</strong></td>
                 <td width="72%">' . $respuestaCliente["nombre"] . '</td>
-            </tr>
-
-            <tr>
-                <td width="25%"><strong>MESERO/A</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $respuestaMesero["nombre"] . '</td>
-            </tr>
-            <tr>
-                <td width="25%"><strong>CAJERO/A</strong></td>
-                <td width="3%"><strong>:</strong></td>
-                <td width="72%">' . $respuestaVendedor["nombre"] . '</td>
             </tr>
             <tr>
                 <td width="25%"><strong>VÍA PAGO</strong></td>

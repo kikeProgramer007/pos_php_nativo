@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 12, 2026 at 05:26 PM
+-- Generation Time: Sep 28, 2026 at 02:22 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.5.1
 
@@ -69,9 +69,9 @@ CREATE TABLE `arqueo_caja` (
 -- Dumping data for table `arqueo_caja`
 --
 
-INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `cuentas_pendientes_cantidad`, `cuentas_pendientes_total`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
-(1, '2026-09-10 19:47:27', '2026-09-10 19:48:35', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 10.00, 0.00, 10.00, 10.00, 0, 0.00, 'cerrada', 0, NULL, 1, 1),
-(2, '2026-09-10 19:48:41', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 758.00, 0.00, 758.00, 0.00, 768.00, 15.00, 0.00, 15.00, 753.00, 0.00, 0.00, 0.00, 0.00, 1, 100.00, 'abierta', 23, NULL, 1, 1);
+INSERT INTO `arqueo_caja` (`id`, `fecha_apertura`, `fecha_cierre`, `Bs200`, `Bs100`, `Bs50`, `Bs20`, `Bs10`, `Bs5`, `Bs2`, `Bs1`, `Bs050`, `Bs020`, `monto_ventas_efectivo`, `monto_ventas_qr`, `monto_ventas`, `monto_apertura`, `monto_apertura_efectivo`, `monto_apertura_qr`, `total_ingresos`, `gastos_operativos`, `monto_compras`, `total_egresos`, `resultado_neto`, `efectivo_en_caja`, `qr_en_caja`, `total_efectivo_qr_en_caja`, `diferencia`, `cuentas_pendientes_cantidad`, `cuentas_pendientes_total`, `estado`, `nroTicket`, `tipo_cambio`, `id_caja`, `id_usuario`) VALUES
+(1, '2026-09-26 19:48:09', '2026-09-28 13:16:23', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 110.00, 0.00, 110.00, 0.00, 0.00, 0.00, 160.00, 10.00, 0.00, 10.00, 150.00, 10.00, 0.00, 10.00, -140.00, 0, 0.00, 'cerrada', 1, NULL, 1, 1),
+(2, '2026-09-28 13:16:32', NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30.00, 0.00, 30.00, 0.00, 0.00, 0.00, 30.00, 0.00, 0.00, 0.00, 30.00, 0.00, 0.00, 0.00, 0.00, 0, 0.00, 'abierta', 3, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -92,7 +92,7 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `numero_caja`, `nro_ticket`, `estado`) VALUES
-(1, 'Caja de ventas', '1', 23, 1),
+(1, 'Caja de ventas', '1', 3, 1),
 (2, 'Caja Administrativa', '2', 0, 0);
 
 -- --------------------------------------------------------
@@ -200,7 +200,7 @@ CREATE TABLE `detalle_venta` (
   `nota_adicional` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `forma_atencion` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `id_presentacion` int DEFAULT NULL,
-  `nombre_presentacion` varchar(80) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `nombre_presentacion` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `cantidad_presentaciones` int DEFAULT NULL,
   `unidades_por_presentacion` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -210,31 +210,11 @@ CREATE TABLE `detalle_venta` (
 --
 
 INSERT INTO `detalle_venta` (`id`, `id_producto`, `id_venta`, `producto`, `cantidad`, `precio_venta`, `precio_original`, `tipo_descuento`, `valor_descuento`, `descuento_unitario`, `descuento_total`, `id_promocion`, `id_intervalo_promocion`, `nombre_promocion`, `precio_compra`, `subtotal`, `preferencias`, `nota_adicional`, `forma_atencion`, `id_presentacion`, `nombre_presentacion`, `cantidad_presentaciones`, `unidades_por_presentacion`) VALUES
-(136, 24, 6, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(137, 24, 7, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(138, 24, 8, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(139, 24, 9, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(140, 24, 10, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(141, 24, 11, 'entero broasterd sin porción', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 90.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(142, 29, 12, 'economico pecho broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(143, 29, 13, 'economico pecho broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(144, 45, 14, 'porción de papa', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(145, 42, 15, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(146, 30, 16, 'económico pierna broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(147, 42, 17, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(148, 38, 18, 'económico pecho brasa', 2, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 30.00, NULL, NULL, 'LL', NULL, 'Unidad', 2, 1),
-(149, 40, 18, 'económico ala brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'LL', NULL, 'Unidad', 1, 1),
-(150, 30, 19, 'económico pierna broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(151, 38, 20, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(152, 31, 21, 'económico ala broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(153, 40, 21, 'económico ala brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(154, 38, 22, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(155, 43, 23, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(156, 43, 24, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(157, 43, 25, 'porción de arroz', 1, 7.00, 7.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 7.00, 7.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(158, 38, 26, 'económico pecho brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(159, 39, 27, 'económico pierna brasa', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
-(160, 31, 28, 'económico ala broasterd', 1, 15.00, 15.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 15.00, 15.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
+(1, 42, 1, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(2, 34, 2, 'entero brasa con porción ', 1, 100.00, 100.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 100.00, 100.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(3, 42, 3, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(4, 42, 4, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1),
+(5, 42, 5, ' presa de pollo', 1, 10.00, 10.00, NULL, NULL, 0.00, 0.00, NULL, NULL, NULL, 10.00, 10.00, NULL, NULL, 'M', NULL, 'Unidad', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -260,7 +240,7 @@ CREATE TABLE `gastos` (
 --
 
 INSERT INTO `gastos` (`id`, `fecha`, `descripcion`, `monto`, `monto_efectivo`, `monto_qr`, `forma_pago`, `id_tipo_gasto`, `id_usuario`, `id_arqueo`) VALUES
-(1, '2026-09-10', 'pañales', 15.00, 15.00, 0.00, '1', 1, 1, 2);
+(1, '2026-09-26', 'gas', 10.00, 10.00, 0.00, '1', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -274,8 +254,7 @@ CREATE TABLE `meseros` (
   `documento` varchar(11) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
   `telefono` text CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
   `direccion` text CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
-  `compras` int NOT NULL DEFAULT '0',
-  `ultima_compra` datetime DEFAULT NULL,
+  `ventas_atendidas` int NOT NULL DEFAULT '0',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `estado` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
@@ -284,9 +263,9 @@ CREATE TABLE `meseros` (
 -- Dumping data for table `meseros`
 --
 
-INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `compras`, `ultima_compra`, `fecha`, `estado`) VALUES
-(1, 's/n', '0000000', '00000000', 's/n', 405, '2026-09-12 16:23:35', '2026-09-12 20:23:35', 1),
-(2, 'lisandra', 'sin carnet', '000-00-000', 'sin dirección', 0, NULL, '2026-09-09 02:15:56', 1);
+INSERT INTO `meseros` (`id`, `nombre`, `documento`, `telefono`, `direccion`, `ventas_atendidas`, `fecha`, `estado`) VALUES
+(1, 's/n', 'sn', '000-00-000', 'sn', 2, '2026-09-28 17:21:45', 1),
+(2, 'lisandra', 'sin carnet', '000-00-000', 'sin dirección', 0, '2026-09-13 13:03:31', 1);
 
 -- --------------------------------------------------------
 
@@ -312,7 +291,7 @@ CREATE TABLE `otros_ingresos` (
 --
 
 INSERT INTO `otros_ingresos` (`id`, `id_arqueo_caja`, `id_usuario`, `descripcion`, `monto`, `tipo_entrada`, `monto_efectivo`, `monto_qr`, `fecha`, `estado`) VALUES
-(1, 2, 1, 'rr', 10.00, 'EFECTIVO', 10.00, 0.00, '2026-09-11 01:33:07', 1);
+(1, 1, 1, 'para camnbio', 50.00, 'EFECTIVO', 50.00, 0.00, '2026-09-27 00:17:33', 1);
 
 -- --------------------------------------------------------
 
@@ -322,8 +301,8 @@ INSERT INTO `otros_ingresos` (`id`, `id_arqueo_caja`, `id_usuario`, `descripcion
 
 CREATE TABLE `perfiles` (
   `id` int NOT NULL,
-  `nombre` varchar(80) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
+  `nombre` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `activo` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -514,10 +493,10 @@ INSERT INTO `perfil_permisos` (`id`, `id_perfil`, `id_permiso`) VALUES
 
 CREATE TABLE `permisos` (
   `id` int NOT NULL,
-  `modulo` varchar(80) NOT NULL,
-  `codigo` varchar(80) NOT NULL,
-  `nombre` varchar(120) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
+  `modulo` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `codigo` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre` varchar(120) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `orden` int NOT NULL DEFAULT '0',
   `estado` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -656,16 +635,16 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 (31, 5, '508', 'económico ala broasterd', 'vistas/img/productos/508/851.png', 99999, 15, 15, 2, '2026-09-12 20:23:35', 0, 1),
 (32, 5, '509', 'económico contra broasterd', 'vistas/img/productos/509/585.png', 99999, 15, 15, 0, '2026-09-11 02:49:09', 0, 1),
 (33, 4, '401', 'entero brasa sin porción', 'vistas/img/productos/401/750.webp', 99999, 80, 80, 0, '2026-09-11 01:24:54', 0, 1),
-(34, 4, '402', 'entero brasa con porción ', 'vistas/img/productos/402/438.png', 99999, 100, 100, 0, '2026-09-11 02:37:50', 0, 1),
+(34, 4, '402', 'entero brasa con porción ', 'vistas/img/productos/402/438.png', 99999, 100, 100, 1, '2026-09-28 17:15:59', 0, 1),
 (35, 4, '403', '1/2 brasa', 'vistas/img/productos/403/922.png', 99999, 50, 50, 0, '2026-09-11 02:38:06', 0, 1),
 (36, 4, '404', 'cuarto  brasa pecho con ala', 'vistas/img/productos/404/862.png', 99999, 25, 25, 0, '2026-09-11 02:40:27', 0, 1),
 (37, 4, '405', 'cuarto brasa contra con pierna ', 'vistas/img/productos/405/170.png', 99999, 25, 25, 0, '2026-09-11 02:43:53', 0, 1),
-(38, 4, '406', 'económico pecho brasa', 'vistas/img/productos/406/144.png', 99999, 15, 15, 5, '2026-09-12 20:13:37', 0, 1),
+(38, 4, '406', 'económico pecho brasa', 'vistas/img/productos/406/144.png', 99999, 15, 15, 7, '2026-09-13 12:56:07', 0, 1),
 (39, 4, '407', 'económico pierna brasa', 'vistas/img/productos/407/523.png', 99999, 15, 15, 1, '2026-09-12 20:22:57', 0, 1),
-(40, 4, '408', 'económico ala brasa', 'vistas/img/productos/408/252.png', 99999, 15, 15, 2, '2026-09-11 05:04:24', 0, 1),
-(41, 4, '409', 'económico contra brasa', 'vistas/img/productos/409/580.png', 99999, 15, 15, 0, '2026-09-11 02:56:54', 0, 1),
-(42, 3, '301', ' presa de pollo', 'vistas/img/productos/301/943.png', 99999, 10, 10, 2, '2026-09-11 03:30:51', 0, 1),
-(43, 3, '302', 'porción de arroz', 'vistas/img/productos/302/399.png', 99999, 7, 7, 3, '2026-09-11 05:18:02', 0, 1),
+(40, 4, '408', 'económico ala brasa', 'vistas/img/productos/408/252.png', 99999, 15, 15, 3, '2026-09-26 23:55:16', 0, 1),
+(41, 4, '409', 'económico contra brasa', 'vistas/img/productos/409/580.png', 50, 15, 15, 0, '2026-09-26 23:54:39', 1, 1),
+(42, 3, '301', ' presa de pollo', 'vistas/img/productos/301/943.png', 99999, 10, 10, 7, '2026-09-28 17:21:45', 0, 1),
+(43, 3, '302', 'porción de arroz', 'vistas/img/productos/302/399.png', 0, 7, 7, 3, '2026-09-26 23:54:13', 0, 1),
 (44, 3, '303', 'porción de fideo', 'vistas/img/productos/303/298.png', 99999, 7, 7, 0, '2026-09-11 03:08:36', 0, 1),
 (45, 3, '304', 'porción de papa', 'vistas/img/productos/304/407.png', 99999, 7, 7, 1, '2026-09-11 03:11:44', 0, 1);
 
@@ -678,7 +657,7 @@ INSERT INTO `productos` (`id`, `id_categoria`, `codigo`, `descripcion`, `imagen`
 CREATE TABLE `producto_presentaciones` (
   `id` int NOT NULL,
   `id_producto` int NOT NULL,
-  `nombre` varchar(80) COLLATE utf8mb4_general_ci NOT NULL,
+  `nombre` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `cantidad_unidades` int NOT NULL COMMENT 'Unidades reales por 1 presentación (ej. Balde=5)',
   `orden` int NOT NULL DEFAULT '0',
   `estado` tinyint NOT NULL DEFAULT '1' COMMENT '1=activo, 0=inactivo',
@@ -693,16 +672,23 @@ CREATE TABLE `producto_presentaciones` (
 
 CREATE TABLE `promociones` (
   `id` int NOT NULL,
-  `nombre` varchar(150) NOT NULL,
-  `descripcion` text,
+  `nombre` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` text COLLATE utf8mb4_unicode_ci,
   `fecha_inicio` datetime NOT NULL,
   `fecha_fin` datetime NOT NULL,
   `prioridad` int NOT NULL DEFAULT '1',
   `estado` tinyint(1) NOT NULL DEFAULT '1',
-  `modo_cantidad` varchar(20) NOT NULL DEFAULT 'individual',
-  `observacion` text,
+  `modo_cantidad` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'individual',
+  `observacion` text COLLATE utf8mb4_unicode_ci,
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `promociones`
+--
+
+INSERT INTO `promociones` (`id`, `nombre`, `descripcion`, `fecha_inicio`, `fecha_fin`, `prioridad`, `estado`, `modo_cantidad`, `observacion`, `fecha`) VALUES
+(1, 'pollo mas soda', '', '2026-09-26 19:46:00', '2030-06-26 19:46:00', 1, 1, 'individual', '', '2026-09-26 23:46:40');
 
 -- --------------------------------------------------------
 
@@ -715,11 +701,18 @@ CREATE TABLE `promocion_intervalos` (
   `id_promocion` int NOT NULL,
   `cantidad_minima` int NOT NULL,
   `cantidad_maxima` int DEFAULT NULL,
-  `tipo_descuento` varchar(20) NOT NULL DEFAULT 'fijo',
+  `tipo_descuento` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fijo',
   `valor_descuento` decimal(10,2) NOT NULL DEFAULT '0.00',
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `promocion_intervalos`
+--
+
+INSERT INTO `promocion_intervalos` (`id`, `id_promocion`, `cantidad_minima`, `cantidad_maxima`, `tipo_descuento`, `valor_descuento`, `estado`, `fecha`) VALUES
+(4, 1, 1, NULL, 'fijo', 3.00, 1, '2026-09-26 23:46:58');
 
 -- --------------------------------------------------------
 
@@ -734,6 +727,14 @@ CREATE TABLE `promocion_productos` (
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   `fecha` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `promocion_productos`
+--
+
+INSERT INTO `promocion_productos` (`id`, `id_promocion`, `id_producto`, `estado`, `fecha`) VALUES
+(5, 1, 36, 1, '2026-09-26 23:47:26'),
+(6, 1, 2, 1, '2026-09-26 23:47:42');
 
 -- --------------------------------------------------------
 
@@ -812,7 +813,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `password`, `perfil`, `id_perfil`, `foto`, `estado`, `ultimo_login`, `fecha`, `activo`) VALUES
-(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-12 16:13:22', '2026-09-12 20:13:22', 1),
+(1, 'soporte', 'soporte', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/admin/997.webp', 1, '2026-09-28 13:15:47', '2026-09-28 17:15:47', 1),
 (2, 'zusana murgia', 'zusana', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Vendedor', 3, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:12:40', 1),
 (3, 'epifania', 'epifania', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:14:54', 1),
 (4, 'santiago', 'santiago', '$2a$07$asxx54ahjppf45sd87a5auGZEtGHuyZwm.Ur.FJvWLCql3nmsMbXy', 'Administrador', 1, 'vistas/img/usuarios/default/anonymous.webp', 1, NULL, '2026-09-09 02:15:17', 1);
@@ -852,29 +853,11 @@ CREATE TABLE `ventas` (
 --
 
 INSERT INTO `ventas` (`id`, `codigo`, `nro_ticket`, `total_qr`, `total_efectivo`, `total`, `total_bruto`, `total_descuento`, `total_pagado`, `fecha`, `nota`, `tipo_pago`, `cambio`, `forma_atencion`, `estado`, `estado_pago`, `fecha_pago`, `id_mesero`, `id_cliente`, `id_vendedor`, `id_arqueo_caja`) VALUES
-(6, 1, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-10 23:52:04', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-10 19:52:04', 1, 1, 1, 2),
-(7, 2, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-10 23:53:42', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-10 19:53:42', 1, 1, 1, 2),
-(8, 3, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-10 23:54:00', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-10 19:54:00', 1, 1, 1, 2),
-(9, 4, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-10 23:57:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-10 19:57:45', 1, 1, 1, 2),
-(10, 5, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-10 23:59:40', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-10 19:59:40', 1, 1, 1, 2),
-(11, 6, NULL, 0, 0, 100, 100.00, 0.00, 0, '2026-09-11 00:00:51', '', '', 0, 'En Mesa', 1, 'PENDIENTE', NULL, 1, 1, 1, 2),
-(12, 7, NULL, 0, 15, 15, 15.00, 0.00, 20, '2026-09-11 01:32:25', '', 'Efectivo', 5, 'En Mesa', 1, 'PAGADA', '2026-09-10 21:32:25', 1, 1, 1, 2),
-(13, 8, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 02:29:29', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 22:29:29', 1, 1, 1, 2),
-(14, 9, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 03:11:44', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:11:44', 1, 1, 1, 2),
-(15, 10, NULL, 0, 10, 10, 10.00, 0.00, 100, '2026-09-11 03:12:02', '', 'Efectivo', 90, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:12:02', 1, 1, 1, 2),
-(16, 11, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 03:30:31', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:30:31', 1, 1, 1, 2),
-(17, 12, NULL, 0, 10, 10, 10.00, 0.00, 100, '2026-09-11 03:30:51', '', 'Efectivo', 90, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:30:51', 1, 1, 1, 2),
-(18, 13, NULL, 0, 45, 45, 45.00, 0.00, 100, '2026-09-11 03:31:42', '', 'Efectivo', 55, 'Para Llevar', 1, 'PAGADA', '2026-09-10 23:31:42', 1, 1, 1, 2),
-(19, 14, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 03:45:51', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-10 23:45:51', 1, 1, 1, 2),
-(20, 15, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-11 05:03:57', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:03:57', 1, 1, 1, 2),
-(21, 16, NULL, 0, 30, 30, 30.00, 0.00, 100, '2026-09-11 05:04:24', '', 'Efectivo', 70, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:04:24', 1, 1, 1, 2),
-(22, 17, NULL, 0, 15, 15, 15.00, 0.00, 15, '2026-09-12 20:23:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:23:45', 1, 1, 1, 2),
-(23, 18, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:06:56', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:06:56', 1, 1, 1, 2),
-(24, 19, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:08:09', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:08:09', 1, 1, 1, 2),
-(25, 20, NULL, 0, 7, 7, 7.00, 0.00, 100, '2026-09-11 05:18:02', '', 'Efectivo', 93, 'En Mesa', 1, 'PAGADA', '2026-09-11 01:18:02', 1, 1, 1, 2),
-(26, 21, NULL, 0, 15, 15, 15.00, 0.00, 15, '2026-09-12 20:13:37', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:13:37', 1, 1, 1, 2),
-(27, 22, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-12 20:22:57', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:22:56', 1, 1, 1, 2),
-(28, 23, NULL, 0, 15, 15, 15.00, 0.00, 100, '2026-09-12 20:23:35', '', 'Efectivo', 85, 'En Mesa', 1, 'PAGADA', '2026-09-12 16:23:35', 1, 1, 1, 2);
+(1, 1, NULL, 0, 10, 10, 10.00, 0.00, 100, '2026-09-26 23:57:14', '', 'Efectivo', 90, 'En Mesa', 1, 'PAGADA', '2026-09-26 19:57:14', 1, 1, 1, 1),
+(2, 2, NULL, 0, 100, 100, 100.00, 0.00, 100, '2026-09-28 17:15:59', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-28 13:15:59', 1, 1, 1, 1),
+(3, 1, NULL, 0, 10, 10, 10.00, 0.00, 100, '2026-09-28 17:16:38', '', 'Efectivo', 90, 'En Mesa', 1, 'PAGADA', '2026-09-28 13:16:38', 1, 1, 1, 2),
+(4, 2, NULL, 0, 10, 10, 10.00, 0.00, 120, '2026-09-28 17:20:06', '', 'Efectivo', 110, 'En Mesa', 1, 'PAGADA', '2026-09-28 13:20:06', 1, 1, 1, 2),
+(5, 3, NULL, 0, 10, 10, 10.00, 0.00, 10, '2026-09-28 17:21:45', '', 'Efectivo', 0, 'En Mesa', 1, 'PAGADA', '2026-09-28 13:21:45', 1, 1, 1, 2);
 
 --
 -- Indexes for dumped tables
@@ -1101,7 +1084,7 @@ ALTER TABLE `detalle_compra`
 -- AUTO_INCREMENT for table `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `gastos`
@@ -1155,19 +1138,19 @@ ALTER TABLE `producto_presentaciones`
 -- AUTO_INCREMENT for table `promociones`
 --
 ALTER TABLE `promociones`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `promocion_intervalos`
 --
 ALTER TABLE `promocion_intervalos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `promocion_productos`
 --
 ALTER TABLE `promocion_productos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `proveedor`
@@ -1191,7 +1174,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
