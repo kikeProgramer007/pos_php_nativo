@@ -38,7 +38,7 @@ class AjaxArqueo {
                 $respuesta["cuentas_pendientes"] = ControladorVentas::ctrResumenCuentasPendientes($respuesta["id"]);
                 $respuesta["cuentas_pendientes_cerradas"] = ControladorVentas::ctrResumenCuentasPendientesCajasCerradas();
             }
-            echo json_encode($respuesta);
+            echo json_encode(self::redondearMontos($respuesta));
         } catch(Exception $e) {
             error_log("Error en ajaxVerificarCaja: " . $e->getMessage());
             echo json_encode([
@@ -75,9 +75,56 @@ class AjaxArqueo {
     }
 
     /**
-     * Procesa las operaciones de apertura y cierre de caja
-     * @return void
+     * Deja los montos en 2 decimales como texto para que json_encode
+     * no imprima el error binario del float.
      */
+    private static function redondearMontos($datos) {
+        if (!is_array($datos)) {
+            return $datos;
+        }
+
+        $claves = [
+            "monto_apertura",
+            "monto_apertura_efectivo",
+            "monto_apertura_qr",
+            "monto_ventas",
+            "monto_ventas_efectivo",
+            "monto_ventas_qr",
+            "otros_ingresos",
+            "otros_ingresos_efectivo",
+            "otros_ingresos_qr",
+            "total_descuentos_ventas",
+            "total_bruto_ventas",
+            "gastos_operativos",
+            "gastos_efectivo",
+            "gastos_qr",
+            "monto_compras",
+            "monto_compras_informativo",
+            "total_ingresos",
+            "total_egresos",
+            "resultado_neto",
+            "total_efectivo_qr_en_caja",
+            "efectivo_en_caja",
+            "diferencia",
+            "qr_en_caja"
+        ];
+
+        foreach ($claves as $clave) {
+            if (isset($datos[$clave]) && is_numeric($datos[$clave])) {
+                $datos[$clave] = number_format(round(floatval($datos[$clave]), 2), 2, ".", "");
+            }
+        }
+
+        if (isset($datos["cuentas_pendientes"]) && is_array($datos["cuentas_pendientes"])) {
+            $datos["cuentas_pendientes"] = self::redondearMontos($datos["cuentas_pendientes"]);
+        }
+        if (isset($datos["total_por_cobrar"]) && is_numeric($datos["total_por_cobrar"])) {
+            $datos["total_por_cobrar"] = number_format(round(floatval($datos["total_por_cobrar"]), 2), 2, ".", "");
+        }
+
+        return $datos;
+    }
+
     public function procesarOperacionCaja() {
         if(!isset($_POST["accion"])) {
             echo json_encode([

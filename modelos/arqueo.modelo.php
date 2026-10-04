@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . "/conexion.php";
+require_once __DIR__ . "/moneda.php";
 
 /**
  * Modelo para gestionar las operaciones de arqueo de caja en la base de datos
@@ -640,11 +641,11 @@ class ModeloArqueo {
         $conexion = $pdo ?: Conexion::conectar();
         $stmt = $conexion->prepare(
             "SELECT
-                COALESCE(SUM(total), 0) AS total,
-                COALESCE(SUM(total_efectivo), 0) AS total_efectivo,
-                COALESCE(SUM(total_qr), 0) AS total_qr,
-                COALESCE(SUM(COALESCE(total_bruto, total)), 0) AS total_bruto,
-                COALESCE(SUM(COALESCE(total_descuento, 0)), 0) AS total_descuento
+                CAST(COALESCE(SUM(total), 0) AS DECIMAL(12,2)) AS total,
+                CAST(COALESCE(SUM(total_efectivo), 0) AS DECIMAL(12,2)) AS total_efectivo,
+                CAST(COALESCE(SUM(total_qr), 0) AS DECIMAL(12,2)) AS total_qr,
+                CAST(COALESCE(SUM(COALESCE(total_bruto, total)), 0) AS DECIMAL(12,2)) AS total_bruto,
+                CAST(COALESCE(SUM(COALESCE(total_descuento, 0)), 0) AS DECIMAL(12,2)) AS total_descuento
              FROM ventas
              WHERE id_arqueo_caja = :id_arqueo_caja
                AND estado = 1
@@ -654,11 +655,11 @@ class ModeloArqueo {
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return [
-            "total" => floatval($row["total"] ?? 0),
-            "total_efectivo" => floatval($row["total_efectivo"] ?? 0),
-            "total_qr" => floatval($row["total_qr"] ?? 0),
-            "total_bruto" => floatval($row["total_bruto"] ?? 0),
-            "total_descuento" => floatval($row["total_descuento"] ?? 0)
+            "total" => Moneda::texto($row["total"] ?? 0),
+            "total_efectivo" => Moneda::texto($row["total_efectivo"] ?? 0),
+            "total_qr" => Moneda::texto($row["total_qr"] ?? 0),
+            "total_bruto" => Moneda::texto($row["total_bruto"] ?? 0),
+            "total_descuento" => Moneda::texto($row["total_descuento"] ?? 0)
         ];
     }
 
@@ -667,21 +668,21 @@ class ModeloArqueo {
      * Si las columnas nuevas están en 0 y existe monto_apertura histórico, se asume 100% efectivo.
      */
     static public function mdlNormalizarMontosApertura($arqueo) {
-        $efectivo = floatval($arqueo["monto_apertura_efectivo"] ?? 0);
-        $qr = floatval($arqueo["monto_apertura_qr"] ?? 0);
-        $total = round($efectivo + $qr, 2);
-        $totalGuardado = floatval($arqueo["monto_apertura"] ?? 0);
+        $efectivoC = Moneda::centavos($arqueo["monto_apertura_efectivo"] ?? 0);
+        $qrC = Moneda::centavos($arqueo["monto_apertura_qr"] ?? 0);
+        $totalC = $efectivoC + $qrC;
+        $guardadoC = Moneda::centavos($arqueo["monto_apertura"] ?? 0);
 
-        if (abs($total) < 0.0001 && abs($totalGuardado) >= 0.0001) {
-            $efectivo = $totalGuardado;
-            $qr = 0.00;
-            $total = $totalGuardado;
+        if ($totalC === 0 && $guardadoC !== 0) {
+            $efectivoC = $guardadoC;
+            $qrC = 0;
+            $totalC = $guardadoC;
         }
 
         return [
-            "monto_apertura" => $total,
-            "monto_apertura_efectivo" => $efectivo,
-            "monto_apertura_qr" => $qr
+            "monto_apertura" => Moneda::desdeCentavos($totalC),
+            "monto_apertura_efectivo" => Moneda::desdeCentavos($efectivoC),
+            "monto_apertura_qr" => Moneda::desdeCentavos($qrC)
         ];
     }
 
@@ -756,18 +757,24 @@ class ModeloArqueo {
             }
 
             $ventas = self::mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo);
-            $compras = self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
-            $gastos = self::mdlSumarGastosPorArqueo($idArqueo, $pdo);
-            $gastosEfectivo = self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo);
-            $gastosQr = self::mdlSumarGastosQrPorArqueo($idArqueo, $pdo);
-            $otrosIngresos = self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo);
-            $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo);
-            $otrosIngresosQr = self::mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo);
+            $compras = Moneda::texto(self::mdlSumarComprasPorArqueo($idArqueo, $pdo));
+            $gastos = Moneda::texto(self::mdlSumarGastosPorArqueo($idArqueo, $pdo));
+            $gastosEfectivo = Moneda::texto(self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo));
+            $gastosQr = Moneda::texto(self::mdlSumarGastosQrPorArqueo($idArqueo, $pdo));
+            $otrosIngresos = Moneda::texto(self::mdlSumarOtrosIngresosPorArqueo($idArqueo, $pdo));
+            $otrosIngresosEfectivo = Moneda::texto(self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $pdo));
+            $otrosIngresosQr = Moneda::texto(self::mdlSumarOtrosIngresosQrPorArqueo($idArqueo, $pdo));
             $apertura = self::mdlNormalizarMontosApertura($arqueo);
             $montoApertura = $apertura["monto_apertura"];
-            $totalIngresos = $montoApertura + $ventas["total"] + $otrosIngresos;
-            $totalEgresos = $compras + $gastos;
-            $resultadoNeto = $totalIngresos - $totalEgresos;
+            $totalIngresos = Moneda::desdeCentavos(
+                Moneda::centavos($montoApertura) + Moneda::centavos($ventas["total"]) + Moneda::centavos($otrosIngresos)
+            );
+            $totalEgresos = Moneda::desdeCentavos(
+                Moneda::centavos($compras) + Moneda::centavos($gastos)
+            );
+            $resultadoNeto = Moneda::desdeCentavos(
+                Moneda::centavos($totalIngresos) - Moneda::centavos($totalEgresos)
+            );
 
             $stmtUpdate = $pdo->prepare(
                 "UPDATE arqueo_caja SET
@@ -813,7 +820,7 @@ class ModeloArqueo {
             // Informativo comercial: no afecta ingresos/egresos de caja
             $arqueo["total_bruto_ventas"] = $ventas["total_bruto"];
             $arqueo["total_descuentos_ventas"] = $ventas["total_descuento"];
-            $arqueo["monto_compras_informativo"] = self::mdlSumarComprasInformativasPorArqueo($idArqueo, $pdo);
+            $arqueo["monto_compras_informativo"] = Moneda::texto(self::mdlSumarComprasInformativasPorArqueo($idArqueo, $pdo));
 
             return $arqueo;
         } catch (PDOException $e) {

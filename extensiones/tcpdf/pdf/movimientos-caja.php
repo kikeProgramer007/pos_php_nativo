@@ -59,12 +59,14 @@ class imprimirFactura
                     + ($arqueo["Bs20"] * 20)
                     + ($arqueo["Bs10"] * 10);
 
-        $totalMonedas = ($arqueo["Bs5"] * 5)
-                    + ($arqueo["Bs2"] * 2)
-                    + ($arqueo["Bs1"] * 1)
-                    + ($arqueo["Bs050"] * 0.5)
-                    + ($arqueo["Bs020"] * 0.20);
-   
+        $totalMonedas = (
+            Moneda::centavos($arqueo["Bs5"] * 5)
+            + Moneda::centavos($arqueo["Bs2"] * 2)
+            + Moneda::centavos($arqueo["Bs1"] * 1)
+            + Moneda::centavos($arqueo["Bs050"] * 0.5)
+            + Moneda::centavos($arqueo["Bs020"] * 0.20)
+        ) / 100;
+
         $totalGeneral = $totalBilletes + $totalMonedas;
 
         // Recalcular montos desde tablas fuente (compras/gastos/ventas pagadas)
@@ -210,11 +212,11 @@ class imprimirFactura
 
             <tr>
                 <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; QR:</td>
-                <td style="text-align:right; ">' . $arqueo["monto_ventas_qr"] . '</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["monto_ventas_qr"] ?? 0), 2) . '</td>
             </tr>
             <tr>
                 <td style="text-align:left; ">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
-                <td style="text-align:right; ">' . $arqueo["monto_ventas_efectivo"] . '</td>
+                <td style="text-align:right; ">' . number_format(floatval($arqueo["monto_ventas_efectivo"] ?? 0), 2) . '</td>
             </tr>
             <tr>
                 <td style="text-align:left; "> OTROS INGRESOS:</td>
@@ -247,7 +249,7 @@ class imprimirFactura
             </tr>
             <tr>
                 <td style="width:70%; text-align:left;"><strong>TOTAL INGRESOS:</strong></td>
-                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . $arqueo["total_ingresos"] . '</strong></td>
+                <td style="width:28%; text-align:right;text-align:right; border-top: 0.5px solid #000000;"><strong>' . number_format(floatval($arqueo["total_ingresos"] ?? 0), 2) . '</strong></td>
             </tr>
             <tr><td colspan="2"></td></tr>
             <tr>
@@ -368,11 +370,11 @@ class imprimirFactura
             </tr>
             <tr>
                 <td style="text-align:left;">QR:</td>
-                <td style="text-align:right;"><strong>' . $arqueo["qr_en_caja"] . '</strong></td>
+                <td style="text-align:right;"><strong>' . number_format(floatval($arqueo["qr_en_caja"] ?? 0), 2) . '</strong></td>
             </tr>
             <tr>
                 <td style="text-align:left;"><strong>DINERO EN CAJA:</strong></td>
-                <td style="text-align:right;border-top: 0.5px solid #000000;"><strong>' . $arqueo["total_efectivo_qr_en_caja"] . '</strong></td>
+                <td style="text-align:right;border-top: 0.5px solid #000000;"><strong>' . number_format(floatval($arqueo["total_efectivo_qr_en_caja"] ?? 0), 2) . '</strong></td>
             </tr>
 
            <tr> <td colspan="2" ></td> </tr> 
@@ -389,7 +391,7 @@ class imprimirFactura
       
             <tr>
                 <td style="text-align:left;">DINERO EN CAJA:</td>
-                <td style="text-align:right;">' . $arqueo["total_efectivo_qr_en_caja"] . '</td>
+                <td style="text-align:right;">' . number_format(floatval($arqueo["total_efectivo_qr_en_caja"] ?? 0), 2) . '</td>
             </tr>
 
             <tr>

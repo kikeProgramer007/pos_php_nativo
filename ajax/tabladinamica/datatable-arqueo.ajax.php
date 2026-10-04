@@ -50,7 +50,7 @@ class DatatableArqueosCaja{
 				  $arqueos[$i]["fecha_cierre"],
 			      number_format($arqueos[$i]["total_ingresos"], 2),
 				  number_format($arqueos[$i]["total_egresos"], 2),
-				  $arqueos[$i]["resultado_neto"],
+				  number_format(floatval($arqueos[$i]["resultado_neto"]), 2),
 				  $montoPorCobrarHtml,
 				  $botones
 			      

@@ -64,6 +64,7 @@ GRÁFICO DE VENTAS
     gridLineColor    : '#efefef',
     gridTextFamily   : 'Open Sans',
     preUnits         : 'Bs',
+    yLabelFormat     : function (y) { return (Number(y) || 0).toFixed(2); },
     gridTextSize     : 10
   });
 
