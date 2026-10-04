@@ -99,68 +99,53 @@ class reporteTopProductosMasVendidos
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
-        $pdf->SetMargins(6, 8, 6);
-        $pdf->SetAutoPageBreak(true, 8);
+        $pdf->SetMargins(6, 6, 6);
+        $pdf->SetAutoPageBreak(true, 6);
         $pdf->SetTitle('Reporte de productos vendidos');
         $pdf->AddPage();
 
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 6, 'Reporte de productos vendidos', 0, 1, 'C');
+        $pdf->SetFont('helvetica', 'B', 11);
+        $pdf->Cell(0, 5, 'Reporte de productos vendidos', 0, 1, 'C');
         $pdf->Ln(1);
 
-        $yInfo = $pdf->GetY();
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(20, 4, 'Restaurante:', 0, 0, 'L');
+        $pdf->Cell(22, 4, 'Restaurante:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(42, 4, $this->nombreTienda, 0, 0, 'L');
+        $pdf->Cell(68, 4, $this->nombreTienda, 0, 0, 'L');
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(16, 4, 'Usuario:', 0, 0, 'L');
+        $pdf->Cell(20, 4, 'Usuario:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(36, 4, $respuestaUsuario["nombre"], 0, 1, 'L');
+        $pdf->Cell(0, 4, $respuestaUsuario["nombre"], 0, 1, 'L');
 
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(20, 4, 'Direccion:', 0, 0, 'L');
+        $pdf->Cell(22, 4, 'Direccion:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(42, 4, $this->direccionTienda, 0, 0, 'L');
+        $pdf->Cell(68, 4, $this->direccionTienda, 0, 0, 'L');
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(16, 4, 'Categoria:', 0, 0, 'L');
+        $pdf->Cell(20, 4, 'Categoria:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(36, 4, $categoriaTexto, 0, 1, 'L');
+        $pdf->Cell(0, 4, $categoriaTexto, 0, 1, 'L');
 
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(20, 4, 'Generado:', 0, 0, 'L');
+        $pdf->Cell(22, 4, 'Generado:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(42, 4, date('d-m-Y h:i a'), 0, 0, 'L');
+        $pdf->Cell(68, 4, date('d-m-Y h:i a'), 0, 0, 'L');
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(16, 4, 'Mesero:', 0, 0, 'L');
+        $pdf->Cell(20, 4, 'Mesero:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(36, 4, $meseroTexto, 0, 1, 'L');
+        $pdf->Cell(0, 4, $meseroTexto, 0, 1, 'L');
 
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(20, 4, 'Periodo:', 0, 0, 'L');
+        $pdf->Cell(22, 4, 'Periodo:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(42, 4, date("d-m-Y", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 0, 'L');
+        $pdf->Cell(68, 4, date("d-m-Y", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 0, 'L');
         $pdf->SetFont('helvetica', 'B', 8);
-        $pdf->Cell(16, 4, 'Producto:', 0, 0, 'L');
+        $pdf->Cell(20, 4, 'Producto:', 0, 0, 'L');
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(36, 4, $this->textoProductos(), 0, 1, 'L');
+        $pdf->Cell(0, 4, $this->textoProductos(), 0, 1, 'L');
 
-        $resumen = array(
-            array('Vendiste:', $sumNeta),
-            array('Te costó:', $sumCosto),
-            array('Te quedó:', $sumGanancia),
-        );
-        $yResumen = $yInfo;
-        foreach ($resumen as $linea) {
-            $pdf->SetXY(138, $yResumen);
-            $pdf->SetFont('helvetica', 'B', 8);
-            $pdf->Cell(24, 5, $linea[0], 0, 0, 'L');
-            $pdf->Cell(32, 5, $this->monto($linea[1]) . ' Bs.', 0, 0, 'R');
-            $yResumen += 5;
-        }
-        $pdf->SetY(max($pdf->GetY(), $yResumen) + 2);
-
-        $pdf->Ln(3);
+        $pdf->Ln(2);
+        $alto = 5;
         $cNum = 6;
         $cFecha = 18;
         $cMesero = 24;
@@ -171,21 +156,21 @@ class reporteTopProductosMasVendidos
         $cDesc = 20;
         $cNeta = 22;
         $cGan = 20;
-        $pdf->SetFont('helvetica', 'B', 6);
+        $pdf->SetFont('helvetica', 'B', 8);
         $pdf->SetFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell($cNum, 5, '#', 1, 0, 'C', 1);
-        $pdf->Cell($cFecha, 5, 'Fecha', 1, 0, 'C', 1);
-        $pdf->Cell($cMesero, 5, 'Mesero', 1, 0, 'C', 1);
-        $pdf->Cell($cProducto, 5, 'Producto', 1, 0, 'C', 1);
-        $pdf->Cell($cCant, 5, 'Cant.', 1, 0, 'C', 1);
-        $pdf->Cell($cVenta, 5, 'P. venta', 1, 0, 'C', 1);
-        $pdf->Cell($cCosto, 5, 'Costo', 1, 0, 'C', 1);
-        $pdf->Cell($cDesc, 5, 'Descuento', 1, 0, 'C', 1);
-        $pdf->Cell($cNeta, 5, 'Venta neta', 1, 0, 'C', 1);
-        $pdf->Cell($cGan, 5, 'Ganancia', 1, 1, 'C', 1);
+        $pdf->Cell($cNum, $alto, '#', 1, 0, 'C', 1);
+        $pdf->Cell($cFecha, $alto, 'Fecha', 1, 0, 'C', 1);
+        $pdf->Cell($cMesero, $alto, 'Mesero', 1, 0, 'C', 1);
+        $pdf->Cell($cProducto, $alto, 'Producto', 1, 0, 'C', 1);
+        $pdf->Cell($cCant, $alto, 'Cant.', 1, 0, 'C', 1);
+        $pdf->Cell($cVenta, $alto, 'P. venta', 1, 0, 'C', 1);
+        $pdf->Cell($cCosto, $alto, 'Costo', 1, 0, 'C', 1);
+        $pdf->Cell($cDesc, $alto, 'Descuento', 1, 0, 'C', 1);
+        $pdf->Cell($cNeta, $alto, 'Venta neta', 1, 0, 'C', 1);
+        $pdf->Cell($cGan, $alto, 'Ganancia', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->SetFont('helvetica', '', 6);
+        $pdf->SetFont('helvetica', '', 8);
 
         $contador = 1;
 
@@ -197,28 +182,45 @@ class reporteTopProductosMasVendidos
             $ventaNeta = floatval($item['venta_neta'] ?? 0);
             $ganancia = floatval($item['ganancia'] ?? 0);
 
-            $pdf->Cell($cNum, 5, $contador, 1, 0, 'C');
-            $pdf->Cell($cFecha, 5, date('d/m/Y', strtotime($item['fecha'])), 1, 0, 'C');
-            $pdf->Cell($cMesero, 5, isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
-            $pdf->Cell($cProducto, 5, $item['descripcion'], 1, 0, 'L');
-            $pdf->Cell($cCant, 5, $cantidad, 1, 0, 'C');
-            $pdf->Cell($cVenta, 5, $this->monto($precioVenta), 1, 0, 'R');
-            $pdf->Cell($cCosto, 5, $this->monto($costo), 1, 0, 'R');
-            $pdf->Cell($cDesc, 5, $this->monto($descuento), 1, 0, 'R');
-            $pdf->Cell($cNeta, 5, $this->monto($ventaNeta), 1, 0, 'R');
-            $pdf->Cell($cGan, 5, $this->monto($ganancia), 1, 1, 'R');
+            $pdf->Cell($cNum, $alto, $contador, 1, 0, 'C');
+            $pdf->Cell($cFecha, $alto, date('d/m/Y', strtotime($item['fecha'])), 1, 0, 'C');
+            $pdf->Cell($cMesero, $alto, isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
+            $pdf->Cell($cProducto, $alto, $item['descripcion'], 1, 0, 'L');
+            $pdf->Cell($cCant, $alto, $cantidad, 1, 0, 'C');
+            $pdf->Cell($cVenta, $alto, $this->monto($precioVenta), 1, 0, 'R');
+            $pdf->Cell($cCosto, $alto, $this->monto($costo), 1, 0, 'R');
+            $pdf->Cell($cDesc, $alto, $this->monto($descuento), 1, 0, 'R');
+            $pdf->Cell($cNeta, $alto, $this->monto($ventaNeta), 1, 0, 'R');
+            $pdf->Cell($cGan, $alto, $this->monto($ganancia), 1, 1, 'R');
 
             $contador++;
         }
 
-        $pdf->SetFont('helvetica', 'B', 6);
-        $pdf->Cell($cNum + $cFecha + $cMesero + $cProducto, 5, 'Total', 'TR', 0, 'R');
-        $pdf->Cell($cCant, 5, $sumCantidad, 1, 0, 'C');
-        $pdf->Cell($cVenta, 5, $this->monto($sumVenta), 1, 0, 'R');
-        $pdf->Cell($cCosto, 5, $this->monto($sumCosto), 1, 0, 'R');
-        $pdf->Cell($cDesc, 5, $this->monto($sumDescuento), 1, 0, 'R');
-        $pdf->Cell($cNeta, 5, $this->monto($sumNeta), 1, 0, 'R');
-        $pdf->Cell($cGan, 5, $this->monto($sumGanancia), 1, 1, 'R');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell($cNum + $cFecha + $cMesero + $cProducto, $alto, 'Total', 'TR', 0, 'R');
+        $pdf->Cell($cCant, $alto, $sumCantidad, 1, 0, 'C');
+        $pdf->Cell($cVenta, $alto, $this->monto($sumVenta), 1, 0, 'R');
+        $pdf->Cell($cCosto, $alto, $this->monto($sumCosto), 1, 0, 'R');
+        $pdf->Cell($cDesc, $alto, $this->monto($sumDescuento), 1, 0, 'R');
+        $pdf->Cell($cNeta, $alto, $this->monto($sumNeta), 1, 0, 'R');
+        $pdf->Cell($cGan, $alto, $this->monto($sumGanancia), 1, 1, 'R');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $resumen = array(
+            array('Vendiste:', $sumNeta),
+            array('Te costó:', $sumCosto),
+            array('Te quedó (ganancia):', $sumGanancia),
+        );
+        $anchoEtiqueta = 0;
+        foreach ($resumen as $linea) {
+            $anchoEtiqueta = max($anchoEtiqueta, $pdf->GetStringWidth($linea[0]));
+        }
+        $anchoEtiqueta += 2;
+        foreach ($resumen as $linea) {
+            $pdf->Cell($anchoEtiqueta, 4.5, $linea[0], 0, 0, 'L');
+            $pdf->Cell(28, 4.5, $this->monto($linea[1]) . ' Bs.', 0, 1, 'L');
+        }
 
         $pdf->Output('ReporteDeProductosVendidos.pdf', 'I');
     }
