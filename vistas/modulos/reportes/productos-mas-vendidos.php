@@ -1,10 +1,6 @@
 <?php
 
-$item = null;
-$valor = null;
-$orden = "ventas";
-
-$productos = ControladorProductos::ctrMostrarProductos($item, $valor, $orden);
+$productos = ControladorVentas::ctrReporteProductosMasVendidos($fechaInicial, $fechaFinal);
 if (!is_array($productos)) {
 	$productos = [];
 }
@@ -12,8 +8,10 @@ if (!is_array($productos)) {
 $colores = array("red","green","yellow","aqua","purple","blue","cyan","magenta","orange","gold");
 $coloresHex = array("#f56954","#00a65a","#f39c12","#00c0ef","#605ca8","#3c8dbc","#39cccc","#D81B60","#ff851b","#ffd700");
 
-$totalVentas = ControladorProductos::ctrMostrarSumaVentas();
-$totalVentasNum = floatval($totalVentas["total"] ?? 0);
+$totalVentasNum = 0;
+foreach ($productos as $producto) {
+	$totalVentasNum += floatval($producto["ventas"] ?? 0);
+}
 
 $limiteLeyenda = min(10, count($productos));
 $limiteLista = min(5, count($productos));

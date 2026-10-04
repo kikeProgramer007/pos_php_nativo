@@ -276,27 +276,101 @@ class ModeloVentas
 			return $stmt->fetchAll();
 		} else {
 
-			$fechaActual = new DateTime();
-			$fechaActual->add(new DateInterval("P1D"));
-			$fechaActualMasUno = $fechaActual->format("Y-m-d");
-
-			$fechaFinal2 = new DateTime($fechaFinal);
-			$fechaFinal2->add(new DateInterval("P1D"));
-			$fechaFinalMasUno = $fechaFinal2->format("Y-m-d");
-
-			if ($fechaFinalMasUno == $fechaActualMasUno) {
-
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinalMasUno' AND $tabla.estado=$estado$filtroPago");
-			} else {
-
-
-				$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE fecha BETWEEN '$fechaInicial' AND '$fechaFinal' AND $tabla.estado=$estado$filtroPago ORDER BY id DESC");
-			}
+			$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE DATE(fecha) BETWEEN :fechaInicial AND :fechaFinal AND $tabla.estado=$estado$filtroPago ORDER BY id DESC");
+			$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+			$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
 
 			$stmt->execute();
 
 			return $stmt->fetchAll();
 		}
+	}
+
+	static private function rangoFechasValido($fechaInicial, $fechaFinal)
+	{
+		return preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $fechaInicial)
+			&& preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $fechaFinal)
+			&& $fechaInicial <= $fechaFinal;
+	}
+
+	static public function mdlReporteVentasPorDia($tabla, $fechaInicial, $fechaFinal)
+	{
+		if (!self::rangoFechasValido($fechaInicial, $fechaFinal)) {
+			return [];
+		}
+
+		$stmt = Conexion::conectar()->prepare("SELECT DATE(fecha) AS dia, SUM(total) AS ventas
+			FROM $tabla
+			WHERE estado = 1 AND estado_pago = 'PAGADA'
+			AND DATE(fecha) BETWEEN :fechaInicial AND :fechaFinal
+			GROUP BY DATE(fecha)
+			ORDER BY dia ASC");
+		$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+		$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		$stmt->execute();
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+	}
+
+	static public function mdlReporteVentasPorUsuario($tabla, $fechaInicial, $fechaFinal)
+	{
+		if (!self::rangoFechasValido($fechaInicial, $fechaFinal)) {
+			return [];
+		}
+
+		$stmt = Conexion::conectar()->prepare("SELECT u.nombre AS nombre, SUM(v.total) AS total
+			FROM $tabla v
+			INNER JOIN usuarios u ON u.id = v.id_vendedor
+			WHERE v.estado = 1 AND v.estado_pago = 'PAGADA'
+			AND DATE(v.fecha) BETWEEN :fechaInicial AND :fechaFinal
+			GROUP BY u.id, u.nombre
+			ORDER BY total DESC");
+		$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+		$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		$stmt->execute();
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+	}
+
+	static public function mdlReporteVentasPorMesero($tabla, $fechaInicial, $fechaFinal)
+	{
+		if (!self::rangoFechasValido($fechaInicial, $fechaFinal)) {
+			return [];
+		}
+
+		$stmt = Conexion::conectar()->prepare("SELECT m.nombre AS nombre, SUM(v.total) AS total
+			FROM $tabla v
+			INNER JOIN meseros m ON m.id = v.id_mesero
+			WHERE v.estado = 1 AND v.estado_pago = 'PAGADA'
+			AND DATE(v.fecha) BETWEEN :fechaInicial AND :fechaFinal
+			GROUP BY m.id, m.nombre
+			ORDER BY total DESC");
+		$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+		$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		$stmt->execute();
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+	}
+
+	static public function mdlReporteProductosMasVendidos($fechaInicial, $fechaFinal)
+	{
+		if (!self::rangoFechasValido($fechaInicial, $fechaFinal)) {
+			return [];
+		}
+
+		$stmt = Conexion::conectar()->prepare("SELECT p.descripcion, p.imagen, SUM(dv.cantidad) AS ventas
+			FROM detalle_venta dv
+			INNER JOIN ventas v ON v.id = dv.id_venta
+			INNER JOIN productos p ON p.id = dv.id_producto
+			WHERE v.estado = 1 AND v.estado_pago = 'PAGADA'
+			AND DATE(v.fecha) BETWEEN :fechaInicial AND :fechaFinal
+			GROUP BY p.id, p.descripcion, p.imagen
+			ORDER BY ventas DESC");
+		$stmt->bindParam(":fechaInicial", $fechaInicial, PDO::PARAM_STR);
+		$stmt->bindParam(":fechaFinal", $fechaFinal, PDO::PARAM_STR);
+		$stmt->execute();
+
+		return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 	}
 
 
@@ -517,21 +591,35 @@ class ModeloVentas
 	/*=============================================
 	TOP PRODUCTO MAS VENDIDOS SEGUNN RANGO FECHAS
 	=============================================*/
-	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null)
+	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array())
 	{
 		if ($fechaInicial <= $fechaFinal) {
 
-			// Consulta SQL para obtener las ventas en el rango de fechas
-			$query	= 	"SELECT 
-							COUNT(dv.id_producto) AS cant_ventas, 
-							dv.id_producto, 
-							SUM(dv.cantidad) AS cantidad, 
+			$idProductos = is_array($idProductos) ? $idProductos : array($idProductos);
+			$idsProducto = array();
+			foreach ($idProductos as $idProducto) {
+				$idProducto = intval($idProducto);
+				if ($idProducto > 0) {
+					$idsProducto[$idProducto] = $idProducto;
+				}
+			}
+			$idsProducto = array_values($idsProducto);
+
+			$query	= 	"SELECT
+							DATE(ventas.fecha) AS fecha,
+							COALESCE(m.nombre, 'Sin mesero') AS mesero,
+							dv.id_producto,
 							p.descripcion,
-							m.nombre AS mesero
+							SUM(dv.cantidad) AS cantidad,
+							SUM(COALESCE(dv.precio_original, dv.precio_venta) * dv.cantidad) AS precio_venta,
+							SUM(dv.precio_compra * dv.cantidad) AS costo,
+							SUM(COALESCE(dv.descuento_total, 0)) AS descuento,
+							SUM(dv.subtotal) AS venta_neta,
+							SUM(dv.subtotal) - SUM(dv.precio_compra * dv.cantidad) AS ganancia
 						FROM $tabla
 						JOIN detalle_venta AS dv ON ventas.id = dv.id_venta
 						JOIN productos AS p ON p.id = dv.id_producto
-						JOIN meseros AS m ON m.id = ventas.id_mesero
+						LEFT JOIN meseros AS m ON m.id = ventas.id_mesero
 						WHERE DATE(ventas.fecha) BETWEEN DATE(:fechaInicio) AND DATE(:fechaFin)
 						AND ventas.estado=1
 						AND ventas.estado_pago = 'PAGADA'";
@@ -544,11 +632,18 @@ class ModeloVentas
 				$query .= " AND ventas.id_mesero = :idMesero";
 			}
 
-			$query .= " GROUP BY dv.id_producto, p.descripcion, m.nombre
-						ORDER BY m.nombre ASC, SUM(dv.cantidad) DESC;";
+			if (count($idsProducto) > 0) {
+				$marcadores = array();
+				foreach ($idsProducto as $indice => $idProducto) {
+					$marcadores[] = ":idProducto" . $indice;
+				}
+				$query .= " AND dv.id_producto IN (" . implode(", ", $marcadores) . ")";
+			}
+
+			$query .= " GROUP BY DATE(ventas.fecha), m.id, m.nombre, dv.id_producto, p.descripcion
+						ORDER BY DATE(ventas.fecha) ASC, m.nombre ASC, p.descripcion ASC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
-			// Vincular los parámetros de las fechas
 			$stmt->bindParam(':fechaInicio', $fechaInicial);
 			$stmt->bindParam(':fechaFin', $fechaFinal);
 
@@ -558,6 +653,10 @@ class ModeloVentas
 
 			if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0" && $idMesero != 0) {
 				$stmt->bindParam(':idMesero', $idMesero, PDO::PARAM_INT);
+			}
+
+			foreach ($idsProducto as $indice => $idProducto) {
+				$stmt->bindValue(":idProducto" . $indice, $idProducto, PDO::PARAM_INT);
 			}
 
 			$stmt->execute();

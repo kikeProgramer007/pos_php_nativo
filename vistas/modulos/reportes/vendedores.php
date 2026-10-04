@@ -1,42 +1,21 @@
 <?php
 
-$item = null;
-$valor = null;
-
-$ventas = ControladorVentas::ctrMostrarVentas($item, $valor);
-$usuarios = ControladorUsuarios::ctrMostrarUsuarios($item, $valor);
-
-$arrayVendedores = array();
-$arraylistaVendedores = array();
-
-foreach ($ventas as $key => $valueVentas) {
-
-  foreach ($usuarios as $key => $valueUsuarios) {
-
-    if($valueUsuarios["id"] == $valueVentas["id_vendedor"]){
-
-        #Capturamos los vendedores en un array
-        array_push($arrayVendedores, $valueUsuarios["nombre"]);
-
-        #Capturamos las nombres y los valores netos en un mismo array
-        $arraylistaVendedores = array($valueUsuarios["nombre"] => $valueVentas["total"]);
-
-         #Sumamos los netos de cada vendedor
-
-        foreach ($arraylistaVendedores as $key => $value) {
-
-            $sumaTotalVendedores[$key] += $value;
-
-         }
-
-    }
-  
-  }
-
+$ventasUsuarios = ControladorVentas::ctrReporteVentasPorUsuario($fechaInicial, $fechaFinal);
+if (!is_array($ventasUsuarios)) {
+	$ventasUsuarios = [];
 }
 
-#Evitamos repetir nombre
-$noRepetirNombres = array_unique($arrayVendedores);
+$serieUsuarios = array();
+foreach ($ventasUsuarios as $fila) {
+	$serieUsuarios[] = array(
+		"y" => (string) ($fila["nombre"] ?? "Sin usuario"),
+		"a" => floatval($fila["total"] ?? 0)
+	);
+}
+
+if (count($serieUsuarios) === 0) {
+	$serieUsuarios[] = array("y" => "Sin ventas", "a" => 0);
+}
 
 ?>
 
@@ -71,18 +50,7 @@ VENDEDORES
 var bar = new Morris.Bar({
   element: 'bar-chart1',
   resize: true,
-  data: [
-
-  <?php
-    
-    foreach($noRepetirNombres as $value){
-
-      echo "{y: '".$value."', a: '".$sumaTotalVendedores[$value]."'},";
-
-    }
-
-  ?>
-  ],
+  data: <?php echo json_encode($serieUsuarios, JSON_UNESCAPED_UNICODE); ?>,
   barColors: ['#006400'],
   xkey: 'y',
   ykeys: ['a'],

@@ -13,6 +13,9 @@ require_once "../../../modelos/meseros.modelo.php";
 require_once "../../../controladores/categorias.controlador.php";
 require_once "../../../modelos/categorias.modelo.php";
 
+require_once "../../../controladores/productos.controlador.php";
+require_once "../../../modelos/productos.modelo.php";
+
 class reporteTopProductosMasVendidos
 {
 
@@ -21,20 +24,59 @@ class reporteTopProductosMasVendidos
     public $idUsuario;
     public $idCategoria;
     public $idMesero;
+    public $idProductos = array();
     private $nombreTienda = "Pollos 360 ";
     private $direccionTienda = "Ave.Miguel Servet ";
 
+    private function textoProductos()
+    {
+        $ids = is_array($this->idProductos) ? $this->idProductos : array();
+        if (count($ids) === 0) {
+            return "Todos los productos";
+        }
+        if (count($ids) === 1) {
+            $producto = ControladorProductos::ctrMostrarProductos("id", $ids[0], "id");
+            if (is_array($producto) && isset($producto["descripcion"])) {
+                return $producto["descripcion"];
+            }
+        }
+        return count($ids) . " productos";
+    }
+
+    private function monto($valor)
+    {
+        return number_format((float) $valor, 2, ',', '.');
+    }
+
     public function generarPdfVentasTopProducto()
     {
-        // Establecer la zona horaria de Bolivia
         date_default_timezone_set('America/La_Paz');
         $fechaInicio = $this->fechaInicio;
         $fechaFin = $this->fechaFin;
         $idUsuario = $this->idUsuario;
         $idCategoria = $this->idCategoria;
         $idMesero = isset($this->idMesero) ? $this->idMesero : null;
+        $idProductos = is_array($this->idProductos) ? $this->idProductos : array();
 
-        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria, $idMesero);
+        $respuestaDatos = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria, $idMesero, $idProductos);
+        if (!is_array($respuestaDatos)) {
+            $respuestaDatos = array();
+        }
+
+        $sumCantidad = 0;
+        $sumVenta = 0;
+        $sumCosto = 0;
+        $sumDescuento = 0;
+        $sumNeta = 0;
+        $sumGanancia = 0;
+        foreach ($respuestaDatos as $item) {
+            $sumCantidad += floatval($item['cantidad'] ?? 0);
+            $sumVenta += floatval($item['precio_venta'] ?? 0);
+            $sumCosto += floatval($item['costo'] ?? 0);
+            $sumDescuento += floatval($item['descuento'] ?? 0);
+            $sumNeta += floatval($item['venta_neta'] ?? 0);
+            $sumGanancia += floatval($item['ganancia'] ?? 0);
+        }
         $itemUsuario = "id";
         $respuestaUsuario = ControladorUsuarios::ctrMostrarUsuarios($itemUsuario, $idUsuario);
 
@@ -54,106 +96,137 @@ class reporteTopProductosMasVendidos
 
         require_once('tcpdf_include.php');
 
-        // Configuración del PDF para UTF-8
         $pdf = new TCPDF('P', 'mm', 'LETTER', true, 'UTF-8', false);
-
-
-        // Desactivar encabezado y pie de página
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
-
-        // Ajustar márgenes a cero
-        $pdf->SetMargins(10, 10, 10);
-        $pdf->SetTitle('Reporte De Producto Mas Vendidos');
+        $pdf->SetMargins(6, 8, 6);
+        $pdf->SetAutoPageBreak(true, 8);
+        $pdf->SetTitle('Reporte de productos vendidos');
         $pdf->AddPage();
 
         $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->Cell(0, 5, 'Reporte De Producto Mas Vendidos', 0, 1, 'C');
-        $pdf->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $pdf->Cell(0, 6, 'Reporte de productos vendidos', 0, 1, 'C');
+        $pdf->Ln(1);
 
-        $pdf->Ln(10); // Espacio después de la imagen
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetY(30);  // Ajusta este valor según sea necesario altura
+        $yInfo = $pdf->GetY();
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(20, 4, 'Restaurante:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(42, 4, $this->nombreTienda, 0, 0, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(16, 4, 'Usuario:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(36, 4, $respuestaUsuario["nombre"], 0, 1, 'L');
 
-            // Nombre y dirección del restaurante
-            $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(23, 5, 'Restaurante:', 0, 0, 'L');
-            $pdf->SetFont('helvetica', '', 9);
-            $pdf->Cell(50, 5, $this->nombreTienda, 0, 1, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(20, 4, 'Direccion:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(42, 4, $this->direccionTienda, 0, 0, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(16, 4, 'Categoria:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(36, 4, $categoriaTexto, 0, 1, 'L');
 
-            $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(23, 5, 'Dirección:', 0, 0, 'L');
-            $pdf->SetFont('helvetica', '', 9);
-            $pdf->Cell(50, 5, $this->direccionTienda, 0, 1, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(20, 4, 'Generado:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(42, 4, date('d-m-Y h:i a'), 0, 0, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(16, 4, 'Mesero:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(36, 4, $meseroTexto, 0, 1, 'L');
 
-            $pdf->SetY(35);  // Ajusta este valor según sea necesario altura
-            $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Usuario: ', 0, 0, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(20, 4, 'Periodo:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(42, 4, date("d-m-Y", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 0, 'L');
+        $pdf->SetFont('helvetica', 'B', 8);
+        $pdf->Cell(16, 4, 'Producto:', 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(36, 4, $this->textoProductos(), 0, 1, 'L');
 
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $respuestaUsuario["nombre"], 0, 1, 'L');
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Categoria: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $categoriaTexto, 0, 1, 'L');
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Mesero: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $meseroTexto, 0, 1, 'L');
-        $pdf->SetX(140); // Ajusta este valor según sea necesario ancho
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, 'Periodo: ', 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(100, 5, date("d-m-Y ", strtotime($fechaInicio)) . " al " . date("d-m-Y", strtotime($fechaFin)), 0, 1, 'L');
+        $resumen = array(
+            array('Vendiste:', $sumNeta),
+            array('Te costó:', $sumCosto),
+            array('Te quedó:', $sumGanancia),
+        );
+        $yResumen = $yInfo;
+        foreach ($resumen as $linea) {
+            $pdf->SetXY(138, $yResumen);
+            $pdf->SetFont('helvetica', 'B', 8);
+            $pdf->Cell(24, 5, $linea[0], 0, 0, 'L');
+            $pdf->Cell(32, 5, $this->monto($linea[1]) . ' Bs.', 0, 0, 'R');
+            $yResumen += 5;
+        }
+        $pdf->SetY(max($pdf->GetY(), $yResumen) + 2);
 
-        $DateAndTime = date('d-m-Y h:i:s a', time());
-        $pdf->SetY(40);  // Ajusta este valor según sea necesario altura
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(23, 5, utf8_decode('Fecha y hora:'), 0, 0, 'L');
-        $pdf->SetFont('helvetica', '', 9);
-        $pdf->Cell(50, 5, $DateAndTime, 0, 1, 'L');
-
-        $pdf->Ln(5);
-        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Ln(3);
+        $cNum = 6;
+        $cFecha = 18;
+        $cMesero = 24;
+        $cProducto = 40;
+        $cCant = 12;
+        $cVenta = 20;
+        $cCosto = 18;
+        $cDesc = 20;
+        $cNeta = 22;
+        $cGan = 20;
+        $pdf->SetFont('helvetica', 'B', 6);
         $pdf->SetFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(0, 5, 'Detalle de Top', 1, 1, 'C', 1);
+        $pdf->Cell($cNum, 5, '#', 1, 0, 'C', 1);
+        $pdf->Cell($cFecha, 5, 'Fecha', 1, 0, 'C', 1);
+        $pdf->Cell($cMesero, 5, 'Mesero', 1, 0, 'C', 1);
+        $pdf->Cell($cProducto, 5, 'Producto', 1, 0, 'C', 1);
+        $pdf->Cell($cCant, 5, 'Cant.', 1, 0, 'C', 1);
+        $pdf->Cell($cVenta, 5, 'P. venta', 1, 0, 'C', 1);
+        $pdf->Cell($cCosto, 5, 'Costo', 1, 0, 'C', 1);
+        $pdf->Cell($cDesc, 5, 'Descuento', 1, 0, 'C', 1);
+        $pdf->Cell($cNeta, 5, 'Venta neta', 1, 0, 'C', 1);
+        $pdf->Cell($cGan, 5, 'Ganancia', 1, 1, 'C', 1);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(12, 5, '#', 1, 0, 'L');
-        $pdf->Cell(58, 5, 'Mesero', 1, 0, 'L');
-        $pdf->Cell(98, 5, 'Producto', 1, 0, 'L');
-        $pdf->Cell(28, 5, 'Cantidad', 1, 1, 'C');
-        $pdf->SetFont('helvetica', '', 8);
+        $pdf->SetFont('helvetica', '', 6);
 
-        //Imprimir los detalles de los productos
         $contador = 1;
-        $sumTotal = 0;
 
         foreach ($respuestaDatos as $item) {
-            $total =  $item['cantidad'];
-            $pdf->Cell(12, 5,  $contador, 1, 0, 'L');
-            $pdf->Cell(58, 5,  isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
-            $pdf->Cell(98, 5,  $item['descripcion'], 1, 0, 'L');
-            $pdf->Cell(28, 5, $total, 1, 1, 'C');
-    
+            $cantidad = floatval($item['cantidad'] ?? 0);
+            $precioVenta = floatval($item['precio_venta'] ?? 0);
+            $costo = floatval($item['costo'] ?? 0);
+            $descuento = floatval($item['descuento'] ?? 0);
+            $ventaNeta = floatval($item['venta_neta'] ?? 0);
+            $ganancia = floatval($item['ganancia'] ?? 0);
+
+            $pdf->Cell($cNum, 5, $contador, 1, 0, 'C');
+            $pdf->Cell($cFecha, 5, date('d/m/Y', strtotime($item['fecha'])), 1, 0, 'C');
+            $pdf->Cell($cMesero, 5, isset($item['mesero']) ? $item['mesero'] : 'Sin mesero', 1, 0, 'L');
+            $pdf->Cell($cProducto, 5, $item['descripcion'], 1, 0, 'L');
+            $pdf->Cell($cCant, 5, $cantidad, 1, 0, 'C');
+            $pdf->Cell($cVenta, 5, $this->monto($precioVenta), 1, 0, 'R');
+            $pdf->Cell($cCosto, 5, $this->monto($costo), 1, 0, 'R');
+            $pdf->Cell($cDesc, 5, $this->monto($descuento), 1, 0, 'R');
+            $pdf->Cell($cNeta, 5, $this->monto($ventaNeta), 1, 0, 'R');
+            $pdf->Cell($cGan, 5, $this->monto($ganancia), 1, 1, 'R');
+
             $contador++;
-            $sumTotal += $total;
         }
 
-        // Total de la compra
-        $pdf->SetFont('helvetica', 'B', 9);
-        $pdf->Cell(168, 5, 'Total ', 0, 0, 'R');
-        $pdf->Cell(28, 5, $sumTotal, 1, 1, 'R');
+        $pdf->SetFont('helvetica', 'B', 6);
+        $pdf->Cell($cNum + $cFecha + $cMesero + $cProducto, 5, 'Total', 'TR', 0, 'R');
+        $pdf->Cell($cCant, 5, $sumCantidad, 1, 0, 'C');
+        $pdf->Cell($cVenta, 5, $this->monto($sumVenta), 1, 0, 'R');
+        $pdf->Cell($cCosto, 5, $this->monto($sumCosto), 1, 0, 'R');
+        $pdf->Cell($cDesc, 5, $this->monto($sumDescuento), 1, 0, 'R');
+        $pdf->Cell($cNeta, 5, $this->monto($sumNeta), 1, 0, 'R');
+        $pdf->Cell($cGan, 5, $this->monto($sumGanancia), 1, 1, 'R');
 
-
-
-
-        // Salida del archivo PDF
-        $pdf->Output('ReporteDeProductosMasVendidos.pdf', 'I');
+        $pdf->Output('ReporteDeProductosVendidos.pdf', 'I');
     }
+}
+
+$idsProducto = isset($_GET["idProducto"]) ? $_GET["idProducto"] : array();
+if (!is_array($idsProducto)) {
+    $idsProducto = ($idsProducto === '' || $idsProducto === null) ? array() : array($idsProducto);
 }
 
 $factura = new reporteTopProductosMasVendidos();
@@ -162,4 +235,5 @@ $factura->fechaFin = $_GET["fechaFin"];
 $factura->idUsuario = $_GET["idUsuario"];
 $factura->idCategoria = isset($_GET["idCategoria"]) ? intval($_GET["idCategoria"]) : 0;
 $factura->idMesero = isset($_GET["idMesero"]) && $_GET["idMesero"] !== "" ? intval($_GET["idMesero"]) : null;
+$factura->idProductos = $idsProducto;
 $factura->generarPdfVentasTopProducto();
