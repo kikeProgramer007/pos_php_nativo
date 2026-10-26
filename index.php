@@ -37,6 +37,7 @@ require_once "modelos/promociones.modelo.php";
 require_once "modelos/perfiles.modelo.php";
 require_once "modelos/otros_ingresos.modelo.php";
 require_once "modelos/producto_presentaciones.modelo.php";
+require_once "modelos/empresa.modelo.php";
 
 $plantilla = new ControladorPlantilla();
 $plantilla -> ctrPlantilla();

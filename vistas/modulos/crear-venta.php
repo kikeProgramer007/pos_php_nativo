@@ -577,7 +577,8 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .lv-producto-controles .lv-presentacion {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    width: auto;
     min-width: 0;
     text-align: left;
   }
@@ -588,7 +589,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   }
 
   .lv-producto-controles .select-presentacion-venta {
-    width: 100%;
+    width: 132px;
     max-width: 140px;
     height: 26px;
     font-size: 11px;
@@ -599,7 +600,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
 
   .lv-producto-controles .lv-notas-wrap {
     flex: 0 0 auto;
-    margin-top: 0;
+    margin: 0;
     position: relative;
   }
 
@@ -2214,6 +2215,7 @@ MODAL AGREGAR MESERO
 <script>
   const idUsuario = <?php echo $_SESSION["id"]; ?>;
   var modoEdicionCuenta = <?php echo $modoEdicionCuenta ? 'true' : 'false'; ?>;
+  var notasTodosLosProductos = <?php echo ModeloEmpresa::mdlFuncionActiva("venta.notas_todos_productos") ? "true" : "false"; ?>;
 </script>
 <script src="vistas/js/validar-caja.js"></script>
 
@@ -2996,7 +2998,7 @@ function agregarLineaProductoEdicion(linea) {
     subtotalFinal: subtotalFinal,
     precioFinal: precioFinal,
     unidadesLabel: factorLinea > 1 ? ("= " + cantLinea + " Unidades") : "",
-    extra: esInventariableLinea ? "" : htmlNotasProductoLinea(),
+      extra: (!esInventariableLinea || notasTodosLosProductos) ? htmlNotasProductoLinea() : "",
     mostrarDuplicar: true
   }));
 
@@ -3058,9 +3060,9 @@ function agregarProductoAVenta(producto) {
    // Bloque condicional para agregar el dropdown si producto.inventariable es 0
    let extra = '';
    
-  if (!esInventariable) {
-    extra = htmlNotasProductoLinea();
-  }
+      if (!esInventariable || notasTodosLosProductos) {
+        extra = htmlNotasProductoLinea();
+      }
   var formaAtencionGeneral = $("#formaAtencion").val();
 
   $(".nuevoProducto").append(construirHtmlLineaVenta({

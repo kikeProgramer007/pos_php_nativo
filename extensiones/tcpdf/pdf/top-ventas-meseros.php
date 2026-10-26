@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
 
@@ -27,6 +28,7 @@ class reporteTopVentasMeseros
 
     public function generarPdfVentasTopMeseros()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         // Establecer la zona horaria de Bolivia
         date_default_timezone_set('America/La_Paz');
         $fechaInicio = $this->fechaInicio;
@@ -100,7 +102,7 @@ class reporteTopVentasMeseros
             . '<strong>Usuario:</strong> <span style="font-weight:normal;">' . htmlspecialchars($respuestaUsuario["nombre"]) . '</span><br/>'
             . '</td>'
             . '<td width="30%" align="center" style="vertical-align:middle;">'
-            . '<img src="images/logo-negro-bloque.jpg" width="80" />'
+            . '<img src="' . htmlspecialchars(empresaPdfLogo(), ENT_QUOTES, 'UTF-8') . '" width="80" />'
             . '</td>'
             . '<td width="35%" style="vertical-align:top; font-size:9px; white-space:normal; word-wrap:break-word;">'
             . '<strong>Mesero:</strong> <span style="font-weight:normal;">' . htmlspecialchars($meseroTexto) . '</span><br/>'

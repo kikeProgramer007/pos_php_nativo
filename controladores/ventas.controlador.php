@@ -1165,8 +1165,17 @@ class ControladorVentas{
 				. '<style>td.num{mso-number-format:"\#\,\#\#0\.00";}</style>'
 				. '</head><body>';
 
+			$nombreEmpresa = ModeloEmpresa::mdlNombre("");
+			$filaEmpresa = "";
+			if ($nombreEmpresa !== "") {
+				$filaEmpresa = "<tr><td colspan='7' style='font-weight:bold;'>"
+					. htmlspecialchars($nombreEmpresa, ENT_QUOTES, "UTF-8")
+					. "</td></tr>";
+			}
+
 			echo utf8_decode("<table border='0'> 
 
+				".$filaEmpresa."
 				<tr> 
 					<td style='font-weight:bold; border:1px solid #eee;'>N°TICKET</td> 
 					<td style='font-weight:bold; border:1px solid #eee;'>MESERO</td>

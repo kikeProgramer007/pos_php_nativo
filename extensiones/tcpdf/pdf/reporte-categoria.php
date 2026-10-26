@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
+
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
 
@@ -28,11 +30,12 @@ class reporteProductoPorCategoria extends FPDF
     // Sobrescribimos el método Header para que se repita en cada página
     function Header()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         $this->SetMargins(12, 12, 12);
         $this->SetTitle(utf8_decode("Reporte De Producto Según Categoría"));
         $this->SetFont('helvetica', 'B', 11);
         $this->Cell(0, 5, utf8_decode('Reporte De Producto Según Categoría'), 0, 1, 'C');
-        $this->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $this->Image(empresaPdfLogo(), 90, 25, 30, 20);
         $this->Ln(10);
         $this->SetX(140);
         $this->SetY(30);

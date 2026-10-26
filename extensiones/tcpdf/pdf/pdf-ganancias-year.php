@@ -1,7 +1,7 @@
 
 <?php
 
-
+require_once __DIR__ . "/empresa-pdf.php";
 
 require_once "../../../controladores/reportes.controlador.php";
 require_once "../../../modelos/reportes.modelo.php";
@@ -22,9 +22,9 @@ class PdfGananciasYear
 
         $yearini = $this->yearini;
         $yearfin = $this->yearfin;
-        // if (!isset($this->session->id_usuario)) {return redirect()->to(base_url());}
         $nombreTienda = "Pollos 360 "; //$this->configuracion->select('valor')->where('nombre','tienda_nombre')->get()->getRow()->valor;
         $direccionTienda = "Ave.Miguel Servet"; // $this->configuracion->select('valor')->where('nombre','tienda_direccion')->get()->getRow()->valor;
+        list($nombreTienda, $direccionTienda) = empresaPdfTextos($nombreTienda, $direccionTienda);
 
         $DateAndTime = date('d-m-Y h:i:s a', time());
         // $db     =\Config\Database::connect();
@@ -35,7 +35,7 @@ class PdfGananciasYear
         $pdf->SetFont('Arial', 'B', 15);
         // $pdf->image(base_url().'/images/logotipo.png',185,10,18,16,'PNG');
         $pdf->Cell(195, 5, utf8_decode("Reporte De Ganancias Por Año"), 0, 1, 'C');
-        $pdf->Image('images/logo-negro-bloque.jpg', 100, 25, 30, 20, 'jpg');
+        $pdf->Image(empresaPdfLogo(), 100, 25, 30, 20);
 
 
         $pdf->Ln(10); // Espacio después de la imagen

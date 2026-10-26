@@ -376,6 +376,15 @@
 			</li>';
 			}
 
+			if (Permisos::tiene("empresa.ver")) {
+				echo '<li>
+					<a href="empresa">
+					<i class="fa fa-building"></i>
+					<span>Empresa</span>
+					</a>
+					</li>';
+			}
+
 			?>
 
 		</ul>

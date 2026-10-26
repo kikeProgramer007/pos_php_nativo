@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
 
@@ -26,6 +27,7 @@ class reporteProductoFaltante
 
     public function generarPdfProductoFaltante()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         // Establecer la zona horaria de Bolivia
         date_default_timezone_set('America/La_Paz');
         $idUsuario = $this->idUsuario;
@@ -49,7 +51,7 @@ class reporteProductoFaltante
         $pdf->Cell(0, 5, utf8_decode('Reporte De Producto Faltantes'), 0, 1, 'C');
         
         // Logo
-        $pdf->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $pdf->Image(empresaPdfLogo(), 90, 25, 30, 20);
         
         // Espacio después de la imagen
         $pdf->Ln(10);

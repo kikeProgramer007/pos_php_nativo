@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
 require_once "../../../controladores/gastos.controlador.php";
 require_once "../../../modelos/gastos.modelo.php";
 require_once "../../../controladores/tipo_gasto.controlador.php";
@@ -33,6 +34,7 @@ class reporteGastos
 
     public function generarPdfGastos()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         date_default_timezone_set('America/La_Paz');
 
         $fechaInicio = $this->fechaInicio;
@@ -91,7 +93,7 @@ class reporteGastos
 
         $pdf->SetFont('helvetica', 'B', 12);
         $pdf->Cell(0, 5, 'REPORTE DE GASTOS ENTRE FECHAS', 0, 1, 'C');
-        $pdf->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $pdf->Image(empresaPdfLogo(), 90, 25, 30, 20);
         $pdf->Ln(10);
 
         $pdf->SetFont('helvetica', 'B', 9);

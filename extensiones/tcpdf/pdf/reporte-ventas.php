@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
+
 // Arriba del archivo
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
@@ -67,12 +69,13 @@ class reporteVenta extends TCPDF
     // Método Header que se repetirá en cada página
     public function Header()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         // Establecer el margen superior
         $this->SetY(10);
         
         $this->SetFont('helvetica', 'B', 11);
         $this->Cell(0, 5, 'REPORTE DE VENTAS ENTRE FECHA', 0, 1, 'C');
-        $this->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $this->Image(empresaPdfLogo(), 90, 25, 30, 20);
         $this->Ln(10);
 
         // Nombre y dirección del restaurante
