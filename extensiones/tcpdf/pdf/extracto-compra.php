@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
 require_once "../../../controladores/compras.controlador.php";
 require_once "../../../modelos/compras.modelo.php";
 
@@ -67,8 +68,9 @@ class imprimirCompra {
         $pdf->AddPage();
 
         // Definir variables de restaurante y dirección
-        $nombreTienda = "El Gato Rico "; // Puedes cambiarlo por una variable si lo deseas
-        $direccionTienda = "Heroes Del Chaco 9,Cotoca"; // Puedes cambiarlo por una variable si lo deseas
+        $nombreTienda = "El Gato Rico ";
+        $direccionTienda = "Heroes Del Chaco 9,Cotoca";
+        list($nombreTienda, $direccionTienda) = empresaPdfTextos($nombreTienda, $direccionTienda);
 
         // --- ENCABEZADO TIPO TABLA DE TRES COLUMNAS ---
         $y_inicial = $pdf->GetY();
@@ -106,7 +108,7 @@ class imprimirCompra {
 
         // COLUMNA CENTRAL (LOGO)
         $pdf->SetXY(100, $y_inicial);
-        $pdf->Image('images/logo-negro-bloque.jpg', 100, $y_inicial, 25, 20, 'jpg', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        $pdf->Image(empresaPdfLogo(), 100, $y_inicial, 25, 20, '', '', 'T', false, 300, '', false, false, 0, false, false, false);
 
         // COLUMNA DERECHA
         $pdf->SetXY(150, $y_inicial);

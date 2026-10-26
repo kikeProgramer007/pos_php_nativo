@@ -136,6 +136,7 @@ class Permisos
 			"editar-perfil" => "perfiles.editar",
 			"asignar-permisos" => "perfiles.permisos",
 			"perfiles-eliminados" => "perfiles.eliminados",
+			"empresa" => "empresa.ver",
 			"categorias" => "categorias.ver",
 			"agregar-categoria" => "categorias.crear",
 			"editar-categoria" => "categorias.editar",

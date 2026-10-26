@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/../../../modelos/empresa.modelo.php";
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
 
@@ -183,14 +184,14 @@ class imprimirFactura
             
             $texto = implode(' - ', array_filter([$preferencias, $nota]));
             $preferenciasYNotaAdicional = $texto 
-                ? '<br><span style="font-size: 9px; color: #666666;">(' . $texto . ')</span>' 
+                ? '<br><i><span style="font-size: 9px; color: #000000; font-style: italic;">(' . $texto . ')</span></i>' 
                 : '';
 
             $infoPromo = '';
             if ($descTotal > 0) {
-                $infoPromo = '<br><span style="font-size: 8px; color: #666;">Promo: - Bs ' . number_format($descTotal, 2) .
+                $infoPromo = '<br><i><span style="font-size: 8px; color: #000000; font-style: italic;">Promo: - Bs ' . number_format($descTotal, 2) .
                     (!empty($item['nombre_promocion']) ? ' (' . htmlspecialchars($item['nombre_promocion']) . ')' : '') .
-                    '</span>';
+                    '</span></i>';
             }
           
             $htmlFactura .= '
@@ -242,7 +243,7 @@ class imprimirFactura
             </tr>
             </tbody>
         </table>
-         <p style="font-size: 9px; text-align: center;">¡GRACIAS POR SU COMPRA!<br>PEDIDOS AL 79902345<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>
+         <p style="font-size: 9px; text-align: center;">' . ModeloEmpresa::mdlNotaTicketHtml() . '<br><span style="font-size: 7px; margin-top: 2px;">Sistemas: 73982982</span></p>
         ';
 
         $pdfFactura->writeHTML($htmlFactura, false, false, false, false, '');

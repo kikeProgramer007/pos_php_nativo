@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../modelos/conexion.php';
+require_once __DIR__ . '/../../modelos/empresa.modelo.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
@@ -24,6 +25,14 @@ function excelNuevoLibro($tituloHoja, $tituloReporte, $metaFilas, $numCols)
 	$sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 	$r = 2;
+	$nombreEmpresa = ModeloEmpresa::mdlNombre("");
+	if ($nombreEmpresa !== "") {
+		$sheet->setCellValue('A' . $r, $nombreEmpresa);
+		$sheet->mergeCells('A' . $r . ':' . $ultimaCol . $r);
+		$sheet->getStyle('A' . $r)->getFont()->setBold(true);
+		$sheet->getStyle('A' . $r)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+		$r++;
+	}
 	foreach ($metaFilas as $texto) {
 		$sheet->setCellValue('A' . $r, $texto);
 		$sheet->mergeCells('A' . $r . ':' . $ultimaCol . $r);

@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
 
 require_once "../../../controladores/ventas.controlador.php";
 require_once "../../../modelos/ventas.modelo.php";
@@ -50,6 +51,7 @@ class reporteTopProductosMasVendidos
 
     public function generarPdfVentasTopProducto()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         date_default_timezone_set('America/La_Paz');
         $fechaInicio = $this->fechaInicio;
         $fechaFin = $this->fechaFin;

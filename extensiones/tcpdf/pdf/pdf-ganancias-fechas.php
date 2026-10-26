@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/empresa-pdf.php";
+
 require_once "../../../controladores/compras.controlador.php";
 require_once "../../../modelos/compras.modelo.php";
 require_once "../../../controladores/reportes.controlador.php";
@@ -21,9 +23,10 @@ class PdfGananciasFechas extends FPDF
 
     function Header()
     {
+        list($this->nombreTienda, $this->direccionTienda) = empresaPdfTextos($this->nombreTienda, $this->direccionTienda);
         $this->SetFont('helvetica', 'B', 12);
         $this->Cell(0, 5, 'REPORTE DE GANANCIAS ENTRE FECHAS', 0, 1, 'C');
-        $this->Image('images/logo-negro-bloque.jpg', 90, 25, 30, 20, 'jpg');
+        $this->Image(empresaPdfLogo(), 90, 25, 30, 20);
 
         $this->Ln(5);
         $this->SetX(140);

@@ -91,6 +91,7 @@ $fechaActual = date("Y-m-d");
          $_GET["ruta"] == "editar-perfil" ||
          $_GET["ruta"] == "asignar-permisos" ||
          $_GET["ruta"] == "perfiles-eliminados" ||
+         $_GET["ruta"] == "empresa" ||
          $_GET["ruta"] == "no-autorizado" ||
          $_GET["ruta"] == "salir"){
 
