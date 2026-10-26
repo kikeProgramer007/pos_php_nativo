@@ -2735,7 +2735,19 @@ function htmlOpcionesPreferenciasProducto() {
     <option value="31">Ají aparte 🌶️</option>
     <option value="32">Sin sal</option>
     <option value="33">Poca sal</option>
-    <option value="34">Bien sazonado</option>`;
+    <option value="34">Bien sazonado</option>
+    <option value="35">Bien fría</option>
+    <option value="36">Natural</option>
+    <option value="37">Con hielo</option>
+    <option value="38">Sin hielo</option>
+    <option value="39">Poco hielo</option>
+    <option value="40">Extra hielo</option>
+    <option value="41">Sin azúcar</option>
+    <option value="42">Poco azúcar</option>
+    <option value="43">Extra azúcar</option>
+    <option value="44">Sin pulpa</option>
+    <option value="45">Con pulpa</option>
+    <option value="46">Poca pulpa</option>`;
 }
 
 function htmlNotasProductoLinea() {
