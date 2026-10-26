@@ -117,3 +117,8 @@ WHERE e.nombre = 'Pollos 360'
     SELECT 1 FROM empresa_funcionalidad ef
     WHERE ef.id_empresa = e.id AND ef.id_funcionalidad = f.id
   );
+-- Nota de ticket
+UPDATE empresa
+SET nota_ticket = CONCAT('¡GRACIAS POR SU COMPRA!', CHAR(10), 'PEDIDOS AL 73688519')
+WHERE nombre = 'Pollos 360'
+  AND (nota_ticket IS NULL OR nota_ticket = '');
