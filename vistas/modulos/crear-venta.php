@@ -2713,7 +2713,13 @@ function htmlOpcionesPreferenciasProducto() {
     <option value="9">Solo fideo </option>
     <option value="10">Poco arroz</option>
     <option value="11">Poco fideo</option>
-    <option value="12">Poca papas</option>`;
+    <option value="12">Poca papas</option>
+    <option value="13">Bien fría</option>
+    <option value="14">Natural</option>
+    <option value="15">Con hielo</option>
+    <option value="16">Poco hielo</option>
+    <option value="17">Extra hielo</option>
+    <option value="18">Sin hielo</option>`;
 }
 
 function htmlNotasProductoLinea() {
