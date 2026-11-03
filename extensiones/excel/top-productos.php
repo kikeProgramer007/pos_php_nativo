@@ -15,6 +15,7 @@ $fechaFin = isset($_GET['fechaFin']) ? trim((string) $_GET['fechaFin']) : '';
 $idUsuario = isset($_GET['idUsuario']) ? $_GET['idUsuario'] : 0;
 $idCategoria = isset($_GET['idCategoria']) ? intval($_GET['idCategoria']) : 0;
 $idMesero = (isset($_GET['idMesero']) && $_GET['idMesero'] !== '') ? intval($_GET['idMesero']) : null;
+$formaAtencion = isset($_GET['formaAtencion']) ? $_GET['formaAtencion'] : '0';
 $idProductos = isset($_GET['idProducto']) ? $_GET['idProducto'] : array();
 if (!is_array($idProductos)) {
 	$idProductos = ($idProductos === '' || $idProductos === null) ? array() : array($idProductos);
@@ -28,6 +29,12 @@ if ($fechaInicio === '' || $fechaFin === '' || $fechaInicio > $fechaFin) {
 
 $usuario = ControladorUsuarios::ctrMostrarUsuarios('id', $idUsuario);
 $nombreUsuario = is_array($usuario) && isset($usuario['nombre']) ? $usuario['nombre'] : '';
+$etiquetaFormaAtencion = 'Todos';
+if ((string) $formaAtencion === '1') {
+	$etiquetaFormaAtencion = 'Mesa';
+} elseif ((string) $formaAtencion === '2') {
+	$etiquetaFormaAtencion = 'Llevar';
+}
 
 $idsLimpios = array();
 foreach ($idProductos as $idProducto) {
@@ -47,12 +54,12 @@ if (count($idsLimpios) === 0) {
 	$textoProductos = count($idsLimpios) . ' productos';
 }
 
-$filas = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria, $idMesero, $idsLimpios);
+$filas = ControladorVentas::ctrRangoFechasTopProductoMasVendidosPdf($fechaInicio, $fechaFin, $idCategoria, $idMesero, $idsLimpios, $formaAtencion);
 if (!is_array($filas)) {
 	$filas = [];
 }
 
-$columnas = 10;
+$columnas = 11;
 list($spreadsheet, $sheet, $headerRow) = excelNuevoLibro(
 	'Productos vendidos',
 	'REPORTE DE PRODUCTOS VENDIDOS',
@@ -60,12 +67,13 @@ list($spreadsheet, $sheet, $headerRow) = excelNuevoLibro(
 		'Periodo: ' . date('d/m/Y', strtotime($fechaInicio)) . ' - ' . date('d/m/Y', strtotime($fechaFin)),
 		'Usuario: ' . $nombreUsuario,
 		'Producto: ' . $textoProductos,
+		'Forma de atención: ' . $etiquetaFormaAtencion,
 		'Generado: ' . date('d-m-Y h:i:s a'),
 	],
 	$columnas
 );
 
-excelEscribirCabeceras($sheet, ['#', 'Fecha', 'Mesero', 'Producto', 'Cantidad', 'Precio venta', 'Costo', 'Descuento', 'Venta neta', 'Ganancia'], $headerRow);
+excelEscribirCabeceras($sheet, ['#', 'Fecha', 'Mesero', 'Producto', 'F. Atención', 'Cantidad', 'Precio venta', 'Costo', 'Descuento', 'Venta neta', 'Ganancia'], $headerRow);
 
 $rowNum = $headerRow + 1;
 $n = 0;
@@ -88,12 +96,13 @@ foreach ($filas as $item) {
 	$sheet->setCellValue('B' . $rowNum, date('d/m/Y', strtotime($item['fecha'])));
 	$sheet->setCellValue('C' . $rowNum, (string) ($item['mesero'] ?? 'Sin mesero'));
 	$sheet->setCellValue('D' . $rowNum, (string) ($item['descripcion'] ?? ''));
-	$sheet->setCellValue('E' . $rowNum, $cantidad);
-	$sheet->setCellValue('F' . $rowNum, $precioVenta);
-	$sheet->setCellValue('G' . $rowNum, $costo);
-	$sheet->setCellValue('H' . $rowNum, $descuento);
-	$sheet->setCellValue('I' . $rowNum, $ventaNeta);
-	$sheet->setCellValue('J' . $rowNum, $ganancia);
+	$sheet->setCellValue('E' . $rowNum, ControladorVentas::etiquetaFormaAtencion($item['forma_atencion'] ?? ''));
+	$sheet->setCellValue('F' . $rowNum, $cantidad);
+	$sheet->setCellValue('G' . $rowNum, $precioVenta);
+	$sheet->setCellValue('H' . $rowNum, $costo);
+	$sheet->setCellValue('I' . $rowNum, $descuento);
+	$sheet->setCellValue('J' . $rowNum, $ventaNeta);
+	$sheet->setCellValue('K' . $rowNum, $ganancia);
 
 	$sumCantidad += $cantidad;
 	$sumVenta += $precioVenta;
@@ -105,22 +114,22 @@ foreach ($filas as $item) {
 }
 
 if ($n > 0) {
-	excelBordesRango($sheet, $headerRow + 1, $rowNum - 1, 10);
-	$sheet->getStyle('E' . ($headerRow + 1) . ':E' . ($rowNum - 1))->getNumberFormat()->setFormatCode('#,##0');
-	$sheet->getStyle('F' . ($headerRow + 1) . ':J' . ($rowNum - 1))->getNumberFormat()->setFormatCode('#,##0.00');
+	excelBordesRango($sheet, $headerRow + 1, $rowNum - 1, 11);
+	$sheet->getStyle('F' . ($headerRow + 1) . ':F' . ($rowNum - 1))->getNumberFormat()->setFormatCode('#,##0');
+	$sheet->getStyle('G' . ($headerRow + 1) . ':K' . ($rowNum - 1))->getNumberFormat()->setFormatCode('#,##0.00');
 }
 
 $rowNum++;
 $sheet->setCellValue('A' . $rowNum, 'Totales:');
-$sheet->setCellValue('E' . $rowNum, $sumCantidad);
-$sheet->setCellValue('F' . $rowNum, $sumVenta);
-$sheet->setCellValue('G' . $rowNum, $sumCosto);
-$sheet->setCellValue('H' . $rowNum, $sumDescuento);
-$sheet->setCellValue('I' . $rowNum, $sumNeta);
-$sheet->setCellValue('J' . $rowNum, $sumGanancia);
-$sheet->getStyle('A' . $rowNum . ':J' . $rowNum)->getFont()->setBold(true);
-$sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('#,##0');
-$sheet->getStyle('F' . $rowNum . ':J' . $rowNum)->getNumberFormat()->setFormatCode('#,##0.00');
+$sheet->setCellValue('F' . $rowNum, $sumCantidad);
+$sheet->setCellValue('G' . $rowNum, $sumVenta);
+$sheet->setCellValue('H' . $rowNum, $sumCosto);
+$sheet->setCellValue('I' . $rowNum, $sumDescuento);
+$sheet->setCellValue('J' . $rowNum, $sumNeta);
+$sheet->setCellValue('K' . $rowNum, $sumGanancia);
+$sheet->getStyle('A' . $rowNum . ':K' . $rowNum)->getFont()->setBold(true);
+$sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('#,##0');
+$sheet->getStyle('G' . $rowNum . ':K' . $rowNum)->getNumberFormat()->setFormatCode('#,##0.00');
 
 $rowNum += 2;
 $resumen = array(
@@ -137,5 +146,5 @@ foreach ($resumen as $linea) {
 	$rowNum++;
 }
 
-excelAutoSize($sheet, 10);
+excelAutoSize($sheet, 11);
 excelDescargarXls($spreadsheet, 'productos-vendidos_' . $fechaInicio . '_' . $fechaFin . '.xls');

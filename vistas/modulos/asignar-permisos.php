@@ -15,9 +15,18 @@ $catalogo = ModeloPerfiles::mdlMostrarPermisosAgrupados();
 $asignados = ModeloPerfiles::mdlIdsPermisosPerfil($id);
 $asignados = array_map("intval", $asignados);
 
+$gestionMesasActiva = ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas");
+
 $modulos = [];
 $totalPermisos = 0;
 foreach ($catalogo as $perm) {
+  // Permisos de Mesas solo si Empresa → Funcionalidad tiene Gestión de Mesas
+  if (!$gestionMesasActiva && isset($perm["modulo"]) && strcasecmp($perm["modulo"], "Mesas") === 0) {
+    continue;
+  }
+  if (!$gestionMesasActiva && !empty($perm["codigo"]) && strpos($perm["codigo"], "mesas.") === 0) {
+    continue;
+  }
   $modulos[$perm["modulo"]][] = $perm;
   $totalPermisos++;
 }
@@ -32,6 +41,7 @@ $iconosModulo = [
   "Ofertas y promociones" => "fa-percent",
   "Clientes" => "fa-user-circle",
   "Meseros" => "fa-cutlery",
+  "Mesas" => "fa-th-large",
   "Ventas" => "fa-shopping-cart",
   "Compras" => "fa-truck",
   "Gastos" => "fa-money",
@@ -39,6 +49,7 @@ $iconosModulo = [
   "Caja" => "fa-calculator",
   "Reportes" => "fa-bar-chart",
   "Proveedores" => "fa-industry",
+  "Empresa" => "fa-building",
 ];
 
 function posIconoModulo($nombre, $mapa) {
@@ -128,6 +139,13 @@ function posIconoModulo($nombre, $mapa) {
           </div>
         </div>
       </div>
+
+      <?php if (!$gestionMesasActiva) { ?>
+      <div class="alert alert-info" style="margin-bottom:15px;">
+        El módulo <strong>Mesas</strong> no se muestra porque <strong>Gestión de Mesas</strong> está desactivada en Empresa → Funcionalidad.
+        Actívala ahí para poder asignar esos permisos.
+      </div>
+      <?php } ?>
 
       <div class="row" id="gridPermisos">
         <?php foreach ($modulos as $nombreModulo => $permisosModulo) {

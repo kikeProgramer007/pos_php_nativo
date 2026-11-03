@@ -1,4 +1,4 @@
-/*=============================================
+﻿/*=============================================
 CARGAR LA TABLA DINÁMICA DE VENTAS
 =============================================*/
 
@@ -1251,7 +1251,11 @@ async function imprimirSoloCocina(codigoVenta, idsDetalle = null) {
 /*=============================================
 FUNCIÓN PARA INICIALIZAR LA TABLA
 =============================================*/
-function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
+function obtenerFiltroMesaVentas() {
+	return $("#filtroMesa").length ? ($("#filtroMesa").val() || "0") : "0";
+}
+
+function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero, idMesa) {
 
 	// Destruir la tabla si ya está inicializada
 	if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
@@ -1263,12 +1267,13 @@ function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
 	  "ajax": {
 		"url": "ajax/datatable-ventas-realizadas.ajax.php",
 		"type": "GET",
-		"data": {
-		  fechaInicial: fechaInicial,
-		  fechaFinal: fechaFinal,
-		  estadoPago: estadoPago || "todos",
-		  idMesero: idMesero || "0",
-		  perfilOculto: $("#perfilOculto").val()
+		"data": function (d) {
+		  d.fechaInicial = fechaInicial;
+		  d.fechaFinal = fechaFinal;
+		  d.estadoPago = $("#filtroEstadoPago").val() || estadoPago || "todos";
+		  d.idMesero = $("#filtroMesero").val() || idMesero || "0";
+		  d.idMesa = obtenerFiltroMesaVentas();
+		  d.perfilOculto = $("#perfilOculto").val();
 		}
 	  },
 	  "deferRender": true,
@@ -1319,11 +1324,17 @@ function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
 	  localStorage.setItem("capturarRango", capturarRango);
   
 	  // Llamada a la función optimizada para cargar la tabla
-	  cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
+	  cargarTablaVentas(
+		fechaInicial,
+		fechaFinal,
+		$("#filtroEstadoPago").val(),
+		$("#filtroMesero").val(),
+		obtenerFiltroMesaVentas()
+	  );
 	}
   );
   
-  $("#filtroEstadoPago, #filtroMesero").on("change", function() {
+  $("#filtroEstadoPago, #filtroMesero, #filtroMesa").on("change", function() {
 	if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
 		$('.tablaVentasRealizadas').DataTable().ajax.reload();
 		return;
@@ -1345,7 +1356,13 @@ function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
 	  fechaInicial = año + "-" + mes + "-" + dia;
 	  fechaFinal = fechaInicial;
 	}
-	cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
+	cargarTablaVentas(
+		fechaInicial,
+		fechaFinal,
+		$("#filtroEstadoPago").val(),
+		$("#filtroMesero").val(),
+		obtenerFiltroMesaVentas()
+	);
   });
   
   /*=============================================
@@ -1368,7 +1385,13 @@ function cargarTablaVentas(fechaInicial, fechaFinal, estadoPago, idMesero) {
 	  localStorage.setItem("capturarRango", "Hoy");
   
 	  // Llamada a la función optimizada para cargar la tabla
-	  cargarTablaVentas(fechaInicial, fechaFinal, $("#filtroEstadoPago").val(), $("#filtroMesero").val());
+	  cargarTablaVentas(
+		fechaInicial,
+		fechaFinal,
+		$("#filtroEstadoPago").val(),
+		$("#filtroMesero").val(),
+		obtenerFiltroMesaVentas()
+	  );
 	}
   });
   
@@ -1643,6 +1666,23 @@ $(".tablas").on("click", ".btnCobrarCuenta", function() {
     $("#nuevoValorEfectivoCobro").val($(this).attr("totalVenta"));
     $("#nuevoValorQRCobro").val("0");
     $("#tipoPagoCobro").val("1");
+    var idMesa = Number($(this).attr("idMesa") || 0);
+    var etiquetaLiberar = $(this).attr("etiquetaLiberarMesa") || "";
+    if (idMesa > 0 && etiquetaLiberar) {
+        $("#lblLiberarMesaCobro").text(etiquetaLiberar);
+        $("#chkLiberarMesaCobro").prop("checked", true);
+        $("#grupoLiberarMesaCobro").show();
+        if (typeof $.fn.tooltip === "function") {
+            var $tipLiberar = $("#grupoLiberarMesaCobro label[data-toggle='tooltip']");
+            if ($tipLiberar.data("bs.tooltip")) {
+                $tipLiberar.tooltip("destroy");
+            }
+            $tipLiberar.tooltip({ container: "body", trigger: "hover" });
+        }
+    } else {
+        $("#chkLiberarMesaCobro").prop("checked", false);
+        $("#grupoLiberarMesaCobro").hide();
+    }
     actualizarCamposCobro();
     calcularCambioCobro();
     $("#modalCobrarCuenta").modal("show");
@@ -1743,6 +1783,10 @@ $("#btnConfirmarCobro").on("click", function() {
   formData.append("nuevoValorEfectivoCobro", efectivo);
   formData.append("nuevoValorQRCobro", qr);
   formData.append("nuevoCambioEfectivoCobro", $("#nuevoCambioEfectivoCobro").val());
+  formData.append(
+    "liberarMesaCobro",
+    $("#grupoLiberarMesaCobro").is(":visible") && $("#chkLiberarMesaCobro").is(":checked") ? "1" : "0"
+  );
 
   $("#btnConfirmarCobro").prop("disabled", true);
 

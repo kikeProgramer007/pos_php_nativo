@@ -15,6 +15,8 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 
+require_once "../../../modelos/mesas.modelo.php";
+
 class imprimirComanda
 {
 
@@ -67,6 +69,17 @@ class imprimirComanda
         $valorVendedor = $respuestaVenta["id_vendedor"];
         $respuestaVendedor = ControladorUsuarios::ctrMostrarUsuariosActivoInactivo($itemVendedor, $valorVendedor);
 
+        $nombreMesaTicket = "";
+        if (!class_exists("ModeloMesas")) {
+            require_once __DIR__ . "/../../../modelos/mesas.modelo.php";
+        }
+        if (!empty($respuestaVenta["id_mesa"])) {
+            $nombreMesaTicket = ModeloMesas::mdlTextoMesasVenta($respuestaVenta);
+        }
+        $htmlMesaCabecera = $nombreMesaTicket !== ""
+            ? '<br><span style="font-size: 18px;"><strong>' . htmlspecialchars($nombreMesaTicket, ENT_QUOTES, "UTF-8") . '</strong></span>'
+            : "";
+
         // Configuración del PDF para impresora térmica
         require_once('tcpdf_include.php');
 
@@ -96,7 +109,7 @@ class imprimirComanda
             <tr>
                <td style="text-align:center;">
                 <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
-                <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
+                <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>' . $htmlMesaCabecera . '
                </td>
             </tr>
             <tbody>

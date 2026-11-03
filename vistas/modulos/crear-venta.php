@@ -5,6 +5,10 @@ if (isset($_GET["editarCuenta"])) {
     echo '<script>window.location = "no-autorizado";</script>';
     return;
   }
+  if (!ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues")) {
+    echo '<script>window.location = "no-autorizado";</script>';
+    return;
+  }
 } elseif (!Permisos::tiene("ventas.crear")) {
   echo '<script>window.location = "no-autorizado";</script>';
   return;
@@ -69,6 +73,8 @@ if ($modoEdicionCuenta) {
 }
 
 $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerificarCajaAbiertaPorIdArqueo($_SESSION["idArqueoCaja"]);
+$gestionMesasActiva = ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas");
+$cobrarDespuesActiva = ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues");
 
 ?>
 <style>
@@ -1272,6 +1278,7 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: 6px;
     margin-bottom: 4px;
@@ -1292,6 +1299,878 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     height: 30px;
     padding: 3px 6px;
     font-size: 12px;
+  }
+
+  .selector-mesa-venta {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .selector-mesa-venta.visible {
+    display: inline-flex;
+  }
+
+  .selector-mesa-venta .btn-seleccionar-mesa {
+    height: 30px;
+    padding: 3px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .selector-mesa-resumen {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #3c8dbc;
+    white-space: nowrap;
+  }
+
+  .selector-mesa-resumen .ico-mesa,
+  .selector-mesa-resumen .ico-personas,
+  .mesa-offcanvas-resumen .ico-mesa,
+  .mesa-offcanvas-resumen .ico-personas,
+  .mesa-card-meta .ico-personas,
+  .mesa-offcanvas-personas-cabecera .ico-personas,
+  .mesa-offcanvas-header .ico-mesa {
+    display: inline-block;
+    vertical-align: -2px;
+    flex-shrink: 0;
+  }
+
+  .ico-mesa,
+  .ico-personas {
+    width: 14px;
+    height: 14px;
+  }
+
+  .ico-mesa {
+    display: inline-block;
+    vertical-align: -2px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: url("vistas/img/iconos/mesa.svg") center / contain no-repeat;
+    mask: url("vistas/img/iconos/mesa.svg") center / contain no-repeat;
+  }
+
+  .ico-personas {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .mesa-card-selector .mesa-card-icono .ico-mesa {
+    width: 30px;
+    height: 28px;
+  }
+
+  .selector-mesa-resumen .ico-mesa,
+  .selector-mesa-resumen .ico-personas {
+    width: 14px;
+    height: 14px;
+  }
+
+  .mesa-offcanvas-header .ico-mesa {
+    width: 18px;
+    height: 17px;
+    color: #fff;
+  }
+
+  .btn-seleccionar-mesa .ico-mesa {
+    width: 15px;
+    height: 14px;
+    color: #fff;
+    margin-right: 3px;
+  }
+
+  .mesa-offcanvas-resumen {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .mesa-offcanvas-resumen .resumen-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mesa-offcanvas-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+  }
+
+  .mesa-offcanvas-backdrop.open {
+    display: block;
+  }
+
+  .mesa-offcanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(560px, 92vw);
+    height: 100%;
+    background: #fff;
+    z-index: 1050;
+    box-shadow: 4px 0 22px rgba(0, 0, 0, 0.2);
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mesa-offcanvas.open {
+    transform: translateX(0);
+  }
+
+  .mesa-offcanvas-header {
+    padding: 14px 16px;
+    background: #3c8dbc;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .mesa-offcanvas-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .mesa-offcanvas-header .close {
+    color: #fff;
+    opacity: 0.9;
+    text-shadow: none;
+    font-size: 28px;
+    font-weight: 400;
+    margin-top: -4px;
+  }
+
+  .mesa-offcanvas-header .close:hover {
+    opacity: 1;
+    color: #fff;
+  }
+
+  .mesa-offcanvas-toolbar {
+    padding: 10px 14px 0;
+    flex-shrink: 0;
+  }
+
+  .mesa-offcanvas-toolbar-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .mesa-offcanvas-acciones-ocupada {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+    min-height: 28px;
+  }
+
+  .mesa-offcanvas-acciones-ocupada .btn {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 8px;
+    white-space: nowrap;
+  }
+
+  #modalVerAtencionMesaVenta .modal-dialog {
+    width: 92%;
+    max-width: 980px;
+  }
+
+  #modalVerAtencionMesaVenta .modal-header {
+    background: #2f6fa8;
+    color: #fff;
+    border-bottom: 0;
+  }
+
+  #modalVerAtencionMesaVenta .modal-header .close {
+    color: #fff;
+    opacity: 0.9;
+    text-shadow: none;
+  }
+
+  .mesa-ver-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    background: #f5f8fb;
+    border: 1px solid #e5eaf0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .mesa-ver-cabecera-izq {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .mesa-ver-cabecera-ico {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #e8f2fa;
+    color: #2f6fa8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mesa-ver-cabecera-ico .ico-mesa {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mesa-ver-cabecera h5 {
+    margin: 0 0 2px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #234;
+  }
+
+  .mesa-ver-cabecera-meta {
+    font-size: 12px;
+    color: #6a7684;
+  }
+
+  .mesa-ver-badge-ocupada {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5c6cb;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .mesa-ver-badge-ocupada .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #dd4b39;
+  }
+
+  .mesa-ver-totales {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .mesa-ver-total-card {
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+  }
+
+  .mesa-ver-total-card .lbl {
+    display: block;
+    font-size: 12px;
+    color: #5b6b7c;
+    margin-bottom: 4px;
+  }
+
+  .mesa-ver-total-card .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: #243447;
+  }
+
+  .mesa-ver-total-card.total {
+    background: #eef6fc;
+    border-color: #d6e8f6;
+  }
+
+  .mesa-ver-total-card.pagado {
+    background: #eefaf1;
+    border-color: #d4efdf;
+  }
+
+  .mesa-ver-total-card.pendiente {
+    background: #fdf1f0;
+    border-color: #f5d0cd;
+  }
+
+  .mesa-ver-total-card.pendiente .val {
+    color: #c0392b;
+  }
+
+  .mesa-ver-pedidos-titulo {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334;
+  }
+
+  .mesa-ver-layout {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    min-height: 420px;
+  }
+
+  .mesa-ver-col-datos,
+  .mesa-ver-col-ticket {
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+
+  .mesa-ver-pedido-card {
+    border: 1px solid #dbe3ec;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mesa-ver-pedido-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 10px 12px;
+    background: #eef5fb;
+    border-bottom: 1px solid #dbe7f2;
+  }
+
+  .mesa-ver-pedido-head strong {
+    display: block;
+    font-size: 14px;
+    color: #234;
+  }
+
+  .mesa-ver-pedido-head small {
+    color: #6a7684;
+  }
+
+  .mesa-ver-pedido-body {
+    padding: 0;
+    flex: 1;
+    overflow: auto;
+  }
+
+  .mesa-ver-pedido-body table {
+    margin: 0;
+  }
+
+  .mesa-ver-pedido-foot {
+    padding: 10px 12px;
+    border-top: 1px solid #e5eaf0;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    background: #fafbfc;
+  }
+
+  .mesa-ver-tickets-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .mesa-ver-tickets-tabs .btn {
+    font-size: 12px;
+  }
+
+  .mesa-ver-ticket-frame-wrap {
+    position: relative;
+    height: 100%;
+    min-height: 420px;
+    border: 1px solid #dbe3ec;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f0f3f6;
+    display: flex;
+    justify-content: center;
+  }
+
+  #iframeTicketVerMesa {
+    width: 100%;
+    max-width: 320px;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+    background: #fff;
+  }
+
+  .mesa-ver-ticket-loading {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.88);
+    font-weight: 600;
+    color: #555;
+    z-index: 2;
+  }
+
+  .mesa-ver-ticket-loading.visible {
+    display: flex;
+  }
+
+  #modalVerAtencionMesaVenta .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #modalVerAtencionMesaVenta .modal-footer-right {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  @media (max-width: 991px) {
+    .mesa-ver-layout,
+    .mesa-ver-totales {
+      flex-direction: column;
+      grid-template-columns: 1fr;
+    }
+
+    .mesa-ver-layout {
+      display: flex;
+    }
+
+    .mesa-ver-ticket-frame-wrap,
+    #iframeTicketVerMesa {
+      min-height: 360px;
+    }
+  }
+
+  .mesa-filtro-estado {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .mesa-filtro-estado .btn-filtro-mesa {
+    border: 1px solid #d2d6de;
+    background: #fff;
+    color: #444;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .mesa-filtro-estado .btn-filtro-mesa.active {
+    background: #3c8dbc;
+    border-color: #3c8dbc;
+    color: #fff;
+  }
+
+  .mesa-leyenda-estados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .mesa-leyenda-estados span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .mesa-leyenda-estados i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .mesa-leyenda-estados .dot-disponible { background: #00a65a; }
+  .mesa-leyenda-estados .dot-ocupada { background: #dd4b39; }
+  .mesa-leyenda-estados .dot-deshabilitada { background: #9e9e9e; }
+
+  .mesa-check-multiple {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    cursor: pointer;
+  }
+
+  .mesa-check-multiple input {
+    margin: 0;
+  }
+
+  .mesa-check-multiple small {
+    font-weight: 400;
+    color: #888;
+  }
+
+  .mesa-offcanvas-footer #btnConfirmarSelectorMesa {
+    margin-left: auto;
+  }
+
+  .mesa-offcanvas-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 14px 12px;
+  }
+
+  .mesa-grid-selector {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .mesa-card-selector {
+    position: relative;
+    border: 1.5px solid #d2d6de;
+    border-radius: 6px;
+    padding: 6px 4px 6px;
+    text-align: center;
+    cursor: pointer;
+    background: #f9f9f9;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    user-select: none;
+    min-width: 0;
+  }
+
+  .mesa-card-selector .mesa-card-check {
+    display: none;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3c8dbc;
+    color: #fff;
+    font-size: 9px;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  .mesa-card-selector .mesa-card-icono {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 1px;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mesa-card-selector.disponible .mesa-card-icono { color: #00a65a; }
+  .mesa-card-selector.ocupada .mesa-card-icono { color: #dd4b39; }
+  .mesa-card-selector.deshabilitada .mesa-card-icono { color: #757575; }
+  .mesa-card-selector.disponible.seleccionada .mesa-card-icono,
+  .mesa-card-selector.ocupada.seleccionada .mesa-card-icono { color: #3c8dbc; }
+
+  .mesa-card-selector .mesa-card-nombre {
+    font-weight: 700;
+    font-size: 12px;
+    margin-bottom: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mesa-card-selector .mesa-card-meta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 3px;
+    line-height: 1.2;
+  }
+
+  .mesa-card-selector .mesa-card-meta .ico-personas {
+    width: 11px;
+    height: 11px;
+    fill: #666;
+  }
+
+  .selector-mesa-resumen .resumen-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .selector-mesa-resumen .resumen-sep {
+    opacity: 0.7;
+    margin: 0 1px;
+  }
+
+  .mesa-card-selector .mesa-card-estado {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 8px;
+    line-height: 1.3;
+  }
+
+  .mesa-card-selector.disponible {
+    border-color: #00a65a;
+    background: #f3fff8;
+  }
+
+  .mesa-card-selector.disponible .mesa-card-icono { color: #00a65a; }
+
+  .mesa-card-selector.disponible .mesa-card-estado {
+    background: #00a65a;
+    color: #fff;
+    border: 1px solid #00a65a;
+  }
+
+  .mesa-card-selector.ocupada {
+    border-color: #dd4b39;
+    background: #fff5f4;
+    cursor: not-allowed;
+  }
+
+  .mesa-card-selector.ocupada .mesa-card-icono { color: #dd4b39; }
+
+  .mesa-card-selector.ocupada .mesa-card-estado {
+    background: #dd4b39;
+    color: #fff;
+    border: 1px solid #dd4b39;
+  }
+
+  .mesa-card-selector.deshabilitada {
+    border-color: #bdbdbd;
+    background: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+
+  .mesa-card-selector.deshabilitada .mesa-card-icono { color: #9e9e9e; }
+
+  .mesa-card-selector.deshabilitada .mesa-card-estado {
+    background: #757575;
+    color: #fff;
+    border: 1px solid #757575;
+  }
+
+  .mesa-card-selector.disponible.seleccionada,
+  .mesa-card-selector.ocupada.seleccionada {
+    border-color: #3c8dbc;
+    box-shadow: 0 0 0 2px rgba(60, 141, 188, 0.3);
+    background: #eef7fc;
+  }
+
+  .mesa-card-selector.disponible.seleccionada .mesa-card-check,
+  .mesa-card-selector.ocupada.seleccionada .mesa-card-check {
+    display: block;
+  }
+
+  .mesa-card-selector.disponible.seleccionada .mesa-card-icono,
+  .mesa-card-selector.ocupada.seleccionada .mesa-card-icono {
+    color: #3c8dbc;
+  }
+
+  .mesa-offcanvas-personas {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+  }
+
+  .mesa-offcanvas-personas-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .mesa-offcanvas-personas-cabecera label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .mesa-capacidad-pill {
+    display: none;
+    font-size: 11px;
+    font-weight: 600;
+    color: #3c8dbc;
+    background: #e8f4fb;
+    border: 1px solid #b9d9ec;
+    border-radius: 12px;
+    padding: 2px 8px;
+  }
+
+  .mesa-capacidad-pill.visible {
+    display: inline-block;
+  }
+
+  .mesa-personas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+    gap: 5px;
+  }
+
+  .mesa-persona-btn {
+    height: 32px;
+    border: 1px solid #d2d6de;
+    border-radius: 5px;
+    background: #fff;
+    color: #444;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .mesa-persona-btn:hover {
+    border-color: #3c8dbc;
+    color: #3c8dbc;
+  }
+
+  .mesa-persona-btn.active {
+    background: #3c8dbc;
+    border-color: #3c8dbc;
+    color: #fff;
+  }
+
+  .mesa-personas-grid.mesa-personas-grid--vacio {
+    display: block;
+  }
+
+  .mesa-personas-vacio {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+    white-space: normal;
+    line-height: 1.35;
+  }
+
+  .mesa-card-selector .mesa-card-adicional {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #3c8dbc;
+    font-weight: 700;
+    font-size: 9px;
+  }
+
+  .mesa-offcanvas-resumen {
+    margin: 0 14px 10px;
+    padding: 8px 10px;
+    background: #eef7fc;
+    border: 1px solid #c5e0f0;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #555;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  .mesa-offcanvas-resumen strong {
+    color: #333;
+  }
+
+  .mesa-offcanvas-footer {
+    padding: 12px 14px;
+    border-top: 1px solid #e5e5e5;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .mesa-offcanvas-footer .btn {
+    min-width: 110px;
+  }
+
+  .mesa-offcanvas-vacio {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777;
+    padding: 16px 8px;
+    font-size: 13px;
+  }
+
+  @media (min-width: 992px) {
+    .mesa-offcanvas {
+      width: min(580px, 52vw);
+    }
+
+    .mesa-grid-selector {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .mesa-grid-selector {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .mesa-offcanvas {
+      width: 100vw;
+      max-width: 100vw;
+    }
+
+    .mesa-grid-selector {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .mesa-offcanvas-footer {
+      flex-direction: column-reverse;
+    }
+
+    .mesa-offcanvas-footer .btn {
+      width: 100%;
+    }
   }
 
   @media (min-width: 768px) {
@@ -1326,6 +2205,11 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
     .forma-atencion-venta select {
       width: 220px;
       flex-basis: 220px;
+    }
+
+    .selector-mesa-venta {
+      width: 100%;
+      justify-content: flex-end;
     }
   }
 
@@ -1772,6 +2656,45 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                     <option value="2" <?php echo $formaAtencionEditar == 2 ? 'selected' : ''; ?>>🚚 Para Llevar</option>
                     <option value="3" <?php echo $formaAtencionEditar == 3 ? 'selected' : ''; ?>>🔀 Mixto</option>
                   </select>
+                  <?php if ($gestionMesasActiva) { ?>
+                  <div class="selector-mesa-venta" id="selectorMesaVenta" data-gestion-mesas="1">
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-seleccionar-mesa"
+                      id="btnAbrirSelectorMesa"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="Elegir mesa y cantidad de personas (obligatorio en En Mesa o Mixto).">
+                      <i class="ico-mesa" aria-hidden="true"></i>
+                      Seleccionar mesa
+                    </button>
+                    <span class="selector-mesa-resumen" id="resumenMesaSeleccionada"></span>
+                    <input type="hidden" name="idMesaSeleccionada" id="idMesaSeleccionada" value="<?php
+                      echo ($modoEdicionCuenta && !empty($ventaEditar['id_mesa'])) ? intval($ventaEditar['id_mesa']) : '';
+                    ?>">
+                    <input type="hidden" name="nombreMesaSeleccionada" id="nombreMesaSeleccionada" value="<?php
+                      if ($modoEdicionCuenta && !empty($ventaEditar['id_mesa'])) {
+                        echo htmlspecialchars(ModeloMesas::mdlNombreMesa($ventaEditar['id_mesa']), ENT_QUOTES, 'UTF-8');
+                      }
+                    ?>">
+                    <input type="hidden" name="cantidadPersonasMesa" id="cantidadPersonasMesa" value="<?php
+                      echo ($modoEdicionCuenta && !empty($ventaEditar['cantidad_personas'])) ? intval($ventaEditar['cantidad_personas']) : '';
+                    ?>">
+                    <input type="hidden" name="idAtencionMesaSeleccionada" id="idAtencionMesaSeleccionada" value="<?php
+                      echo ($modoEdicionCuenta && !empty($ventaEditar['id_atencion_mesa'])) ? intval($ventaEditar['id_atencion_mesa']) : '';
+                    ?>">
+                    <input type="hidden" name="idsMesasSeleccionadasExtra" id="idsMesasSeleccionadasExtra" value="<?php
+                      if ($modoEdicionCuenta && !empty($ventaEditar['ids_mesas_extra'])) {
+                        echo htmlspecialchars($ventaEditar['ids_mesas_extra'], ENT_QUOTES, 'UTF-8');
+                      }
+                    ?>">
+                    <input type="hidden" id="textoMesasSeleccionadas" value="<?php
+                      if ($modoEdicionCuenta && !empty($ventaEditar['id_mesa'])) {
+                        echo htmlspecialchars(ModeloMesas::mdlTextoMesasVenta($ventaEditar), ENT_QUOTES, 'UTF-8');
+                      }
+                    ?>">
+                  </div>
+                  <?php } ?>
                 </div>
 
                 <!--=====================================
@@ -1967,10 +2890,15 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
                   </style>
 
                   <div class="pago-actions">
-                  <?php if ($modoEdicionCuenta): ?>
+                  <?php if ($modoEdicionCuenta && $cobrarDespuesActiva): ?>
                   <button type="button" id="actualizarCuentaBtn" class="btn-actualizar" style="margin-right:0;">Actualizar cuenta</button>
+<<<<<<< Updated upstream
                   <?php else: ?>
                  <!--  <button type="button" id="cuentaPendienteBtn" class="btn-pagar-despues">Cobrar Despues</button> -->
+=======
+                  <?php elseif (!$modoEdicionCuenta && $cobrarDespuesActiva): ?>
+                  <button type="button" id="cuentaPendienteBtn" class="btn-pagar-despues">Cobrar Despues</button>
+>>>>>>> Stashed changes
                   <?php endif; ?>
                   <button type="button" id="guardarVentaBtn" class="btn-pagar-ahora" <?php echo $modoEdicionCuenta ? 'style="display:none;"' : ''; ?>>Cobrar Ahora</button>
                   </div>
@@ -2003,6 +2931,207 @@ $cajaArqueoAbierta = !empty($_SESSION["idArqueoCaja"]) && ModeloArqueo::mdlVerif
   </section>
 
 </div>
+
+<?php if ($gestionMesasActiva) { ?>
+<!--=====================================
+OFFCANVAS SELECCIONAR MESA
+======================================-->
+<div class="mesa-offcanvas-backdrop" id="mesaOffcanvasBackdrop"></div>
+<aside class="mesa-offcanvas" id="mesaOffcanvas" aria-hidden="true">
+  <div class="mesa-offcanvas-header">
+    <h4>
+      <i class="ico-mesa" aria-hidden="true"></i>
+      Seleccionar mesa
+    </h4>
+    <button type="button" class="close" id="btnCerrarSelectorMesa" aria-label="Cerrar">&times;</button>
+  </div>
+  <div class="mesa-offcanvas-toolbar">
+    <div class="mesa-offcanvas-toolbar-top">
+      <div class="mesa-filtro-estado" id="mesaFiltroEstado" role="group" aria-label="Filtrar mesas">
+        <button type="button" class="btn-filtro-mesa active" data-filtro="todas">Todas</button>
+        <button type="button" class="btn-filtro-mesa" data-filtro="disponibles">Disponibles</button>
+        <button type="button" class="btn-filtro-mesa" data-filtro="ocupadas">Ocupadas</button>
+      </div>
+      <div class="mesa-offcanvas-acciones-ocupada" id="mesaAccionesOcupada">
+        <button
+          type="button"
+          class="btn btn-default btn-sm"
+          id="btnVerMesaSelector"
+          style="display:none;"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Ver tickets y si la cuenta está pendiente o pagada.">
+          <i class="fa fa-eye"></i> <span id="lblVerMesaSelector">Ver mesa</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-success btn-sm"
+          id="btnLiberarMesaSelector"
+          style="display:none;"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          title="Deja la mesa libre. Solo si no hay cuenta pendiente por cobrar.">
+          <i class="fa fa-check-circle"></i> <span id="lblLiberarMesaSelector">Liberar mesa</span>
+        </button>
+      </div>
+    </div>
+    <div class="mesa-leyenda-estados">
+      <span><i class="dot-disponible"></i> Disponible</span>
+      <span><i class="dot-ocupada"></i> Ocupada</span>
+      <span><i class="dot-deshabilitada"></i> Deshabilitada</span>
+    </div>
+    <label
+      class="mesa-check-multiple"
+      for="chkMesasMultiples"
+      data-toggle="tooltip"
+      data-placement="bottom"
+      title="Unir hasta 5 mesas disponibles. Luego pulse Confirmar.">
+      <input type="checkbox" id="chkMesasMultiples">
+      Seleccionar múltiples mesas <small>(máx. 5)</small>
+    </label>
+  </div>
+  <div class="mesa-offcanvas-body">
+    <div class="mesa-grid-selector" id="mesaGridSelector">
+      <div class="mesa-offcanvas-vacio">Cargando mesas...</div>
+    </div>
+    <div class="mesa-offcanvas-personas">
+      <div class="mesa-offcanvas-personas-cabecera">
+        <label
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Cuántas personas hay en la mesa (máximo = capacidad).">
+          <svg class="ico-personas" viewBox="0 0 24 24" aria-hidden="true" style="fill:#555;width:14px;height:14px;vertical-align:-2px;">
+            <circle cx="9" cy="8" r="3.2"/>
+            <path d="M3.5 18.5c.4-3.2 2.7-5 5.5-5s5.1 1.8 5.5 5"/>
+            <circle cx="16.5" cy="8.5" r="2.6"/>
+            <path d="M14.2 18.5c.2-2.2 1.6-3.6 3.6-3.6 1.8 0 3.1 1.2 3.5 3.1"/>
+          </svg>
+          Cantidad de personas
+        </label>
+        <span
+          class="mesa-capacidad-pill"
+          id="mesaCapacidadPill"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Máximo de personas según la mesa elegida."></span>
+      </div>
+      <div class="mesa-personas-grid" id="mesaPersonasGrid">
+        <p class="mesa-personas-vacio">Seleccione mesa y cantidad de personas.</p>
+      </div>
+    </div>
+  </div>
+  <div class="mesa-offcanvas-resumen" id="mesaOffcanvasResumen">
+    <span>Selección actual</span>
+    <span class="resumen-item">
+      <i class="ico-mesa" aria-hidden="true" style="color:#3c8dbc;"></i>
+      Mesa: <strong>—</strong>
+    </span>
+    <span class="resumen-item">
+      <svg class="ico-personas" viewBox="0 0 24 24" aria-hidden="true" style="fill:#3c8dbc;"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 18.5c.4-3.2 2.7-5 5.5-5s5.1 1.8 5.5 5"/><circle cx="16.5" cy="8.5" r="2.6"/><path d="M14.2 18.5c.2-2.2 1.6-3.6 3.6-3.6 1.8 0 3.1 1.2 3.5 3.1"/></svg>
+      Personas: <strong>—</strong>
+    </span>
+  </div>
+  <div class="mesa-offcanvas-footer">
+    <button
+      type="button"
+      class="btn btn-default"
+      id="btnCancelarSelectorMesa"
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Cerrar el panel sin guardar la selección.">
+      Cerrar
+    </button>
+    <button
+      type="button"
+      class="btn btn-warning"
+      id="btnLimpiarSelectorMesa"
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Quitar la mesa y las personas elegidas.">
+      <i class="fa fa-eraser"></i> Limpiar selección
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="btnConfirmarSelectorMesa"
+      style="display:none;"
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Guardar las mesas unidas y la cantidad de personas.">
+      <i class="fa fa-check"></i> Confirmar selección
+    </button>
+  </div>
+</aside>
+
+<!-- Modal ver atención de mesa (desde selector) -->
+<div id="modalVerAtencionMesaVenta" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Atención de Mesa</h4>
+      </div>
+      <div class="modal-body">
+        <div class="mesa-ver-cabecera">
+          <div class="mesa-ver-cabecera-izq">
+            <div class="mesa-ver-cabecera-ico">
+              <i class="ico-mesa" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h5 id="tituloVerAtencionMesaVenta">Mesa</h5>
+              <div class="mesa-ver-cabecera-meta" id="metaVerAtencionMesaVenta"></div>
+            </div>
+          </div>
+          <span class="mesa-ver-badge-ocupada"><i class="dot"></i> Ocupada</span>
+        </div>
+
+        <div class="mesa-ver-totales">
+          <div class="mesa-ver-total-card total">
+            <span class="lbl"><i class="fa fa-file-text-o"></i> Total consumido</span>
+            <span class="val" id="verMesaTotalConsumido">Bs 0.00</span>
+          </div>
+          <div class="mesa-ver-total-card pagado">
+            <span class="lbl"><i class="fa fa-money"></i> Pagado</span>
+            <span class="val" id="verMesaTotalPagado">Bs 0.00</span>
+          </div>
+          <div class="mesa-ver-total-card pendiente">
+            <span class="lbl"><i class="fa fa-credit-card"></i> Pendiente de pago</span>
+            <span class="val" id="verMesaTotalPendiente">Bs 0.00</span>
+          </div>
+        </div>
+
+        <h5 class="mesa-ver-pedidos-titulo" id="tituloPedidosVerMesa">Pedidos de la atención (0)</h5>
+        <div id="listaTicketsVerMesa" class="mesa-ver-tickets-tabs"></div>
+
+        <div class="mesa-ver-layout">
+          <div class="mesa-ver-col-datos">
+            <div id="pedidoDetalleVerMesa" class="mesa-ver-pedido-card"></div>
+          </div>
+          <div class="mesa-ver-col-ticket">
+            <div class="mesa-ver-ticket-frame-wrap">
+              <iframe id="iframeTicketVerMesa" title="Vista del ticket" src="about:blank"></iframe>
+              <div id="cargandoTicketVerMesa" class="mesa-ver-ticket-loading">Cargando ticket...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          <i class="fa fa-times"></i> Cerrar
+        </button>
+        <div class="modal-footer-right">
+          <a href="#" class="btn btn-primary" id="btnCobrarVerMesa" style="display:none;">
+            <i class="fa fa-money"></i> Cobrar
+          </a>
+          <button type="button" class="btn btn-success" id="btnLiberarDesdeVerMesa">
+            <i class="fa fa-check-circle"></i> Liberar mesa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<?php } ?>
 
 <!--=====================================
 MODAL AGREGAR MESERO
@@ -2420,6 +3549,10 @@ document.getElementById("guardarVentaBtn") && document.getElementById("guardarVe
   }
 
 
+  if (typeof window.validarMesaParaVenta === "function" && !window.validarMesaParaVenta()) {
+    return;
+  }
+
   if ($(".nuevoProducto .nuevaDescripcionProducto").length <= 0) {
     swal({
       type: "warning",
@@ -2649,6 +3782,7 @@ if (cuentaPendienteBtn) {
   cuentaPendienteBtn.addEventListener("click", function(e) {
     e.preventDefault();
     if (ventaAjaxEnCurso) return;
+    if (typeof window.validarMesaParaVenta === "function" && !window.validarMesaParaVenta()) return;
     if (!validarProductosEnVenta()) return;
     listarProductos();
 
@@ -2678,6 +3812,7 @@ if (actualizarCuentaBtn) {
   actualizarCuentaBtn.addEventListener("click", function(e) {
     e.preventDefault();
     if (ventaAjaxEnCurso) return;
+    if (typeof window.validarMesaParaVenta === "function" && !window.validarMesaParaVenta()) return;
     if (!validarProductosEnVenta()) return;
     listarProductos();
 

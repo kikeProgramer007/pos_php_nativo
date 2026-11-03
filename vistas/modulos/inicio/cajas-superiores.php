@@ -54,11 +54,12 @@ if (is_array($arqueoCaja) && !empty($arqueoCaja["id"])) {
   $otrosArqueoQr = floatval($arqueoCaja["otros_ingresos_qr"] ?? ModeloArqueo::mdlSumarOtrosIngresosQrPorArqueo($arqueoCaja["id"]));
   $gastosEf = floatval($arqueoCaja["gastos_efectivo"] ?? ModeloArqueo::mdlSumarGastosEfectivoPorArqueo($arqueoCaja["id"]));
   $gastosQr = floatval($arqueoCaja["gastos_qr"] ?? ModeloArqueo::mdlSumarGastosQrPorArqueo($arqueoCaja["id"]));
-  $compras = floatval($arqueoCaja["monto_compras"] ?? 0);
+  $comprasEf = floatval($arqueoCaja["compras_efectivo"] ?? ModeloArqueo::mdlSumarComprasEfectivoPorArqueo($arqueoCaja["id"]));
+  $comprasQr = floatval($arqueoCaja["compras_qr"] ?? ModeloArqueo::mdlSumarComprasQrPorArqueo($arqueoCaja["id"]));
 
-  // Saldo por medio: cada gasto resta solo de su bolsillo (efectivo / QR)
-  $saldoEfectivo = $montoAperturaEfectivo + $ventasArqueoEf + $otrosArqueoEf - $gastosEf - $compras;
-  $saldoQr = $montoAperturaQr + $ventasArqueoQr + $otrosArqueoQr - $gastosQr;
+  // Saldo por medio: cada gasto y cada compra restan solo de su bolsillo
+  $saldoEfectivo = $montoAperturaEfectivo + $ventasArqueoEf + $otrosArqueoEf - $gastosEf - $comprasEf;
+  $saldoQr = $montoAperturaQr + $ventasArqueoQr + $otrosArqueoQr - $gastosQr - $comprasQr;
   $saldoTotal = floatval($arqueoCaja["resultado_neto"] ?? ($saldoEfectivo + $saldoQr));
   if (!empty($arqueoCaja["fecha_apertura"])) {
     $fechaArqueo = date('d-m-Y', strtotime($arqueoCaja["fecha_apertura"]));

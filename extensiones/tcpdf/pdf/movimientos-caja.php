@@ -80,6 +80,19 @@ class imprimirFactura
         $gastosEfectivo = abs(floatval($arqueo["gastos_efectivo"] ?? ModeloArqueo::mdlSumarGastosEfectivoPorArqueo($arqueo["id"])));
         $gastosQr = abs(floatval($arqueo["gastos_qr"] ?? ModeloArqueo::mdlSumarGastosQrPorArqueo($arqueo["id"])));
         $montoCompras = abs(floatval($arqueo["monto_compras"] ?? 0));
+        $comprasEfectivo = abs(floatval(
+            $arqueo["monto_compras_efectivo"]
+                ?? $arqueo["compras_efectivo"]
+                ?? ModeloArqueo::mdlSumarComprasEfectivoPorArqueo($arqueo["id"])
+        ));
+        $comprasQr = abs(floatval(
+            $arqueo["monto_compras_qr"]
+                ?? $arqueo["compras_qr"]
+                ?? ModeloArqueo::mdlSumarComprasQrPorArqueo($arqueo["id"])
+        ));
+        if ($comprasEfectivo <= 0 && $comprasQr <= 0 && $montoCompras > 0) {
+            $comprasEfectivo = $montoCompras;
+        }
         $comprasInformativo = floatval($arqueo["monto_compras_informativo"] ?? ModeloArqueo::mdlSumarComprasInformativasPorArqueo($arqueo["id"]));
         $totalEgresos = abs(floatval($arqueo["total_egresos"] ?? ($gastosOperativos + $montoCompras)));
         $resultadoNeto = floatval($arqueo["resultado_neto"] ?? 0);
@@ -101,7 +114,7 @@ class imprimirFactura
         }
 
         // Altura del ticket según filas (evita corte al agregar secciones)
-        $filasFijas = 86;
+        $filasFijas = 88;
         $filasDetalleOtros = 0;
         if (is_array($detalleOtrosIngresos) && count($detalleOtrosIngresos) > 1 && count($detalleOtrosIngresos) <= 6) {
             $filasDetalleOtros = count($detalleOtrosIngresos);
@@ -271,6 +284,14 @@ class imprimirFactura
               <tr>
                 <td style="text-align:left;"> COMPRAS PAGADAS CON CAJA:</td>
                 <td style="text-align:right; ">' . number_format($montoCompras,2) . '</td>
+            </tr>
+              <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; QR:</td>
+                <td style="text-align:right; ">' . number_format($comprasQr,2) . '</td>
+            </tr>
+              <tr>
+                <td style="text-align:left;font-size:7px;">&nbsp;&nbsp;&nbsp; EFECTIVO:</td>
+                <td style="text-align:right; ">' . number_format($comprasEfectivo,2) . '</td>
             </tr>
             <tr>
                 <td style="width:70%; text-align:left;"><strong>TOTAL EGRESOS:</strong></td>

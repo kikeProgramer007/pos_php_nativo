@@ -96,16 +96,17 @@ static public function mdlRegistrarCompra($tabla, $datos){
 
 		$idArqueo = intval($datos["id_arqueo_caja"] ?? 0);
 		$totalCompra = round(floatval($datos["total"] ?? 0), 2);
-
-		if ($idArqueo <= 0) {
-			throw new Exception("No hay caja abierta. No se puede registrar la compra.");
-		}
+		$efectivoCompra = round(floatval($datos["total_efectivo"] ?? 0), 2);
+		$descontarCaja = intval($datos["descontar_caja"] ?? 0) === 1 ? 1 : 0;
 
 		if ($totalCompra <= 0) {
 			throw new Exception("El monto de la compra debe ser mayor a cero.");
 		}
 
-		$descontarCaja = intval($datos["descontar_caja"] ?? 0) === 1 ? 1 : 0;
+		if ($descontarCaja === 1 && $idArqueo <= 0) {
+			throw new Exception("No hay caja abierta. No se puede descontar la compra de caja.");
+		}
+
 		$disponible = null;
 
 		if ($descontarCaja === 1) {
@@ -115,58 +116,42 @@ static public function mdlRegistrarCompra($tabla, $datos){
 			}
 
 			$disponible = floatval($disponibilidad["disponible"]);
-			if ($totalCompra > $disponible + 0.0001) {
-				$faltante = round($totalCompra - $disponible, 2);
+			if ($efectivoCompra > $disponible + 0.0001) {
+				$faltante = round($efectivoCompra - $disponible, 2);
 				throw new Exception(
 					"No hay suficiente efectivo disponible en caja.\n\n" .
 					"Disponible: Bs " . number_format($disponible, 2, '.', '') . "\n" .
-					"Monto de la compra: Bs " . number_format($totalCompra, 2, '.', '') . "\n" .
+					"Efectivo de la compra: Bs " . number_format($efectivoCompra, 2, '.', '') . "\n" .
 					"Faltante: Bs " . number_format($faltante, 2, '.', '')
 				);
 			}
 		}
 
-		try {
-			$stmt = $conexion->prepare(
-				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja, descontar_caja)
-				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja, :descontar_caja)"
-			);
-		} catch (PDOException $e) {
-			$stmt = $conexion->prepare(
-				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
-				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
-			);
-		}
+		$stmt = $conexion->prepare(
+			"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja, descontar_caja, tipo_pago, total_efectivo, total_qr)
+			 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja, :descontar_caja, :tipo_pago, :total_efectivo, :total_qr)"
+		);
 
 		$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
 		$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
 		$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
 		$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
-		$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
-		if (strpos($stmt->queryString, "descontar_caja") !== false) {
-			$stmt->bindValue(":descontar_caja", $descontarCaja, PDO::PARAM_INT);
+		if ($idArqueo > 0) {
+			$stmt->bindValue(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
+		} else {
+			$stmt->bindValue(":id_arqueo_caja", null, PDO::PARAM_NULL);
 		}
+		$stmt->bindValue(":descontar_caja", $descontarCaja, PDO::PARAM_INT);
+		$stmt->bindValue(":tipo_pago", $datos["tipo_pago"], PDO::PARAM_STR);
+		$stmt->bindValue(":total_efectivo", $datos["total_efectivo"], PDO::PARAM_STR);
+		$stmt->bindValue(":total_qr", $datos["total_qr"], PDO::PARAM_STR);
 
 		try {
 			if (!$stmt->execute()) {
 				throw new Exception("Error al registrar la compra");
 			}
 		} catch (PDOException $e) {
-			if ($descontarCaja === 1) {
-				throw new Exception("Ejecute sql/compras_descontar_caja.sql para usar la opción Descontar de caja.");
-			}
-			$stmt = $conexion->prepare(
-				"INSERT INTO $tabla(codigo, total, id_usuario, id_proveedor, id_arqueo_caja)
-				 VALUES (:codigo, :total, :id_usuario, :id_proveedor, :id_arqueo_caja)"
-			);
-			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_STR);
-			$stmt->bindParam(":total", $datos["total"], PDO::PARAM_STR);
-			$stmt->bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
-			$stmt->bindParam(":id_proveedor", $datos["id_proveedor"], PDO::PARAM_INT);
-			$stmt->bindParam(":id_arqueo_caja", $idArqueo, PDO::PARAM_INT);
-			if (!$stmt->execute()) {
-				throw new Exception("Error al registrar la compra");
-			}
+			throw new Exception("Ejecute sql/migracion_unificada.sql antes de registrar la forma de pago.");
 		}
 
 		$idCompra = $conexion->lastInsertId();
@@ -196,14 +181,16 @@ static public function mdlRegistrarCompra($tabla, $datos){
 
 		$conexion->commit();
 
-		ModeloArqueo::mdlSincronizarMontosArqueo($idArqueo);
+		if ($idArqueo > 0) {
+			ModeloArqueo::mdlSincronizarMontosArqueo($idArqueo);
+		}
 
 		$respuesta = [
 			"status" => "ok",
 			"idCompra" => $idCompra,
 		];
 		if ($descontarCaja === 1 && $disponible !== null) {
-			$respuesta["disponible_restante"] = round($disponible - $totalCompra, 2);
+			$respuesta["disponible_restante"] = round($disponible - $efectivoCompra, 2);
 		}
 
 		return $respuesta;
@@ -229,7 +216,7 @@ static public function mdlRegistrarCompra($tabla, $datos){
 
 	static public function mdlEliminarCompra($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET estado=0 WHERE id = :id");
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET estado=0, fecha_alta=fecha_alta WHERE id = :id");
 
 		$stmt -> bindParam(":id", $datos, PDO::PARAM_INT);
 
@@ -329,13 +316,18 @@ static public function mdlRegistrarCompra($tabla, $datos){
 	RANGO FECHAS
 	=============================================*/	
 
-	static public function mdlRangoFechasComprasPdf($tabla, $fechaInicial, $fechaFinal, $idProveedor, $idCategoria=0) {
+	static public function mdlRangoFechasComprasPdf($tabla, $fechaInicial, $fechaFinal, $idProveedor, $idCategoria=0, $tipoPago=0, $descontarCaja=0) {
 		if ($fechaInicial <= $fechaFinal) {
 			$query = "SELECT 
 						compras.codigo, 
 						compras.fecha_alta, 
 						usuarios.nombre AS usuario,
 						proveedor.nombre AS proveedor,
+						compras.tipo_pago,
+						compras.descontar_caja,
+						compras.total_efectivo,
+						compras.total_qr,
+						compras.total AS total_compra,
 						SUM(dc.subtotal) AS total
 					  FROM $tabla 
 					  JOIN detalle_compra dc ON compras.id = dc.id_compra
@@ -352,8 +344,24 @@ static public function mdlRegistrarCompra($tabla, $datos){
 			if ($idCategoria != 0) {
 				$query .= " AND c.id = :idCategoria";
 			}
+			$tipoPago = (string) $tipoPago;
+			if (in_array($tipoPago, array("1", "2", "4"), true)) {
+				if ($tipoPago === "1") {
+					$query .= " AND compras.tipo_pago IN ('1', 'Efectivo')";
+				} elseif ($tipoPago === "2") {
+					$query .= " AND compras.tipo_pago IN ('2', 'QR')";
+				} else {
+					$query .= " AND compras.tipo_pago IN ('4', 'Mixto')";
+				}
+			}
+			$descontarCaja = (string) $descontarCaja;
+			if ($descontarCaja === "1") {
+				$query .= " AND COALESCE(compras.descontar_caja, 0) = 1";
+			} elseif ($descontarCaja === "2") {
+				$query .= " AND COALESCE(compras.descontar_caja, 0) <> 1";
+			}
 	
-			$query .= " GROUP BY compras.codigo, compras.fecha_alta, usuarios.nombre, proveedor.nombre
+			$query .= " GROUP BY compras.id, compras.codigo, compras.fecha_alta, compras.tipo_pago, compras.descontar_caja, compras.total_efectivo, compras.total_qr, compras.total, usuarios.nombre, proveedor.nombre
 						ORDER BY compras.fecha_alta ASC;";
 	
 			$stmt = Conexion::conectar()->prepare($query);

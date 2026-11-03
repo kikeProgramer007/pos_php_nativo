@@ -202,10 +202,44 @@ $cajaAbierta = !empty($_SESSION["idArqueoCaja"])
 
                 </div>
 
+                <hr style="margin-top:5px;margin-bottom:12px;">
 
-              </div>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-5">
+                    <div class="form-group">
+                      <label for="tipoPagoCompra">FORMA DE PAGO:</label>
+                      <select class="form-control input-sm" id="tipoPagoCompra" name="tipoPagoCompra">
+                        <option value="1">Efectivo</option>
+                        <option value="2">QR</option>
+                        <option value="4">Efectivo y QR (Mixto)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-xs-12 col-sm-7">
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-6" id="contenedorPagoEfectivoCompra">
+                        <div class="form-group">
+                          <label for="pagoEfectivoCompra">Pago en Efectivo:</label>
+                          <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                            <input type="text" class="form-control" id="pagoEfectivoCompra" name="pagoEfectivoCompra" value="0.00" placeholder="0.00" inputmode="decimal" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-xs-12 col-sm-6" id="contenedorPagoQrCompra" style="display:none;">
+                        <div class="form-group">
+                          <label for="pagoQrCompra">Pago en QR:</label>
+                          <div class="input-group">
+                            <span class="input-group-addon"><i class="fa fa-qrcode"></i></span>
+                            <input type="text" class="form-control" id="pagoQrCompra" name="pagoQrCompra" value="0.00" placeholder="0.00" inputmode="decimal" readonly>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <div class="well well-sm" style="margin-top:10px;margin-bottom:0;">
+                <div class="well well-sm" style="margin-top:5px;margin-bottom:0;">
                   <div class="checkbox" style="margin-top:0;margin-bottom:0;">
                     <label>
                       <input type="checkbox" class="minimal-orange" name="descontarCaja" id="checkDescontarCaja" value="1" <?php echo $cajaAbierta ? "" : "disabled"; ?>>
@@ -214,11 +248,11 @@ $cajaAbierta = !empty($_SESSION["idArqueoCaja"])
                          data-toggle="tooltip"
                          data-placement="left"
                          data-html="true"
-                         title="<strong>Sin marcar:</strong> solo inventario. No resta de la caja.<br><br><strong>Marcado:</strong> pagó con efectivo de la caja. Valida saldo y resta del arqueo."></i>
+                         title="<strong>Sin marcar:</strong> guarda la forma de pago y no mueve la caja.<br><br><strong>Marcado:</strong> el efectivo resta el cajón y el QR resta la cuenta QR."></i>
                     </label>
                   </div>
                   <p class="help-block" style="margin-top:8px;margin-bottom:0;">
-                    Sin marcar si pagó por otro medio (bolsillo, etc.).
+                    Sin marcar, la compra no descuenta caja aunque el pago sea efectivo, QR o mixto.
                     <?php if ($cajaAbierta) { ?>
                       <span class="text-muted"> · Caja abierta.</span>
                     <?php } else { ?>
@@ -226,6 +260,8 @@ $cajaAbierta = !empty($_SESSION["idArqueoCaja"])
                     <?php } ?>
                   </p>
                 </div>
+
+              </div>
 
           </div>
 

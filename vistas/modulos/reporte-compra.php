@@ -87,6 +87,30 @@ $fechaActual = date('Y-m-d');
               </div>
             </div>
 
+            <div class="row">
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label>Forma de pago:</label>
+                  <select class="select2 form-control" id="tipo_pago" name="tipo_pago">
+                    <option value="0">Todos</option>
+                    <option value="1">Efectivo</option>
+                    <option value="2">QR</option>
+                    <option value="4">Efectivo y QR (Mixto)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-3">
+                <div class="form-group">
+                  <label>Impacto en caja:</label>
+                  <select class="select2 form-control" id="descontar_caja" name="descontar_caja">
+                    <option value="0">Todas</option>
+                    <option value="1">Restaron de caja</option>
+                    <option value="2">No afectaron caja</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="text-right">
   <button type="button" class="btn btn-primary" onclick="generatePDF()" style="margin-right:6px;">
     <i class="fa fa-print"></i> PDF
@@ -123,80 +147,81 @@ fechaFin.setAttribute('max', fechaActual);
 
 var popupWindow = null;
 
-function generatePDF() {
-  const idProveedor = document.getElementById('id_proveedor').value;
-  const idUsuario = document.getElementById('id_usuario').value;
-  const idCategoria = document.getElementById('id_categoria').value;
+function paramsReporteCompras() {
+  return {
+    idProveedor: document.getElementById('id_proveedor').value,
+    idUsuario: document.getElementById('id_usuario').value,
+    idCategoria: document.getElementById('id_categoria').value,
+    tipoPago: document.getElementById('tipo_pago').value || '0',
+    descontarCaja: document.getElementById('descontar_caja').value || '0'
+  };
+}
+
+function validarFechasReporteCompras() {
   if (!fechaInicio.value || !fechaFin.value) {
     swal({
-    icon: 'warning',
-    title: 'Advertencia',
-    text: 'Por favor, seleccione las fechas requeridas.',
+      icon: 'warning',
+      title: 'Advertencia',
+      text: 'Por favor, seleccione las fechas requeridas.',
     });
-    return;
+    return false;
   }
   if (fechaFin.value > fechaActual) {
-      swal({
-          icon: 'warning',
-          title: 'Advertencia',
-          text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual,
-      });
-      return;
+    swal({
+      icon: 'warning',
+      title: 'Advertencia',
+      text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual,
+    });
+    return false;
+  }
+  if (fechaInicio.value > fechaFin.value) {
+    swal({
+      icon: 'warning',
+      title: 'Advertencia',
+      text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.',
+    });
+    return false;
+  }
+  return true;
+}
+
+function queryReporteCompras() {
+  const p = paramsReporteCompras();
+  return "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+    "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+    "&idProveedor=" + encodeURIComponent(p.idProveedor) +
+    "&idUsuario=" + encodeURIComponent(p.idUsuario) +
+    "&idCategoria=" + encodeURIComponent(p.idCategoria) +
+    "&tipoPago=" + encodeURIComponent(p.tipoPago) +
+    "&descontarCaja=" + encodeURIComponent(p.descontarCaja);
+}
+
+function generatePDF() {
+  if (!validarFechasReporteCompras()) {
+    return;
   }
 
-  if (fechaInicio.value > fechaFin.value) { 
-      swal({
-          icon: 'warning',
-          title: 'Advertencia',
-          text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.',
-      });
-      return;
+  const width = 800;
+  const height = 600;
+  const left = (screen.width / 2) - (width / 2);
+  const top = (screen.height / 2) - (height / 2);
+  const windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
+
+  if (popupWindow && !popupWindow.closed) {
+    popupWindow.close();
   }
 
-
-    const width = 800;
-    const height = 600;
-    const left = (screen.width / 2) - (width / 2);
-    const top = (screen.height / 2) - (height / 2);
-    const windowFeatures = `menubar=no,toolbar=no,status=no,width=${width},height=${height},left=${left},top=${top}`;
-
-    if (popupWindow && !popupWindow.closed) {
-        popupWindow.close();
-    }
-
-    const qs = "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-        "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-        "&idProveedor=" + encodeURIComponent(idProveedor) +
-        "&idUsuario=" + encodeURIComponent(idUsuario) +
-        "&idCategoria=" + encodeURIComponent(idCategoria);
-
-    popupWindow = window.open(
-        "extensiones/tcpdf/pdf/reporte-compras.php?" + qs,
-        "_blank",
-        windowFeatures
-    );
+  popupWindow = window.open(
+    "extensiones/tcpdf/pdf/reporte-compras.php?" + queryReporteCompras(),
+    "_blank",
+    windowFeatures
+  );
 }
 
 function generateExcelCompras() {
-  const idProveedor = document.getElementById('id_proveedor').value;
-  const idUsuario = document.getElementById('id_usuario').value;
-  const idCategoria = document.getElementById('id_categoria').value;
-  if (!fechaInicio.value || !fechaFin.value) {
-    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
+  if (!validarFechasReporteCompras()) {
     return;
   }
-  if (fechaFin.value > fechaActual) {
-    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual });
-    return;
-  }
-  if (fechaInicio.value > fechaFin.value) {
-    swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.' });
-    return;
-  }
-  window.location.href = "extensiones/excel/reporte-compras.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-    "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-    "&idProveedor=" + encodeURIComponent(idProveedor) +
-    "&idUsuario=" + encodeURIComponent(idUsuario) +
-    "&idCategoria=" + encodeURIComponent(idCategoria);
+  window.location.href = "extensiones/excel/reporte-compras.php?" + queryReporteCompras();
 }
 </script>

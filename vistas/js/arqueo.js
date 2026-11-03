@@ -28,6 +28,8 @@ class ArqueoCaja {
             gastosEfectivo: 0,
             gastosQr: 0,
             montoCompras: 0,
+            comprasEfectivo: 0,
+            comprasQr: 0,
             totalIngresos: 0,
             totalEgresos: 0,
             resultadoNeto: 0,
@@ -147,6 +149,11 @@ class ArqueoCaja {
         this.totales.gastosEfectivo = Math.abs(parseFloat((document.getElementById('gastos_efectivo') || {}).textContent) || 0);
         this.totales.gastosQr = Math.abs(parseFloat((document.getElementById('gastos_qr') || {}).textContent) || 0);
         this.totales.montoCompras = Math.abs(parseFloat(document.getElementById('monto_compras').textContent) || 0);
+        this.totales.comprasEfectivo = Math.abs(parseFloat((document.getElementById('compras_efectivo') || {}).textContent) || 0);
+        this.totales.comprasQr = Math.abs(parseFloat((document.getElementById('compras_qr') || {}).textContent) || 0);
+        if (this.totales.comprasEfectivo <= 0 && this.totales.comprasQr <= 0 && this.totales.montoCompras > 0) {
+            this.totales.comprasEfectivo = this.totales.montoCompras;
+        }
         this.totales.otrosIngresos = Math.abs(parseFloat(document.getElementById('otros_ingresos').textContent) || 0);
         this.totales.otrosIngresosEfectivo = Math.abs(parseFloat((document.getElementById('otros_ingresos_efectivo') || {}).textContent) || 0);
         this.totales.otrosIngresosQr = Math.abs(parseFloat((document.getElementById('otros_ingresos_qr') || {}).textContent) || 0);
@@ -169,7 +176,7 @@ class ArqueoCaja {
         const efectivoEsperadoC = this.centavos(this.totales.montoAperturaEfectivo)
             + this.centavos(this.totales.montoVentasEfectivo)
             + this.centavos(this.totales.otrosIngresosEfectivo)
-            - this.centavos(this.totales.montoCompras)
+            - this.centavos(this.totales.comprasEfectivo)
             - this.centavos(this.totales.gastosEfectivo);
         const totalContadoC = this.centavos(this.totales.totalEfectivoEnCaja)
             + this.centavos(this.totales.totalQrEnCuenta);
@@ -348,6 +355,14 @@ class ArqueoCaja {
         if (gastosQrEl) {
             gastosQrEl.textContent = '0.00';
         }
+        const comprasEfEl = document.getElementById('compras_efectivo');
+        if (comprasEfEl) {
+            comprasEfEl.textContent = '0.00';
+        }
+        const comprasQrEl = document.getElementById('compras_qr');
+        if (comprasQrEl) {
+            comprasQrEl.textContent = '0.00';
+        }
         this.actualizarTexto('monto_apertura', 0);
         this.actualizarTexto('monto_apertura_efectivo', 0);
         this.actualizarTexto('monto_apertura_qr', 0);
@@ -378,6 +393,8 @@ class ArqueoCaja {
             'gastos_efectivo': this.formatearMonto(datos.gastos_efectivo),
             'gastos_qr': this.formatearMonto(datos.gastos_qr),
             'monto_compras': this.formatearMonto(datos.monto_compras),
+            'compras_efectivo': this.formatearMonto(datos.monto_compras_efectivo ?? datos.compras_efectivo),
+            'compras_qr': this.formatearMonto(datos.monto_compras_qr ?? datos.compras_qr),
             'total_egresos': this.formatearMonto(datos.total_egresos),
             'resultado_neto': this.formatearMonto(datos.resultado_neto),
             'total_ganancia_perdida': this.formatearMonto(datos.resultado_neto),
@@ -450,24 +467,19 @@ class ArqueoCaja {
     }
 
     validarAperturaCierreCaja() {
-        var condicionalEfeCaj;
-        if(this.estado === ESTADO.ABIERTA){
-            condicionalEfeCaj={ 
-                condicion: parseFloat(document.getElementById('total_efectivo_en_caja').value) < 1,
-                mensaje: 'Debe ingresar un monto mayor a 0 en efectivo en caja' 
-            }
-        }else{
-            condicionalEfeCaj={
-                condicion:parseFloat(document.getElementById('total_efectivo_en_caja').value) < 0,
-                mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja'
-            }
-        }
+        // Apertura y cierre: el conteo puede ser 0 (apertura errónea / caja vacía).
+        // Solo se rechaza negativo.
+        const montoEfectivo = parseFloat(document.getElementById('total_efectivo_en_caja').value);
+        const condicionalEfeCaj = {
+            condicion: isNaN(montoEfectivo) || montoEfectivo < 0,
+            mensaje: 'Debe ingresar un monto mayor o igual a 0 en el efectivo en caja'
+        };
         const cantidadPendientes = parseInt(document.getElementById('cuentas_pendientes_cantidad')?.textContent || '0', 10);
         const validaciones = [
             { condicion: !document.getElementById('idVendedor').value, mensaje: 'El usuario es obligatorio' },
             { condicion: !document.getElementById('idCaja').value, mensaje: 'Debe seleccionar una caja' },
             { condicion: !document.getElementById('nro_ticket').value || parseFloat(document.getElementById('nro_ticket').value) < 0, mensaje: 'El número de ticket es obligatorio' },
-            { condicion: !document.getElementById('total_efectivo_en_caja').value, mensaje: 'Debe ingresar el campo efectivo en caja' },
+            { condicion: document.getElementById('total_efectivo_en_caja').value === '', mensaje: 'Debe ingresar el campo efectivo en caja' },
             condicionalEfeCaj,
             {
                 condicion: this.estado === ESTADO.ABIERTA && cantidadPendientes > 0,
@@ -567,6 +579,8 @@ class ArqueoCaja {
             totalEgresos: this.totales.totalEgresos,
             gastosOperativos: this.totales.gastosOperativos,
             montoCompras: this.totales.montoCompras,
+            montoComprasEfectivo: this.totales.comprasEfectivo,
+            montoComprasQr: this.totales.comprasQr,
             resultadoNeto: this.totales.resultadoNeto,
             totalEfectivoEnCaja: this.totales.totalEfectivoEnCaja,
             totalQrEnCuenta: this.totales.totalQrEnCuenta,
@@ -584,9 +598,29 @@ class ArqueoCaja {
     }
 
     async confirmarOperacion(estado) {
-        const config = estado === ESTADO.CERRADA ? 
-            { title: '¿Aperturar Caja?', text: '¿Está seguro de aperturar la caja?' } :
-            { title: '¿Cerrar Caja?', text: '¿Está seguro de cerrar la caja?' };
+        let config;
+        if (estado === ESTADO.CERRADA) {
+            const aperturaCero = (this.totales.totalEfectivoEnCaja || 0) <= 0
+                && (this.totales.totalQrEnCuenta || 0) <= 0;
+            config = {
+                title: '¿Aperturar Caja?',
+                text: aperturaCero
+                    ? 'Va a abrir con saldo inicial 0. Si fue un error, podrá cerrar esta caja en 0 y abrir otra con el monto correcto.'
+                    : '¿Está seguro de aperturar la caja?'
+            };
+        } else {
+            const sesionVacia = (this.totales.montoApertura || 0) <= 0
+                && (this.totales.montoVentas || 0) <= 0
+                && (this.totales.montoCompras || 0) <= 0
+                && (this.totales.gastosOperativos || 0) <= 0
+                && (this.totales.totalEfectivoEnCaja || 0) <= 0;
+            config = {
+                title: '¿Cerrar Caja?',
+                text: sesionVacia
+                    ? 'Esta caja está en 0 (sin movimientos). Se cerrará para que pueda abrir otra con el monto inicial correcto.'
+                    : '¿Está seguro de cerrar la caja?'
+            };
+        }
 
         return swal({
             ...config,

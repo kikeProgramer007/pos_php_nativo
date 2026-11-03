@@ -5,6 +5,16 @@ if (!Permisos::tiene("ventas.ver")) {
   return;
 }
 
+if (!class_exists("ModeloEmpresa")) {
+  require_once "modelos/empresa.modelo.php";
+}
+if (!class_exists("ModeloMesas")) {
+  require_once "modelos/mesas.modelo.php";
+}
+$gestionMesasVentas = ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas");
+$cobrarDespuesVentas = ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues");
+$mesasFiltroVentas = $gestionMesasVentas ? ModeloMesas::mdlMostrarMesas() : array();
+
 ?>
 
 <style>
@@ -207,7 +217,9 @@ if (!Permisos::tiene("ventas.ver")) {
             <i class="fa fa-ticket"></i>
             <select class="form-control input-sm" id="filtroEstadoPago">
               <option value="todos">Todos</option>
+              <?php if ($cobrarDespuesVentas) { ?>
               <option value="PENDIENTE">Cuenta pendiente</option>
+              <?php } ?>
               <option value="PAGADA">Cuenta pagada</option>
             </select>
             </div>
@@ -224,6 +236,26 @@ if (!Permisos::tiene("ventas.ver")) {
                 ?>
               </select>
             </div>
+
+            <?php if ($gestionMesasVentas) { ?>
+            <div class="ventas-filter-card filter-highlight">
+              <i class="fa fa-th-large"></i>
+              <select class="form-control input-sm" id="filtroMesa" title="Filtrar por número de mesa">
+                <option value="0">Todas las mesas</option>
+                <?php
+                  if (is_array($mesasFiltroVentas)) {
+                    foreach ($mesasFiltroVentas as $mesaFiltro) {
+                      $num = !empty($mesaFiltro["numero"]) ? intval($mesaFiltro["numero"]) : 0;
+                      $label = $num > 0
+                        ? ("Nº " . $num)
+                        : htmlspecialchars($mesaFiltro["nombre"] ?? ("Mesa " . intval($mesaFiltro["id"])), ENT_QUOTES, "UTF-8");
+                      echo "<option value='" . intval($mesaFiltro["id"]) . "'>" . $label . "</option>";
+                    }
+                  }
+                ?>
+              </select>
+            </div>
+            <?php } ?>
 
             <button type="button" class="btn btn-default" id="daterange-btn">
               <span>
@@ -246,6 +278,9 @@ if (!Permisos::tiene("ventas.ver")) {
 
               <th style="width:10px">#</th>
               <th>N° TICKET</th>
+              <?php if ($gestionMesasVentas) { ?>
+              <th>Mesa</th>
+              <?php } ?>
               <th>Meseros</th>
               <th>Clientes</th>
               <th>Tipo de Pago</th>
@@ -322,6 +357,16 @@ if (!Permisos::tiene("ventas.ver")) {
         <div class="form-group" id="grupoCambioCobro">
           <label>Cambio</label>
           <input type="text" class="form-control" id="nuevoCambioEfectivoCobro" readonly value="0.00">
+        </div>
+        <div class="checkbox" id="grupoLiberarMesaCobro" style="display:none;margin-top:12px;">
+          <label
+            style="color:#222;font-weight:700;cursor:pointer;"
+            data-toggle="tooltip"
+            data-placement="top"
+            title="Al cobrar, deja la mesa libre si ya no quedan cuentas pendientes. Desmarque si el cliente sigue en la mesa.">
+            <input type="checkbox" id="chkLiberarMesaCobro" value="1" checked>
+            <span id="lblLiberarMesaCobro">LIBERAR MESA</span>
+          </label>
         </div>
       </div>
       <div class="modal-footer">

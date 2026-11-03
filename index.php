@@ -1,5 +1,6 @@
 <?php
 
+require_once "includes/assets.php";
 require_once "controladores/plantilla.controlador.php";
 require_once "controladores/usuarios.controlador.php";
 require_once "controladores/categorias.controlador.php";
@@ -19,6 +20,7 @@ require_once "controladores/perfiles.controlador.php";
 require_once "controladores/permisos.controlador.php";
 require_once "controladores/otros_ingresos.controlador.php";
 require_once "controladores/producto_presentaciones.controlador.php";
+require_once "controladores/mesas.controlador.php";
 
 require_once "modelos/usuarios.modelo.php";
 require_once "modelos/categorias.modelo.php";
@@ -38,6 +40,7 @@ require_once "modelos/perfiles.modelo.php";
 require_once "modelos/otros_ingresos.modelo.php";
 require_once "modelos/producto_presentaciones.modelo.php";
 require_once "modelos/empresa.modelo.php";
+require_once "modelos/mesas.modelo.php";
 
 $plantilla = new ControladorPlantilla();
 $plantilla -> ctrPlantilla();

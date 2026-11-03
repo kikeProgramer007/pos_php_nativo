@@ -16,6 +16,8 @@ require_once "../../../modelos/usuarios.modelo.php";
 require_once "../../../controladores/productos.controlador.php";
 require_once "../../../modelos/productos.modelo.php";
 
+require_once "../../../modelos/mesas.modelo.php";
+
 class imprimirFacturaComanda
 {
 
@@ -141,16 +143,36 @@ class imprimirFacturaComanda
     /**
      * Genera el encabezado de la factura
      */
+    private function htmlMesaCabecera($respuestaVenta) {
+        $nombre = "";
+        if (!class_exists("ModeloMesas")) {
+            require_once __DIR__ . "/../../../modelos/mesas.modelo.php";
+        }
+        if (!empty($respuestaVenta["id_mesa"])) {
+            $nombre = ModeloMesas::mdlTextoMesasVenta($respuestaVenta);
+        }
+        if ($nombre === "") {
+            return "";
+        }
+        return '<br><span style="font-size: 18px;"><strong>' . htmlspecialchars($nombre, ENT_QUOTES, "UTF-8") . '</strong></span>';
+    }
+
     private function generarEncabezadoFactura($respuestaVenta, $respuestaCliente, $respuestaMesero, $respuestaVendedor, $tipoPago) {
         $fechaSolo = date('d-m-Y', strtotime($respuestaVenta["fecha"]));
         $horaSolo = date('H:i a ', strtotime($respuestaVenta["fecha"]));
+        $htmlMesa = $this->htmlMesaCabecera($respuestaVenta);
 
         return '<table border="0">
             <tbody>
             <tr>
                 <td style="text-align:center;">
+<<<<<<< Updated upstream
                     <span style="font-size: 16px;">Pollos 360 </span><br>
                     <span style="font-size: 25px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span><br>
+=======
+                    <span style="font-size: 16px;">EL GATO RICO</span><br>
+                    <span style="font-size: 25px;"><strong>N° PEDIDO:' . ltrim($respuestaVenta["codigo"], '0') . '</strong></span>' . $htmlMesa . '<br>
+>>>>>>> Stashed changes
                     <span style="font-size: 8px;">Fecha: ' . $fechaSolo . ' &nbsp;&nbsp; Hora: ' . $horaSolo . '</span>
                 </td>
             </tr>
@@ -189,12 +211,13 @@ class imprimirFacturaComanda
      * Genera el encabezado de la comanda
      */
     private function generarEncabezadoComanda($respuestaVenta, $respuestaCliente, $respuestaMesero, $fecha, $formaAtencion) {
+        $htmlMesa = $this->htmlMesaCabecera($respuestaVenta);
         return '<table border="0" cellpadding="1" style="font-size: 9px; padding:0px; width:100%;">
             <tbody>
             <tr>
                 <td style="text-align:center;">
                     <span style="font-size: 16px;"><strong>&lt;&lt; COCINA &gt;&gt;</strong></span><br>
-                    <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>
+                    <span style="font-size: 25px; font-weight: bold;">' . ltrim($respuestaVenta["codigo"], '0') . '</span>' . $htmlMesa . '
                 </td>
             </tr>
             </tbody>

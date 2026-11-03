@@ -92,7 +92,7 @@ if ($empresa && !empty($empresa["logo"])) {
                   </label>
                 </div>
               <?php } ?>
-              <p class="help-block">Mientras esté marcada, aplica en cada venta. Si la desmarcas, vuelve el comportamiento anterior.</p>
+              <p class="help-block">Marca o desmarca cada función según el local. Los cambios aplican al guardar.</p>
             </div>
           </div>
         </div>

@@ -451,6 +451,9 @@ function sumarTotalPreciosAComprar(){
 	$("#nuevoTotalCompra").val(sumaTotalPrecio);
 	$("#totalCompra").val(sumaTotalPrecio);
 	$("#nuevoTotalCompra").attr("total",sumaTotalPrecio);
+	if (typeof actualizarPagoCompra === "function") {
+		actualizarPagoCompra();
+	}
 
 
 }
@@ -506,6 +509,143 @@ FORMATO AL PRECIO FINAL
 if ($.fn.number) { 
 $("#nuevoTotalCompra").number(true, 2);
 };
+
+function centavosCompra(valor) {
+	var texto = String(valor == null ? "" : valor).trim().replace(",", ".");
+	if (texto === "" || isNaN(texto)) {
+		return 0;
+	}
+	return Math.round(Number(texto) * 100);
+}
+
+function textoCentavosCompra(centavos) {
+	return (centavos / 100).toFixed(2);
+}
+
+function actualizarPagoCompra(origen) {
+	var tipo = $("#tipoPagoCompra").val() || "1";
+	var totalC = centavosCompra($("#totalCompra").val());
+	var $efectivo = $("#pagoEfectivoCompra");
+	var $qr = $("#pagoQrCompra");
+	var $cajaEfectivo = $("#contenedorPagoEfectivoCompra");
+	var $cajaQr = $("#contenedorPagoQrCompra");
+
+	if (tipo === "1") {
+		$cajaEfectivo.removeClass("col-sm-6").addClass("col-sm-12").show();
+		$cajaQr.hide();
+		$efectivo.prop("readonly", true).val(textoCentavosCompra(totalC));
+		$qr.prop("readonly", true).val("0.00");
+		return;
+	}
+	if (tipo === "2") {
+		$cajaEfectivo.hide();
+		$cajaQr.removeClass("col-sm-6").addClass("col-sm-12").show();
+		$efectivo.prop("readonly", true).val("0.00");
+		$qr.prop("readonly", true).val(textoCentavosCompra(totalC));
+		return;
+	}
+
+	$cajaEfectivo.removeClass("col-sm-12").addClass("col-sm-6").show();
+	$cajaQr.removeClass("col-sm-12").addClass("col-sm-6").show();
+	$efectivo.prop("readonly", false);
+	$qr.prop("readonly", false);
+	var efectivoRaw = String($efectivo.val() || "").trim();
+	var qrRaw = String($qr.val() || "").trim();
+	if (efectivoRaw === "0" || efectivoRaw === "0.00") {
+		$efectivo.val("");
+		efectivoRaw = "";
+	}
+	if (qrRaw === "0" || qrRaw === "0.00") {
+		$qr.val("");
+		qrRaw = "";
+	}
+	var efectivoC = centavosCompra(efectivoRaw);
+	var qrC = centavosCompra(qrRaw);
+	if (origen === "qr") {
+		efectivoC = totalC - qrC;
+		if (efectivoC < 0) efectivoC = 0;
+		if (qrRaw === "") {
+			$efectivo.val("");
+		} else {
+			$efectivo.val(textoCentavosCompra(efectivoC));
+		}
+	} else {
+		qrC = totalC - efectivoC;
+		if (qrC < 0) qrC = 0;
+		if (efectivoRaw === "") {
+			$qr.val(textoCentavosCompra(totalC));
+		} else {
+			$qr.val(textoCentavosCompra(qrC));
+		}
+	}
+}
+
+function limpiarMontoPagoCompra(input) {
+	var limpio = String(input.value || "").replace(/[^0-9.]/g, "");
+	var partes = limpio.split(".");
+	if (partes.length > 2) {
+		limpio = partes[0] + "." + partes.slice(1).join("");
+	}
+	if (/^0\d+/.test(limpio)) {
+		limpio = limpio.replace(/^0+/, "");
+		if (limpio === "" || limpio.charAt(0) === ".") {
+			limpio = "0" + limpio;
+		}
+	}
+	if (input.value !== limpio) {
+		input.value = limpio;
+	}
+}
+
+$(document).on("change", "#tipoPagoCompra", function() {
+	$("#pagoEfectivoCompra").val("");
+	$("#pagoQrCompra").val("");
+	actualizarPagoCompra("efectivo");
+});
+
+$(document).on("focus", "#pagoEfectivoCompra, #pagoQrCompra", function() {
+	if ($(this).prop("readonly")) {
+		return;
+	}
+	var valor = String(this.value || "").trim();
+	if (valor === "0" || valor === "0.00") {
+		this.value = "";
+	} else if (valor !== "") {
+		this.select();
+	}
+});
+
+$(document).on("input", "#pagoEfectivoCompra", function() {
+	limpiarMontoPagoCompra(this);
+	if ($("#tipoPagoCompra").val() === "4") {
+		actualizarPagoCompra("efectivo");
+	}
+});
+
+$(document).on("input", "#pagoQrCompra", function() {
+	limpiarMontoPagoCompra(this);
+	if ($("#tipoPagoCompra").val() === "4") {
+		actualizarPagoCompra("qr");
+	}
+});
+
+$(".formularioCompra").on("submit", function(e) {
+	actualizarPagoCompra($("#tipoPagoCompra").val() === "4" ? "efectivo" : "efectivo");
+	var tipo = $("#tipoPagoCompra").val();
+	var totalC = centavosCompra($("#totalCompra").val());
+	var efectivoC = centavosCompra($("#pagoEfectivoCompra").val());
+	var qrC = centavosCompra($("#pagoQrCompra").val());
+	if (tipo === "4" && (efectivoC <= 0 || qrC <= 0 || efectivoC + qrC !== totalC)) {
+		e.preventDefault();
+		swal({
+			type: "warning",
+			title: "Pago mixto inválido",
+			text: "El efectivo y el QR deben ser mayores a cero y sumar el total."
+		});
+	}
+});
+
+actualizarPagoCompra("efectivo");
 
 
 /*=============================================

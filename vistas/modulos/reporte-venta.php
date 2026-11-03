@@ -1,19 +1,34 @@
 <?php
-// Establecer la zona horaria de Bolivia
 date_default_timezone_set('America/La_Paz');
-
-// Obtener la fecha y hora actual en Bolivia
 $fechaActual = date('Y-m-d');
-?>
-
-
-
-<?php
-// Establecer la zona horaria de Bolivia
-date_default_timezone_set('America/La_Paz');
-
-// Obtener la fecha y hora actual en Bolivia
-$fechaActual = date('Y-m-d');
+if (!class_exists("ModeloEmpresa")) {
+  require_once __DIR__ . "/../../modelos/empresa.modelo.php";
+}
+if (!class_exists("ModeloMesas")) {
+  require_once __DIR__ . "/../../modelos/mesas.modelo.php";
+}
+$gestionMesasReporte = ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas");
+$cobrarDespuesReporte = ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues");
+$mesasReporte = array();
+$mesasReporteSelect2 = array();
+if ($gestionMesasReporte) {
+  $mesasReporte = class_exists("ControladorMesas")
+    ? ControladorMesas::ctrMostrarMesas(null, null)
+    : ModeloMesas::mdlMostrarMesas();
+  if (!is_array($mesasReporte)) {
+    $mesasReporte = array();
+  }
+  foreach ($mesasReporte as $mesaFiltro) {
+    $num = !empty($mesaFiltro["numero"]) ? intval($mesaFiltro["numero"]) : 0;
+    $label = $num > 0
+      ? ("Mesa " . $num)
+      : (string) ($mesaFiltro["nombre"] ?? ("Mesa " . intval($mesaFiltro["id"] ?? 0)));
+    $mesasReporteSelect2[] = array(
+      "id" => intval($mesaFiltro["id"] ?? 0),
+      "text" => $label
+    );
+  }
+}
 ?>
 
 <style>
@@ -76,6 +91,53 @@ $fechaActual = date('Y-m-d');
   }
   .rv-cliente-item:hover,.rv-cliente-item.active{background:#5897fb;color:#fff}
   .rv-cliente-status{padding:8px 12px;font-size:12px;color:#888}
+  /* Restaurar Select2 single (filtros) — no tocar con estilos del multiselect Mesas */
+  .rv-page .select2-container{width:100% !important}
+  .rv-page .select2-container--default .select2-selection--single{
+    height:34px !important;min-height:34px !important;border:1px solid #d2d6de !important;border-radius:4px !important;padding:0 12px !important;
+  }
+  .rv-page .select2-container--default .select2-selection--single .select2-selection__rendered{
+    line-height:32px !important;height:32px !important;margin-top:0 !important;padding:0 !important;color:#555;
+  }
+  .rv-page .select2-container--default .select2-selection--single .select2-selection__arrow{
+    height:32px !important;top:1px !important;right:6px !important;
+  }
+  /* Multiselect Mesas = mismo look Preferencias (Select2 classic) */
+  .rv-mesas-wrap .select2-container{width:100% !important}
+  .rv-mesas-wrap .select2-container--classic .select2-selection--multiple{
+    min-height:38px !important;border:1px solid #3c8dbc !important;border-radius:4px !important;background:#fff;
+    padding:3px 4px !important;overflow:visible !important;
+  }
+  .rv-mesas-wrap .select2-container--classic.select2-container--focus .select2-selection--multiple{
+    border-color:#3c8dbc !important;outline:0;
+  }
+  .rv-mesas-wrap .select2-selection--multiple .select2-selection__rendered{
+    display:block !important;padding:0 2px !important;line-height:28px !important;overflow:visible !important;
+  }
+  .rv-mesas-wrap .select2-selection--multiple .select2-selection__placeholder{
+    line-height:28px !important;margin:0 !important;color:#999;
+  }
+  .rv-mesas-wrap .select2-selection--multiple .select2-search--inline{
+    float:none !important;display:inline-block !important;vertical-align:middle !important;
+    line-height:28px !important;height:28px !important;
+  }
+  .rv-mesas-wrap .select2-selection--multiple .select2-search--inline .select2-search__field{
+    margin:0 !important;padding:0 4px !important;height:28px !important;min-height:28px !important;
+    line-height:28px !important;font-size:14px !important;border:0 !important;box-sizing:border-box !important;
+  }
+  .rv-mesas-wrap .select2-container--classic .select2-selection--multiple .select2-selection__choice{
+    background-color:#eef1f5 !important;border:1px solid #c5c9d0 !important;color:#333 !important;border-radius:3px;
+    padding:2px 6px;margin:3px 0 3px 4px;line-height:1.3;
+  }
+  .rv-mesas-wrap .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove{
+    color:#777 !important;margin-right:4px;border:0;background:transparent;float:none;
+  }
+  .select2-container--classic .rv-mesas-dd .select2-results__option[aria-selected=true],
+  .select2-container--classic.select2-container--open .select2-results__option[aria-selected=true]{
+    background-color:#0056b3 !important;color:#fff !important;
+  }
+  .rv-mesas-wrap .select2-dropdown,
+  .select2-container--classic .rv-mesas-dd{z-index:10050 !important}
   @media(max-width:991px){.rv-breadcrumb{margin-left:0;width:100%;text-align:right}} 
   @media(max-width:767px){.rv-header{justify-content:center}.rv-breadcrumb{text-align:center;margin-top:6px}}
 </style>
@@ -112,7 +174,9 @@ $fechaActual = date('Y-m-d');
           <label class="small">Estado de pago</label>
           <select id="estado_pago" name="estado_pago" class="form-control select2">
             <option value="0" selected>Todos</option>
+            <?php if ($cobrarDespuesReporte) { ?>
             <option value="1">Pendiente</option>
+            <?php } ?>
             <option value="2">Pagado</option>
           </select>
         </div>
@@ -128,7 +192,15 @@ $fechaActual = date('Y-m-d');
       </div>
 
       <div class="row">
-        <div class="col-lg-4 col-md-6 mb-3">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+          <label class="small">Forma de atención</label>
+          <select id="forma_atencion" name="forma_atencion" class="form-control select2">
+            <option value="0" selected>Todos</option>
+            <option value="1">Mesa</option>
+            <option value="2">Llevar</option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
           <label class="small">Categoría</label>
           <select id="id_categoria" name="id_categoria" class="form-control select2">
             <option value="0">Todas</option>
@@ -142,7 +214,7 @@ $fechaActual = date('Y-m-d');
             ?>
           </select>
         </div>
-        <div class="col-lg-4 col-md-6 mb-3">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
           <label class="small">Cliente</label>
           <div class="rv-cliente-wrap" id="rvClienteWrap">
             <input type="hidden" id="id_cliente" name="id_cliente" value="0">
@@ -160,7 +232,7 @@ $fechaActual = date('Y-m-d');
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-12 mb-3">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
           <label class="small">Mesero</label>
           <select id="id_mesero" name="id_mesero" class="form-control select2">
             <option value="0">Todas</option>
@@ -175,6 +247,35 @@ $fechaActual = date('Y-m-d');
           </select>
         </div>
       </div>
+
+      <?php if ($gestionMesasReporte) { ?>
+      <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-12 mb-3">
+          <label class="small">Mesas</label>
+          <div class="rv-mesas-wrap">
+            <select id="ids_mesas" name="ids_mesas[]" class="form-control select2-nota" multiple="multiple" data-placeholder="Todas las mesas">
+              <?php
+              if ($mesasReporteSelect2) {
+                foreach ($mesasReporteSelect2 as $optMesa) {
+                  if (empty($optMesa["id"])) {
+                    continue;
+                  }
+                  echo '<option value="' . intval($optMesa["id"]) . '">' .
+                    htmlspecialchars($optMesa["text"], ENT_QUOTES, "UTF-8") .
+                    '</option>';
+                }
+              }
+              ?>
+            </select>
+          </div>
+          <?php if (!$mesasReporteSelect2) { ?>
+          <small class="text-danger">No hay mesas registradas. Créalas en el módulo Mesas.</small>
+          <?php } else { ?>
+          <small class="text-muted">Vacío = todas las mesas</small>
+          <?php } ?>
+        </div>
+      </div>
+      <?php } ?>
 
       <div class="rv-action-row">
         <div>
@@ -212,12 +313,49 @@ $fechaActual = date('Y-m-d');
   ?>
   var urlAjaxClientes = <?php echo json_encode($urlAjaxClientes, JSON_UNESCAPED_SLASHES); ?>;
 
-  // Select2 solo filtros estáticos (mesero, categoría, etc.)
-  if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
-    $(document).ready(function () {
-      $('.select2').select2({ width: '100%' });
-    });
-  }
+  // Solo Mesas (select2-nota). Los filtros .select2 los inicia plantilla.js — no reiniciarlos.
+  var mesasReporteData = <?php echo json_encode($mesasReporteSelect2, JSON_UNESCAPED_UNICODE); ?>;
+  (function initSelect2MesasReporte() {
+    function boot() {
+      if (typeof jQuery === "undefined" || !jQuery.fn || !jQuery.fn.select2) {
+        setTimeout(boot, 50);
+        return;
+      }
+      var $ = jQuery;
+      var $mesas = $("#ids_mesas");
+      if (!$mesas.length) return;
+
+      if ($mesas.find("option").length === 0 && Array.isArray(mesasReporteData)) {
+        mesasReporteData.forEach(function (m) {
+          if (!m || !m.id) return;
+          $mesas.append($("<option></option>").val(m.id).text(m.text || ("Mesa " + m.id)));
+        });
+      }
+      if ($mesas.hasClass("select2-hidden-accessible")) {
+        $mesas.select2("destroy");
+      }
+      $mesas.select2({
+        theme: "classic",
+        multiple: true,
+        width: "100%",
+        placeholder: "Todas las mesas",
+        allowClear: true,
+        closeOnSelect: false,
+        dropdownParent: $mesas.closest(".rv-mesas-wrap"),
+        dropdownCssClass: "rv-mesas-dd",
+        language: {
+          noResults: function () {
+            return "No hay resultados";
+          }
+        }
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 80); });
+    } else {
+      setTimeout(boot, 80);
+    }
+  })();
 
   // Cliente: dropdown propio (buscador + scroll infinito), sin Select2 AJAX
   (function () {
@@ -477,6 +615,13 @@ $fechaActual = date('Y-m-d');
       swal({icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.'});
       return null;
     }
+    var idsMesas = [];
+    var selMesas = document.getElementById('ids_mesas');
+    if (selMesas) {
+      idsMesas = Array.from(selMesas.selectedOptions || [])
+        .map(function (opt) { return opt.value; })
+        .filter(function (v) { return v && v !== '0'; });
+    }
     return {
       fechaInicio: fechaInicio.value,
       fechaFin: fechaFin.value,
@@ -486,12 +631,14 @@ $fechaActual = date('Y-m-d');
       idCliente: document.getElementById('id_cliente').value || '0',
       tipoPago: document.getElementById('tipo_pago').value,
       estadoPago: document.getElementById('estado_pago').value,
-      registroEliminados: document.getElementById('registros_eliminados').checked
+      formaAtencion: document.getElementById('forma_atencion').value || '0',
+      registroEliminados: document.getElementById('registros_eliminados').checked,
+      idsMesas: idsMesas
     };
   }
 
   function queryReporteVentas(f) {
-    return "fechaInicio=" + encodeURIComponent(f.fechaInicio) +
+    var qs = "fechaInicio=" + encodeURIComponent(f.fechaInicio) +
       "&fechaFin=" + encodeURIComponent(f.fechaFin) +
       "&idMesero=" + encodeURIComponent(f.idMesero) +
       "&idUsuario=" + encodeURIComponent(f.idUsuario) +
@@ -499,7 +646,12 @@ $fechaActual = date('Y-m-d');
       "&idCliente=" + encodeURIComponent(f.idCliente) +
       "&tipoPago=" + encodeURIComponent(f.tipoPago) +
       "&estadoPago=" + encodeURIComponent(f.estadoPago) +
+      "&formaAtencion=" + encodeURIComponent(f.formaAtencion) +
       "&registroEliminados=" + encodeURIComponent(f.registroEliminados);
+    (f.idsMesas || []).forEach(function (id) {
+      qs += "&idsMesas[]=" + encodeURIComponent(id);
+    });
+    return qs;
   }
 
   function generatePDF() {

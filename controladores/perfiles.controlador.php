@@ -151,12 +151,30 @@ class ControladorPerfiles
 		}
 
 		$ids = isset($_POST["permisos"]) && is_array($_POST["permisos"]) ? $_POST["permisos"] : [];
+		$ids = array_map("intval", $ids);
+
+		// Si Gestión de Mesas está off, los checkboxes de Mesas no vienen en el POST:
+		// conservar los mesas.* ya asignados para no borrarlos al guardar.
+		if (!class_exists("ModeloEmpresa")) {
+			require_once __DIR__ . "/../modelos/empresa.modelo.php";
+		}
+		if (!ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas")) {
+			$actuales = ModeloPerfiles::mdlPermisosPorPerfil($id);
+			foreach ($actuales as $perm) {
+				$codigo = isset($perm["codigo"]) ? (string) $perm["codigo"] : "";
+				$modulo = isset($perm["modulo"]) ? (string) $perm["modulo"] : "";
+				if (strpos($codigo, "mesas.") === 0 || strcasecmp($modulo, "Mesas") === 0) {
+					$ids[] = intval($perm["id"]);
+				}
+			}
+			$ids = array_values(array_unique($ids));
+		}
 
 		if (ModeloPerfiles::mdlEsUltimoPerfilConPermiso($id, "perfiles.permisos")) {
 			$catalogo = ModeloPerfiles::mdlMostrarPermisosAgrupados();
 			$tieneAdmin = false;
 			foreach ($catalogo as $perm) {
-				if ($perm["codigo"] === "perfiles.permisos" && in_array((string)$perm["id"], array_map("strval", $ids), true)) {
+				if ($perm["codigo"] === "perfiles.permisos" && in_array(intval($perm["id"]), $ids, true)) {
 					$tieneAdmin = true;
 					break;
 				}

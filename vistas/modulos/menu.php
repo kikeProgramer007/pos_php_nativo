@@ -376,6 +376,15 @@
 			</li>';
 			}
 
+			if (Permisos::tiene("mesas.ver") && ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas")) {
+			echo '<li>
+					<a href="mesas">
+						<i class="fa fa-th-large"></i>
+						<span>Mesas</span>
+					</a>
+				</li>';
+			}
+
 			if (Permisos::tiene("empresa.ver")) {
 				echo '<li>
 					<a href="empresa">
