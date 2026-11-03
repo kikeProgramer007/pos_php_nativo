@@ -4,6 +4,24 @@ if ($.fn.DataTable.isDataTable('.tablaVentasRealizadas')) {
 }
 var perfilOculto = $("#perfilOculto").val();
 
+// Filtros desde URL (solo listar; NUNCA usar idVenta en URL → anula la venta)
+var codigoTicketUrl = "";
+(function aplicarFiltrosVentasDesdeUrl() {
+	var qs = window.location.search || "";
+	var estadoPago = (qs.match(/[?&]estadoPago=([^&]*)/) || [])[1];
+	var idMesa = (qs.match(/[?&]idMesa=([^&]*)/) || [])[1];
+	var codigoTicket = (qs.match(/[?&]codigoTicket=([^&]*)/) || [])[1];
+	if (estadoPago && $("#filtroEstadoPago").length) {
+		$("#filtroEstadoPago").val(decodeURIComponent(estadoPago));
+	}
+	if (idMesa && $("#filtroMesa").length) {
+		$("#filtroMesa").val(decodeURIComponent(idMesa));
+	}
+	if (codigoTicket) {
+		codigoTicketUrl = decodeURIComponent(codigoTicket.replace(/\+/g, " "));
+	}
+})();
+
 if ($.fn.DataTable) { 
 $('.tablaVentasRealizadas').DataTable( {
     "ajax": {
@@ -12,11 +30,17 @@ $('.tablaVentasRealizadas').DataTable( {
             d.perfilOculto = perfilOculto;
             d.estadoPago = $("#filtroEstadoPago").length ? $("#filtroEstadoPago").val() : "todos";
             d.idMesero = $("#filtroMesero").length ? $("#filtroMesero").val() : "0";
+            d.idMesa = $("#filtroMesa").length ? ($("#filtroMesa").val() || "0") : "0";
         }
     },
     "deferRender": true,
     "retrieve": true,
     "processing": true,
+    "initComplete": function () {
+        if (codigoTicketUrl) {
+            this.api().search(codigoTicketUrl).draw();
+        }
+    },
 	 "language": {
 
 			"sProcessing":     "Procesando...",

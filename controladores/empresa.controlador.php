@@ -76,7 +76,7 @@ class ControladorEmpresa
 		));
 		if ($respuesta === "columnas") {
 			echo '<script>
-				swal({ type: "warning", title: "Falta el script", text: "Ejecuta sql/gato_rico.sql o sql/pollos365.sql, el que corresponde a esta base." })
+				swal({ type: "warning", title: "Falta el script", text: "Ejecuta sql/migracion_unificada.sql en esta base de datos." })
 				.then(function(){ window.location = "empresa"; });
 			</script>';
 			return;

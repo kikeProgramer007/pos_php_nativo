@@ -175,7 +175,8 @@ class Permisos
 			"reporte-categoria" => "reportes.categorias",
 			"ganancias-ventas" => "reportes.ganancias",
 			"reporte-compra" => "reportes.compras",
-			"reporte-gastos" => "reportes.gastos"
+			"reporte-gastos" => "reportes.gastos",
+			"mesas" => "mesas.ver"
 		];
 
 		return $mapa[$ruta] ?? null;
@@ -208,6 +209,7 @@ class Permisos
 			"promociones.ver", "promociones.crear", "promociones.editar", "promociones.eliminar",
 			"clientes.ver", "clientes.crear", "clientes.editar", "clientes.eliminar",
 			"meseros.ver", "meseros.crear", "meseros.editar", "meseros.eliminar",
+			"mesas.ver", "mesas.crear", "mesas.editar", "mesas.eliminar",
 			"caja.ver", "caja.abrir", "caja.cerrar", "caja.otros_ingresos",
 			"gastos.ver", "gastos.crear", "gastos.editar", "gastos.eliminar",
 			"ventas.crear", "ventas.ver", "ventas.editar", "ventas.cobrar", "ventas.eliminar", "ventas.imprimir",

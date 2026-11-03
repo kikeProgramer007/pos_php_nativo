@@ -129,6 +129,19 @@ class ControladorVentas{
 			$estadoPago = (isset($_POST["estadoPago"]) && $_POST["estadoPago"] === "PENDIENTE") ? "PENDIENTE" : "PAGADA";
 			$esPendiente = ($estadoPago === "PENDIENTE");
 
+			if ($esPendiente) {
+				if (!class_exists("ModeloEmpresa")) {
+					require_once __DIR__ . "/../modelos/empresa.modelo.php";
+				}
+				if (!ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues")) {
+					echo json_encode([
+						"status" => "error",
+						"mensaje" => "La función Cobrar después está desactivada en Empresa → Funcionalidad."
+					]);
+					return;
+				}
+			}
+
 			if (!$esPendiente) {
 				$validacionPago = self::validarMontosPagoVenta(
 					$_POST["tipoPago"] ?? "",
@@ -210,6 +223,43 @@ class ControladorVentas{
 					$formaAtencion = "No Especificado";
 					break;
 			}
+
+			$idMesa = null;
+			$idsMesasExtra = array();
+			$cantidadPersonas = null;
+			$idAtencionMesa = null;
+			if (!class_exists("ModeloEmpresa")) {
+				require_once __DIR__ . "/../modelos/empresa.modelo.php";
+			}
+			$gestionMesasActiva = ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas");
+			$requiereMesa = $gestionMesasActiva && in_array(strval($_POST["formaAtencion"] ?? ""), array("1", "3"), true);
+			if ($requiereMesa) {
+				if (!class_exists("ModeloMesas")) {
+					require_once __DIR__ . "/../modelos/mesas.modelo.php";
+				}
+				$idMesa = intval($_POST["idMesaSeleccionada"] ?? 0);
+				$idsMesasExtra = ModeloMesas::mdlNormalizarIdsMesasExtra(
+					$_POST["idsMesasSeleccionadasExtra"] ?? "",
+					$idMesa
+				);
+				$cantidadPersonas = intval($_POST["cantidadPersonasMesa"] ?? 0);
+				$idAtencionMesa = intval($_POST["idAtencionMesaSeleccionada"] ?? 0);
+				if ($idMesa <= 0) {
+					echo json_encode([
+						"status" => "error",
+						"mensaje" => "Seleccione una mesa para continuar."
+					]);
+					return;
+				}
+				if ($cantidadPersonas < 1) {
+					echo json_encode([
+						"status" => "error",
+						"mensaje" => "Indique la cantidad de personas."
+					]);
+					return;
+				}
+			}
+
 			/*=============================================
 			GUARDAR LA VENTA
 			=============================================*/	
@@ -235,6 +285,10 @@ class ControladorVentas{
 						   "tipo_pago"=>$tipoPago,
 						   "cambio"=>$esPendiente ? "0.00" : Moneda::texto($_POST["nuevoCambioEfectivo"] ?? 0),
 						   "forma_atencion"=>$formaAtencion,
+						   "id_mesa"=>$idMesa,
+						   "ids_mesas_extra"=>$idsMesasExtra,
+						   "cantidad_personas"=>$cantidadPersonas,
+						   "id_atencion_mesa"=>$idAtencionMesa > 0 ? $idAtencionMesa : null,
 						   "id_arqueo_caja" => $_POST["idArqueoCaja"],
 							"total_pagado"=>Moneda::texto($totalPagado),
 							"total_efectivo"=>$pago["total_efectivo"],
@@ -619,11 +673,11 @@ class ControladorVentas{
 
 	}
 
-	static public function ctrRangoFechasVentasRealizadas($fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null){
+	static public function ctrRangoFechasVentasRealizadas($fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null, $idMesa = null){
 
 		$tabla = "ventas";
 
-		$respuesta = ModeloVentas::mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado, $estadoPago, $idMesero);
+		$respuesta = ModeloVentas::mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado, $estadoPago, $idMesero, $idMesa);
 
 		return $respuesta;
 		
@@ -640,6 +694,17 @@ class ControladorVentas{
 
 		if (!Permisos::tiene("ventas.editar")) {
 			echo json_encode(["status" => "error", "mensaje" => "No tiene permiso para editar cuentas"]);
+			return;
+		}
+
+		if (!class_exists("ModeloEmpresa")) {
+			require_once __DIR__ . "/../modelos/empresa.modelo.php";
+		}
+		if (!ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues")) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "La función Cobrar después está desactivada en Empresa → Funcionalidad."
+			]);
 			return;
 		}
 
@@ -717,6 +782,38 @@ class ControladorVentas{
 		$promoCalc = self::aplicarPromocionesAListaProductos($listaProductos);
 		$listaProductos = $promoCalc["productos"];
 
+		$idMesa = !empty($ventaActual["id_mesa"]) ? intval($ventaActual["id_mesa"]) : null;
+		$idsMesasExtra = !empty($ventaActual["ids_mesas_extra"]) ? $ventaActual["ids_mesas_extra"] : null;
+		$cantidadPersonas = !empty($ventaActual["cantidad_personas"]) ? intval($ventaActual["cantidad_personas"]) : null;
+		$idAtencionMesa = !empty($ventaActual["id_atencion_mesa"]) ? intval($ventaActual["id_atencion_mesa"]) : null;
+		if (!class_exists("ModeloEmpresa")) {
+			require_once __DIR__ . "/../modelos/empresa.modelo.php";
+		}
+		if (ModeloEmpresa::mdlFuncionActiva("venta.gestion_mesas") && in_array(strval($_POST["formaAtencion"] ?? ""), array("1", "3"), true)) {
+			if (!class_exists("ModeloMesas")) {
+				require_once __DIR__ . "/../modelos/mesas.modelo.php";
+			}
+			$idMesaPost = intval($_POST["idMesaSeleccionada"] ?? 0);
+			$personasPost = intval($_POST["cantidadPersonasMesa"] ?? 0);
+			if ($idMesaPost > 0) {
+				$idMesa = $idMesaPost;
+			}
+			$idsMesasExtra = ModeloMesas::mdlNormalizarIdsMesasExtra(
+				$_POST["idsMesasSeleccionadasExtra"] ?? "",
+				$idMesa ?: 0
+			);
+			if ($personasPost > 0) {
+				$cantidadPersonas = $personasPost;
+			}
+			if ($idMesa <= 0) {
+				echo json_encode([
+					"status" => "error",
+					"mensaje" => "Seleccione una mesa para continuar."
+				]);
+				return;
+			}
+		}
+
 		$datos = array(
 			"id_venta" => $idVenta,
 			"id_mesero" => $_POST["seleccionarMesero"],
@@ -726,6 +823,10 @@ class ControladorVentas{
 			"total_descuento" => number_format($promoCalc["total_descuento"], 2, '.', ''),
 			"nota" => strtoupper($_POST["nota"]),
 			"forma_atencion" => $formaAtencion,
+			"id_mesa" => $idMesa,
+			"ids_mesas_extra" => $idsMesasExtra,
+			"cantidad_personas" => $cantidadPersonas,
+			"id_atencion_mesa" => $idAtencionMesa,
 			"productos" => json_encode($listaProductos),
 			"cliente" => $_POST["cliente"]
 		);
@@ -760,6 +861,17 @@ class ControladorVentas{
 
 		if (!Permisos::tiene("ventas.cobrar")) {
 			echo json_encode(["status" => "error", "mensaje" => "No tiene permiso para cobrar cuentas"]);
+			return;
+		}
+
+		if (!class_exists("ModeloEmpresa")) {
+			require_once __DIR__ . "/../modelos/empresa.modelo.php";
+		}
+		if (!ModeloEmpresa::mdlFuncionActiva("venta.cobrar_despues")) {
+			echo json_encode([
+				"status" => "error",
+				"mensaje" => "La función Cobrar después está desactivada en Empresa → Funcionalidad."
+			]);
 			return;
 		}
 
@@ -889,9 +1001,38 @@ class ControladorVentas{
 			);
 			ModeloArqueo::mdlSincronizarCuentasPendientesEnArqueoAbierto($idArqueoVenta);
 
+			$mensajeOk = "Cuenta cobrada correctamente.";
+			$liberarMesa = !empty($_POST["liberarMesaCobro"]) && strval($_POST["liberarMesaCobro"]) === "1";
+			$idMesaVenta = !empty($venta["id_mesa"]) ? intval($venta["id_mesa"]) : 0;
+			$idAtencionVenta = !empty($venta["id_atencion_mesa"]) ? intval($venta["id_atencion_mesa"]) : 0;
+
+			if ($liberarMesa && $idMesaVenta > 0) {
+				if (!class_exists("ModeloMesas")) {
+					require_once __DIR__ . "/../modelos/mesas.modelo.php";
+				}
+				$otrasPendientes = $idAtencionVenta > 0
+					? ModeloVentas::mdlContarPendientesAtencion($idAtencionVenta, $idVenta)
+					: 0;
+				if ($otrasPendientes > 0) {
+					$mensajeOk .= " La mesa no se liberó: hay otras cuentas pendientes en la atención.";
+				} else {
+					$lib = ModeloMesas::mdlLiberarAtencion(
+						$idMesaVenta,
+						intval($_POST["idVendedorCobro"] ?? 0),
+						false
+					);
+					if (!empty($lib["ok"])) {
+						$mensajeOk .= " Mesa liberada.";
+					} else {
+						$mensajeOk .= " No se pudo liberar la mesa" .
+							(!empty($lib["mensaje"]) ? ": " . $lib["mensaje"] : ".");
+					}
+				}
+			}
+
 			echo json_encode([
 				"status" => "ok",
-				"mensaje" => "Cuenta cobrada correctamente.",
+				"mensaje" => $mensajeOk,
 				"idVenta" => $respuesta["idVenta"]
 			]);
 			return;
@@ -929,6 +1070,26 @@ class ControladorVentas{
 			default:
 				return "No Especificado";
 		}
+	}
+
+	/**
+	 * Etiqueta para reportes. Históricos vacíos / "No Especificado" → Sin especificar.
+	 */
+	static public function etiquetaFormaAtencion($valor){
+		$v = trim((string) $valor);
+		if ($v === "" || strcasecmp($v, "No Especificado") === 0 || $v === "0") {
+			return "Sin especificar";
+		}
+		if (in_array($v, array("En Mesa", "Mesa", "M", "1"), true)) {
+			return "Mesa";
+		}
+		if (in_array($v, array("Para Llevar", "Llevar", "LL", "2"), true)) {
+			return "Llevar";
+		}
+		if (in_array($v, array("Mixto", "3"), true)) {
+			return "Mixto";
+		}
+		return "Sin especificar";
 	}
 
 	private static function sumarCantidadesPorProducto($detalle){
@@ -1277,11 +1438,11 @@ class ControladorVentas{
 	/*=============================================
 	rango de ventas:
 	=============================================*/
-	static public function ctrRangoFechasVentasPdf($fechaInicial, $fechaFinal,$id_proveedor,$idCategoria,$idCliente, $registroEliminados, $tipoPago = "0", $estadoPago = "0"){
+	static public function ctrRangoFechasVentasPdf($fechaInicial, $fechaFinal,$id_proveedor,$idCategoria,$idCliente, $registroEliminados, $tipoPago = "0", $estadoPago = "0", $formaAtencion = "0", $idsMesas = array()){
 
 		$tabla = "ventas";
 	
-		$respuesta = ModeloVentas::mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal,$id_proveedor,$idCategoria,$idCliente, $registroEliminados, $tipoPago, $estadoPago);
+		$respuesta = ModeloVentas::mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal,$id_proveedor,$idCategoria,$idCliente, $registroEliminados, $tipoPago, $estadoPago, $formaAtencion, $idsMesas);
 	
 		return $respuesta;
 	}
@@ -1299,11 +1460,11 @@ class ControladorVentas{
 	/*=============================================
 	rango fechas para obtener top productos mas vendidos:
 	=============================================*/
-	static public function ctrRangoFechasTopProductoMasVendidosPdf($fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array()){
+	static public function ctrRangoFechasTopProductoMasVendidosPdf($fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array(), $formaAtencion = "0"){
 
 		$tabla = "ventas";
 	
-		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal, $idCategoria, $idMesero, $idProductos);
+		$respuesta = ModeloVentas::mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial,$fechaFinal, $idCategoria, $idMesero, $idProductos, $formaAtencion);
 	
 		return $respuesta;
 	}

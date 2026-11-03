@@ -115,8 +115,47 @@ class ModeloVentas
 			$datos["total_pagado"] = Moneda::texto($datos["total_pagado"] ?? 0);
 			$datos["cambio"] = Moneda::texto($datos["cambio"] ?? 0);
 
+			$idMesa = !empty($datos["id_mesa"]) ? intval($datos["id_mesa"]) : null;
+			$idsMesasExtra = !empty($datos["ids_mesas_extra"]) ? $datos["ids_mesas_extra"] : array();
+			$csvMesasExtra = null;
+			$cantidadPersonas = !empty($datos["cantidad_personas"]) ? intval($datos["cantidad_personas"]) : null;
+			$idAtencionMesa = null;
+
+			if ($idMesa) {
+				if (!class_exists("ModeloMesas")) {
+					require_once __DIR__ . "/mesas.modelo.php";
+				}
+				$idsMesasExtra = ModeloMesas::mdlNormalizarIdsMesasExtra($idsMesasExtra, $idMesa);
+				$reserva = ModeloMesas::mdlReservarAtencionEnTransaccion(
+					$conexion,
+					$idMesa,
+					$cantidadPersonas ?: 1,
+					$datos["id_vendedor"] ?? null,
+					!empty($datos["id_atencion_mesa"]) ? intval($datos["id_atencion_mesa"]) : 0,
+					$idsMesasExtra
+				);
+				if (empty($reserva["ok"])) {
+					throw new Exception($reserva["mensaje"] ?? "No se pudo ocupar la mesa.");
+				}
+				$idAtencionMesa = intval($reserva["id_atencion"]);
+				$cantidadPersonas = intval($reserva["cantidad_personas"]);
+				$csvMesasExtra = !empty($reserva["ids_mesas_extra"]) ? $reserva["ids_mesas_extra"] : null;
+			}
+
 			// 1. Registrar la venta principal en la tabla "ventas"
-			$stmt = $conexion->prepare("INSERT INTO $tabla(codigo, id_mesero,id_cliente, id_vendedor, total, total_bruto, total_descuento, total_efectivo,total_qr,total_pagado,nota,tipo_pago,cambio, forma_atencion, id_arqueo_caja, estado_pago, fecha_pago) VALUES (:codigo, :id_mesero,:id_cliente, :id_vendedor, :total, :total_bruto, :total_descuento, :total_efectivo,:total_qr, :total_pagado, :nota, :tipo_pago,:cambio,:forma_atencion, :id_arqueo_caja, :estado_pago, :fecha_pago)");
+			$stmt = $conexion->prepare(
+				"INSERT INTO $tabla(
+					codigo, id_mesero, id_cliente, id_vendedor, total, total_bruto, total_descuento,
+					total_efectivo, total_qr, total_pagado, nota, tipo_pago, cambio, forma_atencion,
+					id_mesa, ids_mesas_extra, cantidad_personas, id_atencion_mesa,
+					id_arqueo_caja, estado_pago, fecha_pago
+				) VALUES (
+					:codigo, :id_mesero, :id_cliente, :id_vendedor, :total, :total_bruto, :total_descuento,
+					:total_efectivo, :total_qr, :total_pagado, :nota, :tipo_pago, :cambio, :forma_atencion,
+					:id_mesa, :ids_mesas_extra, :cantidad_personas, :id_atencion_mesa,
+					:id_arqueo_caja, :estado_pago, :fecha_pago
+				)"
+			);
 
 			$stmt->bindParam(":codigo", $datos["codigo"], PDO::PARAM_INT);
 			$stmt->bindParam(":id_mesero", $datos["id_mesero"], PDO::PARAM_INT);
@@ -134,6 +173,10 @@ class ModeloVentas
 			$stmt->bindParam(":tipo_pago", $datos["tipo_pago"], PDO::PARAM_STR);
 			$stmt->bindParam(":cambio", $datos["cambio"], PDO::PARAM_STR);
 			$stmt->bindParam(":forma_atencion", $datos["forma_atencion"], PDO::PARAM_STR);
+			$stmt->bindValue(":id_mesa", $idMesa, $idMesa ? PDO::PARAM_INT : PDO::PARAM_NULL);
+			$stmt->bindValue(":ids_mesas_extra", $csvMesasExtra, $csvMesasExtra ? PDO::PARAM_STR : PDO::PARAM_NULL);
+			$stmt->bindValue(":cantidad_personas", $cantidadPersonas, $cantidadPersonas ? PDO::PARAM_INT : PDO::PARAM_NULL);
+			$stmt->bindValue(":id_atencion_mesa", $idAtencionMesa, $idAtencionMesa ? PDO::PARAM_INT : PDO::PARAM_NULL);
 			$stmt->bindParam(":id_arqueo_caja", $datos["id_arqueo_caja"], PDO::PARAM_INT);
 			$stmt->bindParam(":estado_pago", $datos["estado_pago"], PDO::PARAM_STR);
 			$stmt->bindParam(":fecha_pago", $datos["fecha_pago"], PDO::PARAM_STR);
@@ -453,9 +496,15 @@ class ModeloVentas
 	RANGO DE VENTAS - POR MESERO
 	=============================================*/
 
-	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados, $tipoPago = "0", $estadoPago = "0")
+	static public  function mdlRangoFechasVentasPdf($tabla, $fechaInicial, $fechaFinal, $idMesero, $idCategoria, $idCliente, $soloEliminados, $tipoPago = "0", $estadoPago = "0", $formaAtencion = "0", $idsMesas = array())
 	{
+		if (!is_array($idsMesas)) {
+			$idsMesas = preg_split('/\s*,\s*/', trim((string) $idsMesas));
+		}
+		$idsMesas = array_values(array_unique(array_filter(array_map('intval', $idsMesas))));
+
 		$query = "SELECT 
+						ventas.id,
 						ventas.codigo, 
 						ventas.fecha, 
 						usuarios.nombre AS usuario, 
@@ -463,6 +512,10 @@ class ModeloVentas
 						clientes.nombre AS cliente, 
 						ventas.tipo_pago,
 						ventas.estado_pago,
+						ventas.forma_atencion,
+						ventas.id_mesa,
+						ventas.ids_mesas_extra,
+						ventas.cantidad_personas,
 						ventas.total_qr,
 						ventas.total_efectivo,
 						SUM(dv.subtotal) AS total,
@@ -504,8 +557,25 @@ class ModeloVentas
 		} elseif ($estadoPago == "2") {
 			$query .= " AND ventas.estado_pago = 'PAGADA'";
 		}
+
+		// 0 = Todos, 1 = Mesa, 2 = Llevar
+		$formaAtencion = (string) $formaAtencion;
+		if ($formaAtencion === "1") {
+			$query .= " AND ventas.forma_atencion IN ('En Mesa', 'Mesa', 'M')";
+		} elseif ($formaAtencion === "2") {
+			$query .= " AND ventas.forma_atencion IN ('Para Llevar', 'Llevar', 'LL')";
+		}
+
+		if ($idsMesas) {
+			$orMesas = array();
+			foreach ($idsMesas as $i => $idMesaFiltro) {
+				$orMesas[] = "(ventas.id_mesa = :idMesaF{$i} OR FIND_IN_SET(:idMesaFx{$i}, IFNULL(ventas.ids_mesas_extra, '')))";
+			}
+			$query .= " AND (" . implode(" OR ", $orMesas) . ")";
+		}
 		
 		$query .= " GROUP BY 
+                ventas.id,
                 ventas.codigo, 
                 ventas.fecha, 
                 usuarios.nombre, 
@@ -513,6 +583,10 @@ class ModeloVentas
                 clientes.nombre, 
                 ventas.tipo_pago,
                 ventas.estado_pago,
+                ventas.forma_atencion,
+                ventas.id_mesa,
+                ventas.ids_mesas_extra,
+                ventas.cantidad_personas,
                 ventas.total_qr,
                 ventas.total_efectivo
             ORDER BY ventas.fecha ASC;";
@@ -536,6 +610,12 @@ class ModeloVentas
 		}
 		if ($tipoPago != "0") {
 			$stmt->bindParam(":tipoPago", $tipoPago, PDO::PARAM_STR);
+		}
+		if ($idsMesas) {
+			foreach ($idsMesas as $i => $idMesaFiltro) {
+				$stmt->bindValue(":idMesaF{$i}", $idMesaFiltro, PDO::PARAM_INT);
+				$stmt->bindValue(":idMesaFx{$i}", $idMesaFiltro, PDO::PARAM_INT);
+			}
 		}
 
 		// Ejecutar la consulta
@@ -624,7 +704,7 @@ class ModeloVentas
 	/*=============================================
 	TOP PRODUCTO MAS VENDIDOS SEGUNN RANGO FECHAS
 	=============================================*/
-	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array())
+	static public function mdlRangoFechasTopProductoVendidos($tabla, $fechaInicial, $fechaFinal, $idCategoria = 0, $idMesero = null, $idProductos = array(), $formaAtencion = "0")
 	{
 		if ($fechaInicial <= $fechaFinal) {
 
@@ -643,6 +723,7 @@ class ModeloVentas
 							COALESCE(m.nombre, 'Sin mesero') AS mesero,
 							dv.id_producto,
 							p.descripcion,
+							dv.forma_atencion,
 							SUM(dv.cantidad) AS cantidad,
 							SUM(COALESCE(dv.precio_original, dv.precio_venta) * dv.cantidad) AS precio_venta,
 							SUM(dv.precio_compra * dv.cantidad) AS costo,
@@ -673,7 +754,14 @@ class ModeloVentas
 				$query .= " AND dv.id_producto IN (" . implode(", ", $marcadores) . ")";
 			}
 
-			$query .= " GROUP BY DATE(ventas.fecha), m.id, m.nombre, dv.id_producto, p.descripcion
+			$formaAtencion = (string) $formaAtencion;
+			if ($formaAtencion === "1") {
+				$query .= " AND dv.forma_atencion IN ('M', 'En Mesa', 'Mesa')";
+			} elseif ($formaAtencion === "2") {
+				$query .= " AND dv.forma_atencion IN ('LL', 'Para Llevar', 'Llevar')";
+			}
+
+			$query .= " GROUP BY DATE(ventas.fecha), m.id, m.nombre, dv.id_producto, p.descripcion, dv.forma_atencion
 						ORDER BY DATE(ventas.fecha) ASC, m.nombre ASC, p.descripcion ASC;";
 
 			$stmt = Conexion::conectar()->prepare($query);
@@ -702,18 +790,21 @@ class ModeloVentas
 		}
 	}
 
-	static public function mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null)
+	static public function mdlRangoFechaVentasRealizadas($tabla, $fechaInicial, $fechaFinal, $estado = 1, $estadoPago = null, $idMesero = null, $idMesa = null)
 	{
 		date_default_timezone_set('America/La_Paz');
 
 		$query = "SELECT ventas.id, ventas.codigo, ventas.fecha, ventas.estado_pago, ventas.id_mesero,
 				  ventas.id_arqueo_caja, arqueo_caja.estado AS estado_arqueo,
+				  ventas.id_mesa, ventas.ids_mesas_extra, ventas.id_atencion_mesa,
+				  m1.numero AS mesa_numero, m1.nombre AS mesa_nombre,
 				  usuarios.nombre as usuario, meseros.nombre as mesero, ventas.total, ventas.tipo_pago, clientes.nombre as cliente 
 				  FROM $tabla 
 				  JOIN usuarios ON ventas.id_vendedor = usuarios.id
 				  JOIN clientes ON ventas.id_cliente = clientes.id
 				  JOIN meseros ON ventas.id_mesero = meseros.id
 				  LEFT JOIN arqueo_caja ON ventas.id_arqueo_caja = arqueo_caja.id
+				  LEFT JOIN mesas m1 ON m1.id = ventas.id_mesa
 				  WHERE ventas.estado = :estado";
 
 		if ($estadoPago !== null && $estadoPago !== "" && $estadoPago !== "todos") {
@@ -722,6 +813,14 @@ class ModeloVentas
 
 		if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0") {
 			$query .= " AND ventas.id_mesero = :id_mesero";
+		}
+
+		$idMesaFiltro = intval($idMesa ?? 0);
+		if ($idMesaFiltro > 0) {
+			$query .= " AND (
+				ventas.id_mesa = :id_mesa
+				OR FIND_IN_SET(:id_mesa_extra, IFNULL(ventas.ids_mesas_extra, ''))
+			)";
 		}
 
 		if ($fechaInicial != null && $fechaFinal != null) {
@@ -743,6 +842,11 @@ class ModeloVentas
 
 		if ($idMesero !== null && $idMesero !== "" && $idMesero !== "0") {
 			$stmt->bindParam(":id_mesero", $idMesero, PDO::PARAM_INT);
+		}
+
+		if ($idMesaFiltro > 0) {
+			$stmt->bindValue(":id_mesa", $idMesaFiltro, PDO::PARAM_INT);
+			$stmt->bindValue(":id_mesa_extra", $idMesaFiltro, PDO::PARAM_INT);
 		}
 
 		if ($fechaInicial != null && $fechaFinal != null) {
@@ -849,10 +953,41 @@ class ModeloVentas
 				}
 			}
 
+			$idMesaUpd = !empty($datos["id_mesa"]) ? intval($datos["id_mesa"]) : null;
+			$cantPersUpd = !empty($datos["cantidad_personas"]) ? intval($datos["cantidad_personas"]) : null;
+			$idAtenUpd = !empty($datos["id_atencion_mesa"]) ? intval($datos["id_atencion_mesa"]) : (!empty($ventaActual["id_atencion_mesa"]) ? intval($ventaActual["id_atencion_mesa"]) : null);
+			$csvExtrasUpd = !empty($ventaActual["ids_mesas_extra"]) ? $ventaActual["ids_mesas_extra"] : null;
+			if (array_key_exists("ids_mesas_extra", $datos)) {
+				if (!class_exists("ModeloMesas")) {
+					require_once __DIR__ . "/mesas.modelo.php";
+				}
+				$csvExtrasUpd = ModeloMesas::mdlCsvIdsMesasExtra(
+					ModeloMesas::mdlNormalizarIdsMesasExtra($datos["ids_mesas_extra"], $idMesaUpd ?: 0)
+				);
+			}
+
+			// Cambio de mesa en cuenta pendiente (misma atención).
+			$mesaActualVenta = !empty($ventaActual["id_mesa"]) ? intval($ventaActual["id_mesa"]) : 0;
+			if ($idMesaUpd && $mesaActualVenta && $idMesaUpd !== $mesaActualVenta && $idAtenUpd) {
+				if (!class_exists("ModeloMesas")) {
+					require_once __DIR__ . "/mesas.modelo.php";
+				}
+				ModeloMesas::mdlCambiarMesaAtencionEnConexion($conexion, $mesaActualVenta, $idMesaUpd);
+				$csvExtrasUpd = null;
+			} elseif ($idAtenUpd && $cantPersUpd) {
+				$stmtPers = $conexion->prepare(
+					"UPDATE atencion_mesa SET cantidad_personas = :p WHERE id = :id AND estado = 'abierta'"
+				);
+				$stmtPers->bindValue(":p", $cantPersUpd, PDO::PARAM_INT);
+				$stmtPers->bindValue(":id", $idAtenUpd, PDO::PARAM_INT);
+				$stmtPers->execute();
+			}
+
 			$stmtUpdate = $conexion->prepare(
 				"UPDATE ventas SET id_mesero = :id_mesero, id_cliente = :id_cliente, total = :total,
 				 total_bruto = :total_bruto, total_descuento = :total_descuento,
-				 nota = :nota, forma_atencion = :forma_atencion
+				 nota = :nota, forma_atencion = :forma_atencion,
+				 id_mesa = :id_mesa, ids_mesas_extra = :ids_mesas_extra, cantidad_personas = :cantidad_personas, id_atencion_mesa = :id_atencion_mesa
 				 WHERE id = :id_venta AND estado_pago = 'PENDIENTE'"
 			);
 			$datos["total"] = Moneda::texto($datos["total"] ?? 0);
@@ -865,6 +1000,10 @@ class ModeloVentas
 			$stmtUpdate->bindParam(":total_descuento", $totalDescUpd, PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":nota", $datos["nota"], PDO::PARAM_STR);
 			$stmtUpdate->bindParam(":forma_atencion", $datos["forma_atencion"], PDO::PARAM_STR);
+			$stmtUpdate->bindValue(":id_mesa", $idMesaUpd, $idMesaUpd ? PDO::PARAM_INT : PDO::PARAM_NULL);
+			$stmtUpdate->bindValue(":ids_mesas_extra", $csvExtrasUpd, $csvExtrasUpd ? PDO::PARAM_STR : PDO::PARAM_NULL);
+			$stmtUpdate->bindValue(":cantidad_personas", $cantPersUpd, $cantPersUpd ? PDO::PARAM_INT : PDO::PARAM_NULL);
+			$stmtUpdate->bindValue(":id_atencion_mesa", $idAtenUpd, $idAtenUpd ? PDO::PARAM_INT : PDO::PARAM_NULL);
 			$stmtUpdate->bindParam(":id_venta", $datos["id_venta"], PDO::PARAM_INT);
 
 			if (!$stmtUpdate->execute()) {
@@ -980,6 +1119,26 @@ class ModeloVentas
 			$conexion->rollBack();
 			return "error: " . $e->getMessage();
 		}
+	}
+
+	/** Otras ventas pendientes en la misma atención (excluye una venta). */
+	static public function mdlContarPendientesAtencion($idAtencion, $excluirIdVenta = 0)
+	{
+		$idAtencion = intval($idAtencion);
+		if ($idAtencion <= 0) {
+			return 0;
+		}
+		$stmt = Conexion::conectar()->prepare(
+			"SELECT COUNT(*) AS total FROM ventas
+			 WHERE id_atencion_mesa = :id
+			   AND estado = 1
+			   AND estado_pago = 'PENDIENTE'
+			   AND id <> :excluir"
+		);
+		$stmt->bindValue(":id", $idAtencion, PDO::PARAM_INT);
+		$stmt->bindValue(":excluir", intval($excluirIdVenta), PDO::PARAM_INT);
+		$stmt->execute();
+		return intval(($stmt->fetch(PDO::FETCH_ASSOC)["total"] ?? 0));
 	}
 
 	/*=============================================

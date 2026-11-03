@@ -431,6 +431,66 @@ class ModeloArqueo {
     }
 
     /**
+     * Parte en efectivo de compras que sí descontaron de caja.
+     * Sin forma de pago (compras anteriores) se toma el total, como hasta ahora.
+     */
+    static public function mdlSumarComprasEfectivoPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        try {
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(
+                    CASE
+                        WHEN COALESCE(descontar_caja, 0) <> 1 THEN 0
+                        WHEN tipo_pago IS NULL OR tipo_pago = '' THEN total
+                        WHEN tipo_pago IN ('1', 'Efectivo') THEN COALESCE(total_efectivo, total)
+                        WHEN tipo_pago IN ('4', 'Mixto') THEN COALESCE(total_efectivo, 0)
+                        ELSE 0
+                    END
+                 ), 0) AS total
+                 FROM compras
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            return self::mdlSumarComprasPorArqueo($idArqueo, $pdo);
+        }
+    }
+
+    /**
+     * Parte QR de compras que sí descontaron de caja.
+     * Sin forma de pago no se inventa un QR: queda en 0.
+     */
+    static public function mdlSumarComprasQrPorArqueo($idArqueo, $pdo = null) {
+        $conexion = $pdo ?: Conexion::conectar();
+        try {
+            $stmt = $conexion->prepare(
+                "SELECT COALESCE(SUM(
+                    CASE
+                        WHEN COALESCE(descontar_caja, 0) <> 1 THEN 0
+                        WHEN tipo_pago IS NULL OR tipo_pago = '' THEN 0
+                        WHEN tipo_pago IN ('2', 'QR') THEN COALESCE(total_qr, total)
+                        WHEN tipo_pago IN ('4', 'Mixto') THEN COALESCE(total_qr, 0)
+                        ELSE 0
+                    END
+                 ), 0) AS total
+                 FROM compras
+                 WHERE id_arqueo_caja = :id_arqueo_caja
+                   AND estado = 1"
+            );
+            $stmt->bindValue(":id_arqueo_caja", intval($idArqueo), PDO::PARAM_INT);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return floatval($row["total"] ?? 0);
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    /**
      * Suma todas las compras activas del arqueo (bloque informativo, no afecta cuadre)
      */
     static public function mdlSumarComprasInformativasPorArqueo($idArqueo, $pdo = null) {
@@ -724,7 +784,7 @@ class ModeloArqueo {
         $montoAperturaEfectivo = $apertura["monto_apertura_efectivo"];
         $ventasEfectivo = self::mdlSumarVentasEfectivoPorArqueo($idArqueo, $conexion);
         $otrosIngresosEfectivo = self::mdlSumarOtrosIngresosEfectivoPorArqueo($idArqueo, $conexion);
-        $compras = self::mdlSumarComprasPorArqueo($idArqueo, $conexion);
+        $compras = self::mdlSumarComprasEfectivoPorArqueo($idArqueo, $conexion);
         $gastos = self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $conexion);
         $disponible = $montoAperturaEfectivo + $ventasEfectivo + $otrosIngresosEfectivo - $gastos - $compras;
 
@@ -758,6 +818,8 @@ class ModeloArqueo {
 
             $ventas = self::mdlSumarVentasPagadasPorArqueo($idArqueo, $pdo);
             $compras = Moneda::texto(self::mdlSumarComprasPorArqueo($idArqueo, $pdo));
+            $comprasEfectivo = Moneda::texto(self::mdlSumarComprasEfectivoPorArqueo($idArqueo, $pdo));
+            $comprasQr = Moneda::texto(self::mdlSumarComprasQrPorArqueo($idArqueo, $pdo));
             $gastos = Moneda::texto(self::mdlSumarGastosPorArqueo($idArqueo, $pdo));
             $gastosEfectivo = Moneda::texto(self::mdlSumarGastosEfectivoPorArqueo($idArqueo, $pdo));
             $gastosQr = Moneda::texto(self::mdlSumarGastosQrPorArqueo($idArqueo, $pdo));
@@ -783,6 +845,8 @@ class ModeloArqueo {
                     monto_ventas_efectivo = :monto_ventas_efectivo,
                     monto_ventas_qr = :monto_ventas_qr,
                     monto_compras = :monto_compras,
+                    monto_compras_efectivo = :monto_compras_efectivo,
+                    monto_compras_qr = :monto_compras_qr,
                     gastos_operativos = :gastos_operativos,
                     total_ingresos = :total_ingresos,
                     total_egresos = :total_egresos,
@@ -794,12 +858,42 @@ class ModeloArqueo {
             $stmtUpdate->bindValue(":monto_ventas_efectivo", $ventas["total_efectivo"], PDO::PARAM_STR);
             $stmtUpdate->bindValue(":monto_ventas_qr", $ventas["total_qr"], PDO::PARAM_STR);
             $stmtUpdate->bindValue(":monto_compras", $compras, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":monto_compras_efectivo", $comprasEfectivo, PDO::PARAM_STR);
+            $stmtUpdate->bindValue(":monto_compras_qr", $comprasQr, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":gastos_operativos", $gastos, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":total_ingresos", $totalIngresos, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":total_egresos", $totalEgresos, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":resultado_neto", $resultadoNeto, PDO::PARAM_STR);
             $stmtUpdate->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
-            $stmtUpdate->execute();
+            try {
+                $stmtUpdate->execute();
+            } catch (PDOException $eUpdate) {
+                // Sin columnas nuevas aún: sincroniza lo demas y deja el desglose solo en memoria.
+                $stmtUpdateLegacy = $pdo->prepare(
+                    "UPDATE arqueo_caja SET
+                        monto_apertura = :monto_apertura,
+                        monto_ventas = :monto_ventas,
+                        monto_ventas_efectivo = :monto_ventas_efectivo,
+                        monto_ventas_qr = :monto_ventas_qr,
+                        monto_compras = :monto_compras,
+                        gastos_operativos = :gastos_operativos,
+                        total_ingresos = :total_ingresos,
+                        total_egresos = :total_egresos,
+                        resultado_neto = :resultado_neto
+                     WHERE id = :id"
+                );
+                $stmtUpdateLegacy->bindValue(":monto_apertura", $montoApertura, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":monto_ventas", $ventas["total"], PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":monto_ventas_efectivo", $ventas["total_efectivo"], PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":monto_ventas_qr", $ventas["total_qr"], PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":monto_compras", $compras, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":gastos_operativos", $gastos, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":total_ingresos", $totalIngresos, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":total_egresos", $totalEgresos, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":resultado_neto", $resultadoNeto, PDO::PARAM_STR);
+                $stmtUpdateLegacy->bindValue(":id", intval($idArqueo), PDO::PARAM_INT);
+                $stmtUpdateLegacy->execute();
+            }
 
             $arqueo["monto_apertura"] = $montoApertura;
             $arqueo["monto_apertura_efectivo"] = $apertura["monto_apertura_efectivo"];
@@ -808,6 +902,10 @@ class ModeloArqueo {
             $arqueo["monto_ventas_efectivo"] = $ventas["total_efectivo"];
             $arqueo["monto_ventas_qr"] = $ventas["total_qr"];
             $arqueo["monto_compras"] = $compras;
+            $arqueo["monto_compras_efectivo"] = $comprasEfectivo;
+            $arqueo["monto_compras_qr"] = $comprasQr;
+            $arqueo["compras_efectivo"] = $comprasEfectivo;
+            $arqueo["compras_qr"] = $comprasQr;
             $arqueo["gastos_operativos"] = $gastos;
             $arqueo["gastos_efectivo"] = $gastosEfectivo;
             $arqueo["gastos_qr"] = $gastosQr;
@@ -995,6 +1093,8 @@ class ModeloArqueo {
                 total_egresos = :total_egresos,
                 gastos_operativos = :gastos_operativos,
                 monto_compras = :monto_compras,
+                monto_compras_efectivo = :monto_compras_efectivo,
+                monto_compras_qr = :monto_compras_qr,
                 resultado_neto = :resultado_neto,
                 efectivo_en_caja = :efectivo_en_caja,
                 qr_en_caja = :qr_en_caja,
@@ -1024,6 +1124,8 @@ class ModeloArqueo {
             $stmt->bindParam(":total_egresos", $datos["total_egresos"], PDO::PARAM_STR);
             $stmt->bindParam(":gastos_operativos", $datos["gastos_operativos"], PDO::PARAM_STR);
             $stmt->bindParam(":monto_compras", $datos["monto_compras"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_compras_efectivo", $datos["monto_compras_efectivo"], PDO::PARAM_STR);
+            $stmt->bindParam(":monto_compras_qr", $datos["monto_compras_qr"], PDO::PARAM_STR);
             $stmt->bindParam(":resultado_neto", $datos["resultado_neto"], PDO::PARAM_STR);
             $stmt->bindParam(":efectivo_en_caja", $datos["efectivo_en_caja"], PDO::PARAM_STR);
             $stmt->bindParam(":qr_en_caja", $datos["qr_en_caja"], PDO::PARAM_STR);
@@ -1034,12 +1136,79 @@ class ModeloArqueo {
             $stmt->bindParam(":cuentas_pendientes_total", $datos["cuentas_pendientes_total"], PDO::PARAM_STR);
             $stmt->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);
 
-            if(!$stmt->execute() || $stmt->rowCount() === 0) {
-                $pdo->rollBack();
-                return [
-                    "status" => "error",
-                    "mensaje" => "No se pudo cerrar la caja."
-                ];
+            try {
+                if(!$stmt->execute() || $stmt->rowCount() === 0) {
+                    $pdo->rollBack();
+                    return [
+                        "status" => "error",
+                        "mensaje" => "No se pudo cerrar la caja."
+                    ];
+                }
+            } catch (PDOException $eCierre) {
+                // Compatibilidad si aún no corrieron la migración de compras en arqueo.
+                $stmtLegacy = $pdo->prepare("UPDATE arqueo_caja SET 
+                    fecha_cierre = :fecha_cierre,
+                    Bs200 = :Bs200,
+                    Bs100 = :Bs100,
+                    Bs50 = :Bs50,
+                    Bs20 = :Bs20,
+                    Bs10 = :Bs10,
+                    Bs5 = :Bs5,
+                    Bs2 = :Bs2,
+                    Bs1 = :Bs1,
+                    Bs050 = :Bs050,
+                    Bs020 = :Bs020,
+                    total_ingresos = :total_ingresos,
+                    monto_ventas_efectivo = :monto_ventas_efectivo,
+                    monto_ventas_qr = :monto_ventas_qr,
+                    monto_ventas = :monto_ventas,
+                    total_egresos = :total_egresos,
+                    gastos_operativos = :gastos_operativos,
+                    monto_compras = :monto_compras,
+                    resultado_neto = :resultado_neto,
+                    efectivo_en_caja = :efectivo_en_caja,
+                    qr_en_caja = :qr_en_caja,
+                    total_efectivo_qr_en_caja = :total_efectivo_qr_en_caja,
+                    diferencia = :diferencia,
+                    estado = :estado,
+                    cuentas_pendientes_cantidad = :cuentas_pendientes_cantidad,
+                    cuentas_pendientes_total = :cuentas_pendientes_total
+                    WHERE id = :id_arqueo
+                      AND estado = 'abierta'");
+                $stmtLegacy->bindParam(":fecha_cierre", $datos["fecha_cierre"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":Bs200", $datos["Bs200"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs100", $datos["Bs100"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs50", $datos["Bs50"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs20", $datos["Bs20"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs10", $datos["Bs10"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs5", $datos["Bs5"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs2", $datos["Bs2"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs1", $datos["Bs1"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs050", $datos["Bs050"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":Bs020", $datos["Bs020"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":total_ingresos", $datos["total_ingresos"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":monto_ventas_efectivo", $datos["monto_ventas_efectivo"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":monto_ventas_qr", $datos["monto_ventas_qr"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":monto_ventas", $datos["monto_ventas"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":total_egresos", $datos["total_egresos"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":gastos_operativos", $datos["gastos_operativos"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":monto_compras", $datos["monto_compras"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":resultado_neto", $datos["resultado_neto"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":efectivo_en_caja", $datos["efectivo_en_caja"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":qr_en_caja", $datos["qr_en_caja"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":total_efectivo_qr_en_caja", $datos["total_efectivo_qr_en_caja"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":diferencia", $datos["diferencia"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":estado", $datos["estado"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":cuentas_pendientes_cantidad", $datos["cuentas_pendientes_cantidad"], PDO::PARAM_INT);
+                $stmtLegacy->bindParam(":cuentas_pendientes_total", $datos["cuentas_pendientes_total"], PDO::PARAM_STR);
+                $stmtLegacy->bindParam(":id_arqueo", $datos["id_arqueo"], PDO::PARAM_INT);
+                if(!$stmtLegacy->execute() || $stmtLegacy->rowCount() === 0) {
+                    $pdo->rollBack();
+                    return [
+                        "status" => "error",
+                        "mensaje" => "No se pudo cerrar la caja."
+                    ];
+                }
             }
 
             $idCaja = intval($datos["id_caja"] ?? $arqueo["id_caja"]);

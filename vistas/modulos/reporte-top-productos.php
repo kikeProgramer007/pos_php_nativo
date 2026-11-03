@@ -82,6 +82,14 @@ $fechaActual = date('Y-m-d');
               ?>
             </select>
           </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+            <label class="small">Forma de atención</label>
+            <select class="form-control select2" id="forma_atencion" name="forma_atencion">
+              <option value="0" selected>Todos</option>
+              <option value="1">Mesa</option>
+              <option value="2">Llevar</option>
+            </select>
+          </div>
           <div class="col-lg-6 col-md-8 col-sm-12 mb-3">
             <label class="small">Producto</label>
             <select class="form-control select2" id="id_producto" name="id_producto[]" multiple="multiple" data-placeholder="Todos los productos">
@@ -126,7 +134,7 @@ $fechaActual = date('Y-m-d');
 
   if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
     $(document).ready(function(){
-      $('#id_categoria, #id_mesero').select2({width: '100%'});
+      $('#id_categoria, #id_mesero, #forma_atencion').select2({width: '100%'});
       $('#id_producto').select2({width: '100%', placeholder: 'Todos los productos', allowClear: true});
     });
   }
@@ -144,18 +152,28 @@ $fechaActual = date('Y-m-d');
 
   var popupWindow = null;
 
-  function generatePDF() {
+  function queryReporteProductosVendidos() {
     const idUsuario = document.getElementById('id_usuario').value;
     const idCategoria = document.getElementById('id_categoria').value;
     const idMesero = document.getElementById('id_mesero').value;
+    const formaAtencion = document.getElementById('forma_atencion').value || '0';
+    return "fechaInicio=" + encodeURIComponent(fechaInicio.value) +
+      "&fechaFin=" + encodeURIComponent(fechaFin.value) +
+      "&idUsuario=" + encodeURIComponent(idUsuario) +
+      "&idCategoria=" + encodeURIComponent(idCategoria) +
+      "&idMesero=" + encodeURIComponent(idMesero) +
+      "&formaAtencion=" + encodeURIComponent(formaAtencion) +
+      queryProductos();
+  }
 
+  function validarFechasProductosVendidos() {
     if (!fechaInicio || !fechaFin || !fechaInicio.value || !fechaFin.value) {
       swal({
         icon: 'warning',
         title: 'Advertencia',
         text: 'Por favor, seleccione las fechas requeridas.'
       });
-      return;
+      return false;
     }
 
     if (fechaFin.value > fechaActual) {
@@ -164,7 +182,7 @@ $fechaActual = date('Y-m-d');
         title: 'Advertencia',
         text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual
       });
-      return;
+      return false;
     }
 
     if (fechaInicio.value > fechaFin.value) {
@@ -173,6 +191,13 @@ $fechaActual = date('Y-m-d');
         title: 'Advertencia',
         text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.'
       });
+      return false;
+    }
+    return true;
+  }
+
+  function generatePDF() {
+    if (!validarFechasProductosVendidos()) {
       return;
     }
 
@@ -187,40 +212,17 @@ $fechaActual = date('Y-m-d');
     }
 
     popupWindow = window.open(
-      "extensiones/tcpdf/pdf/top-productos-mas-vendidos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-      "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-      "&idUsuario=" + encodeURIComponent(idUsuario) +
-      "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idMesero=" + encodeURIComponent(idMesero) +
-      queryProductos(),
+      "extensiones/tcpdf/pdf/top-productos-mas-vendidos.php?" + queryReporteProductosVendidos(),
       "_blank",
       windowFeatures
     );
   }
 
   function generateExcelTopProductos() {
-    const idUsuario = document.getElementById('id_usuario').value;
-    const idCategoria = document.getElementById('id_categoria').value;
-    const idMesero = document.getElementById('id_mesero').value;
-
-    if (!fechaInicio || !fechaFin || !fechaInicio.value || !fechaFin.value) {
-      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione las fechas requeridas.' });
-      return;
-    }
-    if (fechaFin.value > fechaActual) {
-      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, la fecha fin seleccionada no puede ser mayor a la fecha actual: ' + fechaActual });
-      return;
-    }
-    if (fechaInicio.value > fechaFin.value) {
-      swal({ icon: 'warning', title: 'Advertencia', text: 'Por favor, seleccione una fecha de inicio menor a la fecha fin.' });
+    if (!validarFechasProductosVendidos()) {
       return;
     }
 
-    window.location.href = "extensiones/excel/top-productos.php?fechaInicio=" + encodeURIComponent(fechaInicio.value) +
-      "&fechaFin=" + encodeURIComponent(fechaFin.value) +
-      "&idUsuario=" + encodeURIComponent(idUsuario) +
-      "&idCategoria=" + encodeURIComponent(idCategoria) +
-      "&idMesero=" + encodeURIComponent(idMesero) +
-      queryProductos();
+    window.location.href = "extensiones/excel/top-productos.php?" + queryReporteProductosVendidos();
   }
 </script>

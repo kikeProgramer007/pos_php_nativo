@@ -125,6 +125,8 @@ class ControladorArqueo {
             "total_egresos" => floatval($_POST["totalEgresos"]),
             "gastos_operativos" => floatval($_POST["gastosOperativos"]),
             "monto_compras" => floatval($_POST["montoCompras"]),
+            "monto_compras_efectivo" => floatval($_POST["montoComprasEfectivo"] ?? 0),
+            "monto_compras_qr" => floatval($_POST["montoComprasQr"] ?? 0),
             "resultado_neto" => floatval($_POST["resultadoNeto"]),
             "efectivo_en_caja" => floatval($_POST["totalEfectivoEnCaja"]),
             "qr_en_caja" => floatval($_POST["totalQrEnCuenta"]),
@@ -143,6 +145,8 @@ class ControladorArqueo {
             $datos["total_egresos"] = floatval($sincronizado["total_egresos"]);
             $datos["gastos_operativos"] = floatval($sincronizado["gastos_operativos"]);
             $datos["monto_compras"] = floatval($sincronizado["monto_compras"]);
+            $datos["monto_compras_efectivo"] = floatval($sincronizado["monto_compras_efectivo"] ?? $sincronizado["compras_efectivo"] ?? 0);
+            $datos["monto_compras_qr"] = floatval($sincronizado["monto_compras_qr"] ?? $sincronizado["compras_qr"] ?? 0);
             $datos["resultado_neto"] = floatval($sincronizado["resultado_neto"]);
             $datos["diferencia"] = floatval($datos["total_efectivo_qr_en_caja"]) - floatval($datos["resultado_neto"]);
         }

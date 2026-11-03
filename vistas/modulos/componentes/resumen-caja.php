@@ -76,7 +76,11 @@
                         Compras pagadas con caja
                         <i class="fa fa-info-circle text-muted"
                            data-toggle="tooltip"
-                           title="Compras marcadas como Descontar de caja."></i>
+                           title="Solo compras con Descontar de caja. El efectivo y el QR se reparten según la forma de pago."></i>
+                        <ul>
+                            <li>QR</li>
+                            <li>Efectivo</li>
+                        </ul>
                     </li>
                 </ul>
             </td>
@@ -85,6 +89,8 @@
                 <div id="gastos_qr">0.00</div>
                 <div id="gastos_efectivo">0.00</div>
                 <div id="monto_compras" class="text-bold">0.00</div>
+                <div id="compras_qr">0.00</div>
+                <div id="compras_efectivo">0.00</div>
             </td>
         </tr>
 
